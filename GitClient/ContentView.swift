@@ -19,47 +19,67 @@ struct ContentView: View {
         "GitClient3": [Commit(message: "Commit3"), Commit(message: "Commit3 2"), Commit(message: "Commit3 3")],
     ]
 
-    var body: some View {
-        NavigationView {
-            List(folders, id: \.path) { folder in
-                NavigationLink(folder.path) {
-                    NavigationView {
-                        List(commits[folder.path]!) { commit in
-                            NavigationLink(commit.message) {
-                                VStack {
-                                    Text(commit.message)
-                                    Text(commit.id)
-                                }
-                            }
+    fileprivate func folderView(_ folder: Folder) -> NavigationLink<Text, some View> {
+        return NavigationLink(folder.path) {
+            NavigationView {
+                List(commits[folder.path]!) { commit in
+                    NavigationLink(commit.message) {
+                        VStack {
+                            Text(commit.message)
+                            Text(commit.id)
                         }
-                    }
-                    .navigationTitle(folder.path)
-                    .navigationSubtitle("main")
-                    .toolbar {
-                        ToolbarItem(placement: .navigation) {
-                            Button {
-
-                            } label: {
-                                Image(systemName: "chevron.down")
-                            }
-                            .help("Change branch")
-                        }
-                    }
-                    .toolbar {
-                        Button {
-
-                        } label: {
-                            Image(systemName: "arrow.down")
-                        }
-                        .help("Pull")
-                        Button {
-
-                        } label: {
-                            Image(systemName: "arrow.up")
-                        }
-                        .help("Push")
                     }
                 }
+            }
+            .navigationTitle(folder.path)
+            .navigationSubtitle("main")
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    Button {
+
+                    } label: {
+                        Image(systemName: "chevron.down")
+                    }
+                    .help("Change Branch")
+                }
+            }
+            .toolbar {
+                Button {
+
+                } label: {
+                    Image(systemName: "arrow.down")
+                }
+                .help("Pull")
+                Button {
+
+                } label: {
+                    Image(systemName: "arrow.up")
+                }
+                .help("Push")
+            }
+        }
+    }
+
+    fileprivate func foldersFooter() -> some View {
+        return Button {
+
+        } label: {
+            Label("Add Folder", systemImage: "plus")
+        }
+        .help("Add Folder")
+        .buttonStyle(.plain)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+    }
+
+    var body: some View {
+        NavigationView {
+            VStack(alignment: .leading, spacing: 0) {
+                List(folders, id: \.path) {
+                    folderView($0)
+                }
+                .listStyle(.sidebar)
+                foldersFooter()
             }
             .navigationTitle("Folders")
             .toolbar {

@@ -100,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				6172E4C728D70EEC0015C958 /* Models */,
+				6172E4C828D76BAB0015C958 /* Views */,
 				61347EED28D5D16C00625FC4 /* GitClientApp.swift */,
 				61347EEF28D5D16C00625FC4 /* ContentView.swift */,
 				61347EF128D5D16D00625FC4 /* Assets.xcassets */,
@@ -141,6 +142,13 @@
 				6172E4C528D70EE30015C958 /* Commit.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		6172E4C828D76BAB0015C958 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

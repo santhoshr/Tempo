@@ -33,7 +33,42 @@ struct ContentView: View {
                             }
                         }
                     }
+                    .navigationTitle(folder.path)
+                    .navigationSubtitle("main")
+                    .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            Button {
+
+                            } label: {
+                                Image(systemName: "chevron.down")
+                            }
+                            .help("Change branch")
+                        }
+                    }
+                    .toolbar {
+                        Button {
+
+                        } label: {
+                            Image(systemName: "arrow.down")
+                        }
+                        .help("Pull")
+                        Button {
+
+                        } label: {
+                            Image(systemName: "arrow.up")
+                        }
+                        .help("Push")
+                    }
                 }
+            }
+            .navigationTitle("Folders")
+            .toolbar {
+                Button {
+
+                } label: {
+                    Image(systemName: "sidebar.leading")
+                }
+                .help("Hide or show the Navigator")
             }
         }
         .frame(minWidth: 700, minHeight: 300)

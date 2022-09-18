@@ -99,8 +99,8 @@
 		61347EEC28D5D16C00625FC4 /* GitClient */ = {
 			isa = PBXGroup;
 			children = (
-				61347EED28D5D16C00625FC4 /* GitClientApp.swift */,
 				6172E4C728D70EEC0015C958 /* Models */,
+				61347EED28D5D16C00625FC4 /* GitClientApp.swift */,
 				61347EEF28D5D16C00625FC4 /* ContentView.swift */,
 				61347EF128D5D16D00625FC4 /* Assets.xcassets */,
 				61347EF628D5D16D00625FC4 /* GitClient.entitlements */,

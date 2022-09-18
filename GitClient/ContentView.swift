@@ -79,16 +79,24 @@ struct ContentView: View {
                     folderView($0)
                 }
                 .listStyle(.sidebar)
-                foldersFooter()
+//                foldersFooter()
             }
             .navigationTitle("Folders")
             .toolbar {
-                Button {
+                ToolbarItemGroup {
+                    Button {
 
-                } label: {
-                    Image(systemName: "sidebar.leading")
+                    } label: {
+                        Image(systemName: "plus.rectangle.on.folder")
+                    }
+                    .help("Add Folder")
+                    Button {
+
+                    } label: {
+                        Image(systemName: "sidebar.leading")
+                    }
+                    .help("Hide or show the Navigator")
                 }
-                .help("Hide or show the Navigator")
             }
         }
         .frame(minWidth: 700, minHeight: 300)

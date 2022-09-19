@@ -21,13 +21,11 @@ struct ContentView: View {
 
     fileprivate func folderView(_ folder: Folder) -> NavigationLink<Text, some View> {
         return NavigationLink(folder.path) {
-            NavigationView {
-                List(commits[folder.path]!) { commit in
-                    NavigationLink(commit.message) {
-                        VStack {
-                            Text(commit.message)
-                            Text(commit.id)
-                        }
+            List(commits[folder.path]!) { commit in
+                NavigationLink(commit.message) {
+                    VStack {
+                        Text(commit.message)
+                        Text(commit.id)
                     }
                 }
             }
@@ -98,6 +96,10 @@ struct ContentView: View {
                     .help("Hide or show the Navigator")
                 }
             }
+
+            Text("No Folder Selection")
+            Text("")
+
         }
         .frame(minWidth: 700, minHeight: 300)
     }

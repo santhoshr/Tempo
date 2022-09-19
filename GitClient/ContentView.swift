@@ -85,6 +85,7 @@ struct ContentView: View {
             }
 
             Text("No Folder Selection")
+                .foregroundColor(.secondary)
             Text("")
         }
         .frame(minWidth: 700, minHeight: 300)

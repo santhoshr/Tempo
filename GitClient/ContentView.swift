@@ -58,18 +58,6 @@ struct ContentView: View {
         }
     }
 
-    fileprivate func foldersFooter() -> some View {
-        return Button {
-
-        } label: {
-            Label("Add Folder", systemImage: "plus")
-        }
-        .help("Add Folder")
-        .buttonStyle(.plain)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-    }
-
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
@@ -77,7 +65,6 @@ struct ContentView: View {
                     folderView($0)
                 }
                 .listStyle(.sidebar)
-//                foldersFooter()
             }
             .navigationTitle("Folders")
             .toolbar {
@@ -99,7 +86,6 @@ struct ContentView: View {
 
             Text("No Folder Selection")
             Text("")
-
         }
         .frame(minWidth: 700, minHeight: 300)
     }

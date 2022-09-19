@@ -76,7 +76,7 @@ struct ContentView: View {
                     }
                     .help("Add Folder")
                     Button {
-
+                        NSApp.keyWindow?.firstResponder?.tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
                     } label: {
                         Image(systemName: "sidebar.leading")
                     }

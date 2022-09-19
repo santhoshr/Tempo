@@ -70,11 +70,19 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItemGroup {
                     Button {
-
+                        let panel = NSOpenPanel()
+                        panel.canChooseFiles = false
+                        panel.begin { (response) in
+                            if response == .OK {
+                                for fileURL in panel.urls {
+                                    print(fileURL)
+                                }
+                            }
+                        }
                     } label: {
                         Image(systemName: "plus.rectangle.on.folder")
                     }
-                    .help("Add Folder")
+                    .help("Add project folder")
                     Button {
                         NSApp.keyWindow?.firstResponder?.tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
                     } label: {

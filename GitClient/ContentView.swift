@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    private var folders = [
+    @State private var folders = [
         Folder(path: "GitClient"),
         Folder(path: "GitClient2"),
         Folder(path: "GitClient3"),
@@ -21,7 +21,7 @@ struct ContentView: View {
 
     fileprivate func folderView(_ folder: Folder) -> NavigationLink<Text, some View> {
         return NavigationLink(folder.path) {
-            List(commits[folder.path]!) { commit in
+            List(commits[folder.path] ?? []) { commit in
                 NavigationLink(commit.message) {
                     VStack {
                         Text(commit.message)
@@ -72,10 +72,12 @@ struct ContentView: View {
                     Button {
                         let panel = NSOpenPanel()
                         panel.canChooseFiles = false
+                        panel.canChooseDirectories = true
+                        panel.canCreateDirectories = false
                         panel.begin { (response) in
                             if response == .OK {
                                 for fileURL in panel.urls {
-                                    print(fileURL)
+                                    folders.append(.init(path: fileURL.absoluteString))
                                 }
                             }
                         }

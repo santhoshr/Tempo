@@ -16,7 +16,7 @@ final class FolderStore: ObservableObject {
         self.defaults = defaults
         guard let data = defaults.data(forKey: .folder) else
              {
-            return
+            throw GenericError(errorDescription: "The data object associated with the specified key, or nil if the key does not exist or its value is not a data object.")
         }
         let decoder = JSONDecoder()
         folders = try decoder.decode([Folder].self, from: data)

@@ -27,7 +27,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle(folder.url.absoluteString)
+            .navigationTitle(folder.displayName)
             .navigationSubtitle("main")
             .toolbar {
                 ToolbarItem(placement: .navigation) {
@@ -60,6 +60,7 @@ struct ContentView: View {
         NavigationView {
             List(folders, id: \.url) {
                 folderView($0)
+                    .help($0.url.path)
             }
             .listStyle(.sidebar)
             .navigationTitle("Folders")

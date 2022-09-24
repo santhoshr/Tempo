@@ -9,4 +9,7 @@ import Foundation
 
 struct Folder: Hashable, Codable {
     var path: String
+    var displayName: String {
+        path.components(separatedBy: "/").filter{ !$0.isEmpty }.last ?? ""
+    }
 }

@@ -8,11 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var folders = [
-        Folder(path: "GitClient"),
-        Folder(path: "GitClient2"),
-        Folder(path: "GitClient3"),
-    ]
+    @StateObject private var foldersViewModel = FoldersViewModel()
+
     private var commits = [
         "GitClient": [Commit(message: "Commit"), Commit(message: "Commit 2"), Commit(message: "Commit 3")],
         "GitClient2": [Commit(message: "Commit2"), Commit(message: "Commit2 2"), Commit(message: "Commit2 3")],
@@ -20,7 +17,7 @@ struct ContentView: View {
     ]
 
     fileprivate func folderView(_ folder: Folder) -> NavigationLink<Text, some View> {
-        return NavigationLink(folder.path) {
+        return NavigationLink(folder.displayName) {
             List(commits[folder.path] ?? []) { commit in
                 NavigationLink(commit.message) {
                     VStack {
@@ -61,7 +58,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
-                List(folders, id: \.path) {
+                List(foldersViewModel.folders, id: \.path) {
                     folderView($0)
                 }
                 .listStyle(.sidebar)
@@ -77,7 +74,7 @@ struct ContentView: View {
                         panel.begin { (response) in
                             if response == .OK {
                                 for fileURL in panel.urls {
-                                    folders.append(.init(path: fileURL.absoluteString))
+                                    foldersViewModel.newFolderDidChoose(url: fileURL)
                                 }
                             }
                         }

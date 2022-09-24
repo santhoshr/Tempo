@@ -28,7 +28,7 @@ struct ContentView: View {
 
     fileprivate func folderView(_ folder: Folder) -> NavigationLink<Text, some View> {
         return NavigationLink(folder.displayName) {
-            List(commits[folder.path] ?? []) { commit in
+            List(commits[folder.displayName] ?? []) { commit in
                 NavigationLink(commit.message) {
                     VStack {
                         Text(commit.message)
@@ -36,7 +36,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle(folder.path)
+            .navigationTitle(folder.url.absoluteString)
             .navigationSubtitle("main")
             .toolbar {
                 ToolbarItem(placement: .navigation) {
@@ -68,7 +68,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
-                List(folders, id: \.path) {
+                List(folders, id: \.url) {
                     folderView($0)
                 }
                 .listStyle(.sidebar)
@@ -84,7 +84,7 @@ struct ContentView: View {
                         panel.begin { (response) in
                             if response == .OK {
                                 for fileURL in panel.urls {
-                                    let chooseFolder = Folder(path: fileURL.path)
+                                    let chooseFolder = Folder(url: fileURL)
                                     folders.removeAll { $0 == chooseFolder }
                                     folders.insert(chooseFolder, at: 0)
                                     do {

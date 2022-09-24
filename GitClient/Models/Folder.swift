@@ -8,8 +8,8 @@
 import Foundation
 
 struct Folder: Hashable, Codable {
-    var path: String
+    var url: URL
     var displayName: String {
-        path.components(separatedBy: "/").filter{ !$0.isEmpty }.last ?? ""
+        url.path.components(separatedBy: "/").filter{ !$0.isEmpty }.last ?? ""
     }
 }

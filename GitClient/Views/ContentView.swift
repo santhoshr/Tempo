@@ -19,10 +19,10 @@ struct ContentView: View {
 
     init() {
         do {
-            folders = try FolderStore.folders()
+            _folders = .init(wrappedValue: try FolderStore.folders())
         } catch {
-            folders = []
-            self.error = error
+            _folders = .init(wrappedValue: [])
+            _error = .init(wrappedValue: GenericError(errorDescription: "Hi"))
         }
     }
 

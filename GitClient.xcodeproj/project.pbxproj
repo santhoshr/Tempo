@@ -109,7 +109,6 @@
 				6172E4C828D76BAB0015C958 /* Views */,
 				61A2D35828DE9D79009A3EEC /* FoundationExtension */,
 				61347EED28D5D16C00625FC4 /* GitClientApp.swift */,
-				61347EEF28D5D16C00625FC4 /* ContentView.swift */,
 				61347EF128D5D16D00625FC4 /* Assets.xcassets */,
 				61347EF628D5D16D00625FC4 /* GitClient.entitlements */,
 				61347EF328D5D16D00625FC4 /* Preview Content */,
@@ -156,6 +155,7 @@
 		6172E4C828D76BAB0015C958 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				61347EEF28D5D16C00625FC4 /* ContentView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";

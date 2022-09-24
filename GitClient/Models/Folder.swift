@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct Folder: Hashable {
+struct Folder: Hashable, Codable {
     var path: String
 }

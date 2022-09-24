@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var folders: [Folder]
+    @State private var folders: [Folder] = []
     @State private var error: Error?
 
     private var commits = [
@@ -16,15 +16,6 @@ struct ContentView: View {
         "GitClient2": [Commit(message: "Commit2"), Commit(message: "Commit2 2"), Commit(message: "Commit2 3")],
         "GitClient3": [Commit(message: "Commit3"), Commit(message: "Commit3 2"), Commit(message: "Commit3 3")],
     ]
-
-    init() {
-        do {
-            _folders = .init(wrappedValue: try FolderStore.folders())
-        } catch {
-            _folders = .init(wrappedValue: [])
-            _error = .init(wrappedValue: GenericError(errorDescription: "Hi"))
-        }
-    }
 
     fileprivate func folderView(_ folder: Folder) -> NavigationLink<Text, some View> {
         return NavigationLink(folder.displayName) {
@@ -103,6 +94,13 @@ struct ContentView: View {
                         Image(systemName: "sidebar.leading")
                     }
                     .help("Hide or show the Navigator")
+                }
+            }
+            .onAppear {
+                do {
+                    folders = try FolderStore.folders()
+                } catch {
+                    self.error = error
                 }
             }
             .errorAlert($error)

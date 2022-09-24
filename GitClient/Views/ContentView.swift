@@ -95,8 +95,29 @@ struct ContentView: View {
                 .foregroundColor(.secondary)
             Text("")
         }
-        .frame(minWidth: 700, minHeight: 300)
+        .frame(minWidth: 700, minHeight: 300)        
+        .alert(
+            foldersViewModel.errors.first?.localizedDescription ?? "",
+            isPresented: .constant(!foldersViewModel.errors.isEmpty),
+            presenting: foldersViewModel.errors.first) { error in
+            Button("OK", role: .cancel) {
+                foldersViewModel.errorDidConfirm(error)
+            }
+        }
     }
+}
+
+extension View {
+//    func errorAlert() -> some View {
+//        alert(
+//            foldersViewModel.errors.first?.localizedDescription ?? "",
+//            isPresented: .constant(!foldersViewModel.errors.isEmpty),
+//            presenting: foldersViewModel.errors.first) { error in
+//            Button("OK", role: .cancel) {
+//                foldersViewModel.errorDidConfirm(error)
+//            }
+//        }
+//    }
 }
 
 struct ContentView_Previews: PreviewProvider {

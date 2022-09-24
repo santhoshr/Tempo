@@ -8,5 +8,5 @@
 import Foundation
 
 struct GenericError: Error, LocalizedError {
-    var errorDescription: String
+    var errorDescription: String?
 }

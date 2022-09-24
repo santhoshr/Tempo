@@ -8,13 +8,23 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var foldersViewModel = FoldersViewModel()
+    @State private var folders: [Folder]
+    @State private var error: Error?
 
     private var commits = [
         "GitClient": [Commit(message: "Commit"), Commit(message: "Commit 2"), Commit(message: "Commit 3")],
         "GitClient2": [Commit(message: "Commit2"), Commit(message: "Commit2 2"), Commit(message: "Commit2 3")],
         "GitClient3": [Commit(message: "Commit3"), Commit(message: "Commit3 2"), Commit(message: "Commit3 3")],
     ]
+
+    init() {
+        do {
+            folders = try FolderStore.folders()
+        } catch {
+            folders = []
+            self.error = error
+        }
+    }
 
     fileprivate func folderView(_ folder: Folder) -> NavigationLink<Text, some View> {
         return NavigationLink(folder.displayName) {
@@ -58,7 +68,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
-                List(foldersViewModel.folders, id: \.path) {
+                List(folders, id: \.path) {
                     folderView($0)
                 }
                 .listStyle(.sidebar)
@@ -74,7 +84,12 @@ struct ContentView: View {
                         panel.begin { (response) in
                             if response == .OK {
                                 for fileURL in panel.urls {
-                                    foldersViewModel.newFolderDidChoose(url: fileURL)
+                                    folders.insert(.init(path: fileURL.absoluteString), at: 0)
+                                    do {
+                                        try FolderStore.save(folders)
+                                    } catch {
+                                        self.error = error
+                                    }
                                 }
                             }
                         }
@@ -95,29 +110,21 @@ struct ContentView: View {
                 .foregroundColor(.secondary)
             Text("")
         }
-        .frame(minWidth: 700, minHeight: 300)        
-        .alert(
-            foldersViewModel.errors.first?.localizedDescription ?? "",
-            isPresented: .constant(!foldersViewModel.errors.isEmpty),
-            presenting: foldersViewModel.errors.first) { error in
-            Button("OK", role: .cancel) {
-                foldersViewModel.errorDidConfirm(error)
-            }
-        }
+        .frame(minWidth: 700, minHeight: 300)
+        .errorAlert($error)
     }
 }
 
 extension View {
-//    func errorAlert() -> some View {
-//        alert(
-//            foldersViewModel.errors.first?.localizedDescription ?? "",
-//            isPresented: .constant(!foldersViewModel.errors.isEmpty),
-//            presenting: foldersViewModel.errors.first) { error in
-//            Button("OK", role: .cancel) {
-//                foldersViewModel.errorDidConfirm(error)
-//            }
-//        }
-//    }
+    func errorAlert(_ error: Binding<Error?>) -> some View {
+        alert(
+            error.wrappedValue?.localizedDescription ?? "",
+            isPresented: .constant(error.wrappedValue != nil)) {
+            Button("OK", role: .cancel) {
+                error.wrappedValue = nil
+            }
+        }
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {

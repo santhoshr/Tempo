@@ -84,7 +84,9 @@ struct ContentView: View {
                         panel.begin { (response) in
                             if response == .OK {
                                 for fileURL in panel.urls {
-                                    folders.insert(.init(path: fileURL.absoluteString), at: 0)
+                                    let chooseFolder = Folder(path: fileURL.path)
+                                    folders.removeAll { $0 == chooseFolder }
+                                    folders.insert(chooseFolder, at: 0)
                                     do {
                                         try FolderStore.save(folders)
                                     } catch {

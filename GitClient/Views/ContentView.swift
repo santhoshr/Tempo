@@ -67,12 +67,10 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading, spacing: 0) {
-                List(folders, id: \.url) {
-                    folderView($0)
-                }
-                .listStyle(.sidebar)
+            List(folders, id: \.url) {
+                folderView($0)
             }
+            .listStyle(.sidebar)
             .navigationTitle("Folders")
             .toolbar {
                 ToolbarItemGroup {

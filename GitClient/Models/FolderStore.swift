@@ -29,17 +29,3 @@ final class FolderStore: ObservableObject {
         defaults.set(encoded, forKey: .folder)
     }
 }
-
-extension UserDefaults {
-    enum Key: String {
-        case folder
-    }
-
-    func data(forKey key: UserDefaults.Key) -> Data? {
-        data(forKey: key.rawValue)
-    }
-
-    func set(_ value: Any?, forKey key: UserDefaults.Key) {
-        set(value, forKey: key.rawValue)
-    }
-}

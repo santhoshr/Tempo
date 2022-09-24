@@ -105,13 +105,13 @@ struct ContentView: View {
                     .help("Hide or show the Navigator")
                 }
             }
+            .errorAlert($error)
 
             Text("No Folder Selection")
                 .foregroundColor(.secondary)
             Text("")
         }
         .frame(minWidth: 700, minHeight: 300)
-        .errorAlert($error)
     }
 }
 

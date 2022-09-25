@@ -11,55 +11,10 @@ struct ContentView: View {
     @State private var folders: [Folder] = []
     @State private var error: Error?
 
-    private var commits = [
-        "GitClient": [Commit(message: "Commit"), Commit(message: "Commit 2"), Commit(message: "Commit 3")],
-        "GitClient2": [Commit(message: "Commit2"), Commit(message: "Commit2 2"), Commit(message: "Commit2 3")],
-        "GitClient3": [Commit(message: "Commit3"), Commit(message: "Commit3 2"), Commit(message: "Commit3 3")],
-    ]
-
-    fileprivate func folderView(_ folder: Folder) -> NavigationLink<Text, some View> {
-        return NavigationLink(folder.displayName) {
-            List(commits[folder.displayName] ?? []) { commit in
-                NavigationLink(commit.message) {
-                    VStack {
-                        Text(commit.message)
-                        Text(commit.id)
-                    }
-                }
-            }
-            .navigationTitle(folder.displayName)
-            .navigationSubtitle("main")
-            .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    Button {
-
-                    } label: {
-                        Image(systemName: "chevron.down")
-                    }
-                    .help("Change Branch")
-                }
-            }
-            .toolbar {
-                Button {
-
-                } label: {
-                    Image(systemName: "arrow.down")
-                }
-                .help("Pull")
-                Button {
-
-                } label: {
-                    Image(systemName: "arrow.up")
-                }
-                .help("Push")
-            }
-        }
-    }
-
     var body: some View {
         NavigationView {
             List(folders, id: \.url) {
-                folderView($0)
+                FolderView(folder: $0)
                     .help($0.url.path)
             }
             .listStyle(.sidebar)

@@ -24,6 +24,7 @@
 		61E290C528E095AE00BCEB04 /* Process+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290C428E095AE00BCEB04 /* Process+Run.swift */; };
 		61E290C928E098DB00BCEB04 /* GitLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290C828E098DB00BCEB04 /* GitLog.swift */; };
 		61E290CB28E098F700BCEB04 /* URL+Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290CA28E098F700BCEB04 /* URL+Git.swift */; };
+		61E290CD28E09FDD00BCEB04 /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290CC28E09FDD00BCEB04 /* Git.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		61E290C428E095AE00BCEB04 /* Process+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Process+Run.swift"; sourceTree = "<group>"; };
 		61E290C828E098DB00BCEB04 /* GitLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitLog.swift; sourceTree = "<group>"; };
 		61E290CA28E098F700BCEB04 /* URL+Git.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Git.swift"; sourceTree = "<group>"; };
+		61E290CC28E09FDD00BCEB04 /* Git.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Git.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +160,7 @@
 				6172E4C528D70EE30015C958 /* Commit.swift */,
 				6172E4C928DB4C8F0015C958 /* FolderStore.swift */,
 				61A2D35628DE9CCC009A3EEC /* GenericError.swift */,
+				61E290CC28E09FDD00BCEB04 /* Git.swift */,
 				61E290C828E098DB00BCEB04 /* GitLog.swift */,
 			);
 			path = Models;
@@ -331,6 +334,7 @@
 				61A2D35D28DF5ACB009A3EEC /* View+.swift in Sources */,
 				61E290C928E098DB00BCEB04 /* GitLog.swift in Sources */,
 				61347EEE28D5D16C00625FC4 /* GitClientApp.swift in Sources */,
+				61E290CD28E09FDD00BCEB04 /* Git.swift in Sources */,
 				6172E4CA28DB4C8F0015C958 /* FolderStore.swift in Sources */,
 				61A2D35728DE9CCC009A3EEC /* GenericError.swift in Sources */,
 			);

@@ -16,6 +16,7 @@ struct FolderView: View {
         ]
     }
     var folder: Folder
+    @State private var error: Error?
 
     var body: some View {
         NavigationLink(folder.displayName) {
@@ -28,8 +29,16 @@ struct FolderView: View {
                 }
             }
             .onAppear {
-                print("folder on appear")
+                print("onAppear")
+                do {
+                    let r = try GitLog(directory: folder.url).run()
+                    print(r)
+                } catch {
+                    self.error = error
+                    print(error)
+                }
             }
+            .errorAlert($error)
             .navigationTitle(folder.displayName)
             .navigationSubtitle("main")
             .toolbar {

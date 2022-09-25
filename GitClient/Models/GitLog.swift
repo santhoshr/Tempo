@@ -10,8 +10,7 @@ import Foundation
 struct GitLog {
     var arguments = ["log"]
     var directory: URL
-    func run() throws {
-        let output = try Process.run(executableURL: .git, arguments: arguments, currentDirectoryURL: directory)
-        print(output)
+    func run() throws -> String {
+        try Process.run(executableURL: .git, arguments: arguments, currentDirectoryURL: directory)
     }
 }

@@ -9,9 +9,7 @@ import SwiftUI
 
 extension View {
     func errorAlert(_ error: Binding<Error?>) -> some View {
-        print(error)
-
-        return alert(
+        alert(
             error.wrappedValue?.localizedDescription ?? "",
             isPresented: .constant(error.wrappedValue != nil)) {
             Button("OK", role: .cancel) {

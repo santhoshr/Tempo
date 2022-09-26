@@ -27,6 +27,7 @@
 		61E290CD28E09FDD00BCEB04 /* Git.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290CC28E09FDD00BCEB04 /* Git.swift */; };
 		61E290D128E1DA2E00BCEB04 /* String+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290D028E1DA2E00BCEB04 /* String+.swift */; };
 		61E290D328E1EFC600BCEB04 /* GitDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290D228E1EFC600BCEB04 /* GitDiff.swift */; };
+		61E290D528E1F05000BCEB04 /* GitDiffCached.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290D428E1F05000BCEB04 /* GitDiffCached.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		61E290CC28E09FDD00BCEB04 /* Git.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Git.swift; sourceTree = "<group>"; };
 		61E290D028E1DA2E00BCEB04 /* String+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+.swift"; sourceTree = "<group>"; };
 		61E290D228E1EFC600BCEB04 /* GitDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitDiff.swift; sourceTree = "<group>"; };
+		61E290D428E1F05000BCEB04 /* GitDiffCached.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitDiffCached.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +169,7 @@
 				61E290CC28E09FDD00BCEB04 /* Git.swift */,
 				61E290C828E098DB00BCEB04 /* GitLog.swift */,
 				61E290D228E1EFC600BCEB04 /* GitDiff.swift */,
+				61E290D428E1F05000BCEB04 /* GitDiffCached.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				6172E4C628D70EE30015C958 /* Commit.swift in Sources */,
 				61E290C528E095AE00BCEB04 /* Process+Run.swift in Sources */,
 				61E290CB28E098F700BCEB04 /* URL+Git.swift in Sources */,
+				61E290D528E1F05000BCEB04 /* GitDiffCached.swift in Sources */,
 				61E290D328E1EFC600BCEB04 /* GitDiff.swift in Sources */,
 				61E290C328DFE29500BCEB04 /* FolderView.swift in Sources */,
 				61347EF028D5D16C00625FC4 /* ContentView.swift in Sources */,

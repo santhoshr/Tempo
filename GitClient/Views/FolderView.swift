@@ -18,11 +18,17 @@ struct FolderView: View {
 
     var body: some View {
         NavigationLink(folder.displayName) {
-            List(commits) { commit in
-                NavigationLink(commit.title) {
-                    VStack {
-                        Text(commit.title)
-                        Text(commit.id)
+            List {
+                NavigationLink("Not Commited") {
+                    Text("Not Commited Detail")
+                }
+                .foregroundColor(.secondary)
+                ForEach(commits) { commit in
+                    NavigationLink(commit.title) {
+                        VStack {
+                            Text(commit.title)
+                            Text(commit.id)
+                        }
                     }
                 }
             }

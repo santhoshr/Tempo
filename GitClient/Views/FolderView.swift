@@ -10,6 +10,8 @@ import SwiftUI
 struct FolderView: View {
     @State private var commits: [Commit] = []
     @State private var error: Error?
+    @State private var gitDiffOutput = ""
+
     var folder: Folder
 
     init(folder: Folder) {
@@ -19,10 +21,14 @@ struct FolderView: View {
     var body: some View {
         NavigationLink(folder.displayName) {
             List {
-                NavigationLink("Not Commited") {
-                    Text("Not Commited Detail")
+                if !gitDiffOutput.isEmpty {
+                    NavigationLink("Not Commited") {
+                        ScrollView {
+                            Text(gitDiffOutput)
+                        }
+                    }
+                    .foregroundColor(.secondary)
                 }
-                .foregroundColor(.secondary)
                 ForEach(commits) { commit in
                     NavigationLink(commit.title) {
                         VStack {
@@ -35,6 +41,9 @@ struct FolderView: View {
             .onAppear {
                 do {
                     self.commits = try Process.run(GitLog(directory: folder.url))
+                    let gitDiff = try Process.run(GitDiff(directory: folder.url))
+                    let gitDiffCached = try Process.run(GitDiffCached(directory: folder.url))
+                    self.gitDiffOutput = gitDiff + gitDiffCached
                 } catch {
                     self.error = error
                 }

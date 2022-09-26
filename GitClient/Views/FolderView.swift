@@ -25,6 +25,9 @@ struct FolderView: View {
                     NavigationLink("Not Commited") {
                         ScrollView {
                             Text(gitDiffOutput)
+                                .font(Font.system(.body, design: .monospaced))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
                         }
                     }
                     .foregroundColor(.secondary)

@@ -8,13 +8,8 @@
 import Foundation
 
 protocol Git {
+    associatedtype OutputModel
     var arguments: [String] { get set}
     var directory: URL { get set }
-    func run() throws -> String
-}
-
-extension Git {
-    func run() throws -> String {
-        try Process.run(executableURL: .git, arguments: arguments, currentDirectoryURL: directory)
-    }
+    func parse(for stdOut: String) -> OutputModel
 }

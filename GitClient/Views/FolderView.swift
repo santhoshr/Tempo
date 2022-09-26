@@ -8,33 +8,28 @@
 import SwiftUI
 
 struct FolderView: View {
-    private var commits: [String: [Commit]] {
-        [
-            "GitClient": [Commit(message: "Commit"), Commit(message: "Commit 2"), Commit(message: "Commit 3")],
-            "GitClient2": [Commit(message: "Commit2"), Commit(message: "Commit2 2"), Commit(message: "Commit2 3")],
-            "GitClient3": [Commit(message: "Commit3"), Commit(message: "Commit3 2"), Commit(message: "Commit3 3")],
-        ]
-    }
-    var folder: Folder
+    @State private var commits: [Commit] = []
     @State private var error: Error?
+    var folder: Folder
+
+    init(folder: Folder) {
+        self.folder = folder
+    }
 
     var body: some View {
         NavigationLink(folder.displayName) {
-            List(commits[folder.displayName] ?? []) { commit in
-                NavigationLink(commit.message) {
+            List(commits) { commit in
+                NavigationLink(commit.title) {
                     VStack {
-                        Text(commit.message)
+                        Text(commit.title)
                         Text(commit.id)
                     }
                 }
             }
             .onAppear {
-                print("onAppear")
                 do {
-                    let r = try GitLog(directory: folder.url).run()
-                    print(r)
+                    self.commits = try Process.run(GitLog(directory: folder.url))
                 } catch {
-                    self.error = error
                     print(error)
                 }
             }

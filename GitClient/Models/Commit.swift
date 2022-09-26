@@ -8,6 +8,9 @@
 import Foundation
 
 struct Commit: Hashable, Identifiable {
-    var id: String = UUID().uuidString
-    var message: String
+    var id = UUID().uuidString
+    var hash: String
+    var author: String
+    var authorDateRelative: String
+    var title: String
 }

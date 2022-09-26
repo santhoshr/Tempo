@@ -47,4 +47,9 @@ extension Process {
         }
         return ""
     }
+
+    static func run<G: Git>(_ git: G) throws -> G.OutputModel {
+        let stdOut = try Self.run(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
+        return git.parse(for: stdOut)
+    }
 }

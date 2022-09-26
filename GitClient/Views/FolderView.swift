@@ -30,7 +30,7 @@ struct FolderView: View {
                 do {
                     self.commits = try Process.run(GitLog(directory: folder.url))
                 } catch {
-                    print(error)
+                    self.error = error
                 }
             }
             .errorAlert($error)

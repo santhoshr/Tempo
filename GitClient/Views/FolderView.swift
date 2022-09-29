@@ -72,7 +72,11 @@ struct FolderView: View {
                 }
                 .help("Pull")
                 Button {
-
+                    do {
+                        print(try Process.run(GitPush(directory: folder.url)))
+                    } catch {
+                        self.error = error
+                    }
                 } label: {
                     Image(systemName: "arrow.up")
                 }

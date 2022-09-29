@@ -19,6 +19,17 @@ struct FolderView: View {
         self.folder = folder
     }
 
+    fileprivate func setCommitsAndDiff() async {
+        do {
+            self.commits = try await Process.stdout(GitLog(directory: folder.url))
+            let gitDiff = try await Process.stdout(GitDiff(directory: folder.url))
+            let gitDiffCached = try await Process.stdout(GitDiffCached(directory: folder.url))
+            self.gitDiffOutput = gitDiff + gitDiffCached
+        } catch {
+            self.error = error
+        }
+    }
+
     var body: some View {
         NavigationLink(folder.displayName) {
             List {
@@ -42,15 +53,8 @@ struct FolderView: View {
                     }
                 }
             }
-            .onAppear {
-                do {
-                    self.commits = try Process.run(GitLog(directory: folder.url))
-                    let gitDiff = try Process.run(GitDiff(directory: folder.url))
-                    let gitDiffCached = try Process.run(GitDiffCached(directory: folder.url))
-                    self.gitDiffOutput = gitDiff + gitDiffCached
-                } catch {
-                    self.error = error
-                }
+            .task {
+                await setCommitsAndDiff()
             }
             .errorAlert($error)
             .navigationTitle(folder.displayName)
@@ -70,6 +74,14 @@ struct FolderView: View {
                     ProgressView()
                         .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
                 } else {
+                    Button {
+                        Task {
+                            await setCommitsAndDiff()
+                        }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    .help("Reload")
                     Button {
 
                     } label: {

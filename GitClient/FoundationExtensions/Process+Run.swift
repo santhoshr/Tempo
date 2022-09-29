@@ -26,6 +26,9 @@ struct ProcessError: Error, LocalizedError {
 
 
 extension Process {
+    static func stdout(executableURL: URL, arguments: [String], currentDirectoryURL: URL?) async throws -> String {
+        try run(executableURL: executableURL, arguments: arguments, currentDirectoryURL: currentDirectoryURL)
+    }
     static func run(executableURL: URL, arguments: [String], currentDirectoryURL: URL?) throws -> String {
         let process = Process()
         let stdOutput = Pipe()
@@ -50,6 +53,11 @@ extension Process {
 
     static func run<G: Git>(_ git: G) throws -> G.OutputModel {
         let stdOut = try Self.run(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
+        return git.parse(for: stdOut)
+    }
+
+    static func stdout<G: Git>(_ git: G) async throws -> G.OutputModel {
+        let stdOut = try await Self.stdout(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
         return git.parse(for: stdOut)
     }
 }

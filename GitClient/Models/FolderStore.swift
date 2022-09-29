@@ -20,8 +20,9 @@ struct FolderStore {
     }
 
     static func save(_ folders: [Folder]) throws {
+        let prefix = Array(folders.prefix(100))
         let encoder = JSONEncoder()
-        let encoded = try encoder.encode(folders)
+        let encoded = try encoder.encode(prefix)
         defaults.set(encoded, forKey: .folder)
     }
 }

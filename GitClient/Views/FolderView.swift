@@ -11,6 +11,7 @@ struct FolderView: View {
     @State private var commits: [Commit] = []
     @State private var error: Error?
     @State private var gitDiffOutput = ""
+    @State private var isLoading = false
 
     var folder: Folder
 
@@ -65,24 +66,31 @@ struct FolderView: View {
                 }
             }
             .toolbar {
-                Button {
+                if isLoading {
+                    ProgressView()
+                        .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
+                } else {
+                    Button {
 
-                } label: {
-                    Image(systemName: "arrow.down")
-                }
-                .help("Pull")
-                Button {
-                    Task {
-                        do {
-                            print(try await Process.stdout(GitPush(directory: folder.url)))
-                        } catch {
-                            self.error = error
-                        }
+                    } label: {
+                        Image(systemName: "arrow.down")
                     }
-                } label: {
-                    Image(systemName: "arrow.up")
+                    .help("Pull")
+                    Button {
+                        isLoading = true
+                        Task {
+                            do {
+                                print(try await Process.stdout(GitPush(directory: folder.url)))
+                            } catch {
+                                self.error = error
+                            }
+                            isLoading = false
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up")
+                    }
+                    .help("Push")
                 }
-                .help("Push")
             }
         }
     }

@@ -24,7 +24,6 @@ struct DiffView: View {
                 HStack {
                     Spacer()
                     Button("Commit") {
-
                     }
                     .padding()
                 }

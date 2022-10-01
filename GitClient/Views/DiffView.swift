@@ -9,6 +9,9 @@ import SwiftUI
 
 struct DiffView: View {
     var diff: String
+    var folder: Folder
+    @State private var commitMessage = ""
+    @State private var error: Error?
 
     var body: some View {
         ScrollView {
@@ -21,10 +24,22 @@ struct DiffView: View {
         .safeAreaInset(edge: .bottom) {
             VStack (spacing: 0) {
                 Divider()
-                HStack {
-                    Spacer()
+                HStack (spacing:0) {
+                    TextEditor(text: $commitMessage)
+                        .frame(height: 90)
                     Button("Commit") {
+                        Task {
+                            do {
+                                print(try await Process.stdout(GitAdd(directory: folder.url)))
+                                print(try await Process.stdout(GitCommit(directory: folder.url, message: commitMessage)))
+                                
+                            } catch {
+                                self.error = error
+                            }
+                        }
                     }
+                    .errorAlert($error)
+                    .disabled(commitMessage.isEmpty)
                     .padding()
                 }
                 .background(.regularMaterial)
@@ -107,6 +122,6 @@ index 0cd5c16..114b4ae 100644
      }
  }
 
-""")
+""", folder: .init(url: .init(string: "file:///maoyama")!))
     }
 }

@@ -36,7 +36,7 @@ struct FolderView: View {
             List(selection: $selectedValue) {
                 if !gitDiffOutput.isEmpty {
                     NavigationLink("Not Commited") {
-                        DiffView(diff: gitDiffOutput)
+                        DiffView(diff: gitDiffOutput, folder: folder)
                     }
                     .foregroundColor(.secondary)
                 }

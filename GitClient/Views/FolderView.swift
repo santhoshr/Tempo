@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct FolderView: View {
-    @State private var commits: [Commit] = []
+    @State private var logs: [Log] = []
     @State private var error: Error?
     @State private var gitDiffOutput = ""
     @State private var isLoading = false
-    @State private var selectedValue: Commit?
+    @State private var selectedValue: Log?
 
     var folder: Folder
 
@@ -22,10 +22,13 @@ struct FolderView: View {
 
     fileprivate func setCommitsAndDiff() async {
         do {
-            self.commits = try await Process.stdout(GitLog(directory: folder.url))
+            logs = try await Process.stdout(GitLog(directory: folder.url)).map { Log.committed($0) }
             let gitDiff = try await Process.stdout(GitDiff(directory: folder.url))
             let gitDiffCached = try await Process.stdout(GitDiffCached(directory: folder.url))
-            self.gitDiffOutput = gitDiff + gitDiffCached
+            gitDiffOutput = gitDiff + gitDiffCached
+            if !gitDiffOutput.isEmpty {
+                logs.insert(.notCommitted, at: 0)
+            }
         } catch {
             self.error = error
         }
@@ -35,21 +38,25 @@ struct FolderView: View {
         NavigationLink(folder.displayName) {
             List(selection: $selectedValue) {
                 if !gitDiffOutput.isEmpty {
-                    NavigationLink("Not Commited") {
-                        DiffView(diff: gitDiffOutput, folder: folder) {
-                            Task {
-                                await setCommitsAndDiff()
-                                selectedValue = commits.first
+                }
+                ForEach(logs) { log in
+                    switch log {
+                    case .notCommitted:
+                        NavigationLink("Not Committed") {
+                            DiffView(diff: gitDiffOutput, folder: folder) {
+                                Task {
+                                    await setCommitsAndDiff()
+                                    selectedValue = logs.first
+                                }
                             }
                         }
-                    }
-                    .foregroundColor(.secondary)
-                }
-                ForEach(commits, id: \.hash) { commit in
-                    NavigationLink(commit.title) {
-                        VStack {
-                            Text(commit.title)
-                            Text(commit.hash)
+                        .foregroundColor(.secondary)
+                    case .committed(let commit):
+                        NavigationLink(commit.title) {
+                            VStack {
+                                Text(commit.title)
+                                Text(commit.hash)
+                            }
                         }
                     }
                 }

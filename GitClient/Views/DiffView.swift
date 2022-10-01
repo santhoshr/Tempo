@@ -11,25 +11,22 @@ struct DiffView: View {
     var diff: String
 
     var body: some View {
-        ZStack {
-            ScrollView {
-                Text(diff)
-                    .textSelection(.enabled)
-                    .font(Font.system(.body, design: .monospaced))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-            }
-            VStack {
+        ScrollView {
+            Text(diff)
+                .textSelection(.enabled)
+                .font(Font.system(.body, design: .monospaced))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+        }
+        .safeAreaInset(edge: .bottom) {
+            HStack {
                 Spacer()
-                HStack {
-                    Spacer()
-                    Button("Commit") {
+                Button("Commit") {
 
-                    }
-                    .padding()
                 }
-                .background(.ultraThinMaterial)
+                .padding()
             }
+            .background(.regularMaterial)
         }
     }
 }

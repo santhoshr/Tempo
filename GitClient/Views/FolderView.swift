@@ -35,12 +35,7 @@ struct FolderView: View {
             List {
                 if !gitDiffOutput.isEmpty {
                     NavigationLink("Not Commited") {
-                        ScrollView {
-                            Text(gitDiffOutput)
-                                .font(Font.system(.body, design: .monospaced))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding()
-                        }
+                        DiffView(diff: gitDiffOutput)
                     }
                     .foregroundColor(.secondary)
                 }

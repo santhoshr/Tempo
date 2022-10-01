@@ -12,6 +12,7 @@ struct DiffView: View {
     var folder: Folder
     @State private var commitMessage = ""
     @State private var error: Error?
+    var onCommit: ()->Void
 
     var body: some View {
         ScrollView {
@@ -32,7 +33,6 @@ struct DiffView: View {
                             do {
                                 print(try await Process.stdout(GitAdd(directory: folder.url)))
                                 print(try await Process.stdout(GitCommit(directory: folder.url, message: commitMessage)))
-                                
                             } catch {
                                 self.error = error
                             }
@@ -122,6 +122,6 @@ index 0cd5c16..114b4ae 100644
      }
  }
 
-""", folder: .init(url: .init(string: "file:///maoyama")!))
+""", folder: .init(url: .init(string: "file:///maoyama")!), onCommit: {})
     }
 }

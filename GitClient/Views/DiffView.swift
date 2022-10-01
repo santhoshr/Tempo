@@ -26,9 +26,14 @@ struct DiffView: View {
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))
             HStack (spacing:0) {
-                TextEditor(text: $commitMessage)
-                    .padding(8)
-
+                ZStack {
+                    TextEditor(text: $commitMessage)
+                        .padding(8)
+                    if commitMessage.isEmpty {
+                        Text("Enter commit message here")
+                            .foregroundColor(.secondary)
+                    }
+                }
                 Divider()
                 Button("Commit") {
                     Task {

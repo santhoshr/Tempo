@@ -7,8 +7,7 @@
 
 import Foundation
 
-struct Commit: Hashable, Identifiable {
-    var id = UUID().uuidString
+struct Commit: Hashable {
     var hash: String
     var author: String
     var authorDateRelative: String

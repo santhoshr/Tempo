@@ -11,7 +11,7 @@ struct GitLog: Git {
     typealias OutputModel = [Commit]
     var arguments = [
         "log",
-        "--pretty=format:%h"
+        "--pretty=format:%H"
         + .formatSeparator + "%an"
         + .formatSeparator + "%ar"
         + .formatSeparator + "%s",

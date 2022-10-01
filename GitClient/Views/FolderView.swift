@@ -12,6 +12,7 @@ struct FolderView: View {
     @State private var error: Error?
     @State private var gitDiffOutput = ""
     @State private var isLoading = false
+    @State private var selectedValue: Commit?
 
     var folder: Folder
 
@@ -32,18 +33,18 @@ struct FolderView: View {
 
     var body: some View {
         NavigationLink(folder.displayName) {
-            List {
+            List(selection: $selectedValue) {
                 if !gitDiffOutput.isEmpty {
                     NavigationLink("Not Commited") {
                         DiffView(diff: gitDiffOutput)
                     }
                     .foregroundColor(.secondary)
                 }
-                ForEach(commits) { commit in
+                ForEach(commits, id: \.hash) { commit in
                     NavigationLink(commit.title) {
                         VStack {
                             Text(commit.title)
-                            Text(commit.id)
+                            Text(commit.hash)
                         }
                     }
                 }

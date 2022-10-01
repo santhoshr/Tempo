@@ -33,6 +33,7 @@ struct DiffView: View {
                             do {
                                 print(try await Process.stdout(GitAdd(directory: folder.url)))
                                 print(try await Process.stdout(GitCommit(directory: folder.url, message: commitMessage)))
+                                onCommit()
                             } catch {
                                 self.error = error
                             }

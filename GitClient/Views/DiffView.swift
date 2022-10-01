@@ -19,14 +19,17 @@ struct DiffView: View {
                 .padding()
         }
         .safeAreaInset(edge: .bottom) {
-            HStack {
-                Spacer()
-                Button("Commit") {
+            VStack (spacing: 0) {
+                Divider()
+                HStack {
+                    Spacer()
+                    Button("Commit") {
 
+                    }
+                    .padding()
                 }
-                .padding()
+                .background(.regularMaterial)
             }
-            .background(.regularMaterial)
         }
     }
 }

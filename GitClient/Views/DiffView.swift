@@ -15,37 +15,35 @@ struct DiffView: View {
     var onCommit: ()->Void
 
     var body: some View {
-        ScrollView {
-            Text(diff)
-                .textSelection(.enabled)
-                .font(Font.system(.body, design: .monospaced))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-        }
-        .background(Color(NSColor.textBackgroundColor))
-        .safeAreaInset(edge: .bottom) {
-            VStack (spacing: 0) {
+        VSplitView {
+            ScrollView {
+                Text(diff)
+                    .textSelection(.enabled)
+                    .font(Font.system(.body, design: .monospaced))
+                    .padding()
+            }
+            .layoutPriority(1)
+            .background(Color(NSColor.textBackgroundColor))
+            HStack (spacing:0) {
+                TextEditor(text: $commitMessage)
+                    .padding(8)
                 Divider()
-                HStack (spacing:0) {
-                    TextEditor(text: $commitMessage)
-                        .frame(height: 90)
-                    Button("Commit") {
-                        Task {
-                            do {
-                                print(try await Process.stdout(GitAdd(directory: folder.url)))
-                                print(try await Process.stdout(GitCommit(directory: folder.url, message: commitMessage)))
-                                onCommit()
-                            } catch {
-                                self.error = error
-                            }
+                Button("Commit") {
+                    Task {
+                        do {
+                            print(try await Process.stdout(GitAdd(directory: folder.url)))
+                            print(try await Process.stdout(GitCommit(directory: folder.url, message: commitMessage)))
+                            onCommit()
+                        } catch {
+                            self.error = error
                         }
                     }
-                    .errorAlert($error)
-                    .disabled(commitMessage.isEmpty)
-                    .padding()
                 }
-                .background(.regularMaterial)
+                .errorAlert($error)
+                .disabled(commitMessage.isEmpty)
+                .padding()
             }
+            .background(Color(NSColor.textBackgroundColor))
         }
     }
 }

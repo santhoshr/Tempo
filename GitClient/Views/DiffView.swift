@@ -22,11 +22,13 @@ struct DiffView: View {
                     .font(Font.system(.body, design: .monospaced))
                     .padding()
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))
             HStack (spacing:0) {
                 TextEditor(text: $commitMessage)
                     .padding(8)
+
                 Divider()
                 Button("Commit") {
                     Task {

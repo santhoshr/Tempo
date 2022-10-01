@@ -36,27 +36,23 @@ struct FolderView: View {
 
     var body: some View {
         NavigationLink(folder.displayName) {
-            List(selection: $selectedValue) {
-                if !gitDiffOutput.isEmpty {
-                }
-                ForEach(logs) { log in
-                    switch log {
-                    case .notCommitted:
-                        NavigationLink("Not Committed") {
-                            DiffView(diff: gitDiffOutput, folder: folder) {
-                                Task {
-                                    await setCommitsAndDiff()
-                                    selectedValue = logs.first
-                                }
+            List(logs, selection: $selectedValue) {
+                switch $0 {
+                case .notCommitted:
+                    NavigationLink("Not Committed") {
+                        DiffView(diff: gitDiffOutput, folder: folder) {
+                            Task {
+                                await setCommitsAndDiff()
+                                selectedValue = logs.first
                             }
                         }
-                        .foregroundColor(.secondary)
-                    case .committed(let commit):
-                        NavigationLink(commit.title) {
-                            VStack {
-                                Text(commit.title)
-                                Text(commit.hash)
-                            }
+                    }
+                    .foregroundColor(.secondary)
+                case .committed(let commit):
+                    NavigationLink(commit.title) {
+                        VStack {
+                            Text(commit.title)
+                            Text(commit.hash)
                         }
                     }
                 }

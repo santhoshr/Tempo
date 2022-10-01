@@ -22,6 +22,7 @@ struct DiffView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
         }
+        .background(Color(NSColor.textBackgroundColor))
         .safeAreaInset(edge: .bottom) {
             VStack (spacing: 0) {
                 Divider()

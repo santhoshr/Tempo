@@ -29,6 +29,7 @@ struct BranchesView: View {
                         onSwitch()
                     } catch {
                         self.error = error
+                        onSwitch() // error occurs even if the switched.
                     }
                 }
                 print("hoge")

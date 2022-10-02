@@ -89,13 +89,16 @@ struct FolderView: View {
                     } label: {
                         Image(systemName: "arrow.clockwise")
                     }
+                    .keyboardShortcut("r")
                     .help("Reload")
+
                     Button {
 
                     } label: {
                         Image(systemName: "arrow.down")
                     }
                     .help("Pull")
+
                     Button {
                         isLoading = true
                         Task {

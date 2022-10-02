@@ -71,7 +71,7 @@ struct FolderView: View {
                     } label: {
                         Image(systemName: "chevron.down")
                     }
-                    .help("Change Branch")
+                    .help("Select Branch")
                     .popover(isPresented: $showingBranches) {
                         BranchesView()
                     }

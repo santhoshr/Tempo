@@ -73,7 +73,7 @@ struct FolderView: View {
                     }
                     .help("Select Branch")
                     .popover(isPresented: $showingBranches) {
-                        BranchesView()
+                        BranchesView(folder: folder)
                     }
                 }
             }

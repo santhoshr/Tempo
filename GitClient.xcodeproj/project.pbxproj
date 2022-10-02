@@ -184,7 +184,7 @@
 				61A2D35628DE9CCC009A3EEC /* GenericError.swift */,
 				616C4C1F28E896FA000E7154 /* Log.swift */,
 				61EBD7D028E940C30009ED92 /* Branch.swift */,
-				61E290DC28E884C200BCEB04 /* Git */,
+				61E290DC28E884C200BCEB04 /* Commands */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -220,7 +220,7 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		61E290DC28E884C200BCEB04 /* Git */ = {
+		61E290DC28E884C200BCEB04 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
 				61E290CC28E09FDD00BCEB04 /* Git.swift */,
@@ -232,7 +232,7 @@
 				616C4C1B28E88828000E7154 /* GitCommit.swift */,
 				61EBD7CE28E922510009ED92 /* GitBranch.swift */,
 			);
-			path = Git;
+			path = Commands;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

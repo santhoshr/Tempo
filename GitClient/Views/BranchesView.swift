@@ -20,7 +20,16 @@ struct BranchesView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                
+                Task {
+                    do {
+                        print(try await Process.stdout(
+                            GitSwitch(directory: folder.url, branchName: branch.name)
+                        ))
+                    } catch {
+                        self.error = error
+                    }
+                }
+                print("hoge")
             }
         }
         .listStyle(.sidebar)

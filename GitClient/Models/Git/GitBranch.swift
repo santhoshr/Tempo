@@ -16,9 +16,9 @@ struct GitBranch: Git {
     }
     var directory: URL
 
-    func parse(for stdOut: String) -> [Branch] {
+    func parse(for stdOut: String) throws -> [Branch] {
         let lines = stdOut.components(separatedBy: .newlines)
-        return lines.map { line in
+        return try lines.map { line in
             let s = line.components(separatedBy: .whitespaces)
             if s.first == "*", let name = s.last  {
                 return Branch(name: name, isCurrent: true)
@@ -26,7 +26,7 @@ struct GitBranch: Git {
             if let name = s.last {
                 return Branch(name: name, isCurrent: false)
             }
-            return Branch(name: "", isCurrent: false)
+            throw GenericError(errorDescription: "Parse error: git branch command")
         }
     }
 }

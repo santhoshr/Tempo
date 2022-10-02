@@ -53,11 +53,11 @@ extension Process {
 
     static func run<G: Git>(_ git: G) throws -> G.OutputModel {
         let stdOut = try Self.run(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
-        return git.parse(for: stdOut)
+        return try git.parse(for: stdOut)
     }
 
     static func stdout<G: Git>(_ git: G) async throws -> G.OutputModel {
         let stdOut = try await Self.stdout(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
-        return git.parse(for: stdOut)
+        return try git.parse(for: stdOut)
     }
 }

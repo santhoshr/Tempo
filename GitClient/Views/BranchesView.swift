@@ -9,21 +9,23 @@ import SwiftUI
 
 struct BranchesView: View {
     var folder: Folder
-    @State private var branches = ""
+    @State private var branches: [Branch] = []
     @State private var error: Error?
 
     var body: some View {
-        Text(branches)
-            .padding()
-            .task {
-                do {
-                    branches = try await Process.stdout(GitBranch(directory: folder.url))
-                } catch {
-                    self.error = error
-                }
+        List(branches, id: \.name) { branch in
+            Text(branch.name)
+        }
+        .listStyle(.sidebar)
+        .task {
+            do {
+                branches = try await Process.stdout(GitBranch(directory: folder.url))
+            } catch {
+                self.error = error
             }
-            .frame(width: 300, height: 660)
-            .errorAlert($error)
+        }
+        .frame(width: 300, height: 660)
+        .errorAlert($error)
     }
 }
 

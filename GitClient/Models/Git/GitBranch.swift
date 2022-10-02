@@ -8,7 +8,7 @@
 import Foundation
 
 struct GitBranch: Git {
-    typealias OutputModel = String
+    typealias OutputModel = [Branch]
     var arguments: [String] {
         [
             "branch",
@@ -16,7 +16,17 @@ struct GitBranch: Git {
     }
     var directory: URL
 
-    func parse(for stdOut: String) -> String {
-        stdOut
+    func parse(for stdOut: String) -> [Branch] {
+        let lines = stdOut.components(separatedBy: .newlines)
+        return lines.map { line in
+            let s = line.components(separatedBy: .whitespaces)
+            if s.first == "*", let name = s.last  {
+                return Branch(name: name, isCurrent: true)
+            }
+            if let name = s.first {
+                return Branch(name: name, isCurrent: false)
+            }
+            return Branch(name: "", isCurrent: false)
+        }
     }
 }

@@ -75,7 +75,12 @@ struct FolderView: View {
                     }
                     .help("Select Branch")
                     .popover(isPresented: $showingBranches) {
-                        BranchesView(folder: folder)
+                        BranchesView(folder: folder) {
+                            Task {
+                                await setModels()
+                                showingBranches = false
+                            }
+                        }
                     }
                 }
             }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct BranchesView: View {
     var folder: Folder
+    var onSwitch: () -> Void
     @State private var branches: [Branch] = []
     @State private var error: Error?
 
@@ -25,6 +26,7 @@ struct BranchesView: View {
                         print(try await Process.stdout(
                             GitSwitch(directory: folder.url, branchName: branch.name)
                         ))
+                        onSwitch()
                     } catch {
                         self.error = error
                     }
@@ -47,6 +49,6 @@ struct BranchesView: View {
 
 struct BranchesView_Previews: PreviewProvider {
     static var previews: some View {
-        BranchesView(folder: .init(url: .init(string: "file:///projects/")!))
+        BranchesView(folder: .init(url: .init(string: "file:///projects/")!)) {}
     }
 }

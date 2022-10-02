@@ -23,7 +23,7 @@ struct GitBranch: Git {
             if s.first == "*", let name = s.last  {
                 return Branch(name: name, isCurrent: true)
             }
-            if let name = s.first {
+            if let name = s.last {
                 return Branch(name: name, isCurrent: false)
             }
             return Branch(name: "", isCurrent: false)

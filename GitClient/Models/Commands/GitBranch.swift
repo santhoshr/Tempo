@@ -18,7 +18,7 @@ struct GitBranch: Git {
     var directory: URL
 
     func parse(for stdOut: String) throws -> [Branch] {
-        let lines = stdOut.components(separatedBy: .newlines)
+        let lines = stdOut.components(separatedBy: .newlines).dropLast()
         return try lines.map { line in
             let s = line.components(separatedBy: .whitespaces)
             if s.first == "*", let name = s.last  {

@@ -12,6 +12,7 @@ struct GitBranch: Git {
     var arguments: [String] {
         [
             "branch",
+            "--sort=-authordate",
         ]
     }
     var directory: URL

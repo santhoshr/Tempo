@@ -34,6 +34,7 @@
 		61E290D528E1F05000BCEB04 /* GitDiffCached.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290D428E1F05000BCEB04 /* GitDiffCached.swift */; };
 		61E290D728E5D84100BCEB04 /* GitPush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290D628E5D84100BCEB04 /* GitPush.swift */; };
 		61E290DB28E7C66300BCEB04 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290DA28E7C66200BCEB04 /* DiffView.swift */; };
+		61EBD7CF28E922510009ED92 /* GitBranch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBD7CE28E922510009ED92 /* GitBranch.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +86,7 @@
 		61E290D428E1F05000BCEB04 /* GitDiffCached.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitDiffCached.swift; sourceTree = "<group>"; };
 		61E290D628E5D84100BCEB04 /* GitPush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitPush.swift; sourceTree = "<group>"; };
 		61E290DA28E7C66200BCEB04 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
+		61EBD7CE28E922510009ED92 /* GitBranch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitBranch.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +227,7 @@
 				61E290D628E5D84100BCEB04 /* GitPush.swift */,
 				616C4C1D28E8894D000E7154 /* GitAdd.swift */,
 				616C4C1B28E88828000E7154 /* GitCommit.swift */,
+				61EBD7CE28E922510009ED92 /* GitBranch.swift */,
 			);
 			path = Git;
 			sourceTree = "<group>";
@@ -378,6 +381,7 @@
 				61E290CD28E09FDD00BCEB04 /* Git.swift in Sources */,
 				6172E4CA28DB4C8F0015C958 /* FolderStore.swift in Sources */,
 				616C4C1E28E8894D000E7154 /* GitAdd.swift in Sources */,
+				61EBD7CF28E922510009ED92 /* GitBranch.swift in Sources */,
 				616C4C1C28E88828000E7154 /* GitCommit.swift in Sources */,
 				61E290D128E1DA2E00BCEB04 /* String+.swift in Sources */,
 				61A2D35728DE9CCC009A3EEC /* GenericError.swift in Sources */,

@@ -13,6 +13,7 @@ struct FolderView: View {
     @State private var gitDiffOutput = ""
     @State private var isLoading = false
     @State private var selectedValue: Log?
+    @State private var showingBranches = false
 
     var folder: Folder
 
@@ -66,11 +67,14 @@ struct FolderView: View {
             .toolbar {
                 ToolbarItem(placement: .navigation) {
                     Button {
-
+                        showingBranches.toggle()
                     } label: {
                         Image(systemName: "chevron.down")
                     }
                     .help("Change Branch")
+                    .popover(isPresented: $showingBranches) {
+                        BranchesView()
+                    }
                 }
             }
             .toolbar {

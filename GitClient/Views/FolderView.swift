@@ -97,6 +97,7 @@ struct FolderView: View {
                     } label: {
                         Image(systemName: "arrow.down")
                     }
+                    .keyboardShortcut(.init(.downArrow))
                     .help("Pull")
 
                     Button {
@@ -112,6 +113,7 @@ struct FolderView: View {
                     } label: {
                         Image(systemName: "arrow.up")
                     }
+                    .keyboardShortcut(.init(.upArrow))
                     .help("Push")
                 }
             }

@@ -14,7 +14,14 @@ struct BranchesView: View {
 
     var body: some View {
         List(branches, id: \.name) { branch in
-            Text(branch.name)
+            HStack {
+                Text(branch.name)
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                
+            }
         }
         .listStyle(.sidebar)
         .task {

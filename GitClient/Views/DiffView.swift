@@ -32,6 +32,7 @@ struct DiffView: View {
                     if commitMessage.isEmpty {
                         Text("Enter commit message here")
                             .foregroundColor(.secondary)
+                            .allowsHitTesting(false)
                     }
                 }
                 Divider()

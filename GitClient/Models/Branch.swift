@@ -11,3 +11,9 @@ struct Branch: Hashable {
     var name: String
     var isCurrent: Bool
 }
+
+extension [Branch] {
+    var current: Branch? {
+        first { $0.isCurrent }
+    }
+}

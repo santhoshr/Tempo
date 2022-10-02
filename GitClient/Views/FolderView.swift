@@ -14,6 +14,7 @@ struct FolderView: View {
     @State private var isLoading = false
     @State private var selectedValue: Log?
     @State private var showingBranches = false
+    @State private var branch: Branch?
 
     var folder: Folder
 
@@ -21,8 +22,9 @@ struct FolderView: View {
         self.folder = folder
     }
 
-    fileprivate func setCommitsAndDiff() async {
+    fileprivate func setModels() async {
         do {
+            branch = try await Process.stdout(GitBranch(directory: folder.url)).current
             logs = try await Process.stdout(GitLog(directory: folder.url)).map { Log.committed($0) }
             let gitDiff = try await Process.stdout(GitDiff(directory: folder.url))
             let gitDiffCached = try await Process.stdout(GitDiffCached(directory: folder.url))
@@ -43,7 +45,7 @@ struct FolderView: View {
                     NavigationLink("Not Committed") {
                         DiffView(diff: gitDiffOutput, folder: folder) {
                             Task {
-                                await setCommitsAndDiff()
+                                await setModels()
                                 selectedValue = logs.first
                             }
                         }
@@ -59,11 +61,11 @@ struct FolderView: View {
                 }
             }
             .task {
-                await setCommitsAndDiff()
+                await setModels()
             }
             .errorAlert($error)
             .navigationTitle(folder.displayName)
-            .navigationSubtitle("main")
+            .navigationSubtitle(branch?.name ?? "")
             .toolbar {
                 ToolbarItem(placement: .navigation) {
                     Button {
@@ -84,7 +86,7 @@ struct FolderView: View {
                 } else {
                     Button {
                         Task {
-                            await setCommitsAndDiff()
+                            await setModels()
                         }
                     } label: {
                         Image(systemName: "arrow.clockwise")

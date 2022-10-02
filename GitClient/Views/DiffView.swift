@@ -47,6 +47,7 @@ struct DiffView: View {
                         }
                     }
                 }
+                .keyboardShortcut(.init(.return))
                 .errorAlert($error)
                 .disabled(commitMessage.isEmpty)
                 .padding()

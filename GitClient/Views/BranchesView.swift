@@ -12,6 +12,8 @@ struct BranchesView: View {
     var onSwitch: () -> Void
     @State private var branches: [Branch] = []
     @State private var error: Error?
+    @State private var isShowingCreateBranch = false
+    @State private var selectedBranch: Branch?
 
     var body: some View {
         List(branches, id: \.name) { branch in
@@ -32,7 +34,21 @@ struct BranchesView: View {
                         onSwitch() // error occurs even if the switched.
                     }
                 }
-                print("hoge")
+            }
+            .contextMenu {
+                if !branch.isCurrent {
+                    Button("Marge into \"\(branches.current?.name ?? "")\"") {
+                    }
+                }
+                Button("New Branch from \"\(branch.name)\"") {
+                    selectedBranch = branch
+                    isShowingCreateBranch = true
+                }
+            }
+            .sheet(isPresented: $isShowingCreateBranch) {
+                CreateNewBranchSheet(folder: folder, from: branch, isShowing: $isShowingCreateBranch) {
+                    onSwitch()
+                }
             }
         }
         .listStyle(.sidebar)

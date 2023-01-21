@@ -75,10 +75,17 @@ struct FolderView: View {
                     }
                     .help("Select Branch")
                     .popover(isPresented: $showingBranches) {
-                        BranchesView(folder: folder) {
+                        BranchesView(folder: folder) { branch in
                             Task {
-                                await setModels()
-                                showingBranches = false
+                                do {
+                                    print(try await Process.stdout(
+                                        GitSwitch(directory: folder.url, branchName: branch.name)
+                                    ))
+                                    await setModels()
+                                    showingBranches = false
+                                } catch {
+                                    self.error = error
+                                }
                             }
                         }
                     }

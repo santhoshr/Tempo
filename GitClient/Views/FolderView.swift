@@ -38,6 +38,79 @@ struct FolderView: View {
         }
     }
 
+    fileprivate func navigationToolbar() -> ToolbarItem<(), some View> {
+        return ToolbarItem(placement: .navigation) {
+            Button {
+                showingBranches.toggle()
+            } label: {
+                Image(systemName: "chevron.down")
+            }
+            .help("Select Branch")
+            .popover(isPresented: $showingBranches) {
+                BranchesView(
+                    folder: folder,
+                    onSelect: { branch in
+                        Task {
+                            do {
+                                print(try await Process.stdout(
+                                    GitSwitch(directory: folder.url, branchName: branch.name)
+                                ))
+                            } catch {
+                                self.error = error
+                            }
+                            // Branch could be switched, but errors can still occur.
+                            await setModels()
+                            showingBranches = false
+                        }
+                    },
+                    onSelectNewBranchFrom: { from in
+                        showingCreateNewBranchFrom = from
+                    }
+                )
+            }
+        }
+    }
+
+    fileprivate func reloadButton() -> some View {
+        return Button {
+            Task {
+                await setModels()
+            }
+        } label: {
+            Image(systemName: "arrow.clockwise")
+        }
+        .keyboardShortcut("r")
+        .help("Reload")
+    }
+
+    fileprivate func pullButton() -> some View {
+        return Button {
+
+        } label: {
+            Image(systemName: "arrow.down")
+        }
+        .keyboardShortcut(.init(.downArrow))
+        .help("Pull")
+    }
+
+    fileprivate func pushButton() -> some View {
+        return Button {
+            isLoading = true
+            Task {
+                do {
+                    print(try await Process.stdout(GitPush(directory: folder.url)))
+                } catch {
+                    self.error = error
+                }
+                isLoading = false
+            }
+        } label: {
+            Image(systemName: "arrow.up")
+        }
+        .keyboardShortcut(.init(.upArrow))
+        .help("Push")
+    }
+
     var body: some View {
         NavigationLink(folder.displayName) {
             List(logs, selection: $selectedValue) {
@@ -75,75 +148,16 @@ struct FolderView: View {
             .navigationTitle(folder.displayName)
             .navigationSubtitle(branch?.name ?? "")
             .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    Button {
-                        showingBranches.toggle()
-                    } label: {
-                        Image(systemName: "chevron.down")
-                    }
-                    .help("Select Branch")
-                    .popover(isPresented: $showingBranches) {
-                        BranchesView(
-                            folder: folder,
-                            onSelect: { branch in
-                                Task {
-                                    do {
-                                        print(try await Process.stdout(
-                                            GitSwitch(directory: folder.url, branchName: branch.name)
-                                        ))
-                                    } catch {
-                                        self.error = error
-                                    }
-                                    // Branch could be switched, but errors can still occur.
-                                    await setModels()
-                                    showingBranches = false
-                                }
-                            },
-                            onSelectNewBranchFrom: { from in
-                                showingCreateNewBranchFrom = from
-                            }
-                        )
-                    }
-                }
+                navigationToolbar()
             }
             .toolbar {
                 if isLoading {
                     ProgressView()
                         .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
                 } else {
-                    Button {
-                        Task {
-                            await setModels()
-                        }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                    .keyboardShortcut("r")
-                    .help("Reload")
-
-                    Button {
-
-                    } label: {
-                        Image(systemName: "arrow.down")
-                    }
-                    .keyboardShortcut(.init(.downArrow))
-                    .help("Pull")
-
-                    Button {
-                        isLoading = true
-                        Task {
-                            do {
-                                print(try await Process.stdout(GitPush(directory: folder.url)))
-                            } catch {
-                                self.error = error
-                            }
-                            isLoading = false
-                        }
-                    } label: {
-                        Image(systemName: "arrow.up")
-                    }
-                    .keyboardShortcut(.init(.upArrow))
-                    .help("Push")
+                    reloadButton()
+                    pullButton()
+                    pushButton()
                 }
             }
         }

@@ -14,7 +14,7 @@ struct FolderView: View {
     @State private var isLoading = false
     @State private var selectedValue: Log?
     @State private var showingBranches = false
-    @State private var showingCreateBranch: Branch?
+    @State private var showingCreateNewBranchFrom: Branch?
     @State private var branch: Branch?
 
     var folder: Folder
@@ -65,8 +65,8 @@ struct FolderView: View {
                 await setModels()
             }
             .errorAlert($error)
-            .sheet(item: $showingCreateBranch, content: { _ in
-                CreateNewBranchSheet(folder: folder, from: branch!, isShowing: $showingCreateBranch) {
+            .sheet(item: $showingCreateNewBranchFrom, content: { _ in
+                CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
                     Task {
                         await setModels()
                     }
@@ -100,7 +100,7 @@ struct FolderView: View {
                                 }
                             },
                             onSelectNewBranchFrom: { from in
-                                showingCreateBranch = from
+                                showingCreateNewBranchFrom = from
                             }
                         )
                     }

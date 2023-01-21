@@ -9,8 +9,7 @@ import SwiftUI
 
 struct CreateNewBranchSheet: View {
     var folder: Folder
-    var from: Branch
-    @Binding var isShowing: Branch?
+    @Binding var showingCreateNewBranchFrom: Branch?
     var onCreate: (() -> Void)
     @State private var newBranchName = ""
     @State private var error: Error?
@@ -21,7 +20,7 @@ struct CreateNewBranchSheet: View {
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {
-                    Text("from:  \(isShowing?.name ?? "")")
+                    Text("from:  \(showingCreateNewBranchFrom?.name ?? "")")
                 }
                 HStack {
                     Text("    to:")
@@ -30,21 +29,21 @@ struct CreateNewBranchSheet: View {
                 HStack {
                     Spacer()
                     Button("Cancel") {
-                        isShowing = nil
+                        showingCreateNewBranchFrom = nil
                     }
                     Button("Create") {
                         Task {
                             do {
                                 print(try await Process.stdout(
-                                    GitSwitch(directory: folder.url, branchName: isShowing!.name)
+                                    GitSwitch(directory: folder.url, branchName: showingCreateNewBranchFrom!.name)
                                 ))
                                 print(try await Process.stdout(
                                     GitCheckoutB(directory: folder.url, newBranchName: newBranchName)))
-                                isShowing = nil
+                                showingCreateNewBranchFrom = nil
                                 onCreate()
                             } catch {
                                 self.error = error // error occurs even if the created.
-                                isShowing = nil
+                                showingCreateNewBranchFrom = nil
                                 onCreate()
                             }
                         }
@@ -68,8 +67,7 @@ struct CreateNewBranchSheet_Previews: PreviewProvider {
     static var previews: some View {
         CreateNewBranchSheet(
             folder: .init(url: .init(string: "file:///projects/")!),
-            from: .init(name: "main", isCurrent: true),
-            isShowing: $isShowing)
+            showingCreateNewBranchFrom: $isShowing)
             {
 
         }

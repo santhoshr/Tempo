@@ -35,11 +35,6 @@ struct BranchesView: View {
                     onSelectNewBranchFrom(branch)
                 }
             }
-//            .sheet(isPresented: $isShowingCreateBranch) {
-//                CreateNewBranchSheet(folder: folder, from: branch, isShowing: $isShowingCreateBranch) {
-////                    onSwitch()
-//                }
-//            }
         }
         .listStyle(.sidebar)
         .task {

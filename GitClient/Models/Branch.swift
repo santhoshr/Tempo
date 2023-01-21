@@ -7,7 +7,10 @@
 
 import Foundation
 
-struct Branch: Hashable {
+struct Branch: Hashable, Identifiable {
+    var id: String {
+        name
+    }
     var name: String
     var isCurrent: Bool
 }

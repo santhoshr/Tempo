@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateNewBranchSheet: View {
     var folder: Folder
     var from: Branch
-    @Binding var isShowing: Bool
+    @Binding var isShowing: Branch?
     var onCreate: (() -> Void)
     @State private var newBranchName = ""
     @State private var error: Error?
@@ -30,18 +30,18 @@ struct CreateNewBranchSheet: View {
                 HStack {
                     Spacer()
                     Button("Cancel") {
-                        isShowing = false
+                        isShowing = nil
                     }
                     Button("Create") {
                         Task {
                             do {
                                 print(try await Process.stdout(
                                     GitCheckoutB(directory: folder.url, newBranchName: newBranchName)))
-                                isShowing = false
+                                isShowing = nil
                                 onCreate()
                             } catch {
                                 self.error = error // error occurs even if the created.
-                                isShowing = false
+                                isShowing = nil
                                 onCreate()
                             }
                         }
@@ -60,7 +60,7 @@ struct CreateNewBranchSheet: View {
 }
 
 struct CreateNewBranchSheet_Previews: PreviewProvider {
-    @State private static var isShowing = true
+    @State private static var isShowing: Branch? = Branch(name: "hoge", isCurrent: false)
 
     static var previews: some View {
         CreateNewBranchSheet(

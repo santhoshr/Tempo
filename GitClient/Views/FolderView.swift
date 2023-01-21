@@ -14,6 +14,7 @@ struct FolderView: View {
     @State private var isLoading = false
     @State private var selectedValue: Log?
     @State private var showingBranches = false
+    @State private var showingCreateBranch: Branch?
     @State private var branch: Branch?
 
     var folder: Folder
@@ -64,6 +65,11 @@ struct FolderView: View {
                 await setModels()
             }
             .errorAlert($error)
+            .sheet(item: $showingCreateBranch, content: { _ in
+                CreateNewBranchSheet(folder: folder, from: branch!, isShowing: $showingCreateBranch) {
+
+                }
+            })
             .navigationTitle(folder.displayName)
             .navigationSubtitle(branch?.name ?? "")
             .toolbar {
@@ -75,20 +81,26 @@ struct FolderView: View {
                     }
                     .help("Select Branch")
                     .popover(isPresented: $showingBranches) {
-                        BranchesView(folder: folder) { branch in
-                            Task {
-                                do {
-                                    print(try await Process.stdout(
-                                        GitSwitch(directory: folder.url, branchName: branch.name)
-                                    ))
-                                } catch {
-                                    self.error = error
+                        BranchesView(
+                            folder: folder,
+                            onSelect: { branch in
+                                Task {
+                                    do {
+                                        print(try await Process.stdout(
+                                            GitSwitch(directory: folder.url, branchName: branch.name)
+                                        ))
+                                    } catch {
+                                        self.error = error
+                                    }
+                                    // Branch could be switched, but errors can still occur.
+                                    await setModels()
+                                    showingBranches = false
                                 }
-                                // Branch could be switched, but errors can still occur.
-                                await setModels()
-                                showingBranches = false
+                            },
+                            onSelectNewBranchFrom: { from in
+                                showingCreateBranch = from
                             }
-                        }
+                        )
                     }
                 }
             }

@@ -10,6 +10,7 @@ import SwiftUI
 struct BranchesView: View {
     var folder: Folder
     var onSelect: ((Branch) -> Void)
+    var onSelectNewBranchFrom: ((Branch) -> Void)
     @State private var branches: [Branch] = []
     @State private var error: Error?
     @State private var isShowingCreateBranch = false
@@ -31,15 +32,14 @@ struct BranchesView: View {
                     }
                 }
                 Button("New Branch from \"\(branch.name)\"") {
-                    selectedBranch = branch
-                    isShowingCreateBranch = true
+                    onSelectNewBranchFrom(branch)
                 }
             }
-            .sheet(isPresented: $isShowingCreateBranch) {
-                CreateNewBranchSheet(folder: folder, from: branch, isShowing: $isShowingCreateBranch) {
-//                    onSwitch()
-                }
-            }
+//            .sheet(isPresented: $isShowingCreateBranch) {
+//                CreateNewBranchSheet(folder: folder, from: branch, isShowing: $isShowingCreateBranch) {
+////                    onSwitch()
+//                }
+//            }
         }
         .listStyle(.sidebar)
         .task {
@@ -58,7 +58,8 @@ struct BranchesView_Previews: PreviewProvider {
     static var previews: some View {
         BranchesView(
             folder: .init(url: .init(string: "file://hoge")!),
-            onSelect: { _ in }
+            onSelect: { _ in },
+            onSelectNewBranchFrom: { _ in }
         )
     }
 }

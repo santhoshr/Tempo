@@ -21,7 +21,7 @@ struct CreateNewBranchSheet: View {
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {
-                    Text("from:  \(from.name)")
+                    Text("from:  \(isShowing?.name ?? "")")
                 }
                 HStack {
                     Text("    to:")
@@ -35,6 +35,9 @@ struct CreateNewBranchSheet: View {
                     Button("Create") {
                         Task {
                             do {
+                                print(try await Process.stdout(
+                                    GitSwitch(directory: folder.url, branchName: isShowing!.name)
+                                ))
                                 print(try await Process.stdout(
                                     GitCheckoutB(directory: folder.url, newBranchName: newBranchName)))
                                 isShowing = nil

@@ -67,7 +67,9 @@ struct FolderView: View {
             .errorAlert($error)
             .sheet(item: $showingCreateBranch, content: { _ in
                 CreateNewBranchSheet(folder: folder, from: branch!, isShowing: $showingCreateBranch) {
-
+                    Task {
+                        await setModels()
+                    }
                 }
             })
             .navigationTitle(folder.displayName)

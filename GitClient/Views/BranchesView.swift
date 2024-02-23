@@ -36,7 +36,7 @@ struct BranchesView: View {
                 }
             }
         }
-        .listStyle(.sidebar)
+        .scrollContentBackground(.hidden)
         .task {
             do {
                 branches = try await Process.stdout(GitBranch(directory: folder.url))

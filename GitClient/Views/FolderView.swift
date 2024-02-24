@@ -26,10 +26,7 @@ struct FolderView: View {
                 Text("Not Committed")
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
-                VStack {
-                    Text(commit.title)
-                    Text(commit.hash)
-                }
+                Text(commit.title)
             }
         }
         .onChange(of: folder, initial: true, {

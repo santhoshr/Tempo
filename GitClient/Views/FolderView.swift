@@ -12,19 +12,15 @@ struct FolderView: View {
     @State private var error: Error?
     @State private var gitDiffOutput = ""
     @State private var isLoading = false
-    @State private var selectedValue: Log?
     @State private var showingBranches = false
     @State private var showingCreateNewBranchFrom: Branch?
     @State private var branch: Branch?
-
     var folder: Folder
-
-    init(folder: Folder) {
-        self.folder = folder
-    }
+    @Binding var selectionLogID: String?
 
     fileprivate func setModels() async {
         do {
+            print(folder)
             branch = try await Process.stdout(GitBranch(directory: folder.url)).current
             logs = try await Process.stdout(GitLog(directory: folder.url)).map { Log.committed($0) }
             let gitDiff = try await Process.stdout(GitDiff(directory: folder.url))
@@ -35,6 +31,9 @@ struct FolderView: View {
             }
         } catch {
             self.error = error
+            branch = nil
+            logs = []
+            gitDiffOutput = ""
         }
     }
 
@@ -112,60 +111,62 @@ struct FolderView: View {
     }
 
     var body: some View {
-        NavigationLink(folder.displayName) {
-            List(logs, selection: $selectedValue) {
-                switch $0 {
-                case .notCommitted:
-                    NavigationLink("Not Committed") {
-                        DiffView(diff: gitDiffOutput, folder: folder) {
-                            Task {
-                                await setModels()
-                                selectedValue = logs.first
-                            }
-                        }
-                    }
-                    .foregroundColor(.secondary)
-                case .committed(let commit):
-                    NavigationLink(commit.title) {
-                        VStack {
-                            Text(commit.title)
-                            Text(commit.hash)
-                        }
-                    }
+        List(logs, selection: $selectionLogID) {
+            switch $0 {
+            case .notCommitted:
+                Text("Not Committed")
+                    .foregroundStyle(Color.secondary)
+
+//                NavigationLink("Not Committed") {
+//                    DiffView(diff: gitDiffOutput, folder: folder) {
+//                        Task {
+//                            await setModels()
+//                            selectionLog = logs.first
+//                        }
+//                    }
+//                }
+//                .foregroundColor(.secondary)
+            case .committed(let commit):
+                VStack {
+                    Text(commit.title)
+                    Text(commit.hash)
                 }
             }
-            .task {
+        }
+        .onChange(of: folder, initial: true, {
+            Task {
                 await setModels()
             }
-            .errorAlert($error)
-            .sheet(item: $showingCreateNewBranchFrom, content: { _ in
-                CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
-                    Task {
-                        await setModels()
-                    }
+        })
+        .errorAlert($error)
+        .sheet(item: $showingCreateNewBranchFrom, content: { _ in
+            CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
+                Task {
+                    await setModels()
                 }
-            })
-            .navigationTitle(folder.displayName)
-            .navigationSubtitle(branch?.name ?? "")
-            .toolbar {
-                navigationToolbar()
             }
-            .toolbar {
-                if isLoading {
-                    ProgressView()
-                        .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
-                } else {
-                    reloadButton()
-                    pullButton()
-                    pushButton()
-                }
+        })
+        .navigationTitle(folder.displayName)
+        .navigationSubtitle(branch?.name ?? "")
+        .toolbar {
+            navigationToolbar()
+        }
+        .toolbar {
+            if isLoading {
+                ProgressView()
+                    .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
+            } else {
+                reloadButton()
+                pullButton()
+                pushButton()
             }
         }
     }
 }
 
 struct CommitsView_Previews: PreviewProvider {
+    @State static var selection: String? = Log.notCommitted.id
     static var previews: some View {
-        FolderView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!))
+        FolderView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), selectionLogID: $selection)
     }
 }

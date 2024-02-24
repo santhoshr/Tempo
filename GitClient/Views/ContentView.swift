@@ -9,16 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var folders: [Folder] = []
+    @State private var selectionFolderURL: URL?
+    @State private var selectionLogID: String?
     @State private var error: Error?
 
+
     var body: some View {
-        NavigationView {
-            List(folders, id: \.url) {
-                FolderView(folder: $0)
+        NavigationSplitView {
+            List(folders, id: \.url, selection: $selectionFolderURL) {
+                Text($0.displayName)
                     .help($0.url.path)
             }
-            .listStyle(.sidebar)
-            .navigationTitle("Folders")
             .toolbar {
                 ToolbarItemGroup {
                     Button {
@@ -44,28 +45,27 @@ struct ContentView: View {
                         Image(systemName: "plus.rectangle.on.folder")
                     }
                     .help("Add project folder")
-                    Button {
-                        NSApp.keyWindow?.firstResponder?.tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
-                    } label: {
-                        Image(systemName: "sidebar.leading")
-                    }
-                    .help("Hide or show the Navigator")
                 }
             }
-            .onAppear {
-                do {
-                    folders = try FolderStore.folders()
-                } catch {
-                    self.error = error
-                }
+        } content: {
+            if let selectionFolderURL = selectionFolderURL, let folder = folders.first(where: { $0.url == selectionFolderURL }) {
+                FolderView(folder: folder, selectionLogID: $selectionLogID)
+            } else {
+                Text("No Folder Selection")
+                    .foregroundColor(.secondary)
             }
-            .errorAlert($error)
-
-            Text("No Folder Selection")
-                .foregroundColor(.secondary)
-            Text("")
+        } detail: {
+            Text(selectionLogID ?? "")
         }
         .frame(minWidth: 700, minHeight: 300)
+        .onAppear {
+            do {
+                folders = try FolderStore.folders()
+            } catch {
+                self.error = error
+            }
+        }
+        .errorAlert($error)
     }
 }
 

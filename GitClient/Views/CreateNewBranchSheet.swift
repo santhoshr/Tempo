@@ -42,7 +42,8 @@ struct CreateNewBranchSheet: View {
                                 showingCreateNewBranchFrom = nil
                                 onCreate()
                             } catch {
-                                self.error = error // error occurs even if the created.
+                                print(error)
+//                                self.error = error  error occurs even if the created.
                                 showingCreateNewBranchFrom = nil
                                 onCreate()
                             }

@@ -18,7 +18,6 @@ struct ContentView: View {
     @State private var folderIsRefresh = false
     @State private var error: Error?
 
-
     var body: some View {
         NavigationSplitView {
             List(folders, id: \.url, selection: $selectionFolderURL) {

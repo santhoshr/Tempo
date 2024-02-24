@@ -64,6 +64,7 @@ struct ContentView: View {
             case .notCommitted(let string):
                 DiffView(diff: string, folder: selectionFolder!) {
                     selectionLog = nil
+                    folderIsRefresh = true
                 }
             case .committed(let commit):
                 Text(commit.hash)

@@ -19,6 +19,65 @@ struct FolderView: View {
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
 
+    var body: some View {
+        List(logs, selection: $selectionLogID) {
+            switch $0 {
+            case .notCommitted:
+                Text("Not Committed")
+                    .foregroundStyle(Color.secondary)
+            case .committed(let commit):
+                VStack {
+                    Text(commit.title)
+                    Text(commit.hash)
+                }
+            }
+        }
+        .onChange(of: folder, initial: true, {
+            Task {
+                await setModels()
+            }
+        })
+        .onChange(of: selectionLogID, {
+            selectionLog = logs.first { $0.id == selectionLogID }
+        })
+        .onChange(of:selectionLog, {
+            if selectionLog == nil {
+                selectionLogID = nil
+            }
+        })
+        .onChange(of: isRefresh, { oldValue, newValue in
+            if !oldValue && newValue {
+                Task {
+                    await setModels()
+                    isRefresh = false
+                }
+            }
+        })
+        .errorAlert($error)
+        .sheet(item: $showingCreateNewBranchFrom, content: { _ in
+            CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
+                Task {
+                    await setModels()
+                }
+            }
+        })
+        .navigationTitle(folder.displayName)
+        .navigationSubtitle(branch?.name ?? "")
+        .toolbar {
+            navigationToolbar()
+        }
+        .toolbar {
+            if isLoading {
+                ProgressView()
+                    .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
+            } else {
+                reloadButton()
+                pullButton()
+                pushButton()
+            }
+        }
+    }
+
     fileprivate func setModels() async {
         do {
             print(folder)
@@ -108,75 +167,6 @@ struct FolderView: View {
         }
         .keyboardShortcut(.init(.upArrow))
         .help("Push")
-    }
-
-    var body: some View {
-        List(logs, selection: $selectionLogID) {
-            switch $0 {
-            case .notCommitted:
-                Text("Not Committed")
-                    .foregroundStyle(Color.secondary)
-
-//                NavigationLink("Not Committed") {
-//                    DiffView(diff: gitDiffOutput, folder: folder) {
-//                        Task {
-//                            await setModels()
-//                            selectionLog = logs.first
-//                        }
-//                    }
-//                }
-//                .foregroundColor(.secondary)
-            case .committed(let commit):
-                VStack {
-                    Text(commit.title)
-                    Text(commit.hash)
-                }
-            }
-        }
-        .onChange(of: folder, initial: true, {
-            Task {
-                await setModels()
-            }
-        })
-        .onChange(of: selectionLogID, {
-            selectionLog = logs.first { $0.id == selectionLogID }
-        })
-        .onChange(of:selectionLog, {
-            if selectionLog == nil {
-                selectionLogID = nil
-            }
-        })
-        .onChange(of: isRefresh, { oldValue, newValue in
-            if !oldValue && newValue {
-                Task {
-                    await setModels()
-                    isRefresh = false
-                }
-            }
-        })
-        .errorAlert($error)
-        .sheet(item: $showingCreateNewBranchFrom, content: { _ in
-            CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
-                Task {
-                    await setModels()
-                }
-            }
-        })
-        .navigationTitle(folder.displayName)
-        .navigationSubtitle(branch?.name ?? "")
-        .toolbar {
-            navigationToolbar()
-        }
-        .toolbar {
-            if isLoading {
-                ProgressView()
-                    .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
-            } else {
-                reloadButton()
-                pullButton()
-                pushButton()
-            }
-        }
     }
 }
 

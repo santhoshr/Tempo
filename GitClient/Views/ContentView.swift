@@ -80,6 +80,9 @@ struct ContentView: View {
                 self.error = error
             }
         }
+        .onChange(of: selectionFolder, {
+            selectionLog = nil
+        })
         .errorAlert($error)
     }
 }

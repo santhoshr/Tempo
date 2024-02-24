@@ -15,6 +15,7 @@ struct ContentView: View {
         return folders.first(where: { $0.url == selectionFolderURL })
     }
     @State private var selectionLog: Log?
+    @State private var folderIsRefresh = false
     @State private var error: Error?
 
 
@@ -53,7 +54,7 @@ struct ContentView: View {
             }
         } content: {
             if let folder = selectionFolder {
-                FolderView(folder: folder, selectionLog: $selectionLog)
+                FolderView(folder: folder, selectionLog: $selectionLog, isRefresh: $folderIsRefresh)
             } else {
                 Text("No Folder Selection")
                     .foregroundColor(.secondary)

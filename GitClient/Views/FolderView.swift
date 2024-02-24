@@ -17,6 +17,7 @@ struct FolderView: View {
     @State private var selectionLogID: String? 
     var folder: Folder
     @Binding var selectionLog: Log?
+    @Binding var isRefresh: Bool
 
     fileprivate func setModels() async {
         do {
@@ -140,6 +141,14 @@ struct FolderView: View {
         .onChange(of: selectionLogID, {
             selectionLog = logs.first { $0.id == selectionLogID }
         })
+        .onChange(of: isRefresh, { oldValue, newValue in
+            if !oldValue && newValue {
+                Task {
+                    await setModels()
+                    isRefresh = false
+                }
+            }
+        })
         .errorAlert($error)
         .sheet(item: $showingCreateNewBranchFrom, content: { _ in
             CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
@@ -168,7 +177,8 @@ struct FolderView: View {
 
 struct CommitsView_Previews: PreviewProvider {
     @State static var selection: Log?
+    @State static var refresh = false
     static var previews: some View {
-        FolderView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), selectionLog: $selection)
+        FolderView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), selectionLog: $selection, isRefresh: $refresh)
     }
 }

@@ -69,6 +69,7 @@ struct ContentView: View {
                 Text(commit.hash)
             case nil:
                 Text("No Selection")
+                    .foregroundColor(.secondary)
             }
         }
         .frame(minWidth: 700, minHeight: 300)

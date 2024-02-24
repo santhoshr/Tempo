@@ -10,13 +10,13 @@ import SwiftUI
 struct FolderView: View {
     @State private var logs: [Log] = []
     @State private var error: Error?
-    @State private var gitDiffOutput = ""
     @State private var isLoading = false
     @State private var showingBranches = false
     @State private var showingCreateNewBranchFrom: Branch?
     @State private var branch: Branch?
+    @State private var selectionLogID: String? 
     var folder: Folder
-    @Binding var selectionLogID: String?
+    @Binding var selectionLog: Log?
 
     fileprivate func setModels() async {
         do {
@@ -25,15 +25,14 @@ struct FolderView: View {
             logs = try await Process.stdout(GitLog(directory: folder.url)).map { Log.committed($0) }
             let gitDiff = try await Process.stdout(GitDiff(directory: folder.url))
             let gitDiffCached = try await Process.stdout(GitDiffCached(directory: folder.url))
-            gitDiffOutput = gitDiff + gitDiffCached
+            let gitDiffOutput = gitDiff + gitDiffCached
             if !gitDiffOutput.isEmpty {
-                logs.insert(.notCommitted, at: 0)
+                logs.insert(.notCommitted(gitDiffOutput), at: 0)
             }
         } catch {
             self.error = error
             branch = nil
             logs = []
-            gitDiffOutput = ""
         }
     }
 
@@ -138,6 +137,9 @@ struct FolderView: View {
                 await setModels()
             }
         })
+        .onChange(of: selectionLogID, {
+            selectionLog = logs.first { $0.id == selectionLogID }
+        })
         .errorAlert($error)
         .sheet(item: $showingCreateNewBranchFrom, content: { _ in
             CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
@@ -165,8 +167,8 @@ struct FolderView: View {
 }
 
 struct CommitsView_Previews: PreviewProvider {
-    @State static var selection: String? = Log.notCommitted.id
+    @State static var selection: Log?
     static var previews: some View {
-        FolderView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), selectionLogID: $selection)
+        FolderView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), selectionLog: $selection)
     }
 }

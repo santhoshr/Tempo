@@ -10,7 +10,11 @@ import SwiftUI
 struct ContentView: View {
     @State private var folders: [Folder] = []
     @State private var selectionFolderURL: URL?
-    @State private var selectionLogID: String?
+    private var selectionFolder: Folder? {
+        guard let selectionFolderURL = selectionFolderURL else { return nil}
+        return folders.first(where: { $0.url == selectionFolderURL })
+    }
+    @State private var selectionLog: Log?
     @State private var error: Error?
 
 
@@ -48,14 +52,23 @@ struct ContentView: View {
                 }
             }
         } content: {
-            if let selectionFolderURL = selectionFolderURL, let folder = folders.first(where: { $0.url == selectionFolderURL }) {
-                FolderView(folder: folder, selectionLogID: $selectionLogID)
+            if let folder = selectionFolder {
+                FolderView(folder: folder, selectionLog: $selectionLog)
             } else {
                 Text("No Folder Selection")
                     .foregroundColor(.secondary)
             }
         } detail: {
-            Text(selectionLogID ?? "")
+            switch selectionLog {
+            case .notCommitted(let string):
+                DiffView(diff: string, folder: selectionFolder!) {
+                    selectionLog = nil
+                }
+            case .committed(let commit):
+                Text(commit.hash)
+            case nil:
+                Text("No Selection")
+            }
         }
         .frame(minWidth: 700, minHeight: 300)
         .onAppear {

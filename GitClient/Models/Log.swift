@@ -17,5 +17,5 @@ enum Log: Identifiable, Hashable {
         }
     }
 
-    case notCommitted, committed(Commit)
+    case notCommitted(String), committed(Commit)
 }

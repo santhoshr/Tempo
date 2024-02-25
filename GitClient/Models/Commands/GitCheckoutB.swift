@@ -8,7 +8,7 @@
 import Foundation
 
 struct GitCheckoutB: Git {
-    typealias OutputModel = String
+    typealias OutputModel = Void
     var arguments: [String] {
         [
             "checkout",
@@ -19,7 +19,5 @@ struct GitCheckoutB: Git {
     var directory: URL
     var newBranchName: String
 
-    func parse(for stdOut: String) -> String {
-        stdOut
-    }
+    func parse(for stdOut: String) -> Void {}
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 struct GitMerge: Git {
-    typealias OutputModel = String
+    typealias OutputModel = Void
     var arguments: [String] {
         [
             "merge",
@@ -18,7 +18,5 @@ struct GitMerge: Git {
     var directory: URL
     var branchName: String
 
-    func parse(for stdOut: String) -> String {
-        stdOut
-    }
+    func parse(for stdOut: String) -> Void {}
 }

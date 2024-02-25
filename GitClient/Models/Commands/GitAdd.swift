@@ -8,7 +8,7 @@
 import Foundation
 
 struct GitAdd: Git {
-    typealias OutputModel = String
+    typealias OutputModel = Void
     var arguments: [String] {
         [
             "add",
@@ -17,7 +17,5 @@ struct GitAdd: Git {
     }
     var directory: URL
 
-    func parse(for stdOut: String) -> String {
-        stdOut
-    }
+    func parse(for stdOut: String) -> Void {}
 }

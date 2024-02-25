@@ -26,10 +26,15 @@ struct ProcessError: Error, LocalizedError {
 
 
 extension Process {
-    static func stdout(executableURL: URL, arguments: [String], currentDirectoryURL: URL?) async throws -> String {
+    struct Output {
+        var standardOutput: String
+        var standartError: String
+    }
+
+    static func stdout(executableURL: URL, arguments: [String], currentDirectoryURL: URL?) async throws -> Output {
         try run(executableURL: executableURL, arguments: arguments, currentDirectoryURL: currentDirectoryURL)
     }
-    static func run(executableURL: URL, arguments: [String], currentDirectoryURL: URL?) throws -> String {
+    static func run(executableURL: URL, arguments: [String], currentDirectoryURL: URL?) throws -> Output {
         let process = Process()
         let stdOutput = Pipe()
         let stdError = Pipe()
@@ -39,25 +44,24 @@ extension Process {
         process.standardOutput = stdOutput
         process.standardError = stdError
         try process.run()
-        if let stdOut = String(data: stdOutput.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8), !stdOut.isEmpty {
-            return stdOut
-        }
-        guard let errOut = String(data: stdError.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) else {
-            throw ProcessError.unknown
-        }
-        guard errOut.isEmpty else {
-            throw ProcessError(description: errOut)
-        }
-        return ""
+        let stdOut = String(data: stdOutput.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+        let errOut = String(data: stdError.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+        return .init(standardOutput: stdOut ?? "", standartError: errOut ?? "")
     }
 
     static func run<G: Git>(_ git: G) throws -> G.OutputModel {
-        let stdOut = try Self.run(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
-        return try git.parse(for: stdOut)
+        let output = try Self.run(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
+        return try git.parse(for: output.standardOutput)
     }
 
-    static func stdout<G: Git>(_ git: G) async throws -> G.OutputModel {
-        let stdOut = try await Self.stdout(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
-        return try git.parse(for: stdOut)
+    static func stdout<G: Git>(_ git: G, verbose: Bool=false) async throws -> G.OutputModel {
+        if verbose {
+            print(git)
+        }
+        let output = try await Self.stdout(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
+        if verbose {
+            print(output)
+        }
+        return try git.parse(for: output.standardOutput)
     }
 }

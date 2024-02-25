@@ -8,7 +8,7 @@
 import Foundation
 
 struct GitCommit: Git {
-    typealias OutputModel = String
+    typealias OutputModel = Void
     var arguments: [String] {
         [
             "commit",
@@ -19,7 +19,5 @@ struct GitCommit: Git {
     var directory: URL
     var message: String
 
-    func parse(for stdOut: String) -> String {
-        stdOut
-    }
+    func parse(for stdOut: String) -> Void {}
 }

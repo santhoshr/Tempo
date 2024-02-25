@@ -18,7 +18,10 @@ struct GitLog: Git {
     ]
     var directory: URL
 
-    func parse(for stdOut: String) -> [Commit] {
+    func parse(for stdOut: String) throws -> [Commit] {
+        guard !stdOut.isEmpty else {
+            throw GenericError(errorDescription: "git log standard output is empty.")
+        }
         let lines = stdOut.components(separatedBy: .newlines)
         return lines.map { line in
             let separated = line.components(separatedBy: String.formatSeparator)

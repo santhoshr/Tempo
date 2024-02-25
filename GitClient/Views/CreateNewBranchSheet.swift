@@ -34,16 +34,17 @@ struct CreateNewBranchSheet: View {
                     Button("Create") {
                         Task {
                             do {
-                                print(try await Process.stdout(
-                                    GitSwitch(directory: folder.url, branchName: showingCreateNewBranchFrom!.name)
-                                ))
+                                if !showingCreateNewBranchFrom!.isCurrent {
+                                    print(try await Process.stdout(
+                                        GitSwitch(directory: folder.url, branchName: showingCreateNewBranchFrom!.name)
+                                    ))
+                                }
                                 print(try await Process.stdout(
                                     GitCheckoutB(directory: folder.url, newBranchName: newBranchName)))
                                 showingCreateNewBranchFrom = nil
                                 onCreate()
                             } catch {
-                                print(error)
-//                                self.error = error  error occurs even if the created.
+                                self.error = error
                                 showingCreateNewBranchFrom = nil
                                 onCreate()
                             }

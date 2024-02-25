@@ -113,7 +113,6 @@ struct FolderView: View {
                             } catch {
                                 self.error = error
                             }
-                            // Branch could be switched, but errors can still occur.
                             await setModels()
                             showingBranches = false
                         }

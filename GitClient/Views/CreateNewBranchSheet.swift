@@ -50,6 +50,7 @@ struct CreateNewBranchSheet: View {
                             }
                         }
                     }
+                    .keyboardShortcut(.init(.return))
                     .disabled(newBranchName.isEmpty)
                 }
                 .padding(.top)

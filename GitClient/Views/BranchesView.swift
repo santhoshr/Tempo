@@ -13,7 +13,6 @@ struct BranchesView: View {
     var onSelectNewBranchFrom: ((Branch) -> Void)
     @State private var branches: [Branch] = []
     @State private var error: Error?
-    @State private var isShowingCreateBranch = false
     @State private var selectedBranch: Branch?
 
     var body: some View {

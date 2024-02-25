@@ -15,7 +15,7 @@ struct DiffView: View {
     var onCommit: ()->Void
 
     var body: some View {
-        VSplitView {
+        VStack(spacing: 0) {
             ScrollView {
                 Text(diff)
                     .textSelection(.enabled)
@@ -25,6 +25,7 @@ struct DiffView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))
+            Divider()
             HStack (spacing:0) {
                 ZStack {
                     TextEditor(text: $commitMessage)
@@ -52,6 +53,7 @@ struct DiffView: View {
                 .disabled(commitMessage.isEmpty)
                 .padding()
             }
+            .frame(height: 100)
             .background(Color(NSColor.textBackgroundColor))
         }
     }

@@ -45,8 +45,6 @@ struct CreateNewBranchSheet: View {
                                 onCreate()
                             } catch {
                                 self.error = error
-                                showingCreateNewBranchFrom = nil
-                                onCreate()
                             }
                         }
                     }

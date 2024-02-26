@@ -106,9 +106,9 @@ struct FolderView: View {
                     onSelect: { branch in
                         Task {
                             do {
-                                print(try await Process.output(
+                                try await Process.output(
                                     GitSwitch(directory: folder.url, branchName: branch.name)
-                                ))
+                                )
                             } catch {
                                 self.error = error
                             }
@@ -161,7 +161,7 @@ struct FolderView: View {
             isLoading = true
             Task {
                 do {
-                    print(try await Process.output(GitPush(directory: folder.url)))
+                    try await Process.output(GitPush(directory: folder.url))
                 } catch {
                     self.error = error
                 }

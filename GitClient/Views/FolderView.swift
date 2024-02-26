@@ -77,7 +77,6 @@ struct FolderView: View {
 
     fileprivate func setModels() async {
         do {
-            print(folder)
             branch = try await Process.stdout(GitBranch(directory: folder.url)).current
             logs = try await Process.stdout(GitLog(directory: folder.url)).map { Log.committed($0) }
             let gitDiff = try await Process.stdout(GitDiff(directory: folder.url))

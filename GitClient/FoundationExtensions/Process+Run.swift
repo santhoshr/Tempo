@@ -46,6 +46,13 @@ extension Process {
         try process.run()
         let stdOut = String(data: stdOutput.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
         let errOut = String(data: stdError.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+        process.waitUntilExit()
+        guard process.terminationStatus == 0 else {
+            if let errOut = errOut {
+                throw ProcessError(description: errOut)
+            }
+            throw ProcessError.unknown
+        }
         return .init(standardOutput: stdOut ?? "", standartError: errOut ?? "")
     }
 

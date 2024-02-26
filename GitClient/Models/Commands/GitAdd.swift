@@ -11,6 +11,7 @@ struct GitAdd: Git {
     typealias OutputModel = Void
     var arguments: [String] {
         [
+            "git",
             "add",
             ".",
         ]

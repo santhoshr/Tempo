@@ -10,6 +10,7 @@ import Foundation
 struct GitLog: Git {
     typealias OutputModel = [Commit]
     var arguments = [
+        "git",
         "log",
         "--pretty=format:%H"
         + .formatSeparator + "%an"

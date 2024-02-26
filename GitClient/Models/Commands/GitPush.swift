@@ -10,6 +10,7 @@ import Foundation
 struct GitPush: Git {
     typealias OutputModel = Void
     var arguments = [
+        "git",
         "push",
         "origin",
         "HEAD",

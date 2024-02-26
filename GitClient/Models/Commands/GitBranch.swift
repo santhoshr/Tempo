@@ -11,6 +11,7 @@ struct GitBranch: Git {
     typealias OutputModel = [Branch]
     var arguments: [String] {
         [
+            "git",
             "branch",
             "--sort=-authordate",
         ]

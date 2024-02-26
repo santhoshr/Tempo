@@ -11,6 +11,7 @@ struct GitCommit: Git {
     typealias OutputModel = Void
     var arguments: [String] {
         [
+            "git",
             "commit",
             "-m",
             message,

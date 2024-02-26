@@ -10,6 +10,7 @@ import Foundation
 struct GitDiffCached: Git {
     typealias OutputModel = String
     var arguments = [
+        "git",
         "diff",
         "--cached",
     ]

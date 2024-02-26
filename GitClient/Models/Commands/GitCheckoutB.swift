@@ -11,6 +11,7 @@ struct GitCheckoutB: Git {
     typealias OutputModel = Void
     var arguments: [String] {
         [
+            "git",
             "checkout",
             "-b",
             newBranchName,

@@ -11,6 +11,7 @@ struct GitMerge: Git {
     typealias OutputModel = Void
     var arguments: [String] {
         [
+            "git",
             "merge",
             branchName,
         ]

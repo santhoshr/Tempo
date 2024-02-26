@@ -31,14 +31,14 @@ extension Process {
         var standartError: String
     }
 
-    static func stdout(executableURL: URL, arguments: [String], currentDirectoryURL: URL?) async throws -> Output {
-        try run(executableURL: executableURL, arguments: arguments, currentDirectoryURL: currentDirectoryURL)
+    static func stdout(arguments: [String], currentDirectoryURL: URL?) async throws -> Output {
+        try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL)
     }
-    static func run(executableURL: URL, arguments: [String], currentDirectoryURL: URL?) throws -> Output {
+    static func run(arguments: [String], currentDirectoryURL: URL?) throws -> Output {
         let process = Process()
         let stdOutput = Pipe()
         let stdError = Pipe()
-        process.executableURL = executableURL
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         process.arguments = arguments
         process.currentDirectoryURL = currentDirectoryURL
         process.standardOutput = stdOutput
@@ -50,7 +50,7 @@ extension Process {
     }
 
     static func run<G: Git>(_ git: G) throws -> G.OutputModel {
-        let output = try Self.run(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
+        let output = try Self.run(arguments: git.arguments, currentDirectoryURL: git.directory)
         return try git.parse(for: output.standardOutput)
     }
 
@@ -58,7 +58,7 @@ extension Process {
         if verbose {
             print(git)
         }
-        let output = try await Self.stdout(executableURL: .git, arguments: git.arguments, currentDirectoryURL: git.directory)
+        let output = try await Self.stdout(arguments: git.arguments, currentDirectoryURL: git.directory)
         if verbose {
             print(output)
         }

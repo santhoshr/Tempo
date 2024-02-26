@@ -10,6 +10,7 @@ import Foundation
 struct GitDiff: Git {
     typealias OutputModel = String
     var arguments = [
+        "git",
         "diff",
     ]
     var directory: URL

@@ -40,7 +40,7 @@ struct BranchesView: View {
         .scrollContentBackground(.hidden)
         .task {
             do {
-                branches = try await Process.stdout(GitBranch(directory: folder.url))
+                branches = try await Process.output(GitBranch(directory: folder.url))
             } catch {
                 self.error = error
             }

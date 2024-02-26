@@ -77,10 +77,10 @@ struct FolderView: View {
 
     fileprivate func setModels() async {
         do {
-            branch = try await Process.stdout(GitBranch(directory: folder.url)).current
-            logs = try await Process.stdout(GitLog(directory: folder.url)).map { Log.committed($0) }
-            let gitDiff = try await Process.stdout(GitDiff(directory: folder.url))
-            let gitDiffCached = try await Process.stdout(GitDiffCached(directory: folder.url))
+            branch = try await Process.output(GitBranch(directory: folder.url)).current
+            logs = try await Process.output(GitLog(directory: folder.url)).map { Log.committed($0) }
+            let gitDiff = try await Process.output(GitDiff(directory: folder.url))
+            let gitDiffCached = try await Process.output(GitDiffCached(directory: folder.url))
             let gitDiffOutput = gitDiff + gitDiffCached
             if !gitDiffOutput.isEmpty {
                 logs.insert(.notCommitted(gitDiffOutput), at: 0)
@@ -106,7 +106,7 @@ struct FolderView: View {
                     onSelect: { branch in
                         Task {
                             do {
-                                print(try await Process.stdout(
+                                print(try await Process.output(
                                     GitSwitch(directory: folder.url, branchName: branch.name)
                                 ))
                             } catch {
@@ -118,7 +118,7 @@ struct FolderView: View {
                     }, onSelectMergeInto: { mergeIntoBranch in
                         Task {
                             do {
-                                try await Process.stdout(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
+                                try await Process.output(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
                             } catch {
                                 self.error = error
                             }
@@ -161,7 +161,7 @@ struct FolderView: View {
             isLoading = true
             Task {
                 do {
-                    print(try await Process.stdout(GitPush(directory: folder.url)))
+                    print(try await Process.output(GitPush(directory: folder.url)))
                 } catch {
                     self.error = error
                 }

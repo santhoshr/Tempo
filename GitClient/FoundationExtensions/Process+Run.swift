@@ -31,7 +31,7 @@ extension Process {
         var standartError: String
     }
 
-    static func stdout(arguments: [String], currentDirectoryURL: URL?) async throws -> Output {
+    static func output(arguments: [String], currentDirectoryURL: URL?) async throws -> Output {
         try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL)
     }
     static func run(arguments: [String], currentDirectoryURL: URL?) throws -> Output {
@@ -49,16 +49,11 @@ extension Process {
         return .init(standardOutput: stdOut ?? "", standartError: errOut ?? "")
     }
 
-    static func run<G: Git>(_ git: G) throws -> G.OutputModel {
-        let output = try Self.run(arguments: git.arguments, currentDirectoryURL: git.directory)
-        return try git.parse(for: output.standardOutput)
-    }
-
-    static func stdout<G: Git>(_ git: G, verbose: Bool=false) async throws -> G.OutputModel {
+    static func output<G: Git>(_ git: G, verbose: Bool=false) async throws -> G.OutputModel {
         if verbose {
             print(git)
         }
-        let output = try await Self.stdout(arguments: git.arguments, currentDirectoryURL: git.directory)
+        let output = try await Self.output(arguments: git.arguments, currentDirectoryURL: git.directory)
         if verbose {
             print(output)
         }

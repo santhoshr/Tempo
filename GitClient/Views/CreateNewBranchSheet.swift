@@ -35,11 +35,11 @@ struct CreateNewBranchSheet: View {
                         Task {
                             do {
                                 if !showingCreateNewBranchFrom!.isCurrent {
-                                    print(try await Process.stdout(
+                                    print(try await Process.output(
                                         GitSwitch(directory: folder.url, branchName: showingCreateNewBranchFrom!.name)
                                     ))
                                 }
-                                print(try await Process.stdout(
+                                print(try await Process.output(
                                     GitCheckoutB(directory: folder.url, newBranchName: newBranchName)))
                                 showingCreateNewBranchFrom = nil
                                 onCreate()

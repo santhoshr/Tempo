@@ -40,8 +40,8 @@ struct DiffView: View {
                 Button("Commit") {
                     Task {
                         do {
-                            print(try await Process.stdout(GitAdd(directory: folder.url)))
-                            print(try await Process.stdout(GitCommit(directory: folder.url, message: commitMessage)))
+                            print(try await Process.output(GitAdd(directory: folder.url)))
+                            print(try await Process.output(GitCommit(directory: folder.url, message: commitMessage)))
                             onCommit()
                         } catch {
                             self.error = error

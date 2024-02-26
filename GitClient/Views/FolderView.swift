@@ -115,6 +115,16 @@ struct FolderView: View {
                             await setModels()
                             showingBranches = false
                         }
+                    }, onSelectMergeInto: { mergeIntoBranch in
+                        Task {
+                            do {
+                                try await Process.stdout(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
+                            } catch {
+                                self.error = error
+                            }
+                            await setModels()
+                            showingBranches = false
+                        }
                     },
                     onSelectNewBranchFrom: { from in
                         showingCreateNewBranchFrom = from

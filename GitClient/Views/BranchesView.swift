@@ -10,6 +10,7 @@ import SwiftUI
 struct BranchesView: View {
     var folder: Folder
     var onSelect: ((Branch) -> Void)
+    var onSelectMergeInto: ((Branch) -> Void)
     var onSelectNewBranchFrom: ((Branch) -> Void)
     @State private var branches: [Branch] = []
     @State private var error: Error?
@@ -28,6 +29,7 @@ struct BranchesView: View {
             .contextMenu {
                 if !branch.isCurrent {
                     Button("Marge into \"\(branches.current?.name ?? "")\"") {
+                        onSelectMergeInto(branch)
                     }
                 }
                 Button("New Branch from \"\(branch.name)\"") {
@@ -52,7 +54,8 @@ struct BranchesView_Previews: PreviewProvider {
     static var previews: some View {
         BranchesView(
             folder: .init(url: .init(string: "file://hoge")!),
-            onSelect: { _ in },
+            onSelect: { _ in }, 
+            onSelectMergeInto: { _ in },
             onSelectNewBranchFrom: { _ in }
         )
     }

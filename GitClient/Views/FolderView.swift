@@ -152,6 +152,7 @@ struct FolderView: View {
             Task {
                 do {
                     try await Process.output(GitPull(directory: folder.url))
+                    await setModels()
                 } catch {
                     self.error = error
                 }

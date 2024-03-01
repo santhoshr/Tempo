@@ -148,7 +148,15 @@ struct FolderView: View {
 
     fileprivate func pullButton() -> some View {
         return Button {
-
+            isLoading = true
+            Task {
+                do {
+                    try await Process.output(GitPull(directory: folder.url))
+                } catch {
+                    self.error = error
+                }
+                isLoading = false
+            }
         } label: {
             Image(systemName: "arrow.down")
         }

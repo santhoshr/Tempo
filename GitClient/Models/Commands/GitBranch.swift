@@ -13,7 +13,6 @@ struct GitBranch: Git {
         [
             "git",
             "branch",
-            "--all",
             "--sort=-authordate",
         ]
     }

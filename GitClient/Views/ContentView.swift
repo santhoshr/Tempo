@@ -66,7 +66,7 @@ struct ContentView: View {
                     folderIsRefresh = true
                 }
             case .committed(let commit):
-                Text(commit.hash)
+                CommitLogView(commitHash: commit.hash, folder: selectionFolder!)
             case nil:
                 Text("No Selection")
                     .foregroundColor(.secondary)

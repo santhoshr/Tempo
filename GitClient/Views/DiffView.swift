@@ -5,7 +5,6 @@
 //  Created by Makoto Aoyama on 2022/10/01.
 //
 
-// test3
 import SwiftUI
 
 struct DiffView: View {
@@ -41,12 +40,10 @@ struct DiffView: View {
                 Button("Commit") {
                     Task {
                         do {
-                            gitAddInteractive()
-                            //                            try await Process.output(GitAdd(directory: folder.url))
-//                            try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
-//                            onCommit()
+                            try await Process.output(GitAdd(directory: folder.url))
+                            try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
+                            onCommit()
                         } catch {
-                            print(error)
                             self.error = error
                         }
                     }
@@ -60,39 +57,6 @@ struct DiffView: View {
             .background(Color(NSColor.textBackgroundColor))
         }
     }
-
-    func runGitCommand(arguments: [String], input: String? = nil) -> String? {
-        let task = Process()
-        let pipe = Pipe()
-        let inputPipe = Pipe()
-
-        task.executableURL = URL(fileURLWithPath: "/usr/bin/git")
-        task.arguments = arguments
-        task.currentDirectoryURL = folder.url
-        task.standardOutput = pipe
-        task.standardInput = inputPipe
-
-        do {
-            try task.run()
-            inputPipe.fileHandleForWriting.write(input?.data(using: .utf8) ?? Data())
-            inputPipe.fileHandleForWriting.closeFile()
-
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            return String(data: data, encoding: .utf8)
-        } catch {
-            print("Error running git command: \(error)")
-            return nil
-        }
-    }
-
-    func gitAddInteractive() {
-        if let output = runGitCommand(arguments: ["add", "-p"], input: "y\n") {
-            print(output)
-        } else {
-            print("Failed to run git add -p")
-        }
-    }
-
 }
 
 
@@ -173,4 +137,3 @@ index 0cd5c16..114b4ae 100644
 """, folder: .init(url: .init(string: "file:///maoyama")!), onCommit: {})
     }
 }
-// test

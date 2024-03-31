@@ -31,21 +31,33 @@ extension Process {
         var standartError: String
     }
 
-    static func output(arguments: [String], currentDirectoryURL: URL?) async throws -> Output {
-        try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL)
+    static func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
+        try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
     }
-    static func run(arguments: [String], currentDirectoryURL: URL?) throws -> Output {
+
+    static func run(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) throws -> Output {
         let process = Process()
         let stdOutput = Pipe()
         let stdError = Pipe()
+        let stdInput = Pipe()
+
         process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         process.arguments = arguments
         process.currentDirectoryURL = currentDirectoryURL
         process.standardOutput = stdOutput
         process.standardError = stdError
+        process.standardInput = stdInput
+
         try process.run()
+
         let stdOut = String(data: stdOutput.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
         let errOut = String(data: stdError.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+
+        if !inputs.isEmpty, let writeData = inputs.joined(separator: "\n").data(using: .utf8) {
+            try stdInput.fileHandleForWriting.write(contentsOf: writeData)
+            try stdInput.fileHandleForWriting.close()
+        }
+
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
             if let errOut = errOut {
@@ -66,4 +78,16 @@ extension Process {
         }
         return try git.parse(for: output.standardOutput)
     }
+
+    static func output<G: InteractiveGit>(_ git: G, verbose: Bool=false) async throws -> G.OutputModel {
+        if verbose {
+            print(git)
+        }
+        let output = try await Self.output(arguments: git.arguments, currentDirectoryURL: git.directory, inputs: git.inputs)
+        if verbose {
+            print(output)
+        }
+        return try git.parse(for: output.standardOutput)
+    }
+
 }

@@ -13,3 +13,7 @@ protocol Git {
     var directory: URL { get set }
     func parse(for standardOutput: String) throws -> OutputModel
 }
+
+protocol InteractiveGit: Git {
+    var inputs: [String] { get }
+}

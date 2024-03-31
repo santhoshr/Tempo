@@ -76,6 +76,7 @@ struct DiffView: View {
             try task.run()
             inputPipe.fileHandleForWriting.write(input?.data(using: .utf8) ?? Data())
             inputPipe.fileHandleForWriting.closeFile()
+
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
             return String(data: data, encoding: .utf8)
         } catch {
@@ -85,12 +86,13 @@ struct DiffView: View {
     }
 
     func gitAddInteractive() {
-        if let output = runGitCommand(arguments: ["add", "-p"], input: "n\nn\nn\ny\n") {
+        if let output = runGitCommand(arguments: ["add", "-p"], input: "y\n") {
             print(output)
         } else {
             print("Failed to run git add -p")
         }
     }
+
 }
 
 
@@ -172,4 +174,3 @@ index 0cd5c16..114b4ae 100644
     }
 }
 // test
-// test2

@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "20703B03-9DC8-43F5-B206-DEB351093A17",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:GitClient.xcodeproj",
+      "identifier" : "61347EE928D5D16C00625FC4",
+      "name" : "GitClient"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:GitClient.xcodeproj",
+        "identifier" : "61347EFA28D5D16D00625FC4",
+        "name" : "GitClientTests"
+      }
+    },
+    {
+      "enabled" : false,
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:GitClient.xcodeproj",
+        "identifier" : "61347F0428D5D16D00625FC4",
+        "name" : "GitClientUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

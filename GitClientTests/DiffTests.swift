@@ -1,0 +1,159 @@
+//
+//  GitClientTests.swift
+//  GitClientTests
+//
+//  Created by Makoto Aoyama on 2022/09/17.
+//
+
+import XCTest
+@testable import GitClient
+
+final class DiffTests: XCTestCase {
+
+    func testDiffInit() throws {
+        let raw = """
+diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+index ca7d6df..b9d9984 100644
+--- a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
++++ b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+@@ -24,7 +24,7 @@
+         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
+         "state": {
+           "branch": null,
+-          "revision": "7ccfb6cefdb6180cde839310e3dbd5b2d6fefee5",
++          "revision": "20d21b3fd7192a42851d7951453e96b41e4e1ed1",
+           "version": "5.13.3"
+         }
+       }
+diff --git a/GitBlamePR/View/DetailFooter.swift b/GitBlamePR/View/DetailFooter.swift
+index ec290b6..46b0c19 100644
+--- a/GitBlamePR/View/DetailFooter.swift
++++ b/GitBlamePR/View/DetailFooter.swift
+@@ -6,6 +6,7 @@
+ //  Copyright © 2020 dev.aoyama. All rights reserved.
+ //
+
++// test
+ import SwiftUI
+
+ struct DetailFooter: View {
+@@ -36,6 +37,9 @@ struct DetailFooter: View {
+     }
+ }
+
++
++
++// test2
+ struct DetailFooter_Previews: PreviewProvider {
+     static var previews: some View {
+         Group {
+"""
+        let diff = try Diff(raw: raw)
+        XCTAssertEqual(diff.fileDiffs.count, 2)
+        XCTAssertEqual(diff.fileDiffs.first!.raw, """
+diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+index ca7d6df..b9d9984 100644
+--- a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
++++ b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+@@ -24,7 +24,7 @@
+         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
+         "state": {
+           "branch": null,
+-          "revision": "7ccfb6cefdb6180cde839310e3dbd5b2d6fefee5",
++          "revision": "20d21b3fd7192a42851d7951453e96b41e4e1ed1",
+           "version": "5.13.3"
+         }
+       }
+
+"""
+        )
+        XCTAssertEqual(diff.fileDiffs[1].raw, """
+diff --git a/GitBlamePR/View/DetailFooter.swift b/GitBlamePR/View/DetailFooter.swift
+index ec290b6..46b0c19 100644
+--- a/GitBlamePR/View/DetailFooter.swift
++++ b/GitBlamePR/View/DetailFooter.swift
+@@ -6,6 +6,7 @@
+ //  Copyright © 2020 dev.aoyama. All rights reserved.
+ //
+
++// test
+ import SwiftUI
+
+ struct DetailFooter: View {
+@@ -36,6 +37,9 @@ struct DetailFooter: View {
+     }
+ }
+
++
++
++// test2
+ struct DetailFooter_Previews: PreviewProvider {
+     static var previews: some View {
+         Group {
+"""
+        )
+        XCTAssertEqual(raw, diff.raw)
+        XCTAssertEqual(diff.raw, diff.fileDiffs[0].raw + diff.fileDiffs[1].raw)
+    }
+
+    func testFileDiffInit() {
+        let fileDiff = FileDiff(raw: """
+diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+index ca7d6df..b9d9984 100644
+--- a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
++++ b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+@@ -24,7 +24,7 @@
+         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
+         "state": {
+           "branch": null,
+-          "revision": "7ccfb6cefdb6180cde839310e3dbd5b2d6fefee5",
++          "revision": "20d21b3fd7192a42851d7951453e96b41e4e1ed1",
+           "version": "5.13.3"
+         }
+       }
+@@ -36,6 +37,9 @@ struct DetailFooter: View {
+     }
+ }
+
++
++
++// test2
+ struct DetailFooter_Previews: PreviewProvider {
+     static var previews: some View {
+         Group {
+""")!
+        XCTAssertEqual(fileDiff.header, "diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved")
+        XCTAssertEqual(fileDiff.extendedHeaderLines.count, 1)
+        XCTAssertEqual(fileDiff.extendedHeaderLines[0], "index ca7d6df..b9d9984 100644")
+        XCTAssertEqual(fileDiff.fromFileToFileLines.count, 2)
+        XCTAssertEqual(fileDiff.fromFileToFileLines[0], "--- a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved")
+        XCTAssertEqual(fileDiff.fromFileToFileLines[1], "+++ b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved")
+        XCTAssertEqual(fileDiff.chunks.count, 2)
+        XCTAssertEqual(fileDiff.chunks[0].raw, """
+@@ -24,7 +24,7 @@
+         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
+         "state": {
+           "branch": null,
+-          "revision": "7ccfb6cefdb6180cde839310e3dbd5b2d6fefee5",
++          "revision": "20d21b3fd7192a42851d7951453e96b41e4e1ed1",
+           "version": "5.13.3"
+         }
+       }
+"""
+        )
+        XCTAssertEqual(fileDiff.chunks[1].raw, """
+@@ -36,6 +37,9 @@ struct DetailFooter: View {
+     }
+ }
+
++
++
++// test2
+ struct DetailFooter_Previews: PreviewProvider {
+     static var previews: some View {
+         Group {
+"""
+        )
+
+    }
+}

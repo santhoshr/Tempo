@@ -14,7 +14,7 @@
 		61347EF028D5D16C00625FC4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EEF28D5D16C00625FC4 /* ContentView.swift */; };
 		61347EF228D5D16D00625FC4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61347EF128D5D16D00625FC4 /* Assets.xcassets */; };
 		61347EF528D5D16D00625FC4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61347EF428D5D16D00625FC4 /* Preview Assets.xcassets */; };
-		61347F0028D5D16D00625FC4 /* GitClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EFF28D5D16D00625FC4 /* GitClientTests.swift */; };
+		61347F0028D5D16D00625FC4 /* DiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EFF28D5D16D00625FC4 /* DiffTests.swift */; };
 		61347F0A28D5D16D00625FC4 /* GitClientUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347F0928D5D16D00625FC4 /* GitClientUITests.swift */; };
 		61347F0C28D5D16D00625FC4 /* GitClientUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347F0B28D5D16D00625FC4 /* GitClientUITestsLaunchTests.swift */; };
 		616C4C1C28E88828000E7154 /* GitCommit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616C4C1B28E88828000E7154 /* GitCommit.swift */; };
@@ -75,7 +75,7 @@
 		61347EF428D5D16D00625FC4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		61347EF628D5D16D00625FC4 /* GitClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GitClient.entitlements; sourceTree = "<group>"; };
 		61347EFB28D5D16D00625FC4 /* GitClientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GitClientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		61347EFF28D5D16D00625FC4 /* GitClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitClientTests.swift; sourceTree = "<group>"; };
+		61347EFF28D5D16D00625FC4 /* DiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffTests.swift; sourceTree = "<group>"; };
 		61347F0528D5D16D00625FC4 /* GitClientUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GitClientUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		61347F0928D5D16D00625FC4 /* GitClientUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitClientUITests.swift; sourceTree = "<group>"; };
 		61347F0B28D5D16D00625FC4 /* GitClientUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitClientUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -86,6 +86,7 @@
 		6172E4C528D70EE30015C958 /* Commit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commit.swift; sourceTree = "<group>"; };
 		6172E4C928DB4C8F0015C958 /* FolderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderStore.swift; sourceTree = "<group>"; };
 		6175B89D2BEF686B00554227 /* Collection+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+.swift"; sourceTree = "<group>"; };
+		6175B89F2BF87D4400554227 /* GitClient.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GitClient.xctestplan; sourceTree = "<group>"; };
 		6180C0A728E916B900B3AEAD /* BranchesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BranchesView.swift; sourceTree = "<group>"; };
 		61839DBC2B9221D10015215B /* GitPull.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitPull.swift; sourceTree = "<group>"; };
 		61839DBE2B9229A30015215B /* GitShow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitShow.swift; sourceTree = "<group>"; };
@@ -137,6 +138,7 @@
 		61347EE128D5D16C00625FC4 = {
 			isa = PBXGroup;
 			children = (
+				6175B89F2BF87D4400554227 /* GitClient.xctestplan */,
 				61347EEC28D5D16C00625FC4 /* GitClient */,
 				61347EFE28D5D16D00625FC4 /* GitClientTests */,
 				61347F0828D5D16D00625FC4 /* GitClientUITests */,
@@ -179,7 +181,7 @@
 		61347EFE28D5D16D00625FC4 /* GitClientTests */ = {
 			isa = PBXGroup;
 			children = (
-				61347EFF28D5D16D00625FC4 /* GitClientTests.swift */,
+				61347EFF28D5D16D00625FC4 /* DiffTests.swift */,
 			);
 			path = GitClientTests;
 			sourceTree = "<group>";
@@ -432,7 +434,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				61347F0028D5D16D00625FC4 /* GitClientTests.swift in Sources */,
+				61347F0028D5D16D00625FC4 /* DiffTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -641,7 +643,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JRA6VW2DG4;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.aoyama.GitClientTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -660,7 +662,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JRA6VW2DG4;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.aoyama.GitClientTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

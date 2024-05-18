@@ -14,7 +14,7 @@ struct Diff {
     init(raw: String) throws {
         self.raw = raw
         fileDiffs = try raw.split(separator: "diff").map { fileDiffRaw in
-            guard let fileDiff = FileDiff(raw: String(fileDiffRaw)) else { throw GenericError(errorDescription: "Parse error")}
+            guard let fileDiff = FileDiff(raw: String("diff" + fileDiffRaw)) else { throw GenericError(errorDescription: "Parse error")}
             return fileDiff
         }
     }
@@ -51,13 +51,13 @@ struct FileDiff {
 
     init?(raw: String) {
         self.raw = raw
-        let splited = raw.split(separator: "\n").map { String($0) }
+        let splited = raw.split(separator: "\n", omittingEmptySubsequences: false).map { String($0) }
         let firstLine = splited.first
         guard let firstLine else { return nil }
         header = firstLine
         let fromFileIndex = splited.firstIndex { $0.hasPrefix("---") }
         guard let fromFileIndex else { return nil }
-        extendedHeaderLines = splited[1...fromFileIndex].map { String($0) }
+        extendedHeaderLines = splited[1..<fromFileIndex].map { String($0) }
         let toFileIndex = splited.lastIndex { $0.hasPrefix("+++") }
         guard let toFileIndex else { return nil }
         fromFileToFileLines = splited[fromFileIndex...toFileIndex].map { String($0) }

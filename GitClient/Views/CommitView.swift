@@ -1,5 +1,5 @@
 //
-//  DiffView.swift
+//  CommitView.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2022/10/01.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DiffView: View {
+struct CommitView: View {
     var diff: String
     var folder: Folder
     @State private var commitMessage = ""
@@ -61,7 +61,7 @@ struct DiffView: View {
 
 struct DiffView_Previews: PreviewProvider {
     static var previews: some View {
-        DiffView(diff: """
+        CommitView(diff: """
 diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
 index 0cd5c16..114b4ae 100644
 --- a/GitClient/Views/DiffView.swift

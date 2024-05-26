@@ -121,7 +121,9 @@ index ca7d6df..b9d9984 100644
  struct DetailFooter_Previews: PreviewProvider {
      static var previews: some View {
          Group {
-""")!
+"""
+        )!
+
         XCTAssertEqual(fileDiff.header, "diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved")
         XCTAssertEqual(fileDiff.extendedHeaderLines.count, 1)
         XCTAssertEqual(fileDiff.extendedHeaderLines[0], "index ca7d6df..b9d9984 100644")
@@ -154,6 +156,31 @@ index ca7d6df..b9d9984 100644
          Group {
 """
         )
+    }
 
+    func testChunkInit() {
+        let chunk = Chunk(raw: """
+@@ -24,7 +24,7 @@
+         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
+         "state": {
+           "branch": null,
+-          "revision": "7ccfb6cefdb6180cde839310e3dbd5b2d6fefee5",
++          "revision": "20d21b3fd7192a42851d7951453e96b41e4e1ed1",
+           "version": "5.13.3"
+         }
+       }
+"""
+        )
+
+        XCTAssertEqual(chunk.lines.count, 9)
+        XCTAssertEqual(chunk.lines[0].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[1].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[2].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[3].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[4].kind, Chunk.Line.Kind.removed)
+        XCTAssertEqual(chunk.lines[5].kind, Chunk.Line.Kind.added)
+        XCTAssertEqual(chunk.lines[6].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[7].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[8].kind, Chunk.Line.Kind.unchanged)
     }
 }

@@ -138,8 +138,8 @@
 		61347EE128D5D16C00625FC4 = {
 			isa = PBXGroup;
 			children = (
-				6175B89F2BF87D4400554227 /* GitClient.xctestplan */,
 				61347EEC28D5D16C00625FC4 /* GitClient */,
+				6175B89F2BF87D4400554227 /* GitClient.xctestplan */,
 				61347EFE28D5D16D00625FC4 /* GitClientTests */,
 				61347F0828D5D16D00625FC4 /* GitClientUITests */,
 				61347EEB28D5D16C00625FC4 /* Products */,

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		6103A59E28EE46E30083A2F5 /* GitCheckoutB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */; };
 		6103A5A028EE47790083A2F5 /* GitMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59F28EE47790083A2F5 /* GitMerge.swift */; };
+		612208A92C032A0D0047B454 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208A82C032A0D0047B454 /* DiffView.swift */; };
 		61326BBC2BC27A3300472D64 /* Diff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61326BBB2BC27A3300472D64 /* Diff.swift */; };
 		61347EEE28D5D16C00625FC4 /* GitClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EED28D5D16C00625FC4 /* GitClientApp.swift */; };
 		61347EF028D5D16C00625FC4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EEF28D5D16C00625FC4 /* ContentView.swift */; };
@@ -67,6 +68,7 @@
 /* Begin PBXFileReference section */
 		6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCheckoutB.swift; sourceTree = "<group>"; };
 		6103A59F28EE47790083A2F5 /* GitMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitMerge.swift; sourceTree = "<group>"; };
+		612208A82C032A0D0047B454 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
 		61326BBB2BC27A3300472D64 /* Diff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff.swift; sourceTree = "<group>"; };
 		61347EEA28D5D16C00625FC4 /* GitClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61347EED28D5D16C00625FC4 /* GitClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitClientApp.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				61839DC02B922B0D0015215B /* CommitLogView.swift */,
 				6180C0A728E916B900B3AEAD /* BranchesView.swift */,
 				619D876028F154AB00DD1D4E /* CreateNewBranchSheet.swift */,
+				612208A82C032A0D0047B454 /* DiffView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -425,6 +428,7 @@
 				61839DBD2B9221D10015215B /* GitPull.swift in Sources */,
 				6175B89E2BEF686B00554227 /* Collection+.swift in Sources */,
 				61839DBF2B9229A30015215B /* GitShow.swift in Sources */,
+				612208A92C032A0D0047B454 /* DiffView.swift in Sources */,
 				61A2D35728DE9CCC009A3EEC /* GenericError.swift in Sources */,
 				6103A5A028EE47790083A2F5 /* GitMerge.swift in Sources */,
 			);

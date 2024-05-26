@@ -10,6 +10,7 @@
 		6103A59E28EE46E30083A2F5 /* GitCheckoutB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */; };
 		6103A5A028EE47790083A2F5 /* GitMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59F28EE47790083A2F5 /* GitMerge.swift */; };
 		612208A92C032A0D0047B454 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208A82C032A0D0047B454 /* DiffView.swift */; };
+		612208AB2C032D500047B454 /* ShowMedium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208AA2C032D500047B454 /* ShowMedium.swift */; };
 		61326BBC2BC27A3300472D64 /* Diff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61326BBB2BC27A3300472D64 /* Diff.swift */; };
 		61347EEE28D5D16C00625FC4 /* GitClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EED28D5D16C00625FC4 /* GitClientApp.swift */; };
 		61347EF028D5D16C00625FC4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EEF28D5D16C00625FC4 /* ContentView.swift */; };
@@ -69,6 +70,7 @@
 		6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCheckoutB.swift; sourceTree = "<group>"; };
 		6103A59F28EE47790083A2F5 /* GitMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitMerge.swift; sourceTree = "<group>"; };
 		612208A82C032A0D0047B454 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
+		612208AA2C032D500047B454 /* ShowMedium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMedium.swift; sourceTree = "<group>"; };
 		61326BBB2BC27A3300472D64 /* Diff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff.swift; sourceTree = "<group>"; };
 		61347EEA28D5D16C00625FC4 /* GitClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61347EED28D5D16C00625FC4 /* GitClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitClientApp.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 				616C4C1F28E896FA000E7154 /* Log.swift */,
 				61EBD7D028E940C30009ED92 /* Branch.swift */,
 				61326BBB2BC27A3300472D64 /* Diff.swift */,
+				612208AA2C032D500047B454 /* ShowMedium.swift */,
 				61E290DC28E884C200BCEB04 /* Commands */,
 			);
 			path = Models;
@@ -413,6 +416,7 @@
 				6172E4C428D70B3C0015C958 /* Folder.swift in Sources */,
 				61A2D35D28DF5ACB009A3EEC /* View+.swift in Sources */,
 				61839DC12B922B0D0015215B /* CommitLogView.swift in Sources */,
+				612208AB2C032D500047B454 /* ShowMedium.swift in Sources */,
 				61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */,
 				61EBD7D128E940C30009ED92 /* Branch.swift in Sources */,
 				61E290C928E098DB00BCEB04 /* GitLog.swift in Sources */,

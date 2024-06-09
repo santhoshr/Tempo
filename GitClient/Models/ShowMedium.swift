@@ -28,6 +28,6 @@ struct ShowMedium {
         author = commitInfoSplited[1]
         date = commitInfoSplited[2]
         commitMessage = commitInfoSplited[3]
-        diff = try Diff(raw: "\ndiff" + spliteDiff[1])
+        diff = try Diff(raw: "diff" + spliteDiff[1])
     }
 }

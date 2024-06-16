@@ -59,7 +59,7 @@ struct CommitView: View {
     }
 }
 
-struct DiffView_Previews: PreviewProvider {
+struct CommitView_Previews: PreviewProvider {
     static var previews: some View {
         CommitView(diff: """
 diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift

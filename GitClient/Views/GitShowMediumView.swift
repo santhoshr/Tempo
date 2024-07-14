@@ -50,7 +50,7 @@ index ca7d6df..b9d9984 100644
     return GitShowMediumView(showMedium: model)
 }
 
-#Preview("Marge commit") {
+#Preview("Merge commit") {
     let model = try! ShowMedium(raw: """
 commit 903d5f53d26752e2f87147ae98d326c2f8626e48
 Merge: 850eba7 4351257

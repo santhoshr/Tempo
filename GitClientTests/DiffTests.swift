@@ -64,7 +64,6 @@ index ca7d6df..b9d9984 100644
            "version": "5.13.3"
          }
        }
-
 """
         )
         XCTAssertEqual(diff.fileDiffs[1].raw, """
@@ -93,7 +92,7 @@ index ec290b6..46b0c19 100644
 """
         )
         XCTAssertEqual(raw, diff.raw)
-        XCTAssertEqual(diff.raw, diff.fileDiffs[0].raw + diff.fileDiffs[1].raw)
+        XCTAssertEqual(diff.raw, diff.fileDiffs[0].raw + "\n" + diff.fileDiffs[1].raw)
     }
 
     func testFileDiffInit() throws {
@@ -156,6 +155,27 @@ index ca7d6df..b9d9984 100644
          Group {
 """
         )
+    }
+
+    func testDiffInit2() throws {
+        let raw = """
+diff --git a/GitClient/Models/ShowMedium.swift b/GitClient/Models/ShowMedium.swift
+index 88f91e0..1c7669c 100644
+--- a/GitClient/Models/ShowMedium.swift
++++ b/GitClient/Models/ShowMedium.swift
+@@ -16,6 +16,9 @@ struct ShowMedium {
+     var diff: Diff?
+
+     init(raw: String) throws {
++        guard !raw.isEmpty else {
++            throw GenericError(errorDescription: "raw is empty")
++        }
+         let spliteDiff = raw.split(separator: "diff", maxSplits: 1)
+         guard spliteDiff.count == 2 else {
+             let commitInfo = raw
+
+"""
+        _ = try Diff(raw: raw)
     }
 
     func testFileDiffInit2() throws {

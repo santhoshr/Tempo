@@ -13,7 +13,7 @@ struct Diff {
 
     init(raw: String) throws {
         self.raw = raw
-        fileDiffs = try raw.split(separator: "diff").map { fileDiffRaw in
+        fileDiffs = try ("\n" + raw).split(separator: "\ndiff").map { fileDiffRaw in
             let fileDiff = try FileDiff(raw: String("diff" + fileDiffRaw))
             return fileDiff
         }
@@ -59,6 +59,7 @@ struct FileDiff {
         header = firstLine
         let fromFileIndex = splited.firstIndex { $0.hasPrefix("---") }
         guard let fromFileIndex else {
+            print("Parse error for fromFileIndex", raw)
             throw GenericError(errorDescription: "Parse error for fromFileIndex in FileDiff")
         }
         extendedHeaderLines = splited[1..<fromFileIndex].map { String($0) }

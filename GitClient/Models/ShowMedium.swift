@@ -16,6 +16,9 @@ struct ShowMedium {
     var diff: Diff?
 
     init(raw: String) throws {
+        guard !raw.isEmpty else {
+            throw GenericError(errorDescription: "raw is empty")
+        }
         let spliteDiff = raw.split(separator: "\ndiff", maxSplits: 1)
         guard spliteDiff.count == 2 else {
             let commitInfo = raw

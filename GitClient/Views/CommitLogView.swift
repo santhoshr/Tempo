@@ -10,16 +10,31 @@ import SwiftUI
 struct CommitLogView: View {
     var commitHash: String
     var folder: Folder
-    @State private var commitLog = ""
+    @State private var gitShow = ""
+    private var showMedium: ShowMedium? {
+        do {
+            return try ShowMedium(raw: gitShow)
+        } catch {
+            print(error)
+            return nil
+        }
+    }
     @State private var error: Error?
 
     var body: some View {   
         VStack(spacing: 0) {
             ScrollView {
-                Text(commitLog)
-                    .textSelection(.enabled)
-                    .font(Font.system(.body, design: .monospaced))
-                    .padding()
+                if let model = showMedium {
+                    GitShowMediumView(showMedium: model)
+                        .textSelection(.enabled)
+                        .font(Font.system(.body, design: .monospaced))
+                        .padding()
+                } else {
+                    Text(gitShow)
+                        .textSelection(.enabled)
+                        .font(Font.system(.body, design: .monospaced))
+                        .padding()
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(NSColor.textBackgroundColor))
@@ -27,7 +42,7 @@ struct CommitLogView: View {
         .onChange(of: commitHash, initial: true, {
             Task {
                 do {
-                    commitLog = try await Process.output(GitShow(directory: folder.url, object: commitHash))
+                    gitShow = try await Process.output(GitShow(directory: folder.url, object: commitHash))
                 } catch {
                     self.error = error
                 }

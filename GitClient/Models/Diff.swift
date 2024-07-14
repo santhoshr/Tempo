@@ -13,8 +13,8 @@ struct Diff {
 
     init(raw: String) throws {
         self.raw = raw
-        fileDiffs = try raw.split(separator: "diff").map { fileDiffRaw in
-            guard let fileDiff = FileDiff(raw: String("diff" + fileDiffRaw)) else { throw GenericError(errorDescription: "Parse error")}
+        fileDiffs = try ("\n" + raw).split(separator: "\ndiff").map { fileDiffRaw in
+            let fileDiff = try FileDiff(raw: String("diff" + fileDiffRaw))
             return fileDiff
         }
     }
@@ -49,17 +49,24 @@ struct FileDiff {
         return chunks
     }
 
-    init?(raw: String) {
+    init(raw: String) throws {
         self.raw = raw
         let splited = raw.split(separator: "\n", omittingEmptySubsequences: false).map { String($0) }
         let firstLine = splited.first
-        guard let firstLine else { return nil }
+        guard let firstLine else {
+            throw GenericError(errorDescription: "Parse error for first line in FileDiff")
+        }
         header = firstLine
         let fromFileIndex = splited.firstIndex { $0.hasPrefix("---") }
-        guard let fromFileIndex else { return nil }
+        guard let fromFileIndex else {
+            print("Parse error for fromFileIndex", raw)
+            throw GenericError(errorDescription: "Parse error for fromFileIndex in FileDiff")
+        }
         extendedHeaderLines = splited[1..<fromFileIndex].map { String($0) }
         let toFileIndex = splited.lastIndex { $0.hasPrefix("+++") }
-        guard let toFileIndex else { return nil }
+        guard let toFileIndex else {
+            throw GenericError(errorDescription: "Parse error for toFileIndex in FileDiff")
+        }
         fromFileToFileLines = splited[fromFileIndex...toFileIndex].map { String($0) }
         chunks = Self.extractChunks(from: splited).map { Chunk(raw: $0) }
     }

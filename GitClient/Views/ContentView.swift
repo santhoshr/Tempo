@@ -61,7 +61,7 @@ struct ContentView: View {
         } detail: {
             switch selectionLog {
             case .notCommitted(let string):
-                DiffView(diff: string, folder: selectionFolder!) {
+                CommitView(diff: string, folder: selectionFolder!) {
                     selectionLog = nil
                     folderIsRefresh = true
                 }

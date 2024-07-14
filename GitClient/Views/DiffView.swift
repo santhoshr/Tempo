@@ -2,137 +2,34 @@
 //  DiffView.swift
 //  GitClient
 //
-//  Created by Makoto Aoyama on 2022/10/01.
+//  Created by Makoto Aoyama on 2024/05/26.
 //
 
 import SwiftUI
 
 struct DiffView: View {
-    var diff: String
-    var folder: Folder
-    @State private var commitMessage = ""
-    @State private var error: Error?
-    var onCommit: ()->Void
+    var diff: Diff
 
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                Text(diff)
-                    .textSelection(.enabled)
-                    .font(Font.system(.body, design: .monospaced))
-                    .padding()
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .layoutPriority(1)
-            .background(Color(NSColor.textBackgroundColor))
-            Divider()
-            HStack (spacing:0) {
-                ZStack {
-                    TextEditor(text: $commitMessage)
-                        .padding(8)
-                    if commitMessage.isEmpty {
-                        Text("Enter commit message here")
-                            .foregroundColor(.secondary)
-                            .allowsHitTesting(false)
-                    }
-                }
-                Divider()
-                Button("Commit") {
-                    Task {
-                        do {
-                            try await Process.output(GitAdd(directory: folder.url))
-                            try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
-                            onCommit()
-                        } catch {
-                            self.error = error
-                        }
-                    }
-                }
-                .keyboardShortcut(.init(.return))
-                .errorAlert($error)
-                .disabled(commitMessage.isEmpty)
-                .padding()
-            }
-            .frame(height: 100)
-            .background(Color(NSColor.textBackgroundColor))
-        }
+        Text(diff.raw)
     }
 }
 
-struct DiffView_Previews: PreviewProvider {
-    static var previews: some View {
-        DiffView(diff: """
-diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
-index 0cd5c16..114b4ae 100644
---- a/GitClient/Views/DiffView.swift
-+++ b/GitClient/Views/DiffView.swift
-@@ -11,11 +11,25 @@ struct DiffView: View {
-     var diff: String
-
-     var body: some View {
--        ScrollView {
--            Text(diff)
--                .font(Font.system(.body, design: .monospaced))
--                .frame(maxWidth: .infinity, alignment: .leading)
--                .padding()
-+        ZStack {
-+            ScrollView {
-+                Text(diff)
-+                    .textSelection(.enabled)
-+                    .font(Font.system(.body, design: .monospaced))
-+                    .frame(maxWidth: .infinity, alignment: .leading)
-+                    .padding()
-+            }
-+            VStack {
-+                Spacer()
-+                HStack {
-+                    Spacer()
-+                    Button("Commit") {
-+
-+                    }
-+                    .padding()
-+                }
-+                .background(.ultraThinMaterial)
-+            }
-         }
-     }
- }
-diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
-index 0cd5c16..114b4ae 100644
---- a/GitClient/Views/DiffView.swift
-+++ b/GitClient/Views/DiffView.swift
-@@ -11,11 +11,25 @@ struct DiffView: View {
-     var diff: String
-
-     var body: some View {
--        ScrollView {
--            Text(diff)
--                .font(Font.system(.body, design: .monospaced))
--                .frame(maxWidth: .infinity, alignment: .leading)
--                .padding()
-+        ZStack {
-+            ScrollView {
-+                Text(diff)
-+                    .textSelection(.enabled)
-+                    .font(Font.system(.body, design: .monospaced))
-+                    .frame(maxWidth: .infinity, alignment: .leading)
-+                    .padding()
-+            }
-+            VStack {
-+                Spacer()
-+                HStack {
-+                    Spacer()
-+                    Button("Commit") {
-+
-+                    }
-+                    .padding()
-+                }
-+                .background(.ultraThinMaterial)
-+            }
-         }
-     }
- }
-
-""", folder: .init(url: .init(string: "file:///maoyama")!), onCommit: {})
-    }
+#Preview {
+    let text = """
+diff --git a/GitClient.xcodeproj/project.pbxproj b/GitClient.xcodeproj/project.pbxproj
+index 96134c5..46cd844 100644
+--- a/GitClient.xcodeproj/project.pbxproj
++++ b/GitClient.xcodeproj/project.pbxproj
+@@ -41,7 +41,7 @@
+                61E290D328E1EFC600BCEB04 /* GitDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290D228E1EFC600BCEB04 /* GitDiff.swift */; };
+                61E290D528E1F05000BCEB04 /* GitDiffCached.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290D428E1F05000BCEB04 /* GitDiffCached.swift */; };
+                61E290D728E5D84100BCEB04 /* GitPush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290D628E5D84100BCEB04 /* GitPush.swift */; };
+-               61E290DB28E7C66300BCEB04 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290DA28E7C66200BCEB04 /* DiffView.swift */; };
++               61E290DB28E7C66300BCEB04 /* CommitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290DA28E7C66200BCEB04 /* CommitView.swift */; };
+                61EBD7CF28E922510009ED92 /* GitBranch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBD7CE28E922510009ED92 /* GitBranch.swift */; };
+                61EBD7D128E940C30009ED92 /* Branch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBD7D028E940C30009ED92 /* Branch.swift */; };
+                61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBD7D228E966190009ED92 /* GitSwitch.swift */; };
+"""
+    return DiffView(diff: try! Diff(raw: text))
 }

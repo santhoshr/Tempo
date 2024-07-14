@@ -45,7 +45,7 @@ index ca7d6df..b9d9984 100644
 
 """
         )
-        XCTAssertEqual(showMedium.diff.raw, """
+        XCTAssertEqual(showMedium.diff?.raw, """
 diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 index ca7d6df..b9d9984 100644
 --- a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
@@ -62,4 +62,28 @@ index ca7d6df..b9d9984 100644
 """
         )
     }
+
+    func testInitForMarge() throws {
+        let raw = """
+commit da82a43b5d274fecbf8e02b64b4e6298caab8709
+Merge: 1506e13 b842015
+Author: Makoto Aoyama <m@aoyama.dev>
+Date:   Fri Mar 1 23:54:45 2024 +0900
+
+    Merge branch 'main' of github.com:maoyama/GitClient
+
+"""
+        let showMedium = try ShowMedium(raw: raw)
+        XCTAssertEqual(showMedium.commitHash, "commit da82a43b5d274fecbf8e02b64b4e6298caab8709")
+        XCTAssertEqual(showMedium.author, "Author: Makoto Aoyama <m@aoyama.dev>")
+        XCTAssertEqual(showMedium.date, "Date:   Fri Mar 1 23:54:45 2024 +0900")
+        XCTAssertEqual(showMedium.commitMessage, """
+
+    Merge branch 'main' of github.com:maoyama/GitClient
+
+"""
+        )
+        XCTAssertNil(showMedium.diff)
+    }
+
 }

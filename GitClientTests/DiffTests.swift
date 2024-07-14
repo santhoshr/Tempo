@@ -96,8 +96,8 @@ index ec290b6..46b0c19 100644
         XCTAssertEqual(diff.raw, diff.fileDiffs[0].raw + diff.fileDiffs[1].raw)
     }
 
-    func testFileDiffInit() {
-        let fileDiff = FileDiff(raw: """
+    func testFileDiffInit() throws {
+        let fileDiff = try FileDiff(raw: """
 diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 index ca7d6df..b9d9984 100644
 --- a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
@@ -122,7 +122,7 @@ index ca7d6df..b9d9984 100644
      static var previews: some View {
          Group {
 """
-        )!
+        )
 
         XCTAssertEqual(fileDiff.header, "diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved")
         XCTAssertEqual(fileDiff.extendedHeaderLines.count, 1)
@@ -156,6 +156,25 @@ index ca7d6df..b9d9984 100644
          Group {
 """
         )
+    }
+
+    func testFileDiffInit2() throws {
+let raw = """
+diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
+index 347796e..df0715b 100644
+--- a/GitClient/Views/DiffView.swift
++++ b/GitClient/Views/DiffView.swift
+@@ -59,7 +59,6 @@ struct DiffView: View {
+  }
+}
+
+-
+struct DiffView_Previews: PreviewProvider {
+  static var previews: some View {
+
+"""
+        let fileDiff = try FileDiff(raw: raw)
+        XCTAssertEqual(fileDiff.raw, raw)
     }
 
     func testChunkInit() {

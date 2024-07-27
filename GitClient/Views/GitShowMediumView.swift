@@ -22,11 +22,14 @@ struct GitShowMediumView: View {
             if let fileDiffs = showMedium.diff?.fileDiffs {
                 ForEach(fileDiffs) { fileDiff in
                     Text(fileDiff.header)
+                        .fontWeight(.bold)
                     ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
                         Text(line)
+                            .fontWeight(.bold)
                     }
                     ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
                         Text(line)
+                            .fontWeight(.bold)
                     }
                     ForEach(fileDiff.chunks) { chunk in
                         ForEach(chunk.lines) { line in

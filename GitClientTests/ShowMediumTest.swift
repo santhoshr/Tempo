@@ -86,4 +86,8 @@ Date:   Fri Mar 1 23:54:45 2024 +0900
         XCTAssertNil(showMedium.diff)
     }
 
+    func testInitForNewFile() throws {
+        let raw = """
+"""
+    }
 }

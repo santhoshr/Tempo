@@ -31,14 +31,25 @@ struct GitShowMediumView: View {
                         Text(line)
                             .fontWeight(.bold)
                     }
-                    ForEach(fileDiff.chunks) { chunk in
-                        ForEach(chunk.lines) { line in
-                            Text(line.raw)
-                                .foregroundStyle(chunkLineColor(line))
-                        }
-                    }
+                    chunksViews(fileDiff.chunks)
                 }
             }
+        }
+    }
+
+    // to be able to select multiple lines of text
+    private func chunksViews(_ chunks: [Chunk]) -> Text {
+        let views = chunks.map { chunk in
+            let chunksText = chunk.lines.map { line in
+                Text(line.raw)
+                    .foregroundStyle(chunkLineColor(line))
+            }
+            return chunksText.reduce(Text("")) { partialResult, text in
+                partialResult + text + Text("\n")
+            }
+        }
+        return views.reduce(Text("")) { partialResult, text in
+            partialResult + text
         }
     }
 

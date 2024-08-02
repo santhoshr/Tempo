@@ -12,14 +12,55 @@ struct GitShowMediumView: View {
     var body: some View {
         VStack (alignment: .leading) {
             Text(showMedium.commitHash)
-                .foregroundStyle(.yellow)
+                .foregroundStyle(.orange)
             if let merge = showMedium.merge {
                 Text(merge)
             }
             Text(showMedium.author)
             Text(showMedium.date)
             Text(showMedium.commitMessage)
-            Text(showMedium.diff?.raw ?? "")
+            if let fileDiffs = showMedium.diff?.fileDiffs {
+                ForEach(fileDiffs) { fileDiff in
+                    Text(fileDiff.header)
+                        .fontWeight(.bold)
+                    ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
+                        Text(line)
+                            .fontWeight(.bold)
+                    }
+                    ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
+                        Text(line)
+                            .fontWeight(.bold)
+                    }
+                    chunksViews(fileDiff.chunks)
+                }
+            }
+        }
+    }
+
+    // to be able to select multiple lines of text
+    private func chunksViews(_ chunks: [Chunk]) -> Text {
+        let views = chunks.map { chunk in
+            let chunksText = chunk.lines.map { line in
+                Text(line.raw)
+                    .foregroundStyle(chunkLineColor(line))
+            }
+            return chunksText.reduce(Text("")) { partialResult, text in
+                partialResult + text + Text("\n")
+            }
+        }
+        return views.reduce(Text("")) { partialResult, text in
+            partialResult + text
+        }
+    }
+
+    private func chunkLineColor(_ line: Chunk.Line) -> Color {
+        switch line.kind {
+        case .removed:
+            return .red
+        case .added:
+            return .green
+        case .unchanged:
+            return .primary
         }
     }
 }
@@ -51,6 +92,8 @@ index ca7d6df..b9d9984 100644
 """
     )
     return GitShowMediumView(showMedium: model)
+        .background(Color(NSColor.textBackgroundColor))
+
 }
 
 #Preview("Merge commit") {

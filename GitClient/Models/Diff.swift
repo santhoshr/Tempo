@@ -20,7 +20,8 @@ struct Diff {
     }
 }
 
-struct FileDiff {
+struct FileDiff: Identifiable {
+    var id: String { raw }
     var header: String
     var extendedHeaderLines: [String]
     var fromFileToFileLines: [String]
@@ -57,13 +58,13 @@ struct FileDiff {
             throw GenericError(errorDescription: "Parse error for first line in FileDiff")
         }
         header = firstLine
-        let fromFileIndex = splited.firstIndex { $0.hasPrefix("---") }
+        let fromFileIndex = splited.firstIndex { $0.hasPrefix("--- ") }
         guard let fromFileIndex else {
             print("Parse error for fromFileIndex", raw)
             throw GenericError(errorDescription: "Parse error for fromFileIndex in FileDiff")
         }
         extendedHeaderLines = splited[1..<fromFileIndex].map { String($0) }
-        let toFileIndex = splited.lastIndex { $0.hasPrefix("+++") }
+        let toFileIndex = splited.lastIndex { $0.hasPrefix("+++ ") }
         guard let toFileIndex else {
             throw GenericError(errorDescription: "Parse error for toFileIndex in FileDiff")
         }
@@ -72,12 +73,12 @@ struct FileDiff {
     }
 }
 
-struct Chunk {
-    struct Line {
+struct Chunk: Identifiable {
+    struct Line: Identifiable {
         enum Kind {
             case removed, added, unchanged
         }
-        
+        var id: Int
         var kind: Kind {
             switch raw.first {
             case "-":
@@ -92,16 +93,17 @@ struct Chunk {
         }
         var raw: String
 
-        init(raw: String) {
+        init(id: Int, raw: String) {
+            self.id = id
             self.raw = raw
         }
     }
-
+    var id: String { raw }
     var lines: [Line]
     var raw: String
 
     init(raw: String) {
         self.raw = raw
-        self.lines = raw.split(separator: "\n").map { Line(raw: String($0)) }
+        self.lines = raw.split(separator: "\n").enumerated().map { Line(id: $0.offset, raw: String($0.element)) }
     }
 }

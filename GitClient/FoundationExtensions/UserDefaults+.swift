@@ -10,6 +10,7 @@ import Foundation
 extension UserDefaults {
     enum Key: String {
         case folder
+        case messageTemplate
     }
 
     func data(forKey key: UserDefaults.Key) -> Data? {

@@ -11,18 +11,21 @@ struct GitShowMediumView: View {
     var showMedium: ShowMedium
 
     var body: some View {
-        VStack (alignment: .leading) {
-            Text(showMedium.commitHash)
-                .foregroundStyle(.orange)
-            if let merge = showMedium.merge {
-                Text(merge)
+        HStack {
+            VStack (alignment: .leading) {
+                Text(showMedium.commitHash)
+                    .foregroundStyle(.orange)
+                if let merge = showMedium.merge {
+                    Text(merge)
+                }
+                Text(showMedium.author)
+                Text(showMedium.date)
+                Text(showMedium.commitMessage)
+                if let fileDiffs = showMedium.diff?.fileDiffs {
+                    FileDiffsView(fileDiffs: fileDiffs)
+                }
             }
-            Text(showMedium.author)
-            Text(showMedium.date)
-            Text(showMedium.commitMessage)
-            if let fileDiffs = showMedium.diff?.fileDiffs {
-                FileDiffsView(fileDiffs: fileDiffs)
-            }
+            Spacer()
         }
     }
 }

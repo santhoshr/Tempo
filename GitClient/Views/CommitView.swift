@@ -18,10 +18,13 @@ struct CommitView: View {
         VStack(spacing: 0) {
             ScrollView {
                 if let diff = try? Diff(raw: diff) {
-                    VStack(alignment: .leading) {
-                        DiffView(diff: diff)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            DiffView(diff: diff)
+                        }
+                        .padding()
+                        Spacer()
                     }
-                    .padding()
                 } else {
                     Text(diff)
                         .padding()

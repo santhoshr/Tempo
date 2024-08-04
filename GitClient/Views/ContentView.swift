@@ -20,9 +20,19 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            List(folders, id: \.url, selection: $selectionFolderURL) {
-                Text($0.displayName)
-                    .help($0.url.path)
+            List(folders, id: \.url, selection: $selectionFolderURL) { folder in
+                Text(folder.displayName)
+                    .help(folder.url.path)
+                    .contextMenu {
+                        Button("Delete") {
+                            folders.removeAll { $0 == folder }
+                            do {
+                                try FolderStore.save(folders)
+                            } catch {
+                                self.error = error
+                            }
+                        }
+                    }
             }
             .toolbar {
                 ToolbarItemGroup {

@@ -20,9 +20,8 @@ struct MessageTemplateStore {
     }
 
     static func save(_ messageTemplate: [MessageTemplate]) throws {
-        let prefix = Array(messageTemplate.prefix(100))
         let encoder = JSONEncoder()
-        let encoded = try encoder.encode(prefix)
+        let encoded = try encoder.encode(messageTemplate)
         defaults.set(encoded, forKey: .messageTemplate)
     }
 }

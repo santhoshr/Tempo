@@ -11,7 +11,7 @@ struct DiffView: View {
     var diff: Diff
 
     var body: some View {
-        Text(diff.raw)
+        FileDiffsView(fileDiffs: diff.fileDiffs)
     }
 }
 

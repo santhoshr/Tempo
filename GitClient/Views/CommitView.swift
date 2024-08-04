@@ -17,11 +17,18 @@ struct CommitView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                Text(diff)
-                    .textSelection(.enabled)
-                    .font(Font.system(.body, design: .monospaced))
+                if let diff = try? Diff(raw: diff) {
+                    VStack(alignment: .leading) {
+                        DiffView(diff: diff)
+                    }
                     .padding()
+                } else {
+                    Text(diff)
+                        .padding()
+                }
             }
+            .textSelection(.enabled)
+            .font(Font.system(.body, design: .monospaced))
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))

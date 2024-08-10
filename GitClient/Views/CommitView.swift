@@ -36,14 +36,68 @@ struct CommitView: View {
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))
             Divider()
-            HStack (spacing:0) {
-                ZStack {
-                    TextEditor(text: $commitMessage)
-                        .padding(8)
-                    if commitMessage.isEmpty {
-                        Text("Enter commit message here")
-                            .foregroundColor(.secondary)
-                            .allowsHitTesting(false)
+            HStack(spacing: 0) {
+                VStack(spacing: 2) {
+                    ZStack {
+                            TextEditor(text: $commitMessage)
+                                .padding(8)
+                            if commitMessage.isEmpty {
+                                Text("Enter commit message here")
+                                    .foregroundColor(.secondary)
+                                    .allowsHitTesting(false)
+                            }
+                    }
+                    .frame(height: 80)
+
+                    HStack(spacing: 0) {
+                        ScrollView(.horizontal) {
+                            LazyHStack {
+                                Button("Tweaks") {
+
+                                }
+                                .buttonStyle(.borderless)
+                                Text("|")
+                                    .foregroundStyle(.separator)
+                                Button("Fix lint warnings") {
+
+                                }
+                                .buttonStyle(.borderless)
+                                Text("|")
+                                    .foregroundStyle(.separator)
+                                Button("Fix lint warnings") {
+
+                                }
+                                .buttonStyle(.borderless)
+                                Text("|")
+                                    .foregroundStyle(.separator)
+                                Button("Fix lint warnings") {
+
+                                }
+                                .buttonStyle(.borderless)
+                                Text("|")
+                                    .foregroundStyle(.separator)
+                                Button("Fix lint warnings") {
+
+                                }
+                                .buttonStyle(.borderless)
+                                Text("|")
+                                    .foregroundStyle(.separator)
+                                Button("Fix lint warnings") {
+
+                                }
+                                .buttonStyle(.borderless)
+
+                            }
+                            .padding(.leading, 14)
+                        }
+                        .frame(height: 44)
+                        Button(action: {
+
+                        }, label: {
+                            Image(systemName: "list.dash")
+                        })
+                        .padding([.horizontal], 14)
+
                     }
                 }
                 Divider()
@@ -63,7 +117,6 @@ struct CommitView: View {
                 .disabled(commitMessage.isEmpty)
                 .padding()
             }
-            .frame(height: 100)
             .background(Color(NSColor.textBackgroundColor))
         }
     }

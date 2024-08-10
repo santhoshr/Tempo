@@ -9,7 +9,6 @@ import SwiftUI
 import Collections
 
 struct CommitMessageSuggestionView: View {
-    @State private var messageTemplates = OrderedSet<MessageTemplate>()
     @State private var error: Error?
     @State private var isPresenting = false
     var onSelect: (String) -> Void
@@ -49,13 +48,6 @@ struct CommitMessageSuggestionView: View {
                 Image(systemName: "list.dash")
             })
             .padding([.horizontal], 14)
-        }
-        .onAppear {
-            do {
-                messageTemplates = try MessageTemplateStore.messageTemplates()
-            } catch {
-                self.error = error
-            }
         }
         .errorAlert($error)
     }

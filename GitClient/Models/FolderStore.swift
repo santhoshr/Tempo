@@ -7,21 +7,21 @@
 
 import Foundation
 
-struct FolderStore {
-    static let defaults = UserDefaults.standard
-
-    static func folders() throws -> [Folder] {
-        guard let data = defaults.data(forKey: .folder) else
-             {
-            throw GenericError(errorDescription: "The data object associated with the specified key, or nil if the key does not exist or its value is not a data object.")
-        }
-        let decoder = JSONDecoder()
-        return try decoder.decode([Folder].self, from: data)
-    }
-
-    static func save(_ folders: [Folder]) throws {
-        let encoder = JSONEncoder()
-        let encoded = try encoder.encode(folders)
-        defaults.set(encoded, forKey: .folder)
-    }
-}
+//struct FolderStore {
+//    static let defaults = UserDefaults.standard
+//
+//    static func folders() throws -> [Folder] {
+//        guard let data = defaults.data(forKey: .folder) else
+//             {
+//            throw GenericError(errorDescription: "The data object associated with the specified key, or nil if the key does not exist or its value is not a data object.")
+//        }
+//        let decoder = JSONDecoder()
+//        return try decoder.decode([Folder].self, from: data)
+//    }
+//
+//    static func save(_ folders: [Folder]) throws {
+//        let encoder = JSONEncoder()
+//        let encoded = try encoder.encode(folders)
+//        defaults.set(encoded, forKey: .folder)
+//    }
+//}

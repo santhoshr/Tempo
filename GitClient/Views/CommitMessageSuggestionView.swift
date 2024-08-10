@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import Collections
 
 struct CommitMessageSuggestionView: View {
-    @State private var messageTemplates: [MessageTemplate] = []
+    @State private var messageTemplates = OrderedSet<MessageTemplate>()
     @State private var error: Error?
 
     var body: some View {
@@ -20,8 +21,11 @@ struct CommitMessageSuggestionView: View {
 
                         }
                         .buttonStyle(.borderless)
-                        Text("|")
-                            .foregroundStyle(.separator)
+                        if template != messageTemplates.last {
+                            Text("|")
+                                .foregroundStyle(.separator)
+
+                        }
                     }
                 }
                 .padding(.leading, 14)

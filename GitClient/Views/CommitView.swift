@@ -12,7 +12,7 @@ struct CommitView: View {
     var folder: Folder
     @State private var commitMessage = ""
     @State private var error: Error?
-    var onCommit: ()->Void
+    var onCommit: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -48,7 +48,9 @@ struct CommitView: View {
                             }
                     }
                     .frame(height: 80)
-                    CommitMessageSuggestionView()
+                    CommitMessageSuggestionView { message in
+                        commitMessage = message
+                    }
                 }
                 Divider()
                 Button("Commit") {

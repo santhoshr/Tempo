@@ -11,6 +11,7 @@ import Collections
 struct CommitMessageSuggestionView: View {
     @State private var messageTemplates = OrderedSet<MessageTemplate>()
     @State private var error: Error?
+    var onSelect: (String) -> Void
 
     var body: some View {
         HStack(spacing: 0) {
@@ -18,7 +19,7 @@ struct CommitMessageSuggestionView: View {
                 LazyHStack {
                     ForEach(messageTemplates) { template in
                         Button(template.message) {
-
+                            onSelect(template.message)
                         }
                         .buttonStyle(.borderless)
                         if template != messageTemplates.last {
@@ -50,5 +51,5 @@ struct CommitMessageSuggestionView: View {
 }
 
 #Preview {
-    CommitMessageSuggestionView()
+    CommitMessageSuggestionView { print($0) }
 }

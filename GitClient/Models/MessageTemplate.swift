@@ -7,6 +7,7 @@
 
 import Foundation
 
-struct MessageTemplate: Hashable, Codable {
+struct MessageTemplate: Hashable, Codable, Identifiable {
+    var id: String { message }
     var message: String
 }

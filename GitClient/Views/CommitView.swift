@@ -48,57 +48,7 @@ struct CommitView: View {
                             }
                     }
                     .frame(height: 80)
-
-                    HStack(spacing: 0) {
-                        ScrollView(.horizontal) {
-                            LazyHStack {
-                                Button("Tweaks") {
-
-                                }
-                                .buttonStyle(.borderless)
-                                Text("|")
-                                    .foregroundStyle(.separator)
-                                Button("Fix lint warnings") {
-
-                                }
-                                .buttonStyle(.borderless)
-                                Text("|")
-                                    .foregroundStyle(.separator)
-                                Button("Fix lint warnings") {
-
-                                }
-                                .buttonStyle(.borderless)
-                                Text("|")
-                                    .foregroundStyle(.separator)
-                                Button("Fix lint warnings") {
-
-                                }
-                                .buttonStyle(.borderless)
-                                Text("|")
-                                    .foregroundStyle(.separator)
-                                Button("Fix lint warnings") {
-
-                                }
-                                .buttonStyle(.borderless)
-                                Text("|")
-                                    .foregroundStyle(.separator)
-                                Button("Fix lint warnings") {
-
-                                }
-                                .buttonStyle(.borderless)
-
-                            }
-                            .padding(.leading, 14)
-                        }
-                        .frame(height: 44)
-                        Button(action: {
-
-                        }, label: {
-                            Image(systemName: "list.dash")
-                        })
-                        .padding([.horizontal], 14)
-
-                    }
+                    CommitMessageSuggestionView()
                 }
                 Divider()
                 Button("Commit") {

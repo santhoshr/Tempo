@@ -11,7 +11,7 @@ struct MessageTemplateStore {
     static let defaults = UserDefaults.standard
 
     static func messageTemplates() throws -> [MessageTemplate] {
-        guard let data = defaults.data(forKey: .folder) else
+        guard let data = defaults.data(forKey: .messageTemplate) else
              {
             throw GenericError(errorDescription: "The data object associated with the specified key, or nil if the key does not exist or its value is not a data object.")
         }

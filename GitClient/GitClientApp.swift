@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import Collections
 
 @main
 struct GitClientApp: App {
     @AppStorage (UserDefaults.Key.initialConfigurationIsComplete.rawValue) var initialConfigurationIsComplete = false
+    @AppStorage (UserDefaults.Key.messageTemplate.rawValue) var messageTemplate: Data?
 
     var body: some Scene {
         WindowGroup {
@@ -24,7 +26,20 @@ struct GitClientApp: App {
                 }
         }
         Window("Commit Message Template", id: "messageTemplate") {
-            Text("Hello")
+            if let data = messageTemplate, let templates = try? MessageTemplateStore.messageTemplates(data: data) {
+                List {
+                    ForEach(templates) {
+                        Text($0.message)
+                    }
+                    .onMove(perform: { indices, newOffset in
+                        print(indices)
+                        print(newOffset)
+                        var t = Array(templates)
+                        t.move(fromOffsets: indices, toOffset: newOffset)
+                        try? MessageTemplateStore.save(OrderedSet(t))
+                    })
+                }
+            }
         }
     }
 }

@@ -20,6 +20,11 @@ struct MessageTemplateStore {
         return try decoder.decode(OrderedSet<MessageTemplate>.self, from: data)
     }
 
+    static func messageTemplates(data: Data) throws -> OrderedSet<MessageTemplate> {
+        let decoder = JSONDecoder()
+        return try decoder.decode(OrderedSet<MessageTemplate>.self, from: data)
+    }
+
     static func save(_ messageTemplates: OrderedSet<MessageTemplate>) throws {
         let encoder = JSONEncoder()
         let encoded = try encoder.encode(messageTemplates)

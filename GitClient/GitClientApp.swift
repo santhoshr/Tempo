@@ -23,5 +23,8 @@ struct GitClientApp: App {
                     initialConfigurationIsComplete = true
                 }
         }
+        Window("Commit Message Template", id: "messageTemplate") {
+            Text("Hello")
+        }
     }
 }

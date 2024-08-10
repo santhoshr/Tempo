@@ -11,7 +11,9 @@ import Collections
 struct CommitMessageSuggestionView: View {
     @State private var messageTemplates = OrderedSet<MessageTemplate>()
     @State private var error: Error?
+    @State private var isPresenting = false
     var onSelect: (String) -> Void
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         HStack(spacing: 0) {
@@ -32,7 +34,7 @@ struct CommitMessageSuggestionView: View {
             }
             .frame(height: 44)
             Button(action: {
-
+                openWindow(id: "messageTemplate")
             }, label: {
                 Image(systemName: "list.dash")
             })

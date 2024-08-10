@@ -22,3 +22,12 @@ extension UserDefaults {
         set(value, forKey: key.rawValue)
     }
 }
+
+enum AppStorageKey: String {
+    case folder
+    case commitMessageTemplate
+}
+
+struct AppStorageDefaults {
+    static let commitMessageTemplate = try! JSONEncoder().encode(["Tweaks", "Fix lint warnings"])
+}

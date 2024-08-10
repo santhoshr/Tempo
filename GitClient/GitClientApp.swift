@@ -10,35 +10,33 @@ import Collections
 
 @main
 struct GitClientApp: App {
-    @AppStorage (UserDefaults.Key.initialConfigurationIsComplete.rawValue) var initialConfigurationIsComplete = false
-    @AppStorage (UserDefaults.Key.messageTemplate.rawValue) var messageTemplate: Data?
+    @AppStorage (AppStorageKey.commitMessageTemplate.rawValue) var commitMessageTemplate: Data = AppStorageDefaults.commitMessageTemplate
+    var decodedCommitMessageTemplates: OrderedSet<String> {
+        do {
+            return try JSONDecoder().decode(OrderedSet<String>.self, from: commitMessageTemplate)
+        } catch {
+            return []
+        }
+    }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear {
-                    guard !initialConfigurationIsComplete else { return }
-                    try? MessageTemplateStore.save([
-                        .init(message: "Tweaks"),
-                        .init(message: "Fix lint warnings")
-                    ])
-                    initialConfigurationIsComplete = true
-                }
         }
         Window("Commit Message Template", id: "messageTemplate") {
-            if let data = messageTemplate, let templates = try? MessageTemplateStore.messageTemplates(data: data) {
-                List {
-                    ForEach(templates) {
-                        Text($0.message)
-                    }
-                    .onMove(perform: { indices, newOffset in
-                        print(indices)
-                        print(newOffset)
-                        var t = Array(templates)
-                        t.move(fromOffsets: indices, toOffset: newOffset)
-                        try? MessageTemplateStore.save(OrderedSet(t))
-                    })
+            List {
+                ForEach(decodedCommitMessageTemplates, id: \.self) {
+                    Text($0)
                 }
+                .onMove(perform: { indices, newOffset in
+                    var t = Array(decodedCommitMessageTemplates)
+                    t.move(fromOffsets: indices, toOffset: newOffset)
+                    do {
+                        commitMessageTemplate = try JSONEncoder().encode(t)
+                    } catch {
+                        print(error)
+                    }
+                })
             }
         }
     }

@@ -14,23 +14,27 @@ struct CommitMessageSuggestionView: View {
     @State private var isPresenting = false
     var onSelect: (String) -> Void
     @Environment(\.openWindow) private var openWindow
-    @AppStorage (UserDefaults.Key.messageTemplate.rawValue) var messageTemplate: Data?
-    var commitMessageTemplate: OrderedSet<MessageTemplate> {
-        guard let messageTemplate = messageTemplate else { return [] }
-        guard let m = try? MessageTemplateStore.messageTemplates(data: messageTemplate) else { return [] }
-        return m
+    @AppStorage (AppStorageKey.commitMessageTemplate.rawValue) var commitMessageTemplate: Data = AppStorageDefaults.commitMessageTemplate
+    var decodedCommitMessageTemplate: Array<String> {
+        do {
+            do {
+                return try JSONDecoder().decode(Array<String>.self, from: commitMessageTemplate)
+            } catch {
+                return []
+            }
+        }
     }
 
     var body: some View {
         HStack(spacing: 0) {
             ScrollView(.horizontal) {
                 LazyHStack {
-                    ForEach(commitMessageTemplate) { template in
-                        Button(template.message) {
-                            onSelect(template.message)
+                    ForEach(decodedCommitMessageTemplate, id: \.self) { template in
+                        Button(template) {
+                            onSelect(template)
                         }
                         .buttonStyle(.borderless)
-                        if template != commitMessageTemplate.last {
+                        if template != decodedCommitMessageTemplate.last {
                             Text("|")
                                 .foregroundStyle(.separator)
                         }

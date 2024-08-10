@@ -11,6 +11,7 @@ extension UserDefaults {
     enum Key: String {
         case folder
         case messageTemplate
+        case initialConfigurationIsComplete
     }
 
     func data(forKey key: UserDefaults.Key) -> Data? {

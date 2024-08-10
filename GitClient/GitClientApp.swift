@@ -9,9 +9,19 @@ import SwiftUI
 
 @main
 struct GitClientApp: App {
+    @AppStorage (UserDefaults.Key.initialConfigurationIsComplete.rawValue) var initialConfigurationIsComplete = false
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    guard !initialConfigurationIsComplete else { return }
+                    try? MessageTemplateStore.save([
+                        .init(message: "Tweaks"),
+                        .init(message: "Fix lint warnings")
+                    ])
+                    initialConfigurationIsComplete = true
+                }
         }
     }
 }

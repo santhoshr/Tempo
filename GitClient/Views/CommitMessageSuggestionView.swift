@@ -25,7 +25,6 @@ struct CommitMessageSuggestionView: View {
                         if template != messageTemplates.last {
                             Text("|")
                                 .foregroundStyle(.separator)
-
                         }
                     }
                 }

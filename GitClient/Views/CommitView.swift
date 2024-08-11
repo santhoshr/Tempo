@@ -59,7 +59,11 @@ struct CommitView: View {
                         Task {
                             do {
                                 try await Process.output(GitAdd(directory: folder.url))
-                                try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
+                                if isAmend {
+                                    try await Process.output(GitCommitAmend(directory: folder.url, message: commitMessage))
+                                } else {
+                                    try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
+                                }
                                 onCommit()
                             } catch {
                                 self.error = error

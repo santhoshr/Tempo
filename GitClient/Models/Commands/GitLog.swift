@@ -23,7 +23,6 @@ struct GitLog: Git {
 
     func parse(for stdOut: String) throws -> [Commit] {
         let logs = stdOut.components(separatedBy: String.formatSeparator + "\n")
-        print(logs)
         return logs.map { log in
             let separated = log.components(separatedBy: String.formatSeparator)
             return Commit(

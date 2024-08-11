@@ -42,7 +42,7 @@ struct CommitMessageSuggestionView: View {
             }
             .frame(height: 44)
             Button(action: {
-                openWindow(id: WindowID.commitMessageTemplate.rawValue)
+                openWindow(id: WindowID.commitMessageTemplates.rawValue)
             }, label: {
                 Image(systemName: "list.dash")
             })

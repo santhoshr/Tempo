@@ -8,5 +8,5 @@
 import Foundation
 
 enum WindowID: String {
-    case commitMessageTemplate
+    case commitMessageTemplates
 }

@@ -12,7 +12,7 @@ struct CommitView: View {
     var folder: Folder
     @State private var commitMessage = ""
     @State private var error: Error?
-    var onCommit: ()->Void
+    var onCommit: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,15 +36,20 @@ struct CommitView: View {
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))
             Divider()
-            HStack (spacing:0) {
-                ZStack {
-                    TextEditor(text: $commitMessage)
-                        .padding(8)
-                    if commitMessage.isEmpty {
-                        Text("Enter commit message here")
-                            .foregroundColor(.secondary)
-                            .allowsHitTesting(false)
+            HStack(spacing: 0) {
+                VStack(spacing: 2) {
+                    ZStack {
+                            TextEditor(text: $commitMessage)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 8)
+                            if commitMessage.isEmpty {
+                                Text("Enter commit message here")
+                                    .foregroundColor(.secondary)
+                                    .allowsHitTesting(false)
+                            }
                     }
+                    .frame(height: 80)
+                    CommitMessageSuggestionView()
                 }
                 Divider()
                 Button("Commit") {
@@ -63,8 +68,12 @@ struct CommitView: View {
                 .disabled(commitMessage.isEmpty)
                 .padding()
             }
-            .frame(height: 100)
             .background(Color(NSColor.textBackgroundColor))
+            .onReceive(NotificationCenter.default.publisher(for: .didSelectCommitMessageTemplateNotification), perform: { notification in
+                if let commitMessage = notification.object as? String {
+                    self.commitMessage = commitMessage
+                }
+            })
         }
     }
 }

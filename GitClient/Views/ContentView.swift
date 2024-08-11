@@ -8,11 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var folders: [Folder] = []
+    @AppStorage (AppStorageKey.folder.rawValue) var folders: Data?
+    private var decodedFolders: [Folder] {
+        guard let folders else { return [] }
+        do {
+           return try JSONDecoder().decode([Folder].self, from: folders)
+        } catch {
+            return []
+        }
+    }
     @State private var selectionFolderURL: URL?
     private var selectionFolder: Folder? {
         guard let selectionFolderURL = selectionFolderURL else { return nil}
-        return folders.first(where: { $0.url == selectionFolderURL })
+        return decodedFolders.first(where: { $0.url == selectionFolderURL })
     }
     @State private var selectionLog: Log?
     @State private var folderIsRefresh = false
@@ -20,14 +28,15 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            List(folders, id: \.url, selection: $selectionFolderURL) { folder in
+            List(decodedFolders, id: \.url, selection: $selectionFolderURL) { folder in
                 Text(folder.displayName)
                     .help(folder.url.path)
                     .contextMenu {
                         Button("Delete") {
+                            var folders = decodedFolders
                             folders.removeAll { $0 == folder }
                             do {
-                                try FolderStore.save(folders)
+                                try self.folders = JSONEncoder().encode(folders)
                             } catch {
                                 self.error = error
                             }
@@ -45,10 +54,11 @@ struct ContentView: View {
                             if response == .OK {
                                 for fileURL in panel.urls {
                                     let chooseFolder = Folder(url: fileURL)
+                                    var folders = decodedFolders
                                     folders.removeAll { $0 == chooseFolder }
                                     folders.insert(chooseFolder, at: 0)
                                     do {
-                                        try FolderStore.save(folders)
+                                        try self.folders = JSONEncoder().encode(folders)
                                     } catch {
                                         self.error = error
                                     }
@@ -83,13 +93,6 @@ struct ContentView: View {
             }
         }
         .frame(minWidth: 700, minHeight: 300)
-        .onAppear {
-            do {
-                folders = try FolderStore.folders()
-            } catch {
-                self.error = error
-            }
-        }
         .onChange(of: selectionFolder, {
             selectionLog = nil
         })

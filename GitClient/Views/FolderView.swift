@@ -37,7 +37,7 @@ struct FolderView: View {
         .onChange(of: selectionLogID, {
             selectionLog = logs.first { $0.id == selectionLogID }
         })
-        .onChange(of:selectionLog, {
+        .onChange(of: selectionLog, {
             if selectionLog == nil {
                 selectionLogID = nil
             }

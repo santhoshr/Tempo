@@ -53,6 +53,7 @@
 		61FAF4962C684569000B7ACB /* Notification+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FAF4952C684569000B7ACB /* Notification+.swift */; };
 		61FAF4982C688111000B7ACB /* AppStorageKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FAF4972C688111000B7ACB /* AppStorageKey.swift */; };
 		61FAF49A2C68812F000B7ACB /* AppStorageDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FAF4992C68812F000B7ACB /* AppStorageDefaults.swift */; };
+		61FAF49C2C688181000B7ACB /* WindowID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FAF49B2C688181000B7ACB /* WindowID.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +125,7 @@
 		61FAF4952C684569000B7ACB /* Notification+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+.swift"; sourceTree = "<group>"; };
 		61FAF4972C688111000B7ACB /* AppStorageKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageKey.swift; sourceTree = "<group>"; };
 		61FAF4992C68812F000B7ACB /* AppStorageDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageDefaults.swift; sourceTree = "<group>"; };
+		61FAF49B2C688181000B7ACB /* WindowID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowID.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +227,7 @@
 				612208AA2C032D500047B454 /* ShowMedium.swift */,
 				61FAF4972C688111000B7ACB /* AppStorageKey.swift */,
 				61FAF4992C68812F000B7ACB /* AppStorageDefaults.swift */,
+				61FAF49B2C688181000B7ACB /* WindowID.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -450,6 +453,7 @@
 				6154D69C2C6739C700448AB4 /* CommitMessageSuggestionView.swift in Sources */,
 				616C4C1E28E8894D000E7154 /* GitAdd.swift in Sources */,
 				61EBD7CF28E922510009ED92 /* GitBranch.swift in Sources */,
+				61FAF49C2C688181000B7ACB /* WindowID.swift in Sources */,
 				616C4C1C28E88828000E7154 /* GitCommit.swift in Sources */,
 				61E290D128E1DA2E00BCEB04 /* String+.swift in Sources */,
 				61326BBC2BC27A3300472D64 /* Diff.swift in Sources */,

@@ -12,6 +12,8 @@ struct CommitView: View {
     var folder: Folder
     @State private var commitMessage = ""
     @State private var error: Error?
+    @State private var isAmend = false
+    @State private var amendCommit: Commit?
     var onCommit: () -> Void
 
     var body: some View {
@@ -52,20 +54,34 @@ struct CommitView: View {
                     CommitMessageSuggestionView()
                 }
                 Divider()
-                Button("Commit") {
-                    Task {
-                        do {
-                            try await Process.output(GitAdd(directory: folder.url))
-                            try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
-                            onCommit()
-                        } catch {
-                            self.error = error
+                VStack(spacing: 14) {
+                    Button("Commit") {
+                        Task {
+                            do {
+                                try await Process.output(GitAdd(directory: folder.url))
+                                if isAmend {
+                                    try await Process.output(GitCommitAmend(directory: folder.url, message: commitMessage))
+                                } else {
+                                    try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
+                                }
+                                onCommit()
+                            } catch {
+                                self.error = error
+                            }
                         }
                     }
+                    .keyboardShortcut(.init(.return))
+                    .disabled(commitMessage.isEmpty)
+                    Toggle("Amend", isOn: $isAmend)
+                        .font(.caption)
                 }
-                .keyboardShortcut(.init(.return))
-                .errorAlert($error)
-                .disabled(commitMessage.isEmpty)
+                .onChange(of: isAmend) {
+                    if isAmend {
+                        commitMessage = amendCommit?.rawBody ?? ""
+                    } else {
+                        commitMessage = ""
+                    }
+                }
                 .padding()
             }
             .background(Color(NSColor.textBackgroundColor))
@@ -74,6 +90,13 @@ struct CommitView: View {
                     self.commitMessage = commitMessage
                 }
             })
+        }
+        .task {
+            do {
+                amendCommit = try await Process.output(GitLog(directory: folder.url)).first
+            } catch {
+                self.error = error
+            }
         }
     }
 }

@@ -54,6 +54,7 @@
 		61FAF4982C688111000B7ACB /* AppStorageKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FAF4972C688111000B7ACB /* AppStorageKey.swift */; };
 		61FAF49A2C68812F000B7ACB /* AppStorageDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FAF4992C68812F000B7ACB /* AppStorageDefaults.swift */; };
 		61FAF49C2C688181000B7ACB /* WindowID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FAF49B2C688181000B7ACB /* WindowID.swift */; };
+		61FAF49E2C68DBFB000B7ACB /* GitCommitAmend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FAF49D2C68DBFB000B7ACB /* GitCommitAmend.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +127,7 @@
 		61FAF4972C688111000B7ACB /* AppStorageKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageKey.swift; sourceTree = "<group>"; };
 		61FAF4992C68812F000B7ACB /* AppStorageDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageDefaults.swift; sourceTree = "<group>"; };
 		61FAF49B2C688181000B7ACB /* WindowID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowID.swift; sourceTree = "<group>"; };
+		61FAF49D2C68DBFB000B7ACB /* GitCommitAmend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCommitAmend.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -283,6 +285,7 @@
 				616C4C1D28E8894D000E7154 /* GitAdd.swift */,
 				61839DC22B929EAB0015215B /* GitAddPatch.swift */,
 				616C4C1B28E88828000E7154 /* GitCommit.swift */,
+				61FAF49D2C68DBFB000B7ACB /* GitCommitAmend.swift */,
 				61EBD7CE28E922510009ED92 /* GitBranch.swift */,
 				61EBD7D228E966190009ED92 /* GitSwitch.swift */,
 				6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */,
@@ -442,6 +445,7 @@
 				6172E4C428D70B3C0015C958 /* Folder.swift in Sources */,
 				61A2D35D28DF5ACB009A3EEC /* View+.swift in Sources */,
 				61839DC12B922B0D0015215B /* CommitLogView.swift in Sources */,
+				61FAF49E2C68DBFB000B7ACB /* GitCommitAmend.swift in Sources */,
 				612208AB2C032D500047B454 /* ShowMedium.swift in Sources */,
 				61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */,
 				61EBD7D128E940C30009ED92 /* Branch.swift in Sources */,

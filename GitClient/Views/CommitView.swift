@@ -40,7 +40,8 @@ struct CommitView: View {
                 VStack(spacing: 2) {
                     ZStack {
                             TextEditor(text: $commitMessage)
-                                .padding(8)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 8)
                             if commitMessage.isEmpty {
                                 Text("Enter commit message here")
                                     .foregroundColor(.secondary)

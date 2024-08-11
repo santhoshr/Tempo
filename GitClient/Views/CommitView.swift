@@ -12,6 +12,7 @@ struct CommitView: View {
     var folder: Folder
     @State private var commitMessage = ""
     @State private var error: Error?
+    @State private var isAmend = false
     var onCommit: () -> Void
 
     var body: some View {
@@ -52,20 +53,24 @@ struct CommitView: View {
                     CommitMessageSuggestionView()
                 }
                 Divider()
-                Button("Commit") {
-                    Task {
-                        do {
-                            try await Process.output(GitAdd(directory: folder.url))
-                            try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
-                            onCommit()
-                        } catch {
-                            self.error = error
+                VStack(spacing: 14) {
+                    Button("Commit") {
+                        Task {
+                            do {
+                                try await Process.output(GitAdd(directory: folder.url))
+                                try await Process.output(GitCommit(directory: folder.url, message: commitMessage))
+                                onCommit()
+                            } catch {
+                                self.error = error
+                            }
                         }
                     }
+                    .keyboardShortcut(.init(.return))
+                    .disabled(commitMessage.isEmpty)
+                    Toggle("Amend", isOn: $isAmend)
+                        .font(.caption)
                 }
-                .keyboardShortcut(.init(.return))
                 .errorAlert($error)
-                .disabled(commitMessage.isEmpty)
                 .padding()
             }
             .background(Color(NSColor.textBackgroundColor))

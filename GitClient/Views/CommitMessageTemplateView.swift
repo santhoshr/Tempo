@@ -19,8 +19,16 @@ struct CommitMessageTemplateView: View {
 
     var body: some View {
         List {
-            ForEach(decodedCommitMessageTemplates, id: \.self) {
-                Text($0)
+            ForEach(decodedCommitMessageTemplates, id: \.self) { template in
+                HStack {
+                    Button(template) {
+                        NotificationCenter.default.post(name: .didSelectCommitMessageTemplateNotification, object: template)
+                    }
+                        .buttonStyle(.borderless)
+                    Spacer()
+                    Image(systemName: "line.3.horizontal")
+                        .foregroundColor(.secondary)
+                }
             }
             .onMove(perform: { indices, newOffset in
                 var t = Array(decodedCommitMessageTemplates)

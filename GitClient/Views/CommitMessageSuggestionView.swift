@@ -11,7 +11,6 @@ import Collections
 struct CommitMessageSuggestionView: View {
     @State private var error: Error?
     @State private var isPresenting = false
-    var onSelect: (String) -> Void
     @Environment(\.openWindow) private var openWindow
     @AppStorage (AppStorageKey.commitMessageTemplate.rawValue) var commitMessageTemplate: Data = AppStorageDefaults.commitMessageTemplate
     var decodedCommitMessageTemplate: Array<String> {
@@ -30,7 +29,7 @@ struct CommitMessageSuggestionView: View {
                 LazyHStack {
                     ForEach(decodedCommitMessageTemplate, id: \.self) { template in
                         Button(template) {
-                            onSelect(template)
+                            NotificationCenter.default.post(name: .didSelectCommitMessageTemplateNotification, object: template)
                         }
                         .buttonStyle(.borderless)
                         if template != decodedCommitMessageTemplate.last {
@@ -54,5 +53,5 @@ struct CommitMessageSuggestionView: View {
 }
 
 #Preview {
-    CommitMessageSuggestionView { print($0) }
+    CommitMessageSuggestionView()
 }

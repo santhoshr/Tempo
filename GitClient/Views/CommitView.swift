@@ -48,9 +48,7 @@ struct CommitView: View {
                             }
                     }
                     .frame(height: 80)
-                    CommitMessageSuggestionView { message in
-                        commitMessage = message
-                    }
+                    CommitMessageSuggestionView()
                 }
                 Divider()
                 Button("Commit") {
@@ -70,6 +68,11 @@ struct CommitView: View {
                 .padding()
             }
             .background(Color(NSColor.textBackgroundColor))
+            .onReceive(NotificationCenter.default.publisher(for: .didSelectCommitMessageTemplateNotification), perform: { notification in
+                if let commitMessage = notification.object as? String {
+                    self.commitMessage = commitMessage
+                }
+            })
         }
     }
 }

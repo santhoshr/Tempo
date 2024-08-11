@@ -54,7 +54,7 @@ struct CommitMessageTemplateView: View {
                 })
             }
             Divider()
-            HStack {
+            HStack(spacing: 0) {
                 ZStack {
                     TextEditor(text: $editCommitMessageTemplate)
                         .padding(.horizontal, 4)

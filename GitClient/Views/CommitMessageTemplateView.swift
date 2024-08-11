@@ -31,6 +31,17 @@ struct CommitMessageTemplateView: View {
                         Image(systemName: "line.3.horizontal")
                             .foregroundColor(.secondary)
                     }
+                    .contextMenu {
+                        Button("Delete") {
+                            var templates = decodedCommitMessageTemplates
+                            templates.removeAll { $0 == template }
+                            do {
+                                commitMessageTemplate = try JSONEncoder().encode(templates)
+                            } catch {
+                                print(error)
+                            }
+                        }
+                    }
                 }
                 .onMove(perform: { indices, newOffset in
                     var t = decodedCommitMessageTemplates

@@ -13,6 +13,7 @@ struct CommitView: View {
     @State private var commitMessage = ""
     @State private var error: Error?
     @State private var isAmend = false
+    @State private var amendCommit: Commit?
     var onCommit: () -> Void
 
     var body: some View {
@@ -70,7 +71,13 @@ struct CommitView: View {
                     Toggle("Amend", isOn: $isAmend)
                         .font(.caption)
                 }
-                .errorAlert($error)
+                .onChange(of: isAmend) {
+                    if isAmend {
+                        commitMessage = amendCommit?.rawBody ?? ""
+                    } else {
+                        commitMessage = ""
+                    }
+                }
                 .padding()
             }
             .background(Color(NSColor.textBackgroundColor))
@@ -79,6 +86,13 @@ struct CommitView: View {
                     self.commitMessage = commitMessage
                 }
             })
+        }
+        .task {
+            do {
+                amendCommit = try await Process.output(GitLog(directory: folder.url)).first
+            } catch {
+                self.error = error
+            }
         }
     }
 }

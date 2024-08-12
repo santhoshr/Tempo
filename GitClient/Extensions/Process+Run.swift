@@ -35,7 +35,7 @@ extension Process {
         try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
     }
 
-    static func run(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) throws -> Output {
+    private static func run(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) throws -> Output {
         let process = Process()
         let stdOutput = Pipe()
         let stdError = Pipe()

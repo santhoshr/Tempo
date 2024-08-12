@@ -27,6 +27,18 @@ struct FolderView: View {
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
                 Text(commit.title)
+                    .contextMenu {
+                        Button("Checkout") {
+                            Task {
+                                do {
+                                    try await Process.output(GitCheckout(directory: folder.url, commitHash: commit.hash))
+                                    await setModels()
+                                } catch {
+                                    self.error = error
+                                }
+                            }
+                        }
+                    }
             }
         }
         .onChange(of: folder, initial: true, {

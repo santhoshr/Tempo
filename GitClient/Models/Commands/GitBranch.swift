@@ -20,15 +20,8 @@ struct GitBranch: Git {
 
     func parse(for stdOut: String) throws -> [Branch] {
         let lines = stdOut.components(separatedBy: .newlines).dropLast()
-        return try lines.map { line in
-            let s = line.components(separatedBy: .whitespaces)
-            if s.first == "*", let name = s.last  {
-                return Branch(name: name, isCurrent: true)
-            }
-            if let name = s.last {
-                return Branch(name: name, isCurrent: false)
-            }
-            throw GenericError(errorDescription: "Parse error: git branch command")
+        return lines.map { line in
+            Branch(name: String(line.dropFirst(2)), isCurrent: line.hasPrefix("*"))
         }
     }
 }

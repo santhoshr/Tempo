@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Collections
 
 struct CommitMessageSuggestionView: View {
     @State private var error: Error?

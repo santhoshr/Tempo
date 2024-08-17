@@ -113,35 +113,47 @@ struct FolderView: View {
             }
             .help("Select Branch")
             .popover(isPresented: $showingBranches) {
-                BranchesView(
-                    folder: folder,
-                    onSelect: { branch in
-                        Task {
-                            do {
-                                try await Process.output(
-                                    GitSwitch(directory: folder.url, branchName: branch.name)
-                                )
-                            } catch {
-                                self.error = error
+                TabView {
+                    BranchesView(
+                        folder: folder,
+                        onSelect: { branch in
+                            Task {
+                                do {
+                                    try await Process.output(
+                                        GitSwitch(directory: folder.url, branchName: branch.name)
+                                    )
+                                } catch {
+                                    self.error = error
+                                }
+                                await setModels()
+                                showingBranches = false
                             }
-                            await setModels()
-                            showingBranches = false
-                        }
-                    }, onSelectMergeInto: { mergeIntoBranch in
-                        Task {
-                            do {
-                                try await Process.output(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
-                            } catch {
-                                self.error = error
+                        }, onSelectMergeInto: { mergeIntoBranch in
+                            Task {
+                                do {
+                                    try await Process.output(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
+                                } catch {
+                                    self.error = error
+                                }
+                                await setModels()
+                                showingBranches = false
                             }
-                            await setModels()
-                            showingBranches = false
+                        },
+                        onSelectNewBranchFrom: { from in
+                            showingCreateNewBranchFrom = from
                         }
-                    },
-                    onSelectNewBranchFrom: { from in
-                        showingCreateNewBranchFrom = from
+                    )
+                        .tabItem {
+                            Text("Local")
+                        }
+                    VStack {
+                        Text("hello")
                     }
-                )
+                    .tabItem {
+                        Text("Remotes")
+                    }
+                }
+                .padding()
             }
         }
     }

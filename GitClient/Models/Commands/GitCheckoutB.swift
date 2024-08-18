@@ -15,10 +15,12 @@ struct GitCheckoutB: Git {
             "checkout",
             "-b",
             newBranchName,
+            startPoint,
         ]
     }
     var directory: URL
     var newBranchName: String
+    var startPoint: String
 
     func parse(for stdOut: String) -> Void {}
 }

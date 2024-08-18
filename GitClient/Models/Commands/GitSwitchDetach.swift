@@ -12,7 +12,7 @@ struct GitSwitchDetach: Git {
         [
             "git",
             "switch",
-            "–detach",
+            "-d",
             branchName,
         ]
     }

@@ -9,10 +9,11 @@ import SwiftUI
 
 struct BranchesView: View {
     var folder: Folder
+    var branch: Branch?
+    var isRemote = false
     var onSelect: ((Branch) -> Void)
     var onSelectMergeInto: ((Branch) -> Void)
     var onSelectNewBranchFrom: ((Branch) -> Void)
-    var isRemote = false
     @State private var branches: [Branch] = []
     @State private var error: Error?
     @State private var selectedBranch: Branch?
@@ -28,8 +29,8 @@ struct BranchesView: View {
                 onSelect(branch)
             }
             .contextMenu {
-                if !branch.isCurrent {
-                    Button("Marge into \"\(branches.current?.name ?? "")\"") {
+                if let currentBranch = self.branch {
+                    Button("Marge into \"\(currentBranch.name)\"") {
                         onSelectMergeInto(branch)
                     }
                 }

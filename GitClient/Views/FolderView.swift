@@ -116,6 +116,7 @@ struct FolderView: View {
                 TabView {
                     BranchesView(
                         folder: folder,
+                        branch: branch,
                         onSelect: { branch in
                             Task {
                                 do {
@@ -148,6 +149,8 @@ struct FolderView: View {
                         }
                     BranchesView(
                         folder: folder,
+                        branch: branch,
+                        isRemote: true,
                         onSelect: { branch in
                             Task {
                                 do {
@@ -173,8 +176,8 @@ struct FolderView: View {
                         },
                         onSelectNewBranchFrom: { from in
                             showingCreateNewBranchFrom = from
-                        },
-                        isRemote: true
+                        }
+
                     )
                         .tabItem {
                             Text("Remotes")

@@ -17,29 +17,52 @@ struct BranchesView: View {
     @State private var branches: [Branch] = []
     @State private var error: Error?
     @State private var selectedBranch: Branch?
+    @State private var filterText: String = ""
 
     var body: some View {
-        List(branches, id: \.name) { branch in
-            HStack {
-                Text(branch.name)
-                Spacer()
+        VStack(spacing: 0) {
+            HStack(spacing: 4) {
+                Image(systemName: "line.3.horizontal.decrease")
+                TextField(text: $filterText) {
+                    Text("Filter")
+                }
+                if isRemote {
+                    Button(action: {
+
+                    }, label: {
+                        Image(systemName: "arrow.down")
+                    })
+                        .padding(.leading)
+                        .help("Fetch")
+                }
             }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                onSelect(branch)
-            }
-            .contextMenu {
-                if let currentBranch = self.branch {
-                    Button("Marge into \"\(currentBranch.name)\"") {
-                        onSelectMergeInto(branch)
+            .padding(.top, 4)
+            .padding([.horizontal, .bottom])
+            Divider()
+                .background(.ultraThinMaterial)
+            List(branches, id: \.name) { branch in
+                HStack {
+                    Text(branch.name)
+                    Spacer()
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onSelect(branch)
+                }
+                .contextMenu {
+                    if let currentBranch = self.branch {
+                        Button("Marge into \"\(currentBranch.name)\"") {
+                            onSelectMergeInto(branch)
+                        }
+                    }
+                    Button("New Branch from \"\(branch.name)\"") {
+                        onSelectNewBranchFrom(branch)
                     }
                 }
-                Button("New Branch from \"\(branch.name)\"") {
-                    onSelectNewBranchFrom(branch)
-                }
             }
+            .scrollContentBackground(.hidden)
         }
-        .scrollContentBackground(.hidden)
+        .textFieldStyle(.roundedBorder)
         .task {
             do {
                 branches = try await Process.output(GitBranch(directory: folder.url, isRemote: isRemote))

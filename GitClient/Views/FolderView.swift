@@ -155,7 +155,7 @@ struct FolderView: View {
                             Task {
                                 do {
                                     try await Process.output(
-                                        GitSwitch(directory: folder.url, branchName: branch.name)
+                                        GitSwitchDetach(directory: folder.url, branchName: branch.name)
                                     )
                                 } catch {
                                     self.error = error

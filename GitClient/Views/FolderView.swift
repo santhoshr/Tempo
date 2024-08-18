@@ -183,6 +183,7 @@ struct FolderView: View {
                             Text("Remotes")
                         }
                 }
+                .frame(width: 300, height: 660)
                 .padding()
             }
         }

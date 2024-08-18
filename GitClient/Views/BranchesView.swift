@@ -47,7 +47,6 @@ struct BranchesView: View {
                 self.error = error
             }
         }
-        .frame(width: 300, height: 660)
         .errorAlert($error)
     }
 }

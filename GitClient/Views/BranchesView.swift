@@ -18,6 +18,10 @@ struct BranchesView: View {
     @State private var error: Error?
     @State private var selectedBranch: Branch?
     @State private var filterText: String = ""
+    private var filteredBranch: [Branch] {
+        guard !filterText.isEmpty else { return branches }
+        return branches.filter { $0.name.lowercased().contains(filterText.lowercased()) }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -40,7 +44,7 @@ struct BranchesView: View {
             .padding([.horizontal, .bottom])
             Divider()
                 .background(.ultraThinMaterial)
-            List(branches, id: \.name) { branch in
+            List(filteredBranch, id: \.name) { branch in
                 HStack {
                     Text(branch.name)
                     Spacer()

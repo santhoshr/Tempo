@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CommitMessageSnippetView: View {
-    @AppStorage (AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippet
+    @AppStorage (AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippets
     var decodedCommitMessageSnippets: Array<String> {
         do {
             return try JSONDecoder().decode(Array<String>.self, from: commitMessageSnippet)

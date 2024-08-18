@@ -11,7 +11,7 @@ struct CommitMessageSuggestionView: View {
     @State private var error: Error?
     @State private var isPresenting = false
     @Environment(\.openWindow) private var openWindow
-    @AppStorage (AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippet
+    @AppStorage (AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippets
     var decodedCommitMessageSnippet: Array<String> {
         do {
             do {

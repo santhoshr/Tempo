@@ -8,5 +8,5 @@
 import Foundation
 
 struct AppStorageDefaults {
-    static let commitMessageSnippet = try! JSONEncoder().encode(["Tweaks", "Fix lint warnings"])
+    static let commitMessageSnippets = try! JSONEncoder().encode(["Tweaks", "Remove unused code", "Fix lint warnings"])
 }

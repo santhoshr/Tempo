@@ -146,12 +146,39 @@ struct FolderView: View {
                         .tabItem {
                             Text("Local")
                         }
-                    VStack {
-                        Text("hello")
-                    }
-                    .tabItem {
-                        Text("Remotes")
-                    }
+                    BranchesView(
+                        folder: folder,
+                        onSelect: { branch in
+                            Task {
+                                do {
+                                    try await Process.output(
+                                        GitSwitch(directory: folder.url, branchName: branch.name)
+                                    )
+                                } catch {
+                                    self.error = error
+                                }
+                                await setModels()
+                                showingBranches = false
+                            }
+                        }, onSelectMergeInto: { mergeIntoBranch in
+                            Task {
+                                do {
+                                    try await Process.output(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
+                                } catch {
+                                    self.error = error
+                                }
+                                await setModels()
+                                showingBranches = false
+                            }
+                        },
+                        onSelectNewBranchFrom: { from in
+                            showingCreateNewBranchFrom = from
+                        },
+                        isRemote: true
+                    )
+                        .tabItem {
+                            Text("Remotes")
+                        }
                 }
                 .padding()
             }

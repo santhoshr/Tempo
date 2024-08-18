@@ -12,6 +12,7 @@ struct BranchesView: View {
     var onSelect: ((Branch) -> Void)
     var onSelectMergeInto: ((Branch) -> Void)
     var onSelectNewBranchFrom: ((Branch) -> Void)
+    var isRemote = false
     @State private var branches: [Branch] = []
     @State private var error: Error?
     @State private var selectedBranch: Branch?
@@ -40,7 +41,7 @@ struct BranchesView: View {
         .scrollContentBackground(.hidden)
         .task {
             do {
-                branches = try await Process.output(GitBranch(directory: folder.url))
+                branches = try await Process.output(GitBranch(directory: folder.url, isRemote: isRemote))
             } catch {
                 self.error = error
             }

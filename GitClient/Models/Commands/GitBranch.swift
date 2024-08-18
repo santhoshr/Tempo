@@ -10,13 +10,18 @@ import Foundation
 struct GitBranch: Git {
     typealias OutputModel = [Branch]
     var arguments: [String] {
-        [
+        var arg = [
             "git",
             "branch",
             "--sort=-authordate",
         ]
+        if isRemote {
+            arg.append("-r")
+        }
+        return arg
     }
     var directory: URL
+    var isRemote = false
 
     func parse(for stdOut: String) throws -> [Branch] {
         let lines = stdOut.components(separatedBy: .newlines).dropLast()

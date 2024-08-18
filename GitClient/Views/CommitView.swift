@@ -85,7 +85,7 @@ struct CommitView: View {
                 .padding()
             }
             .background(Color(NSColor.textBackgroundColor))
-            .onReceive(NotificationCenter.default.publisher(for: .didSelectCommitMessageTemplateNotification), perform: { notification in
+            .onReceive(NotificationCenter.default.publisher(for: .didSelectCommitMessageSnippetNotification), perform: { notification in
                 if let commitMessage = notification.object as? String {
                     self.commitMessage = commitMessage
                 }

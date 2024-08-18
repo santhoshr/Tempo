@@ -1,5 +1,5 @@
 //
-//  MessageTemplateSuggestionView.swift
+//  MessageSnippetSuggestionView.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2024/08/10.
@@ -11,11 +11,11 @@ struct CommitMessageSuggestionView: View {
     @State private var error: Error?
     @State private var isPresenting = false
     @Environment(\.openWindow) private var openWindow
-    @AppStorage (AppStorageKey.commitMessageTemplate.rawValue) var commitMessageTemplate: Data = AppStorageDefaults.commitMessageTemplate
-    var decodedCommitMessageTemplate: Array<String> {
+    @AppStorage (AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippet
+    var decodedCommitMessageSnippet: Array<String> {
         do {
             do {
-                return try JSONDecoder().decode(Array<String>.self, from: commitMessageTemplate)
+                return try JSONDecoder().decode(Array<String>.self, from: commitMessageSnippet)
             } catch {
                 return []
             }
@@ -26,12 +26,12 @@ struct CommitMessageSuggestionView: View {
         HStack(spacing: 0) {
             ScrollView(.horizontal) {
                 LazyHStack {
-                    ForEach(decodedCommitMessageTemplate, id: \.self) { template in
-                        Button(template) {
-                            NotificationCenter.default.post(name: .didSelectCommitMessageTemplateNotification, object: template)
+                    ForEach(decodedCommitMessageSnippet, id: \.self) { snippet in
+                        Button(snippet) {
+                            NotificationCenter.default.post(name: .didSelectCommitMessageSnippetNotification, object: snippet)
                         }
                         .buttonStyle(.borderless)
-                        if template != decodedCommitMessageTemplate.last {
+                        if snippet != decodedCommitMessageSnippet.last {
                             Text("|")
                                 .foregroundStyle(.separator)
                         }
@@ -41,7 +41,7 @@ struct CommitMessageSuggestionView: View {
             }
             .frame(height: 44)
             Button(action: {
-                openWindow(id: WindowID.commitMessageTemplates.rawValue)
+                openWindow(id: WindowID.commitMessageSnippets.rawValue)
             }, label: {
                 Image(systemName: "list.dash")
             })

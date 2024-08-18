@@ -13,8 +13,8 @@ struct GitClientApp: App {
         WindowGroup {
             ContentView()
         }
-        Window("Commit Message Templates", id: WindowID.commitMessageTemplates.rawValue) {
-            CommitMessageTemplateView()
+        Window("Commit Message Snippets", id: WindowID.commitMessageSnippets.rawValue) {
+            CommitMessageSnippetView()
         }
     }
 }

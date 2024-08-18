@@ -8,5 +8,5 @@
 import Foundation
 
 extension Notification.Name {
-    static let didSelectCommitMessageTemplateNotification = Notification.Name("didSelectCommitMessageTemplateNotification")
+    static let didSelectCommitMessageSnippetNotification = Notification.Name("didSelectCommitMessageSnippetNotification")
 }

@@ -1,5 +1,5 @@
 //
-//  CommitMessageTemplateView.swift
+//  CommitMessageSnippetView.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2024/08/11.
@@ -7,24 +7,24 @@
 
 import SwiftUI
 
-struct CommitMessageTemplateView: View {
-    @AppStorage (AppStorageKey.commitMessageTemplate.rawValue) var commitMessageTemplate: Data = AppStorageDefaults.commitMessageTemplate
-    var decodedCommitMessageTemplates: Array<String> {
+struct CommitMessageSnippetView: View {
+    @AppStorage (AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippet
+    var decodedCommitMessageSnippets: Array<String> {
         do {
-            return try JSONDecoder().decode(Array<String>.self, from: commitMessageTemplate)
+            return try JSONDecoder().decode(Array<String>.self, from: commitMessageSnippet)
         } catch {
             return []
         }
     }
-    @State private var editCommitMessageTemplate: String = ""
+    @State private var editCommitMessageSnippet: String = ""
 
     var body: some View {
         VStack(spacing: 0) {
             List {
-                ForEach(decodedCommitMessageTemplates, id: \.self) { template in
+                ForEach(decodedCommitMessageSnippets, id: \.self) { snippet in
                     HStack {
-                        Button(template) {
-                            NotificationCenter.default.post(name: .didSelectCommitMessageTemplateNotification, object: template)
+                        Button(snippet) {
+                            NotificationCenter.default.post(name: .didSelectCommitMessageSnippetNotification, object: snippet)
                         }
                             .buttonStyle(.borderless)
                         Spacer()
@@ -33,10 +33,10 @@ struct CommitMessageTemplateView: View {
                     }
                     .contextMenu {
                         Button("Delete") {
-                            var templates = decodedCommitMessageTemplates
-                            templates.removeAll { $0 == template }
+                            var snippets = decodedCommitMessageSnippets
+                            snippets.removeAll { $0 == snippet }
                             do {
-                                commitMessageTemplate = try JSONEncoder().encode(templates)
+                                commitMessageSnippet = try JSONEncoder().encode(snippets)
                             } catch {
                                 print(error)
                             }
@@ -44,10 +44,10 @@ struct CommitMessageTemplateView: View {
                     }
                 }
                 .onMove(perform: { indices, newOffset in
-                    var t = decodedCommitMessageTemplates
+                    var t = decodedCommitMessageSnippets
                     t.move(fromOffsets: indices, toOffset: newOffset)
                     do {
-                        commitMessageTemplate = try JSONEncoder().encode(t)
+                        commitMessageSnippet = try JSONEncoder().encode(t)
                     } catch {
                         print(error)
                     }
@@ -56,27 +56,27 @@ struct CommitMessageTemplateView: View {
             Divider()
             HStack(spacing: 0) {
                 ZStack {
-                    TextEditor(text: $editCommitMessageTemplate)
+                    TextEditor(text: $editCommitMessageSnippet)
                         .padding(.horizontal, 4)
                         .padding(.vertical, 8)
-                    if editCommitMessageTemplate.isEmpty {
-                        Text("Enter commit message template here")
+                    if editCommitMessageSnippet.isEmpty {
+                        Text("Enter commit message snippet here")
                             .foregroundColor(.secondary)
                             .allowsHitTesting(false)
                     }
                 }
                 Divider()
                 Button("Add") {
-                    let newCommitMessageTemplates = decodedCommitMessageTemplates + [editCommitMessageTemplate]
+                    let newCommitMessageSnippets = decodedCommitMessageSnippets + [editCommitMessageSnippet]
                     do {
-                        commitMessageTemplate = try JSONEncoder().encode(newCommitMessageTemplates)
-                        editCommitMessageTemplate = ""
+                        commitMessageSnippet = try JSONEncoder().encode(newCommitMessageSnippets)
+                        editCommitMessageSnippet = ""
                     } catch {
                         print(error)
                     }
                 }
                 .keyboardShortcut(.init(.return))
-                .disabled(editCommitMessageTemplate.isEmpty)
+                .disabled(editCommitMessageSnippet.isEmpty)
                 .padding()
 
             }
@@ -87,5 +87,5 @@ struct CommitMessageTemplateView: View {
 }
 
 #Preview {
-    CommitMessageTemplateView()
+    CommitMessageSnippetView()
 }

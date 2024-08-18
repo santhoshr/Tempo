@@ -234,7 +234,7 @@ struct FolderView: View {
             Image(systemName: "arrow.up")
         }
         .keyboardShortcut(.init(.upArrow))
-        .help("Push")
+        .help("Push origin HEAD")
     }
 }
 

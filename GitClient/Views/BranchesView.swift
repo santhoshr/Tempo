@@ -18,6 +18,7 @@ struct BranchesView: View {
     @State private var error: Error?
     @State private var selectedBranch: Branch?
     @State private var filterText: String = ""
+    @State private var isFetching = false
     private var filteredBranch: [Branch] {
         guard !filterText.isEmpty else { return branches }
         return branches.filter { $0.name.lowercased().contains(filterText.lowercased()) }
@@ -31,13 +32,30 @@ struct BranchesView: View {
                     Text("Filter")
                 }
                 if isRemote {
-                    Button(action: {
+                    if isFetching {
+                        ProgressView()
+                            .scaleEffect(0.4)
+                            .frame(width: 29, height: 17)
+                            .padding(.leading)
+                    } else {
+                        Button(action: {
+                            Task {
+                                do {
+                                    isFetching = true
+                                    defer { isFetching = false }
+                                    try await Process.output(GitFetch(directory: folder.url))
+                                    branches = try await Process.output(GitBranch(directory: folder.url, isRemote: isRemote))
+                                } catch {
+                                    self.error = error
+                                }
+                            }
+                        }, label: {
+                            Image(systemName: "arrow.down")
 
-                    }, label: {
-                        Image(systemName: "arrow.down")
-                    })
+                        })
                         .padding(.leading)
                         .help("Fetch")
+                    }
                 }
             }
             .padding(.top, 4)

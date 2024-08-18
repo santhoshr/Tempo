@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		610134BF2C718E760071677C /* GitSwitchDetach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610134BE2C718E760071677C /* GitSwitchDetach.swift */; };
+		610134C12C71D5860071677C /* GitFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610134C02C71D5860071677C /* GitFetch.swift */; };
 		6103A59E28EE46E30083A2F5 /* GitCheckoutB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */; };
 		6103A5A028EE47790083A2F5 /* GitMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59F28EE47790083A2F5 /* GitMerge.swift */; };
 		612208A92C032A0D0047B454 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208A82C032A0D0047B454 /* DiffView.swift */; };
@@ -78,6 +79,7 @@
 
 /* Begin PBXFileReference section */
 		610134BE2C718E760071677C /* GitSwitchDetach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitSwitchDetach.swift; sourceTree = "<group>"; };
+		610134C02C71D5860071677C /* GitFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitFetch.swift; sourceTree = "<group>"; };
 		6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCheckoutB.swift; sourceTree = "<group>"; };
 		6103A59F28EE47790083A2F5 /* GitMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitMerge.swift; sourceTree = "<group>"; };
 		612208A82C032A0D0047B454 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
@@ -285,6 +287,7 @@
 				61E290D228E1EFC600BCEB04 /* GitDiff.swift */,
 				61E290D428E1F05000BCEB04 /* GitDiffCached.swift */,
 				61E290D628E5D84100BCEB04 /* GitPush.swift */,
+				610134C02C71D5860071677C /* GitFetch.swift */,
 				61839DBC2B9221D10015215B /* GitPull.swift */,
 				616C4C1D28E8894D000E7154 /* GitAdd.swift */,
 				61839DC22B929EAB0015215B /* GitAddPatch.swift */,
@@ -456,6 +459,7 @@
 				61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */,
 				61EBD7D128E940C30009ED92 /* Branch.swift in Sources */,
 				61E290C928E098DB00BCEB04 /* GitLog.swift in Sources */,
+				610134C12C71D5860071677C /* GitFetch.swift in Sources */,
 				61347EEE28D5D16C00625FC4 /* GitClientApp.swift in Sources */,
 				61E290DB28E7C66300BCEB04 /* CommitView.swift in Sources */,
 				61E290CD28E09FDD00BCEB04 /* Git.swift in Sources */,

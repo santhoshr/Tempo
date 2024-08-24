@@ -21,6 +21,7 @@ struct CreateNewBranchSheet: View {
             VStack(alignment: .leading) {
                 HStack {
                     Text("from:  \(showingCreateNewBranchFrom?.name ?? "")")
+                        .textSelection(.enabled)
                 }
                 HStack {
                     Text("    to:")

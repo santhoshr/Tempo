@@ -11,3 +11,4 @@ enum AppStorageKey: String {
     case folder
     case commitMessageSnippet
 }
+

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DiffView: View {
+struct NotCommittedDiffView: View {
     var diff: Diff
 
     var body: some View {
@@ -31,5 +31,5 @@ index 96134c5..46cd844 100644
                 61EBD7D128E940C30009ED92 /* Branch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBD7D028E940C30009ED92 /* Branch.swift */; };
                 61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBD7D228E966190009ED92 /* GitSwitch.swift */; };
 """
-    return DiffView(diff: try! Diff(raw: text))
+    return NotCommittedDiffView(diff: try! Diff(raw: text))
 }

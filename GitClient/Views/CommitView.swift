@@ -22,7 +22,7 @@ struct CommitView: View {
                 if let diff = try? Diff(raw: diff) {
                     HStack {
                         VStack(alignment: .leading) {
-                            DiffView(diff: diff)
+                            NotCommittedDiffView(diff: diff)
                         }
                         .padding()
                         Spacer()

@@ -11,7 +11,7 @@
 		610134C12C71D5860071677C /* GitFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610134C02C71D5860071677C /* GitFetch.swift */; };
 		6103A59E28EE46E30083A2F5 /* GitCheckoutB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */; };
 		6103A5A028EE47790083A2F5 /* GitMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59F28EE47790083A2F5 /* GitMerge.swift */; };
-		612208A92C032A0D0047B454 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208A82C032A0D0047B454 /* DiffView.swift */; };
+		612208A92C032A0D0047B454 /* NotCommittedDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208A82C032A0D0047B454 /* NotCommittedDiffView.swift */; };
 		612208AB2C032D500047B454 /* ShowMedium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208AA2C032D500047B454 /* ShowMedium.swift */; };
 		612208AD2C0333CC0047B454 /* ShowMediumTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208AC2C0333CC0047B454 /* ShowMediumTest.swift */; };
 		61326BBC2BC27A3300472D64 /* Diff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61326BBB2BC27A3300472D64 /* Diff.swift */; };
@@ -82,7 +82,7 @@
 		610134C02C71D5860071677C /* GitFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitFetch.swift; sourceTree = "<group>"; };
 		6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCheckoutB.swift; sourceTree = "<group>"; };
 		6103A59F28EE47790083A2F5 /* GitMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitMerge.swift; sourceTree = "<group>"; };
-		612208A82C032A0D0047B454 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
+		612208A82C032A0D0047B454 /* NotCommittedDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotCommittedDiffView.swift; sourceTree = "<group>"; };
 		612208AA2C032D500047B454 /* ShowMedium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMedium.swift; sourceTree = "<group>"; };
 		612208AC2C0333CC0047B454 /* ShowMediumTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMediumTest.swift; sourceTree = "<group>"; };
 		61326BBB2BC27A3300472D64 /* Diff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff.swift; sourceTree = "<group>"; };
@@ -253,7 +253,7 @@
 				619D876028F154AB00DD1D4E /* CreateNewBranchSheet.swift */,
 				61B4BE312C1E7EAC00F30F62 /* GitShowMediumView.swift */,
 				61B7F0482C5F3EBF00BFAA34 /* FileDiffsView.swift */,
-				612208A82C032A0D0047B454 /* DiffView.swift */,
+				612208A82C032A0D0047B454 /* NotCommittedDiffView.swift */,
 				61FAF4932C6835EC000B7ACB /* CommitMessageSnippetView.swift */,
 			);
 			path = Views;
@@ -477,7 +477,7 @@
 				6175B89E2BEF686B00554227 /* Collection+.swift in Sources */,
 				61FAF49A2C68812F000B7ACB /* AppStorageDefaults.swift in Sources */,
 				61839DBF2B9229A30015215B /* GitShow.swift in Sources */,
-				612208A92C032A0D0047B454 /* DiffView.swift in Sources */,
+				612208A92C032A0D0047B454 /* NotCommittedDiffView.swift in Sources */,
 				61B7F0492C5F3EBF00BFAA34 /* FileDiffsView.swift in Sources */,
 				61FAF4982C688111000B7ACB /* AppStorageKey.swift in Sources */,
 				61A2D35728DE9CCC009A3EEC /* GenericError.swift in Sources */,

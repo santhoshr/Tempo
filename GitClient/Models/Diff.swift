@@ -28,6 +28,18 @@ struct Diff {
         return new
     }
 
+    func toggleChunkStage(_ chunk: Chunk, in fileDiff: FileDiff) -> Self {
+        let fileDiffIndex = fileDiffs.firstIndex { $0.id == fileDiff.id }
+        guard let fileDiffIndex  else { return self }
+        let chunkIndex = fileDiffs[fileDiffIndex].chunks.firstIndex { $0.id == chunk.id }
+        guard let chunkIndex else { return self }
+        var new = self
+        var newChunk = chunk
+        newChunk.stage?.toggle()
+        new.fileDiffs[fileDiffIndex].chunks[chunkIndex] = newChunk
+        return new
+    }
+
     func stageStrings() -> [String] {
         Array(fileDiffs.map { $0.stageStrings() }.joined())
     }

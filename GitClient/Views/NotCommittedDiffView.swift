@@ -23,24 +23,20 @@ struct NotCommittedDiffView: View {
                     Text(line)
                         .fontWeight(.bold)
                 }
-                chunksViews(fileDiff.chunks)
+                ForEach(fileDiff.chunks) { chunk in
+                    chunkView(chunk)
+                }
             }
         }
     }
 
-    // to be able to select multiple lines of text
-    private func chunksViews(_ chunks: [Chunk]) -> Text {
-        let views = chunks.map { chunk in
-            let chunksText = chunk.lines.map { line in
-                Text(line.raw)
-                    .foregroundStyle(chunkLineColor(line))
-            }
-            return chunksText.reduce(Text("")) { partialResult, text in
-                partialResult + text + Text("\n")
-            }
+    private func chunkView(_ chunk: Chunk) -> some View {
+        chunk.lines.map { line in
+            Text(line.raw)
+                .foregroundStyle(chunkLineColor(line))
         }
-        return views.reduce(Text("")) { partialResult, text in
-            partialResult + text
+        .reduce(Text("")) { partialResult, text in
+            partialResult + text + Text("\n")
         }
     }
 

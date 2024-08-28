@@ -50,13 +50,13 @@ extension Process {
 
         try process.run()
 
-        let stdOut = String(data: stdOutput.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-        let errOut = String(data: stdError.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-
         if !inputs.isEmpty, let writeData = inputs.joined(separator: "\n").data(using: .utf8) {
             try stdInput.fileHandleForWriting.write(contentsOf: writeData)
             try stdInput.fileHandleForWriting.close()
         }
+
+        let stdOut = String(data: stdOutput.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+        let errOut = String(data: stdError.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
 
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {

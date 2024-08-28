@@ -18,6 +18,19 @@ struct Diff {
             return fileDiff
         }
     }
+
+    func stageAll(stage: Bool) -> Self {
+        let newFileDiffs = fileDiffs.map { fileDiff in
+            fileDiff.stageAll(stage: stage)
+        }
+        var new = self
+        new.fileDiffs = newFileDiffs
+        return new
+    }
+
+    func stageStrings() -> [String] {
+        Array(fileDiffs.map { $0.stageStrings() }.joined())
+    }
 }
 
 struct FileDiff: Identifiable {
@@ -71,6 +84,21 @@ struct FileDiff: Identifiable {
         fromFileToFileLines = splited[fromFileIndex...toFileIndex].map { String($0) }
         chunks = Self.extractChunks(from: splited).map { Chunk(raw: $0) }
     }
+
+    func stageAll(stage: Bool) -> Self {
+        let newChunks = chunks.map { chunk in
+            var newChunk = chunk
+            newChunk.stage = stage
+            return newChunk
+        }
+        var new = self
+        new.chunks = newChunks
+        return new
+    }
+
+    func stageStrings() -> [String] {
+        chunks.map { $0.stageString }
+    }
 }
 
 struct Chunk: Identifiable {
@@ -101,6 +129,13 @@ struct Chunk: Identifiable {
     var id: String { raw }
     var lines: [Line]
     var raw: String
+    var stage: Bool?
+    var stageString: String {
+        if let stage, stage {
+            return "y"
+        }
+        return "n"
+    }
 
     init(raw: String) {
         self.raw = raw

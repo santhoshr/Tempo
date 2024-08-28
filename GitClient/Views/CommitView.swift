@@ -75,7 +75,11 @@ struct CommitView: View {
                     Button("Commit") {
                         Task {
                             do {
-                                try await Process.output(GitAdd(directory: folder.url))
+                                if let diff {
+                                    try await Process.output(GitAddPatch(directory: folder.url, inputs: diff.stageStrings()), verbose: true)
+                                } else {
+                                    try await Process.output(GitAdd(directory: folder.url))
+                                }
                                 if isAmend {
                                     try await Process.output(GitCommitAmend(directory: folder.url, message: commitMessage))
                                 } else {

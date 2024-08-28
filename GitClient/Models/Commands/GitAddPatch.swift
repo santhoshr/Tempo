@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GitAddPatch: Git {
+struct GitAddPatch: InteractiveGit {
     typealias OutputModel = Void
     var arguments: [String] {
         [

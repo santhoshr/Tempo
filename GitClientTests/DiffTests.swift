@@ -230,13 +230,13 @@ struct DiffView_Previews: PreviewProvider {
                 XCTAssertNil(chunk.stage)
             }
         }
-        diff = diff.stageAll(stage: true)
+        diff = diff.updateAll(stage: true)
         diff.fileDiffs.forEach { fileDiff in
             fileDiff.chunks.forEach { chunk in
                 XCTAssertTrue(chunk.stage!)
             }
         }
-        diff = diff.stageAll(stage: false)
+        diff = diff.updateAll(stage: false)
         diff.fileDiffs.forEach { fileDiff in
             fileDiff.chunks.forEach { chunk in
                 XCTAssertFalse(chunk.stage!)
@@ -250,12 +250,12 @@ struct DiffView_Previews: PreviewProvider {
         diff.stageStrings().forEach {
             XCTAssertEqual($0, "n")
         }
-        diff = diff.stageAll(stage: true)
+        diff = diff.updateAll(stage: true)
         XCTAssertEqual(diff.stageStrings().count, 3)
         diff.stageStrings().forEach {
             XCTAssertEqual($0, "y")
         }
-        diff = diff.stageAll(stage: false)
+        diff = diff.updateAll(stage: false)
         XCTAssertEqual(diff.stageStrings().count, 3)
         diff.stageStrings().forEach {
             XCTAssertEqual($0, "n")

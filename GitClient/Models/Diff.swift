@@ -19,9 +19,9 @@ struct Diff {
         }
     }
 
-    func stageAll(stage: Bool) -> Self {
+    func updateAll(stage: Bool) -> Self {
         let newFileDiffs = fileDiffs.map { fileDiff in
-            fileDiff.stageAll(stage: stage)
+            fileDiff.updateAll(stage: stage)
         }
         var new = self
         new.fileDiffs = newFileDiffs
@@ -85,7 +85,7 @@ struct FileDiff: Identifiable {
         chunks = Self.extractChunks(from: splited).map { Chunk(raw: $0) }
     }
 
-    func stageAll(stage: Bool) -> Self {
+    func updateAll(stage: Bool) -> Self {
         let newChunks = chunks.map { chunk in
             var newChunk = chunk
             newChunk.stage = stage

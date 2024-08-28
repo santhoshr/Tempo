@@ -126,6 +126,7 @@ struct CommitView: View {
                 self.error = error
             }
         }
+        .errorAlert($error)
     }
 }
 

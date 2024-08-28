@@ -10,8 +10,7 @@ import SwiftUI
 struct CommitView: View {
     var diffRaw: String
     var folder: Folder
-    @State private var runTask = false
-    @State private var fileDiffs: [FileDiff] = []
+    @State private var diff: Diff?
     @State private var commitMessage = ""
     @State private var error: Error?
     @State private var isAmend = false
@@ -21,20 +20,18 @@ struct CommitView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if runTask {
-                    if !fileDiffs.isEmpty {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                NotCommittedDiffView(fileDiffs: fileDiffs) { fileDiff, chunk in
-                                }
+                if let diff {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            NotCommittedDiffView(fileDiffs: diff.fileDiffs) { fileDiff, chunk in
                             }
-                            .padding()
-                            Spacer()
                         }
-                    } else {
-                        Text(diffRaw)
-                            .padding()
+                        .padding()
+                        Spacer()
                     }
+                } else {
+                    Text(diffRaw)
+                        .padding()
                 }
             }
             .textSelection(.enabled)
@@ -97,18 +94,13 @@ struct CommitView: View {
             })
         }
         .task {
-            do {
-                fileDiffs = try Diff(raw: diffRaw).updateAll(stage: true).fileDiffs
-            } catch {
-                
-            }
+            diff = try? Diff(raw: diffRaw).updateAll(stage: true)
 
             do {
                 amendCommit = try await Process.output(GitLog(directory: folder.url)).first
             } catch {
                 self.error = error
             }
-            runTask = true
         }
     }
 }

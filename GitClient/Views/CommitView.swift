@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct CommitView: View {
-    var diff: String
+    var diffRaw: String
     var folder: Folder
+    @State private var runTask = false
+    @State private var fileDiffs: [FileDiff] = []
     @State private var commitMessage = ""
     @State private var error: Error?
     @State private var isAmend = false
@@ -19,17 +21,20 @@ struct CommitView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if let diff = try? Diff(raw: diff).updateAll(stage: true) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            NotCommittedDiffView(fileDiffs: diff.fileDiffs)
+                if runTask {
+                    if !fileDiffs.isEmpty {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                NotCommittedDiffView(fileDiffs: fileDiffs) { fileDiff, chunk in
+                                }
+                            }
+                            .padding()
+                            Spacer()
                         }
-                        .padding()
-                        Spacer()
+                    } else {
+                        Text(diffRaw)
+                            .padding()
                     }
-                } else {
-                    Text(diff)
-                        .padding()
                 }
             }
             .textSelection(.enabled)
@@ -93,17 +98,24 @@ struct CommitView: View {
         }
         .task {
             do {
+                fileDiffs = try Diff(raw: diffRaw).updateAll(stage: true).fileDiffs
+            } catch {
+                
+            }
+
+            do {
                 amendCommit = try await Process.output(GitLog(directory: folder.url)).first
             } catch {
                 self.error = error
             }
+            runTask = true
         }
     }
 }
 
 struct CommitView_Previews: PreviewProvider {
     static var previews: some View {
-        CommitView(diff: """
+        CommitView(diffRaw: """
 diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
 index 0cd5c16..114b4ae 100644
 --- a/GitClient/Views/DiffView.swift

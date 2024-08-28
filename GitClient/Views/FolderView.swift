@@ -93,9 +93,9 @@ struct FolderView: View {
             logs = try await Process.output(GitLog(directory: folder.url)).map { Log.committed($0) }
             let gitDiff = try await Process.output(GitDiff(directory: folder.url))
             let gitDiffCached = try await Process.output(GitDiffCached(directory: folder.url))
-            let gitDiffOutput = gitDiff + gitDiffCached
-            if !gitDiffOutput.isEmpty {
-                logs.insert(.notCommitted(gitDiffOutput), at: 0)
+            let notCommitted = NotCommitted(diff: gitDiff, diffCached: gitDiffCached)
+            if !notCommitted.isEmpty {
+                logs.insert(.notCommitted(notCommitted), at: 0)
             }
         } catch {
             self.error = error

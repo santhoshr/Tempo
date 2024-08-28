@@ -13,6 +13,10 @@ struct Diff {
 
     init(raw: String) throws {
         self.raw = raw
+        guard !raw.isEmpty else {
+            fileDiffs = []
+            return
+        }
         fileDiffs = try ("\n" + raw).split(separator: "\ndiff").map { fileDiffRaw in
             let fileDiff = try FileDiff(raw: String("diff" + fileDiffRaw))
             return fileDiff

@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct CommitView: View {
-    var diffRaw: String
+    var notCommitted: NotCommitted
     var folder: Folder
     @State private var diff: Diff?
+    @State private var cachedDiff: Diff?
+    @State private var createDiffError: Error?
     @State private var commitMessage = ""
     @State private var error: Error?
     @State private var isAmend = false
@@ -24,13 +26,26 @@ struct CommitView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             NotCommittedDiffView(fileDiffs: diff.fileDiffs) { fileDiff, chunk in
+                                self.diff = diff.toggleChunkStage(chunk, in: fileDiff)
                             }
                         }
                         .padding()
                         Spacer()
                     }
-                } else {
-                    Text(diffRaw)
+                }
+                if let cachedDiff {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            NotCommittedDiffView(fileDiffs: cachedDiff.fileDiffs)
+                        }
+                        .padding()
+                        Spacer()
+                    }
+                }
+
+                if let createDiffError {
+                    Label(createDiffError.localizedDescription, systemImage: "exclamationmark.octagon")
+                    Text(notCommitted.diff + notCommitted.diffCached)
                         .padding()
                 }
             }
@@ -94,7 +109,12 @@ struct CommitView: View {
             })
         }
         .task {
-            diff = try? Diff(raw: diffRaw).updateAll(stage: true)
+            do {
+                diff = try Diff(raw: notCommitted.diff).updateAll(stage: true)
+                cachedDiff = try Diff(raw: notCommitted.diffCached)
+            } catch {
+                createDiffError = error
+            }
 
             do {
                 amendCommit = try await Process.output(GitLog(directory: folder.url)).first
@@ -105,80 +125,80 @@ struct CommitView: View {
     }
 }
 
-struct CommitView_Previews: PreviewProvider {
-    static var previews: some View {
-        CommitView(diffRaw: """
-diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
-index 0cd5c16..114b4ae 100644
---- a/GitClient/Views/DiffView.swift
-+++ b/GitClient/Views/DiffView.swift
-@@ -11,11 +11,25 @@ struct DiffView: View {
-     var diff: String
-
-     var body: some View {
--        ScrollView {
--            Text(diff)
--                .font(Font.system(.body, design: .monospaced))
--                .frame(maxWidth: .infinity, alignment: .leading)
--                .padding()
-+        ZStack {
-+            ScrollView {
-+                Text(diff)
-+                    .textSelection(.enabled)
-+                    .font(Font.system(.body, design: .monospaced))
-+                    .frame(maxWidth: .infinity, alignment: .leading)
-+                    .padding()
-+            }
-+            VStack {
-+                Spacer()
-+                HStack {
-+                    Spacer()
-+                    Button("Commit") {
-+
-+                    }
-+                    .padding()
-+                }
-+                .background(.ultraThinMaterial)
-+            }
-         }
-     }
- }
-diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
-index 0cd5c16..114b4ae 100644
---- a/GitClient/Views/DiffView.swift
-+++ b/GitClient/Views/DiffView.swift
-@@ -11,11 +11,25 @@ struct DiffView: View {
-     var diff: String
-
-     var body: some View {
--        ScrollView {
--            Text(diff)
--                .font(Font.system(.body, design: .monospaced))
--                .frame(maxWidth: .infinity, alignment: .leading)
--                .padding()
-+        ZStack {
-+            ScrollView {
-+                Text(diff)
-+                    .textSelection(.enabled)
-+                    .font(Font.system(.body, design: .monospaced))
-+                    .frame(maxWidth: .infinity, alignment: .leading)
-+                    .padding()
-+            }
-+            VStack {
-+                Spacer()
-+                HStack {
-+                    Spacer()
-+                    Button("Commit") {
-+
-+                    }
-+                    .padding()
-+                }
-+                .background(.ultraThinMaterial)
-+            }
-         }
-     }
- }
-
-""", folder: .init(url: .init(string: "file:///maoyama")!), onCommit: {})
-    }
-}
+//struct CommitView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CommitView(diffRaw: """
+//diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
+//index 0cd5c16..114b4ae 100644
+//--- a/GitClient/Views/DiffView.swift
+//+++ b/GitClient/Views/DiffView.swift
+//@@ -11,11 +11,25 @@ struct DiffView: View {
+//     var diff: String
+//
+//     var body: some View {
+//-        ScrollView {
+//-            Text(diff)
+//-                .font(Font.system(.body, design: .monospaced))
+//-                .frame(maxWidth: .infinity, alignment: .leading)
+//-                .padding()
+//+        ZStack {
+//+            ScrollView {
+//+                Text(diff)
+//+                    .textSelection(.enabled)
+//+                    .font(Font.system(.body, design: .monospaced))
+//+                    .frame(maxWidth: .infinity, alignment: .leading)
+//+                    .padding()
+//+            }
+//+            VStack {
+//+                Spacer()
+//+                HStack {
+//+                    Spacer()
+//+                    Button("Commit") {
+//+
+//+                    }
+//+                    .padding()
+//+                }
+//+                .background(.ultraThinMaterial)
+//+            }
+//         }
+//     }
+// }
+//diff --git a/GitClient/Views/DiffView.swift b/GitClient/Views/DiffView.swift
+//index 0cd5c16..114b4ae 100644
+//--- a/GitClient/Views/DiffView.swift
+//+++ b/GitClient/Views/DiffView.swift
+//@@ -11,11 +11,25 @@ struct DiffView: View {
+//     var diff: String
+//
+//     var body: some View {
+//-        ScrollView {
+//-            Text(diff)
+//-                .font(Font.system(.body, design: .monospaced))
+//-                .frame(maxWidth: .infinity, alignment: .leading)
+//-                .padding()
+//+        ZStack {
+//+            ScrollView {
+//+                Text(diff)
+//+                    .textSelection(.enabled)
+//+                    .font(Font.system(.body, design: .monospaced))
+//+                    .frame(maxWidth: .infinity, alignment: .leading)
+//+                    .padding()
+//+            }
+//+            VStack {
+//+                Spacer()
+//+                HStack {
+//+                    Spacer()
+//+                    Button("Commit") {
+//+
+//+                    }
+//+                    .padding()
+//+                }
+//+                .background(.ultraThinMaterial)
+//+            }
+//         }
+//     }
+// }
+//
+//""", folder: .init(url: .init(string: "file:///maoyama")!), onCommit: {})
+//    }
+//}

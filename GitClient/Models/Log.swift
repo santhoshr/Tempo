@@ -17,5 +17,11 @@ enum Log: Identifiable, Hashable {
         }
     }
 
-    case notCommitted(String), committed(Commit)
+    case notCommitted(NotCommitted), committed(Commit)
+}
+
+struct NotCommitted: Hashable {
+    var diff: String
+    var diffCached: String
+    var isEmpty: Bool { (diff + diffCached).isEmpty }
 }

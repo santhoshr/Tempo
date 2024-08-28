@@ -247,13 +247,13 @@
 				61347EEF28D5D16C00625FC4 /* ContentView.swift */,
 				61E290C228DFE29500BCEB04 /* FolderView.swift */,
 				61E290DA28E7C66200BCEB04 /* CommitView.swift */,
+				612208A82C032A0D0047B454 /* NotCommittedDiffView.swift */,
 				6154D69B2C6739C700448AB4 /* CommitMessageSuggestionView.swift */,
 				61839DC02B922B0D0015215B /* CommitLogView.swift */,
 				6180C0A728E916B900B3AEAD /* BranchesView.swift */,
 				619D876028F154AB00DD1D4E /* CreateNewBranchSheet.swift */,
 				61B4BE312C1E7EAC00F30F62 /* GitShowMediumView.swift */,
 				61B7F0482C5F3EBF00BFAA34 /* FileDiffsView.swift */,
-				612208A82C032A0D0047B454 /* NotCommittedDiffView.swift */,
 				61FAF4932C6835EC000B7ACB /* CommitMessageSnippetView.swift */,
 			);
 			path = Views;

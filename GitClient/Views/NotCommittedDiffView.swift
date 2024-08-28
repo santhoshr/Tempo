@@ -9,31 +9,45 @@ import SwiftUI
 
 struct NotCommittedDiffView: View {
     var fileDiffs: [FileDiff]
-    var onTap: (FileDiff, Chunk) -> Void?
+    var onTap: ((FileDiff, Chunk) -> Void)?
 
     var body: some View {
         LazyVStack(alignment: .leading) {
             ForEach(fileDiffs) { fileDiff in
-                Text(fileDiff.header)
-                    .fontWeight(.bold)
-                ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
-                    Text(line)
-                        .fontWeight(.bold)
-                }
-                ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
-                    Text(line)
-                        .fontWeight(.bold)
+                HStack(spacing: 16) {
+                    Rectangle()
+                        .frame(width: 8)
+                        .foregroundColor(.clear)
+                    VStack(alignment: .leading) {
+                        Text(fileDiff.header)
+                            .fontWeight(.bold)
+                        ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
+                            Text(line)
+                                .fontWeight(.bold)
+                        }
+                        ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
+                            Text(line)
+                                .fontWeight(.bold)
+                        }
+                    }
                 }
                 ForEach(fileDiff.chunks) { chunk in
-                    HStack {
-                        Rectangle()
-                            .frame(width: 8)
-                            .frame(maxHeight: .infinity)
-                            .foregroundColor(chunk.stage == true ? .accentColor : .secondary)
-                            .onTapGesture {
-                                onTap(fileDiff, chunk)
-                            }
-                            .clipShape(Capsule())
+                    HStack(spacing: 16) {
+                        if let stage = chunk.stage {
+                            Rectangle()
+                                .frame(width: 8)
+                                .frame(maxHeight: .infinity)
+                                .foregroundColor(stage ? .accentColor : .secondary)
+                                .opacity(0.7)
+                                .onTapGesture {
+                                    onTap?(fileDiff, chunk)
+                                }
+                                .clipShape(Capsule())
+                        } else {
+                            Rectangle()
+                                .frame(width: 8)
+                                .foregroundColor(.clear)
+                        }
                         chunkView(chunk)
                     }
                 }

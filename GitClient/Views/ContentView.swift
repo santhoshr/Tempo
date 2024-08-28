@@ -80,8 +80,8 @@ struct ContentView: View {
             }
         } detail: {
             switch selectionLog {
-            case .notCommitted(let string):
-                CommitView(diffRaw: string, folder: selectionFolder!) {
+            case .notCommitted(let value):
+                CommitView(notCommitted: value, folder: selectionFolder!) {
                     selectionLog = nil
                     folderIsRefresh = true
                 }

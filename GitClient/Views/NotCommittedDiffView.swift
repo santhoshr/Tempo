@@ -8,10 +8,51 @@
 import SwiftUI
 
 struct NotCommittedDiffView: View {
-    var diff: Diff
+    var fileDiffs: [FileDiff]
 
     var body: some View {
-        FileDiffsView(fileDiffs: diff.fileDiffs)
+        LazyVStack(alignment: .leading) {
+            ForEach(fileDiffs) { fileDiff in
+                Text(fileDiff.header)
+                    .fontWeight(.bold)
+                ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
+                    Text(line)
+                        .fontWeight(.bold)
+                }
+                ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
+                    Text(line)
+                        .fontWeight(.bold)
+                }
+                chunksViews(fileDiff.chunks)
+            }
+        }
+    }
+
+    // to be able to select multiple lines of text
+    private func chunksViews(_ chunks: [Chunk]) -> Text {
+        let views = chunks.map { chunk in
+            let chunksText = chunk.lines.map { line in
+                Text(line.raw)
+                    .foregroundStyle(chunkLineColor(line))
+            }
+            return chunksText.reduce(Text("")) { partialResult, text in
+                partialResult + text + Text("\n")
+            }
+        }
+        return views.reduce(Text("")) { partialResult, text in
+            partialResult + text
+        }
+    }
+
+    private func chunkLineColor(_ line: Chunk.Line) -> Color {
+        switch line.kind {
+        case .removed:
+            return .red
+        case .added:
+            return .green
+        case .unchanged:
+            return .primary
+        }
     }
 }
 
@@ -31,5 +72,5 @@ index 96134c5..46cd844 100644
                 61EBD7D128E940C30009ED92 /* Branch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBD7D028E940C30009ED92 /* Branch.swift */; };
                 61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EBD7D228E966190009ED92 /* GitSwitch.swift */; };
 """
-    return NotCommittedDiffView(diff: try! Diff(raw: text))
+    return NotCommittedDiffView(fileDiffs: try! Diff(raw: text).updateAll(stage: true).fileDiffs)
 }

@@ -22,7 +22,7 @@ struct CommitView: View {
                 if let diff = try? Diff(raw: diff).updateAll(stage: true) {
                     HStack {
                         VStack(alignment: .leading) {
-                            NotCommittedDiffView(diff: diff)
+                            NotCommittedDiffView(fileDiffs: diff.fileDiffs)
                         }
                         .padding()
                         Spacer()

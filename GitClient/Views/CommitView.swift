@@ -19,7 +19,7 @@ struct CommitView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if let diff = try? Diff(raw: diff) {
+                if let diff = try? Diff(raw: diff).updateAll(stage: true) {
                     HStack {
                         VStack(alignment: .leading) {
                             NotCommittedDiffView(diff: diff)

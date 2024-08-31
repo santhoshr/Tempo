@@ -81,10 +81,17 @@ struct ContentView: View {
         } detail: {
             switch selectionLog {
             case .notCommitted(let value):
-                CommitView(notCommitted: value, folder: selectionFolder!) {
-                    selectionLog = nil
-                    folderIsRefresh = true
-                }
+                CommitView(
+                    notCommitted: value,
+                    folder: selectionFolder!,
+                    onChange: {
+                        folderIsRefresh = true
+                    },
+                    onCommit: {
+                        selectionLog = nil
+                        folderIsRefresh = true
+                    }
+                )
             case .committed(let commit):
                 CommitLogView(commitHash: commit.hash, folder: selectionFolder!)
             case nil:

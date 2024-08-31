@@ -17,12 +17,13 @@ struct CommitView: View {
     @State private var error: Error?
     @State private var isAmend = false
     @State private var amendCommit: Commit?
+    var onChange: () -> Void
     var onCommit: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if let cachedDiff {
+                if let cachedDiff, !cachedDiff.fileDiffs.isEmpty {
                     NotCommittedDiffView(title: "Changes to be committed", fileDiffs: cachedDiff.fileDiffs)
                 }
 
@@ -45,10 +46,22 @@ struct CommitView: View {
                         Text("Header")
                         Spacer()
                         Button("Add All") {
-
+                            Task {
+                                do {
+                                    try await Process.output(GitAdd(directory: folder.url))
+                                } catch {
+                                    self.error = error
+                                }
+                            }
                         }
                         Button("Restore All") {
-
+                            Task {
+                                do {
+                                    try await Process.output(GitRestore(directory: folder.url))
+                                } catch {
+                                    self.error = error
+                                }
+                            }
                         }
                     }
                     .padding()
@@ -81,11 +94,6 @@ struct CommitView: View {
                     Button("Commit") {
                         Task {
                             do {
-                                if let diff {
-                                    try await Process.output(GitAddPatch(directory: folder.url, inputs: diff.stageStrings()), verbose: true)
-                                } else {
-                                    try await Process.output(GitAdd(directory: folder.url))
-                                }
                                 if isAmend {
                                     try await Process.output(GitCommitAmend(directory: folder.url, message: commitMessage))
                                 } else {

@@ -24,11 +24,11 @@ struct CommitView: View {
         VStack(spacing: 0) {
             ScrollView {
                 if let cachedDiff, !cachedDiff.fileDiffs.isEmpty {
-                    NotCommittedDiffView(title: "Changes to be committed", fileDiffs: cachedDiff.fileDiffs)
+                    NotCommittedDiffView(title: "Staged", fileDiffs: cachedDiff.fileDiffs)
                 }
 
                 if let diff {
-                    NotCommittedDiffView(title: "Changes not staged for commit",fileDiffs: diff.fileDiffs) { fileDiff, chunk in
+                    NotCommittedDiffView(title: "Not Staged",fileDiffs: diff.fileDiffs) { fileDiff, chunk in
                         self.diff = diff.toggleChunkStage(chunk, in: fileDiff)
                     }
                 }

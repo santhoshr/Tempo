@@ -8,16 +8,14 @@
 import SwiftUI
 
 struct NotCommittedDiffView: View {
+    var title: String
     var fileDiffs: [FileDiff]
     var onTap: ((FileDiff, Chunk) -> Void)?
 
     var body: some View {
-        LazyVStack(alignment: .leading) {
-            ForEach(fileDiffs) { fileDiff in
-                HStack(spacing: 16) {
-                    Rectangle()
-                        .frame(width: 8)
-                        .foregroundColor(.clear)
+        LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
+            Section {
+                ForEach(fileDiffs) { fileDiff in
                     VStack(alignment: .leading) {
                         Text(fileDiff.header)
                             .fontWeight(.bold)
@@ -30,27 +28,23 @@ struct NotCommittedDiffView: View {
                                 .fontWeight(.bold)
                         }
                     }
-                }
-                ForEach(fileDiff.chunks) { chunk in
-                    HStack(spacing: 16) {
-                        if let stage = chunk.stage {
-                            Rectangle()
-                                .frame(width: 8)
-                                .frame(maxHeight: .infinity)
-                                .foregroundColor(stage ? .accentColor : .secondary)
-                                .opacity(0.7)
-                                .onTapGesture {
-                                    onTap?(fileDiff, chunk)
-                                }
-                                .clipShape(Capsule())
-                        } else {
-                            Rectangle()
-                                .frame(width: 8)
-                                .foregroundColor(.clear)
-                        }
+                    ForEach(fileDiff.chunks) { chunk in
                         chunkView(chunk)
                     }
                 }
+                .font(Font.system(.body, design: .monospaced))
+                .padding([.trailing, .bottom, .leading])
+            } header: {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        Text(title)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    }
+                    .padding()
+                }
+                .background(Color(nsColor: .textBackgroundColor))
             }
         }
     }

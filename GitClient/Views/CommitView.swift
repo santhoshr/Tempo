@@ -22,24 +22,13 @@ struct CommitView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if let diff {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            NotCommittedDiffView(fileDiffs: diff.fileDiffs) { fileDiff, chunk in
-                                self.diff = diff.toggleChunkStage(chunk, in: fileDiff)
-                            }
-                        }
-                        .padding()
-                        Spacer()
-                    }
-                }
                 if let cachedDiff {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            NotCommittedDiffView(fileDiffs: cachedDiff.fileDiffs)
-                        }
-                        .padding()
-                        Spacer()
+                    NotCommittedDiffView(title: "Changes to be committed", fileDiffs: cachedDiff.fileDiffs)
+                }
+
+                if let diff {
+                    NotCommittedDiffView(title: "Changes not staged for commit",fileDiffs: diff.fileDiffs) { fileDiff, chunk in
+                        self.diff = diff.toggleChunkStage(chunk, in: fileDiff)
                     }
                 }
 
@@ -47,10 +36,27 @@ struct CommitView: View {
                     Label(createDiffError.localizedDescription, systemImage: "exclamationmark.octagon")
                     Text(notCommitted.diff + notCommitted.diffCached)
                         .padding()
+                        .font(Font.system(.body, design: .monospaced))
                 }
             }
+            .safeAreaInset(edge: .top, spacing: 0, content: {
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("Header")
+                        Spacer()
+                        Button("Add All") {
+
+                        }
+                        Button("Restore All") {
+
+                        }
+                    }
+                    .padding()
+                    Divider()
+                }
+                .background(Color(nsColor: .textBackgroundColor))
+            })
             .textSelection(.enabled)
-            .font(Font.system(.body, design: .monospaced))
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))

@@ -49,6 +49,7 @@ struct CommitView: View {
                             Task {
                                 do {
                                     try await Process.output(GitAdd(directory: folder.url))
+                                    onChange()
                                 } catch {
                                     self.error = error
                                 }
@@ -58,6 +59,7 @@ struct CommitView: View {
                             Task {
                                 do {
                                     try await Process.output(GitRestore(directory: folder.url))
+                                    onChange()
                                 } catch {
                                     self.error = error
                                 }

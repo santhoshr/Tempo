@@ -18,6 +18,7 @@ struct CommitView: View {
     @State private var error: Error?
     @State private var isAmend = false
     @State private var amendCommit: Commit?
+    @Binding var isRefresh: Bool
     var onCommit: () -> Void
 
     var body: some View {
@@ -128,6 +129,13 @@ struct CommitView: View {
                 }
             })
         }
+        .onChange(of: isRefresh, { oldValue, newValue in
+            if newValue {
+                Task {
+                    await updateDiffs()
+                }
+            }
+        })
         .task {
             await updateDiffs()
 

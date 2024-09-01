@@ -83,6 +83,7 @@ struct ContentView: View {
             case .notCommitted:
                 CommitView(
                     folder: selectionFolder!,
+                    isRefresh: $folderIsRefresh,
                     onCommit: {
                         selectionLog = nil
                         folderIsRefresh = true

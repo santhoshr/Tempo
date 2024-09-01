@@ -55,7 +55,7 @@ struct FolderView: View {
             }
         })
         .onChange(of: isRefresh, { oldValue, newValue in
-            if !oldValue && newValue {
+            if newValue {
                 Task {
                     await setModels()
                     isRefresh = false
@@ -192,9 +192,7 @@ struct FolderView: View {
 
     fileprivate func reloadButton() -> some View {
         return Button {
-            Task {
-                await setModels()
-            }
+            isRefresh = true
         } label: {
             Image(systemName: "arrow.clockwise")
         }

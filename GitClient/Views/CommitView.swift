@@ -28,7 +28,7 @@ struct CommitView: View {
                     NotCommittedDiffView(title: "Staged", fileDiffs: cachedDiff.fileDiffs)
                 }
 
-                if let diff {
+                if let diff, !diff.fileDiffs.isEmpty {
                     NotCommittedDiffView(title: "Not Staged",fileDiffs: diff.fileDiffs) { fileDiff, chunk in
                         self.diff = diff.toggleChunkStage(chunk, in: fileDiff)
                     }

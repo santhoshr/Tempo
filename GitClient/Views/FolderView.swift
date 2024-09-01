@@ -90,13 +90,14 @@ struct FolderView: View {
     fileprivate func setModels() async {
         do {
             branch = try await Process.output(GitBranch(directory: folder.url)).current
-            logs = try await Process.output(GitLog(directory: folder.url)).map { Log.committed($0) }
+            var newLogs = try await Process.output(GitLog(directory: folder.url)).map { Log.committed($0) }
             let gitDiff = try await Process.output(GitDiff(directory: folder.url))
             let gitDiffCached = try await Process.output(GitDiffCached(directory: folder.url))
-            let notCommitted = NotCommitted(diff: gitDiff, diffCached: gitDiffCached)
-            if !notCommitted.isEmpty {
-                logs.insert(.notCommitted(notCommitted), at: 0)
+            let newNotCommitted = NotCommitted(diff: gitDiff, diffCached: gitDiffCached)
+            if !newNotCommitted.isEmpty {
+                newLogs.insert(.notCommitted, at: 0)
             }
+            logs = newLogs
         } catch {
             self.error = error
             branch = nil

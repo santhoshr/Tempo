@@ -10,14 +10,14 @@ import Foundation
 enum Log: Identifiable, Hashable {
     var id: String {
         switch self {
-        case .notCommitted(let value):
-            return "diff:" + value.diff + "\n diffCahched:" + value.diffCached
+        case .notCommitted:
+            return "notCommitted"
         case .committed(let c):
             return c.hash
         }
     }
 
-    case notCommitted(NotCommitted), committed(Commit)
+    case notCommitted, committed(Commit)
 }
 
 struct NotCommitted: Hashable {

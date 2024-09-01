@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct CommitView: View {
-    var notCommitted: NotCommitted
     var folder: Folder
-    @State private var diff: Diff?
+    @State private var cachedDiffRaw = ""
+    @State private var diffRaw = ""
     @State private var cachedDiff: Diff?
+    @State private var diff: Diff?
     @State private var createDiffError: Error?
     @State private var commitMessage = ""
     @State private var error: Error?
     @State private var isAmend = false
     @State private var amendCommit: Commit?
-    var onChange: () -> Void
     var onCommit: () -> Void
 
     var body: some View {
@@ -35,7 +35,7 @@ struct CommitView: View {
 
                 if let createDiffError {
                     Label(createDiffError.localizedDescription, systemImage: "exclamationmark.octagon")
-                    Text(notCommitted.diff + notCommitted.diffCached)
+                    Text(cachedDiffRaw + diffRaw)
                         .padding()
                         .font(Font.system(.body, design: .monospaced))
                 }
@@ -49,7 +49,7 @@ struct CommitView: View {
                             Task {
                                 do {
                                     try await Process.output(GitAdd(directory: folder.url))
-                                    onChange()
+                                    await updateDiffs()
                                 } catch {
                                     self.error = error
                                 }
@@ -59,7 +59,7 @@ struct CommitView: View {
                             Task {
                                 do {
                                     try await Process.output(GitRestore(directory: folder.url))
-                                    onChange()
+                                    await updateDiffs()
                                 } catch {
                                     self.error = error
                                 }
@@ -129,12 +129,7 @@ struct CommitView: View {
             })
         }
         .task {
-            do {
-                diff = try Diff(raw: notCommitted.diff).updateAll(stage: true)
-                cachedDiff = try Diff(raw: notCommitted.diffCached)
-            } catch {
-                createDiffError = error
-            }
+            await updateDiffs()
 
             do {
                 amendCommit = try await Process.output(GitLog(directory: folder.url)).first
@@ -143,6 +138,17 @@ struct CommitView: View {
             }
         }
         .errorAlert($error)
+    }
+
+    private func updateDiffs() async {
+        do {
+            cachedDiffRaw = try await Process.output(GitDiffCached(directory: folder.url))
+            diffRaw = try await Process.output(GitDiff(directory: folder.url))
+            cachedDiff = try Diff(raw: cachedDiffRaw)
+            diff = try Diff(raw: diffRaw)
+        } catch {
+            createDiffError = error
+        }
     }
 }
 

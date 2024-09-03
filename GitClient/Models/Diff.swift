@@ -89,8 +89,10 @@ struct FileDiff: Identifiable {
         header = firstLine
         let fromFileIndex = splited.firstIndex { $0.hasPrefix("--- ") }
         guard let fromFileIndex else {
-            print("Parse error for fromFileIndex", raw)
-            throw GenericError(errorDescription: "Parse error for fromFileIndex in FileDiff")
+            extendedHeaderLines = splited[1..<splited.endIndex].map { String($0) }
+            fromFileToFileLines = []
+            chunks = []
+            return
         }
         extendedHeaderLines = splited[1..<fromFileIndex].map { String($0) }
         let toFileIndex = splited.lastIndex { $0.hasPrefix("+++ ") }

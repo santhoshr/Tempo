@@ -8,8 +8,6 @@
 import Foundation
 
 struct ProcessError: Error, LocalizedError {
-    static var unknown = ProcessError(description: "Unknown error.")
-
     private var description: String
     var errorDescription: String? {
         return description
@@ -60,10 +58,10 @@ extension Process {
 
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
-            if let errOut = errOut {
-                throw ProcessError(description: errOut)
-            }
-            throw ProcessError.unknown
+            let errorMessageWhen = "An error occurred while executing the '" + arguments.joined(separator: " ") + "'\n\n"
+            throw ProcessError(
+                description: errorMessageWhen + (stdOut ?? "") + "\n" + (errOut ?? "")
+            )
         }
         return .init(standardOutput: stdOut ?? "", standartError: errOut ?? "")
     }

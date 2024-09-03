@@ -13,6 +13,7 @@ struct GitDiffCached: Git {
         "git",
         "diff",
         "--cached",
+        "--no-renames",
     ]
     var directory: URL
 

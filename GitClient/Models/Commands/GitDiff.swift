@@ -12,6 +12,7 @@ struct GitDiff: Git {
     var arguments = [
         "git",
         "diff",
+        "--no-renames",
     ]
     var directory: URL
 

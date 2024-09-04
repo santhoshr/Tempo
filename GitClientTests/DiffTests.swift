@@ -45,11 +45,14 @@ struct DetailFooter: View {
 struct DetailFooter_Previews: PreviewProvider {
  static var previews: some View {
      Group {
+diff --git a/testfile6.txt b/testfile6.txt
+new file mode 100644
+index 0000000..e69de29
 """
 
     func testDiffInit() throws {
         let diff = try Diff(raw: raw)
-        XCTAssertEqual(diff.fileDiffs.count, 2)
+        XCTAssertEqual(diff.fileDiffs.count, 3)
         XCTAssertEqual(diff.fileDiffs.first!.raw, """
 diff --git a/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GitBlamePR.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 index ca7d6df..b9d9984 100644
@@ -92,7 +95,7 @@ struct DetailFooter_Previews: PreviewProvider {
 """
         )
         XCTAssertEqual(raw, diff.raw)
-        XCTAssertEqual(diff.raw, diff.fileDiffs[0].raw + "\n" + diff.fileDiffs[1].raw)
+        XCTAssertEqual(diff.raw, diff.fileDiffs[0].raw + "\n" + diff.fileDiffs[1].raw + "\n" + diff.fileDiffs[2].raw)
     }
 
     func testFileDiffInit() throws {
@@ -246,17 +249,17 @@ struct DiffView_Previews: PreviewProvider {
 
     func testStageStrings() throws {
         var diff = try Diff(raw: raw)
-        XCTAssertEqual(diff.stageStrings().count, 3)
+        XCTAssertEqual(diff.stageStrings().count, 4)
         diff.stageStrings().forEach {
             XCTAssertEqual($0, "n")
         }
         diff = diff.updateAll(stage: true)
-        XCTAssertEqual(diff.stageStrings().count, 3)
+        XCTAssertEqual(diff.stageStrings().count, 4)
         diff.stageStrings().forEach {
             XCTAssertEqual($0, "y")
         }
         diff = diff.updateAll(stage: false)
-        XCTAssertEqual(diff.stageStrings().count, 3)
+        XCTAssertEqual(diff.stageStrings().count, 4)
         diff.stageStrings().forEach {
             XCTAssertEqual($0, "n")
         }

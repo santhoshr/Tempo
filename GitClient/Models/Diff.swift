@@ -32,14 +32,22 @@ struct Diff {
         return new
     }
 
-    func toggleChunkStage(_ chunk: Chunk, in fileDiff: FileDiff) -> Self {
+    func updateFileDiffStage(_ fileDiff: FileDiff, stage: Bool) -> Self {
+        let fileDiffIndex = fileDiffs.firstIndex { $0.id == fileDiff.id }
+        guard let fileDiffIndex  else { return self }
+        var new = self
+        new.fileDiffs[fileDiffIndex].stage = stage
+        return new
+    }
+
+    func updateChunkStage(_ chunk: Chunk, in fileDiff: FileDiff, stage: Bool) -> Self {
         let fileDiffIndex = fileDiffs.firstIndex { $0.id == fileDiff.id }
         guard let fileDiffIndex  else { return self }
         let chunkIndex = fileDiffs[fileDiffIndex].chunks.firstIndex { $0.id == chunk.id }
         guard let chunkIndex else { return self }
         var new = self
         var newChunk = chunk
-        newChunk.stage?.toggle()
+        newChunk.stage = stage
         new.fileDiffs[fileDiffIndex].chunks[chunkIndex] = newChunk
         return new
     }
@@ -55,6 +63,13 @@ struct FileDiff: Identifiable {
     var extendedHeaderLines: [String]
     var fromFileToFileLines: [String]
     var chunks: [Chunk]
+    var stage: Bool?
+    var stageString: String {
+        if let stage, stage {
+            return "y"
+        }
+        return "n"
+    }
     var raw: String
 
     private static func extractChunks(from lines: [String]) -> [String] {
@@ -104,6 +119,11 @@ struct FileDiff: Identifiable {
     }
 
     func updateAll(stage: Bool) -> Self {
+        guard !chunks.isEmpty else {
+            var newSelf = self
+            newSelf.stage = stage
+            return newSelf
+        }
         let newChunks = chunks.map { chunk in
             var newChunk = chunk
             newChunk.stage = stage
@@ -115,7 +135,10 @@ struct FileDiff: Identifiable {
     }
 
     func stageStrings() -> [String] {
-        chunks.map { $0.stageString }
+        guard !chunks.isEmpty else {
+            return [stageString]
+        }
+        return chunks.map { $0.stageString }
     }
 }
 

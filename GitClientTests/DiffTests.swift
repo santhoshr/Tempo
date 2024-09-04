@@ -262,9 +262,9 @@ struct DiffView_Previews: PreviewProvider {
         }
     }
 
-    func testToggleChunkStage() throws {
+    func testUpdateChunkStage() throws {
         let diff = try Diff(raw: raw).updateAll(stage: false)
-        let newDiff = diff.toggleChunkStage(diff.fileDiffs.first!.chunks.first!, in: diff.fileDiffs.first!)
+        let newDiff = diff.updateChunkStage(diff.fileDiffs.first!.chunks.first!, in: diff.fileDiffs.first!, stage: true)
         XCTAssertFalse(diff.fileDiffs.first!.chunks.first!.stage!)
         XCTAssertTrue(newDiff.fileDiffs.first!.chunks.first!.stage!)
     }

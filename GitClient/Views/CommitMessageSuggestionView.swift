@@ -30,7 +30,7 @@ struct CommitMessageSuggestionView: View {
                         Button(snippet) {
                             NotificationCenter.default.post(name: .didSelectCommitMessageSnippetNotification, object: snippet)
                         }
-                        .buttonStyle(.borderless)
+                        .buttonStyle(.accessoryBar)
                         if snippet != decodedCommitMessageSnippet.last {
                             Text("|")
                                 .foregroundStyle(.separator)

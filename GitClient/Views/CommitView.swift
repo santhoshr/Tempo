@@ -46,7 +46,7 @@ struct CommitView: View {
                     HStack {
                         Text("Header")
                         Spacer()
-                        Button("Add All") {
+                        Button("Stage All") {
                             Task {
                                 do {
                                     try await Process.output(GitAdd(directory: folder.url))
@@ -56,7 +56,8 @@ struct CommitView: View {
                                 }
                             }
                         }
-                        Button("Restore All") {
+                        .buttonStyle(.borderedProminent)
+                        Button("Unstage All") {
                             Task {
                                 do {
                                     try await Process.output(GitRestore(directory: folder.url))

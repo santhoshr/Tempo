@@ -10,26 +10,51 @@ import SwiftUI
 struct NotCommittedDiffView: View {
     var title: String
     var fileDiffs: [FileDiff]
-    var onTap: ((FileDiff, Chunk) -> Void)?
+    var staged: Bool
+    var onSelect: ((FileDiff, Chunk?) -> Void)?
 
     var body: some View {
         LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
             Section {
                 ForEach(fileDiffs) { fileDiff in
-                    VStack(alignment: .leading) {
-                        Text(fileDiff.header)
-                            .fontWeight(.bold)
-                        ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
-                            Text(line)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(fileDiff.header)
                                 .fontWeight(.bold)
+                            ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
+                                Text(line)
+                                    .fontWeight(.bold)
+                            }
+                            ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
+                                Text(line)
+                                    .fontWeight(.bold)
+                            }
                         }
-                        ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
-                            Text(line)
-                                .fontWeight(.bold)
+                        Spacer()
+                        if fileDiff.chunks.isEmpty {
+                            Button {
+                                onSelect?(fileDiff, nil)
+                            } label: {
+                                Image(systemName: staged ? "minus.circle" : "plus.circle")
+                            }
+                            .buttonStyle(.accessoryBar)
+                            .padding()
                         }
                     }
+
                     ForEach(fileDiff.chunks) { chunk in
-                        chunkView(chunk)
+                        HStack {
+                            chunkView(chunk)
+                            Spacer()
+                            Button {
+                                onSelect?(fileDiff, chunk)
+                            } label: {
+                                Image(systemName: staged ? "minus.circle" : "plus.circle")
+                            }
+                            .buttonStyle(.accessoryBar)
+                            .padding()
+                        }
+
                     }
                 }
                 .font(Font.system(.body, design: .monospaced))

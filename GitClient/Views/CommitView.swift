@@ -36,7 +36,7 @@ struct CommitView: View {
                         Task {
                             do {
                                 try await Process.output(GitRestorePatch(directory: folder.url, inputs: newDiff.unstageStrings()))
-                                await updateDiffs()
+                                await updateChanges()
                             } catch {
                                 self.error = error
                             }
@@ -55,7 +55,7 @@ struct CommitView: View {
                         Task {
                             do {
                                 try await Process.output(GitAddPatch(directory: folder.url, inputs: newDiff.stageStrings()))
-                                await updateDiffs()
+                                await updateChanges()
                             } catch {
                                 self.error = error
                             }
@@ -79,7 +79,7 @@ struct CommitView: View {
                             Task {
                                 do {
                                     try await Process.output(GitAdd(directory: folder.url))
-                                    await updateDiffs()
+                                    await updateChanges()
                                 } catch {
                                     self.error = error
                                 }
@@ -90,7 +90,7 @@ struct CommitView: View {
                             Task {
                                 do {
                                     try await Process.output(GitRestore(directory: folder.url))
-                                    await updateDiffs()
+                                    await updateChanges()
                                 } catch {
                                     self.error = error
                                 }
@@ -163,12 +163,12 @@ struct CommitView: View {
         .onChange(of: isRefresh, { oldValue, newValue in
             if newValue {
                 Task {
-                    await updateDiffs()
+                    await updateChanges()
                 }
             }
         })
         .task {
-            await updateDiffs()
+            await updateChanges()
 
             do {
                 amendCommit = try await Process.output(GitLog(directory: folder.url)).first
@@ -179,7 +179,7 @@ struct CommitView: View {
         .errorAlert($error)
     }
 
-    private func updateDiffs() async {
+    private func updateChanges() async {
         do {
             cachedDiffRaw = try await Process.output(GitDiffCached(directory: folder.url))
             diffRaw = try await Process.output(GitDiff(directory: folder.url))

@@ -32,6 +32,15 @@ struct CommitView: View {
                         } else {
                             newDiff = cachedDiff.updateFileDiffStage(fileDiff, stage: false)
                         }
+
+                        Task {
+                            do {
+                                try await Process.output(GitRestorePatch(directory: folder.url, inputs: newDiff.unstageStrings()))
+                                await updateDiffs()
+                            } catch {
+                                self.error = error
+                            }
+                        }
                     }
                 }
 

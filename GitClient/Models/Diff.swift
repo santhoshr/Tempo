@@ -55,6 +55,10 @@ struct Diff {
     func stageStrings() -> [String] {
         Array(fileDiffs.map { $0.stageStrings() }.joined())
     }
+
+    func unstageStrings() -> [String] {
+        Array(fileDiffs.map { $0.unstageStrings() }.joined())
+    }
 }
 
 struct FileDiff: Identifiable {
@@ -66,6 +70,12 @@ struct FileDiff: Identifiable {
     var stage: Bool?
     var stageString: String {
         if let stage, stage {
+            return "y"
+        }
+        return "n"
+    }
+    var unstageString: String {
+        if let stage, !stage {
             return "y"
         }
         return "n"
@@ -140,6 +150,13 @@ struct FileDiff: Identifiable {
         }
         return chunks.map { $0.stageString }
     }
+
+    func unstageStrings() -> [String] {
+        guard !chunks.isEmpty else {
+            return [unstageString]
+        }
+        return chunks.map { $0.unstageString }
+    }
 }
 
 struct Chunk: Identifiable {
@@ -173,6 +190,12 @@ struct Chunk: Identifiable {
     var stage: Bool?
     var stageString: String {
         if let stage, stage {
+            return "y"
+        }
+        return "n"
+    }
+    var unstageString: String {
+        if let stage, !stage {
             return "y"
         }
         return "n"

@@ -25,12 +25,32 @@ struct CommitView: View {
         VStack(spacing: 0) {
             ScrollView {
                 if let cachedDiff, !cachedDiff.fileDiffs.isEmpty {
-                    NotCommittedDiffView(title: "Staged", fileDiffs: cachedDiff.fileDiffs)
+                    NotCommittedDiffView(title: "Staged", fileDiffs: cachedDiff.fileDiffs, staged: true) { fileDiff, chunk in
+                        let newDiff: Diff
+                        if let chunk {
+                            newDiff = cachedDiff.updateChunkStage(chunk, in: fileDiff, stage: false)
+                        } else {
+                            newDiff = cachedDiff.updateFileDiffStage(fileDiff, stage: false)
+                        }
+                    }
                 }
 
                 if let diff, !diff.fileDiffs.isEmpty {
-                    NotCommittedDiffView(title: "Not Staged",fileDiffs: diff.fileDiffs) { fileDiff, chunk in
-                        self.diff = diff.updateChunkStage(chunk, in: fileDiff, stage: true)
+                    NotCommittedDiffView(title: "Not Staged",fileDiffs: diff.fileDiffs, staged: false) { fileDiff, chunk in
+                        let newDiff: Diff
+                        if let chunk {
+                            newDiff = diff.updateChunkStage(chunk, in: fileDiff, stage: true)
+                        } else {
+                            newDiff = diff.updateFileDiffStage(fileDiff, stage: true)
+                        }
+                        Task {
+                            do {
+                                try await Process.output(GitAddPatch(directory: folder.url, inputs: newDiff.stageStrings()))
+                                await updateDiffs()
+                            } catch {
+                                self.error = error
+                            }
+                        }
                     }
                 }
 

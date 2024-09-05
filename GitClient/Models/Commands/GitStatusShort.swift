@@ -8,7 +8,7 @@
 import Foundation
 
 struct GitStatus: Git {
-    typealias OutputModel = String
+    typealias OutputModel = Status
     var arguments: [String] {
         [
             "git",
@@ -18,7 +18,9 @@ struct GitStatus: Git {
     }
     var directory: URL
 
-    func parse(for stdOut: String) -> String {
-        stdOut
+    func parse(for stdOut: String) -> Status {
+        let lines = stdOut.components(separatedBy: .newlines)
+        let untrackedLines = lines.filter { $0.hasPrefix("?? ") }
+        return .init(untrackedFiles: untrackedLines.map { String($0.dropFirst(3)) })
     }
 }

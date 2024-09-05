@@ -56,7 +56,7 @@ struct CommitView: View {
                                 }
                             }
                         }
-                        .buttonStyle(.borderedProminent)
+                        .disabled(diffRaw.isEmpty)
                         Button("Unstage All") {
                             Task {
                                 do {
@@ -67,6 +67,7 @@ struct CommitView: View {
                                 }
                             }
                         }
+                        .disabled(cachedDiffRaw.isEmpty)
                     }
                     .padding()
                     Divider()
@@ -110,7 +111,7 @@ struct CommitView: View {
                         }
                     }
                     .keyboardShortcut(.init(.return))
-                    .disabled(commitMessage.isEmpty)
+                    .disabled(cachedDiffRaw.isEmpty || commitMessage.isEmpty)
                     Toggle("Amend", isOn: $isAmend)
                         .font(.caption)
                 }

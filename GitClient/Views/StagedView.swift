@@ -37,6 +37,7 @@ struct StagedView: View {
                                 Image(systemName: "minus.circle")
                             }
                             .buttonStyle(.accessoryBar)
+                            .help("Unstage this hunk")
                             .padding()
                         }
                     }

@@ -40,22 +40,17 @@ struct CommitView: View {
                 }
 
                 if let diff, !diff.fileDiffs.isEmpty {
-                    NotCommittedDiffView(title: "Not Staged",fileDiffs: diff.fileDiffs, staged: false) { fileDiff, chunk in
-                        let newDiff: Diff
-                        if let chunk {
-                            newDiff = diff.updateChunkStage(chunk, in: fileDiff, stage: true)
-                        } else {
-                            newDiff = diff.updateFileDiffStage(fileDiff, stage: true)
+                    NotStagedView(
+                        fileDiffs: diff.fileDiffs,
+                        onSelectFileDiff: { fileDiff in
+                            let newDiff = diff.updateFileDiffStage(fileDiff, stage: true)
+                            addPatch(newDiff)
+                        },
+                        onSelectChunk: { fileDiff, chunk in
+                            let newDiff = diff.updateChunkStage(chunk, in: fileDiff, stage: true)
+                            addPatch(newDiff)
                         }
-                        Task {
-                            do {
-                                try await Process.output(GitAddPatch(directory: folder.url, inputs: newDiff.stageStrings()))
-                                await updateChanges()
-                            } catch {
-                                self.error = error
-                            }
-                        }
-                    }
+                    )
                 }
 
                 if let updateChangesError {
@@ -191,6 +186,17 @@ struct CommitView: View {
         Task {
             do {
                 try await Process.output(GitRestorePatch(directory: folder.url, inputs: newDiff.unstageStrings()))
+                await updateChanges()
+            } catch {
+                self.error = error
+            }
+        }
+    }
+
+    private func addPatch(_ newDiff: Diff) {
+        Task {
+            do {
+                try await Process.output(GitAddPatch(directory: folder.url, inputs: newDiff.stageStrings()))
                 await updateChanges()
             } catch {
                 self.error = error

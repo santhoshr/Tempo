@@ -32,7 +32,6 @@ struct CommitView: View {
             return diffShortStat
         }
     }
-
     @State private var cachedDiffRaw = ""
     @State private var diffRaw = ""
     @State private var cachedDiff: Diff?

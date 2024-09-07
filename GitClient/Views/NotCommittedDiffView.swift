@@ -64,10 +64,10 @@ struct NotCommittedDiffView: View {
                     HStack {
                         Text(title)
                             .fontWeight(.bold)
-                            .foregroundStyle(.secondary)
                         Spacer()
                     }
-                    .padding()
+                    .padding(.vertical, 9)
+                    .padding(.horizontal)
                 }
                 .background(Color(nsColor: .textBackgroundColor))
             }

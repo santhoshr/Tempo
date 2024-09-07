@@ -74,7 +74,6 @@ struct CommitView: View {
             .safeAreaInset(edge: .top, spacing: 0, content: {
                 VStack(spacing: 0) {
                     HStack {
-                        Text("Header")
                         Spacer()
                         Button("Stage All") {
                             Task {
@@ -99,7 +98,8 @@ struct CommitView: View {
                         }
                         .disabled(cachedDiffRaw.isEmpty)
                     }
-                    .padding()
+                    .padding(.vertical, 10)
+                    .padding(.horizontal)
                     Divider()
                 }
                 .background(Color(nsColor: .textBackgroundColor))
@@ -144,6 +144,7 @@ struct CommitView: View {
                     .disabled(cachedDiffRaw.isEmpty || commitMessage.isEmpty)
                     Toggle("Amend", isOn: $isAmend)
                         .font(.caption)
+                        .padding(.trailing, 6)
                 }
                 .onChange(of: isAmend) {
                     if isAmend {

@@ -50,6 +50,16 @@ struct CommitView: View {
                         onSelectChunk: { fileDiff, chunk in
                             let newDiff = diff.updateChunkStage(chunk, in: fileDiff, stage: true)
                             addPatch(newDiff)
+                        },
+                        onSelectUntrackedFile: { file in
+                            Task {
+                                do {
+                                    try await Process.output(GitAddPathspec(directory: folder.url, pathspec: file))
+                                    await updateChanges()
+                                } catch {
+                                    self.error = error
+                                }
+                            }
                         }
                     )
                 }

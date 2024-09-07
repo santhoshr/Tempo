@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CommitView: View {
     var folder: Folder
+    @State private var cachedDiffShortStat = ""
+    @State private var diffShortStat = ""
     @State private var cachedDiffRaw = ""
     @State private var diffRaw = ""
     @State private var cachedDiff: Diff?
@@ -74,7 +76,16 @@ struct CommitView: View {
             .safeAreaInset(edge: .top, spacing: 0, content: {
                 VStack(spacing: 0) {
                     HStack {
-                        Spacer()
+                        VStack(alignment: .leading) {
+                            Text("Staged: " + cachedDiffShortStat)
+                            Text("Not Staged: " + diffShortStat)
+                        }
+                        .lineLimit(1)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .layoutPriority(1)
+                        Spacer(minLength: 0)
+                            .foregroundColor(.accentColor)
                         Button("Stage All") {
                             Task {
                                 do {
@@ -86,6 +97,7 @@ struct CommitView: View {
                             }
                         }
                         .disabled(diffRaw.isEmpty)
+                        .layoutPriority(2)
                         Button("Unstage All") {
                             Task {
                                 do {
@@ -97,6 +109,7 @@ struct CommitView: View {
                             }
                         }
                         .disabled(cachedDiffRaw.isEmpty)
+                        .layoutPriority(2)
                     }
                     .padding(.vertical, 10)
                     .padding(.horizontal)
@@ -183,11 +196,27 @@ struct CommitView: View {
 
     private func updateChanges() async {
         do {
+            diffShortStat = try await String(Process.output(GitDiffShortStat(directory: folder.url)).dropLast())
+            cachedDiffShortStat = try await String(Process.output(GitDiffShortStat(directory: folder.url, cached: true)).dropLast())
+            status = try await Process.output(GitStatus(directory: folder.url))
             cachedDiffRaw = try await Process.output(GitDiffCached(directory: folder.url))
             diffRaw = try await Process.output(GitDiff(directory: folder.url))
             cachedDiff = try Diff(raw: cachedDiffRaw)
             diff = try Diff(raw: diffRaw)
-            status = try await Process.output(GitStatus(directory: folder.url))
+
+            if let untrackedStat = status?.untrackedFilesShortStat, !untrackedStat.isEmpty {
+                if diffShortStat.isEmpty {
+                    diffShortStat = untrackedStat
+                } else {
+                    diffShortStat += ", " + untrackedStat
+                }
+            }
+            if cachedDiffShortStat.isEmpty {
+                cachedDiffShortStat = "No changed"
+            }
+            if diffShortStat.isEmpty {
+                diffShortStat = "No changed"
+            }
         } catch {
             updateChangesError = error
         }

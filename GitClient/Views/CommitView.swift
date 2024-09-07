@@ -42,6 +42,7 @@ struct CommitView: View {
                 if let diff, !diff.fileDiffs.isEmpty {
                     NotStagedView(
                         fileDiffs: diff.fileDiffs,
+                        untrackedFiles: status?.untrackedFiles ?? [],
                         onSelectFileDiff: { fileDiff in
                             let newDiff = diff.updateFileDiffStage(fileDiff, stage: true)
                             addPatch(newDiff)

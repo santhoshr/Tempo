@@ -9,8 +9,10 @@ import SwiftUI
 
 struct NotStagedView: View {
     var fileDiffs: [FileDiff]
+    var untrackedFiles: [String]
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
+    var onSelectUntrackedFile: ((String) -> Void)?
 
     var body: some View {
         LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
@@ -57,9 +59,27 @@ struct NotStagedView: View {
                         }
 
                     }
+
                 }
                 .font(Font.system(.body, design: .monospaced))
                 .padding([.trailing, .bottom, .leading])
+
+                if !untrackedFiles.isEmpty {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Divider()
+                        Text("Untracked Files")
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                            .padding(.bottom)
+
+                        ForEach(untrackedFiles, id: \.self) { files in
+                            Text(files)
+                                .fontWeight(.bold)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                }
             } header: {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
@@ -141,11 +161,17 @@ index 0000000..e69de29
     let diff = try! Diff(raw: raw)
     return ScrollView {
         NotStagedView(
-            fileDiffs: diff.fileDiffs)
-            { f in
+            fileDiffs: diff.fileDiffs,
+            untrackedFiles: ["Projects/Files/Path.swift", "Projects/Files/Path1.swift"],
+            onSelectFileDiff: { f in
                 print(f)
-            } onSelectChunk: { f, c in
+            },
+            onSelectChunk: { f, c in
                 print(f, c)
+            },
+            onSelectUntrackedFile: { f in
+                print(f)
             }
+        )
     }
 }

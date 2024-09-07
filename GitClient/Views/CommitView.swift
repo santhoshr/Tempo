@@ -11,6 +11,28 @@ struct CommitView: View {
     var folder: Folder
     @State private var cachedDiffShortStat = ""
     @State private var diffShortStat = ""
+    private var stagedHeaderCaption: String {
+        if cachedDiffShortStat.isEmpty {
+            return " No changed"
+        } else {
+            return cachedDiffShortStat
+        }
+    }
+    private var notStagedHeaderCaption: String {
+        if let untrackedStat = status?.untrackedFilesShortStat, !untrackedStat.isEmpty {
+            if diffShortStat.isEmpty {
+                return untrackedStat
+            } else {
+                return diffShortStat + ", " + untrackedStat
+            }
+        }
+        if diffShortStat.isEmpty {
+            return " No changed"
+        } else {
+            return diffShortStat
+        }
+    }
+
     @State private var cachedDiffRaw = ""
     @State private var diffRaw = ""
     @State private var cachedDiff: Diff?
@@ -85,8 +107,8 @@ struct CommitView: View {
                         .foregroundColor(.secondary)
                         .layoutPriority(1)
                         VStack(alignment: .leading) {
-                            Text(": " + cachedDiffShortStat)
-                            Text(": " + diffShortStat)
+                            Text(": " + stagedHeaderCaption)
+                            Text(": " + notStagedHeaderCaption)
                         }
                         .lineLimit(1)
                         .font(.caption)
@@ -210,20 +232,6 @@ struct CommitView: View {
             diffRaw = try await Process.output(GitDiff(directory: folder.url))
             cachedDiff = try Diff(raw: cachedDiffRaw)
             diff = try Diff(raw: diffRaw)
-
-            if let untrackedStat = status?.untrackedFilesShortStat, !untrackedStat.isEmpty {
-                if diffShortStat.isEmpty {
-                    diffShortStat = untrackedStat
-                } else {
-                    diffShortStat += ", " + untrackedStat
-                }
-            }
-            if cachedDiffShortStat.isEmpty {
-                cachedDiffShortStat = " No changed"
-            }
-            if diffShortStat.isEmpty {
-                diffShortStat = " No changed"
-            }
         } catch {
             updateChangesError = error
         }

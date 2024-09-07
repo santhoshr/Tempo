@@ -77,13 +77,20 @@ struct CommitView: View {
                 VStack(spacing: 0) {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text("Staged: " + cachedDiffShortStat)
-                            Text("Not Staged: " + diffShortStat)
+                            Text("Staged")
+                            Text("Not Staged")
                         }
                         .lineLimit(1)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .layoutPriority(1)
+                        VStack(alignment: .leading) {
+                            Text(": " + cachedDiffShortStat)
+                            Text(": " + diffShortStat)
+                        }
+                        .lineLimit(1)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                         Spacer(minLength: 0)
                             .foregroundColor(.accentColor)
                         Button("Stage All") {
@@ -212,10 +219,10 @@ struct CommitView: View {
                 }
             }
             if cachedDiffShortStat.isEmpty {
-                cachedDiffShortStat = "No changed"
+                cachedDiffShortStat = " No changed"
             }
             if diffShortStat.isEmpty {
-                diffShortStat = "No changed"
+                diffShortStat = " No changed"
             }
         } catch {
             updateChangesError = error

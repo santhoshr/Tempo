@@ -72,9 +72,20 @@ struct NotStagedView: View {
                             .font(.caption)
                             .padding(.bottom)
 
-                        ForEach(untrackedFiles, id: \.self) { files in
-                            Text(files)
-                                .fontWeight(.bold)
+                        ForEach(untrackedFiles, id: \.self) { file in
+                            HStack {
+                                Text(file)
+                                    .fontWeight(.bold)
+                                Spacer()
+                                Button {
+                                    onSelectUntrackedFile?(file)
+                                } label: {
+                                    Image(systemName: "plus.circle")
+                                }
+                                .buttonStyle(.accessoryBar)
+                                .help("Stage this file")
+                                .padding(.horizontal)
+                            }
                         }
                     }
                     .padding(.horizontal)

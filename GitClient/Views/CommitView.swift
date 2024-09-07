@@ -13,7 +13,8 @@ struct CommitView: View {
     @State private var diffRaw = ""
     @State private var cachedDiff: Diff?
     @State private var diff: Diff?
-    @State private var createDiffError: Error?
+    @State private var status: Status?
+    @State private var updateChangesError: Error?
     @State private var commitMessage = ""
     @State private var error: Error?
     @State private var isAmend = false
@@ -63,8 +64,8 @@ struct CommitView: View {
                     }
                 }
 
-                if let createDiffError {
-                    Label(createDiffError.localizedDescription, systemImage: "exclamationmark.octagon")
+                if let updateChangesError {
+                    Label(updateChangesError.localizedDescription, systemImage: "exclamationmark.octagon")
                     Text(cachedDiffRaw + diffRaw)
                         .padding()
                         .font(Font.system(.body, design: .monospaced))
@@ -185,8 +186,9 @@ struct CommitView: View {
             diffRaw = try await Process.output(GitDiff(directory: folder.url))
             cachedDiff = try Diff(raw: cachedDiffRaw)
             diff = try Diff(raw: diffRaw)
+            status = try await Process.output(GitStatus(directory: folder.url))
         } catch {
-            createDiffError = error
+            updateChangesError = error
         }
     }
 }

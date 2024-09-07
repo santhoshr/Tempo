@@ -11,18 +11,20 @@ struct FileDiffsView: View {
     var fileDiffs: [FileDiff]
 
     var body: some View {
-        ForEach(fileDiffs) { fileDiff in
-            Text(fileDiff.header)
-                .fontWeight(.bold)
-            ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
-                Text(line)
+        LazyVStack(alignment: .leading) {
+            ForEach(fileDiffs) { fileDiff in
+                Text(fileDiff.header)
                     .fontWeight(.bold)
+                ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
+                    Text(line)
+                        .fontWeight(.bold)
+                }
+                ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
+                    Text(line)
+                        .fontWeight(.bold)
+                }
+                chunksViews(fileDiff.chunks)
             }
-            ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
-                Text(line)
-                    .fontWeight(.bold)
-            }
-            chunksViews(fileDiff.chunks)
         }
     }
 

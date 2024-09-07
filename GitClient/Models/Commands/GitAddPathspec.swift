@@ -1,23 +1,23 @@
 //
-//  GitAddPatch.swift
+//  GitAddPathspec.swift
 //  GitClient
 //
-//  Created by Makoto Aoyama on 2024/03/02.
+//  Created by Makoto Aoyama on 2024/09/07.
 //
 
 import Foundation
 
-struct GitAddPatch: InteractiveGit {
+struct GitAddPathspec: Git {
     typealias OutputModel = Void
     var arguments: [String] {
         [
             "git",
             "add",
-            "--patch",
+            pathspec,
         ]
     }
     var directory: URL
-    var inputs: [String]
+    var pathspec: String
 
     func parse(for stdOut: String) -> Void {}
 }

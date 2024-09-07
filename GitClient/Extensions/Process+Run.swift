@@ -8,8 +8,6 @@
 import Foundation
 
 struct ProcessError: Error, LocalizedError {
-    static var unknown = ProcessError(description: "Unknown error.")
-
     private var description: String
     var errorDescription: String? {
         return description
@@ -50,20 +48,20 @@ extension Process {
 
         try process.run()
 
-        let stdOut = String(data: stdOutput.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-        let errOut = String(data: stdError.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-
         if !inputs.isEmpty, let writeData = inputs.joined(separator: "\n").data(using: .utf8) {
             try stdInput.fileHandleForWriting.write(contentsOf: writeData)
             try stdInput.fileHandleForWriting.close()
         }
 
+        let stdOut = String(data: stdOutput.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+        let errOut = String(data: stdError.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
-            if let errOut = errOut {
-                throw ProcessError(description: errOut)
-            }
-            throw ProcessError.unknown
+            let errorMessageWhen = "An error occurred while executing the '" + arguments.joined(separator: " ") + "'\n\n"
+            throw ProcessError(
+                description: errorMessageWhen + (stdOut ?? "") + "\n" + (errOut ?? "")
+            )
         }
         return .init(standardOutput: stdOut ?? "", standartError: errOut ?? "")
     }

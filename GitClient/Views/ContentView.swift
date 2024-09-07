@@ -80,11 +80,15 @@ struct ContentView: View {
             }
         } detail: {
             switch selectionLog {
-            case .notCommitted(let string):
-                CommitView(diff: string, folder: selectionFolder!) {
-                    selectionLog = nil
-                    folderIsRefresh = true
-                }
+            case .notCommitted:
+                CommitView(
+                    folder: selectionFolder!,
+                    isRefresh: $folderIsRefresh,
+                    onCommit: {
+                        selectionLog = nil
+                        folderIsRefresh = true
+                    }
+                )
             case .committed(let commit):
                 CommitLogView(commitHash: commit.hash, folder: selectionFolder!)
             case nil:

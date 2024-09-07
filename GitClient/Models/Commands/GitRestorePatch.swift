@@ -1,18 +1,19 @@
 //
-//  GitAddPatch.swift
+//  GitRestorePatch.swift
 //  GitClient
 //
-//  Created by Makoto Aoyama on 2024/03/02.
+//  Created by Makoto Aoyama on 2024/09/05.
 //
 
 import Foundation
 
-struct GitAddPatch: InteractiveGit {
+struct GitRestorePatch: InteractiveGit {
     typealias OutputModel = Void
     var arguments: [String] {
         [
             "git",
-            "add",
+            "restore",
+            "--staged",
             "--patch",
         ]
     }

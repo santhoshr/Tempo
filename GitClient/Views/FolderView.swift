@@ -55,7 +55,7 @@ struct FolderView: View {
             }
         })
         .onChange(of: isRefresh, { oldValue, newValue in
-            if !oldValue && newValue {
+            if newValue {
                 Task {
                     await setModels()
                     isRefresh = false
@@ -90,13 +90,14 @@ struct FolderView: View {
     fileprivate func setModels() async {
         do {
             branch = try await Process.output(GitBranch(directory: folder.url)).current
-            logs = try await Process.output(GitLog(directory: folder.url)).map { Log.committed($0) }
+            var newLogs = try await Process.output(GitLog(directory: folder.url)).map { Log.committed($0) }
             let gitDiff = try await Process.output(GitDiff(directory: folder.url))
             let gitDiffCached = try await Process.output(GitDiffCached(directory: folder.url))
-            let gitDiffOutput = gitDiff + gitDiffCached
-            if !gitDiffOutput.isEmpty {
-                logs.insert(.notCommitted(gitDiffOutput), at: 0)
+            let newNotCommitted = NotCommitted(diff: gitDiff, diffCached: gitDiffCached)
+            if !newNotCommitted.isEmpty {
+                newLogs.insert(.notCommitted, at: 0)
             }
+            logs = newLogs
         } catch {
             self.error = error
             branch = nil
@@ -191,9 +192,7 @@ struct FolderView: View {
 
     fileprivate func reloadButton() -> some View {
         return Button {
-            Task {
-                await setModels()
-            }
+            isRefresh = true
         } label: {
             Image(systemName: "arrow.clockwise")
         }

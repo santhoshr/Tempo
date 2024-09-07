@@ -26,23 +26,17 @@ struct CommitView: View {
         VStack(spacing: 0) {
             ScrollView {
                 if let cachedDiff, !cachedDiff.fileDiffs.isEmpty {
-                    NotCommittedDiffView(title: "Staged", fileDiffs: cachedDiff.fileDiffs, staged: true) { fileDiff, chunk in
-                        let newDiff: Diff
-                        if let chunk {
-                            newDiff = cachedDiff.updateChunkStage(chunk, in: fileDiff, stage: false)
-                        } else {
-                            newDiff = cachedDiff.updateFileDiffStage(fileDiff, stage: false)
+                    StagedView(
+                        fileDiffs: cachedDiff.fileDiffs,
+                        onSelectFileDiff: { fileDiff in
+                            let newDiff = cachedDiff.updateFileDiffStage(fileDiff, stage: false)
+                            restorePatch(newDiff)
+                        },
+                        onSelectChunk: { fileDiff, chunk in
+                            let newDiff = cachedDiff.updateChunkStage(chunk, in: fileDiff, stage: false)
+                            restorePatch(newDiff)
                         }
-
-                        Task {
-                            do {
-                                try await Process.output(GitRestorePatch(directory: folder.url, inputs: newDiff.unstageStrings()))
-                                await updateChanges()
-                            } catch {
-                                self.error = error
-                            }
-                        }
-                    }
+                    )
                 }
 
                 if let diff, !diff.fileDiffs.isEmpty {
@@ -190,6 +184,17 @@ struct CommitView: View {
             status = try await Process.output(GitStatus(directory: folder.url))
         } catch {
             updateChangesError = error
+        }
+    }
+
+    private func restorePatch(_ newDiff: Diff) {
+        Task {
+            do {
+                try await Process.output(GitRestorePatch(directory: folder.url, inputs: newDiff.unstageStrings()))
+                await updateChanges()
+            } catch {
+                self.error = error
+            }
         }
     }
 }

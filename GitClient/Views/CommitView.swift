@@ -169,7 +169,7 @@ struct CommitView: View {
                     CommitMessageSuggestionView()
                 }
                 Divider()
-                VStack(alignment: .trailing, spacing: 14) {
+                VStack(alignment: .trailing, spacing: 11) {
                     VStack(alignment: .trailing, spacing: 2) {
                         Label(cachedDiffStat?.files.count.formatted() ?? "-" , systemImage: "doc")
                         Label(cachedDiffStat?.insertionsTotal.formatted() ?? "-", systemImage: "plus")

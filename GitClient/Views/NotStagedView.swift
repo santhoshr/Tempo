@@ -13,10 +13,11 @@ struct NotStagedView: View {
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
     var onSelectUntrackedFile: ((String) -> Void)?
+    @State private var isExpanded = true
 
     var body: some View {
         LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
-            Section {
+            Section (isExpanded: $isExpanded) {
                 if fileDiffs.isEmpty && untrackedFiles.isEmpty {
                     LazyVStack(alignment: .center) {
                         Text("No Changed")
@@ -101,17 +102,7 @@ struct NotStagedView: View {
                     .padding(.bottom)
                 }
             } header: {
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        Text("Not Staged")
-                            .fontWeight(.bold)
-                        Spacer()
-                    }
-                    .padding(.vertical, 9)
-                    .padding(.horizontal)
-                }
-                .textSelection(.disabled)
-                .background(Color(nsColor: .textBackgroundColor))
+                SectionHeader(title: "Not Staged", isExpanded: $isExpanded)
             }
         }
     }

@@ -69,34 +69,7 @@ struct StagedView: View {
                 .font(Font.system(.body, design: .monospaced))
                 .padding([.trailing, .bottom, .leading])
             } header: {
-                VStack(alignment: .leading, spacing: 0) {
-                    Divider()
-                    HStack {
-                        Text("Staged")
-                            .fontWeight(.bold)
-                        Spacer()
-                        Button {
-                            withAnimation {
-                                isExpanded.toggle()
-                            }
-                        } label: {
-                            if isExpanded {
-                                Image(systemName: "chevron.down")
-                                    .frame(width: 20, height: 20)
-                            } else {
-                                Image(systemName: "chevron.right")
-                                    .frame(width: 20, height: 20)
-                            }
-                        }
-                        .buttonStyle(.accessoryBar)
-                    }
-                    .padding(.vertical, 9)
-                    .padding(.horizontal)
-                    Divider()
-                }
-                .textSelection(.disabled)
-                .background(Color(nsColor: .quaternarySystemFill))
-                .background(Color(nsColor: .textBackgroundColor))
+                SectionHeader(title: "Staged", isExpanded: $isExpanded)
             }
         }
     }

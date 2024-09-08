@@ -73,6 +73,7 @@ struct NotStagedView: View {
                 }
                 .font(Font.system(.body, design: .monospaced))
                 .padding([.trailing, .bottom, .leading])
+                .padding(.top, 6)
 
                 if !untrackedFiles.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {

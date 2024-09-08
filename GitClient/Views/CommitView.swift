@@ -140,6 +140,7 @@ struct CommitView: View {
                         .disabled(cachedDiffRaw.isEmpty)
                         .layoutPriority(2)
                     }
+                    .textSelection(.disabled)
                     .padding(.vertical, 10)
                     .padding(.horizontal)
                     Divider()

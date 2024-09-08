@@ -70,6 +70,7 @@ struct StagedView: View {
                     .padding(.vertical, 9)
                     .padding(.horizontal)
                 }
+                .textSelection(.disabled)
                 .background(Color(nsColor: .textBackgroundColor))
             }
         }

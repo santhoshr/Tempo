@@ -21,7 +21,7 @@ struct CommitView: View {
     private var notStagedHeaderCaption: String {
         if let untrackedStat = status?.untrackedFilesShortStat, !untrackedStat.isEmpty {
             if diffShortStat.isEmpty {
-                return untrackedStat
+                return " " + untrackedStat
             } else {
                 return diffShortStat + ", " + untrackedStat
             }

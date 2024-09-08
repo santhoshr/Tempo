@@ -17,6 +17,17 @@ struct NotStagedView: View {
     var body: some View {
         LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
             Section {
+                if fileDiffs.isEmpty && untrackedFiles.isEmpty {
+                    LazyVStack(alignment: .center) {
+                        Text("No Changed")
+                            .foregroundStyle(.secondary)
+                            .padding()
+                            .padding(.trailing)
+                            .padding(.trailing)
+                            .padding(.bottom, 16)
+                    }
+                }
+
                 ForEach(fileDiffs) { fileDiff in
                     HStack {
                         VStack(alignment: .leading) {
@@ -57,9 +68,7 @@ struct NotStagedView: View {
                             .help("Stage this hunk")
                             .padding()
                         }
-
                     }
-
                 }
                 .font(Font.system(.body, design: .monospaced))
                 .padding([.trailing, .bottom, .leading])

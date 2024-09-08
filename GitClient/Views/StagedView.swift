@@ -15,6 +15,15 @@ struct StagedView: View {
     var body: some View {
         LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
             Section {
+                if fileDiffs.isEmpty {
+                    LazyVStack(alignment: .center) {
+                        Text("No Changed")
+                            .foregroundStyle(.secondary)
+                            .padding()
+                            .padding(.trailing)
+                            .padding(.trailing)
+                    }
+                }
                 ForEach(fileDiffs) { fileDiff in
                     HStack {
                         VStack(alignment: .leading) {

@@ -50,7 +50,6 @@ struct StagedView: View {
                             .padding()
                         }
                     }
-
                     ForEach(fileDiff.chunks) { chunk in
                         HStack {
                             chunkView(chunk)
@@ -64,13 +63,13 @@ struct StagedView: View {
                             .help("Unstage this hunk")
                             .padding()
                         }
-
                     }
                 }
                 .font(Font.system(.body, design: .monospaced))
                 .padding([.trailing, .bottom, .leading])
             } header: {
                 VStack(alignment: .leading, spacing: 0) {
+                    Divider()
                     HStack {
                         Text("Staged")
                             .fontWeight(.bold)
@@ -78,8 +77,10 @@ struct StagedView: View {
                     }
                     .padding(.vertical, 9)
                     .padding(.horizontal)
+                    Divider()
                 }
                 .textSelection(.disabled)
+                .background(Color(nsColor: .quaternarySystemFill))
                 .background(Color(nsColor: .textBackgroundColor))
             }
         }

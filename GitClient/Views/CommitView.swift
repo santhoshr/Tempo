@@ -143,7 +143,6 @@ struct CommitView: View {
                     .textSelection(.disabled)
                     .padding(.vertical, 10)
                     .padding(.horizontal)
-                    Divider()
                 }
                 .background(Color(nsColor: .textBackgroundColor))
             })

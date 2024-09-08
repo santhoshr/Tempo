@@ -11,10 +11,11 @@ struct StagedView: View {
     var fileDiffs: [FileDiff]
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
+    @State private var isExpanded = true
 
     var body: some View {
         LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
-            Section {
+            Section (isExpanded: $isExpanded) {
                 if fileDiffs.isEmpty {
                     LazyVStack(alignment: .center) {
                         Text("No Changed")
@@ -74,6 +75,20 @@ struct StagedView: View {
                         Text("Staged")
                             .fontWeight(.bold)
                         Spacer()
+                        Button {
+                            withAnimation {
+                                isExpanded.toggle()
+                            }
+                        } label: {
+                            if isExpanded {
+                                Image(systemName: "chevron.down")
+                                    .frame(width: 20, height: 20)
+                            } else {
+                                Image(systemName: "chevron.right")
+                                    .frame(width: 20, height: 20)
+                            }
+                        }
+                        .buttonStyle(.accessoryBar)
                     }
                     .padding(.vertical, 9)
                     .padding(.horizontal)

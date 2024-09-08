@@ -12,11 +12,11 @@ final class GitDiffNumStatTests: XCTestCase {
     func testParse() throws {
         let c = GitDiffNumStat(directory: URL(string: "file:///maoyama/Projects/")!)
         let stat = c.parse(for: """
-3       0       Jot/HistoryDetailNote.swift
-0       20      Jot/Note.swift
-20      0       Jot/Note.wift
-3       0       testfile5.swif
--       -       testfile6.bin
+3\t0\tJot/HistoryDetailNote.swift
+0\t20\tJot/Note.swift
+20\t0\tJot/Note.wift
+3\t0\ttestfile5.swif
+-\t-\ttestfile6.bin
 """)
         XCTAssertEqual(
             stat.files,

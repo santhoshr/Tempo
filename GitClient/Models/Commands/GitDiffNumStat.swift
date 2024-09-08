@@ -25,14 +25,14 @@ struct GitDiffNumStat: Git {
     var cached = false
 
     func parse(for stdOut: String) -> DiffStat {
-        let lines = stdOut.components(separatedBy: .newlines)
+        let lines = stdOut.components(separatedBy: .newlines).filter { !$0.isEmpty }
         let splitted = lines.map { line in
-            line.split(separator: " ")
+            line.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
         }
-        return .init(
-            files: splitted.map {String($0[2])},
-            insertions: splitted.map { Int($0[0]) ?? 0 },
-            deletions: splitted.map { Int($0[1]) ?? 0 }
+        return DiffStat(
+            files: splitted.map { String($0[safe: 2] ?? "") },
+            insertions: splitted.map { Int($0[safe: 0] ?? "0") ?? 0 },
+            deletions: splitted.map { Int($0[safe: 1] ?? "0") ?? 0 }
         )
     }
 }

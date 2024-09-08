@@ -37,6 +37,7 @@ struct CommitView: View {
     @State private var cachedDiff: Diff?
     @State private var diff: Diff?
     @State private var status: Status?
+    @State private var cachedDiffStat: DiffStat?
     @State private var updateChangesError: Error?
     @State private var commitMessage = ""
     @State private var error: Error?
@@ -166,7 +167,14 @@ struct CommitView: View {
                     CommitMessageSuggestionView()
                 }
                 Divider()
-                VStack(spacing: 14) {
+                VStack(alignment: .trailing, spacing: 14) {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Label(cachedDiffStat?.files.count.formatted() ?? "-" , systemImage: "doc")
+                        Label(cachedDiffStat?.insertionsTotal.formatted() ?? "-", systemImage: "plus")
+                        Label(cachedDiffStat?.deletionsTotal.formatted() ?? "-", systemImage: "minus")
+                    }
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                     Button("Commit") {
                         Task {
                             do {
@@ -231,6 +239,7 @@ struct CommitView: View {
             diffRaw = try await Process.output(GitDiff(directory: folder.url))
             cachedDiff = try Diff(raw: cachedDiffRaw)
             diff = try Diff(raw: diffRaw)
+            cachedDiffStat = try await Process.output(GitDiffNumStat(directory: folder.url, cached: true))
         } catch {
             updateChangesError = error
         }

@@ -145,6 +145,8 @@ struct CommitView: View {
                     .padding(.horizontal)
                 }
                 .background(Color(nsColor: .textBackgroundColor))
+                .compositingGroup()
+                .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.15), radius: 2.5)
             })
             .textSelection(.enabled)
             .frame(maxWidth: .infinity, alignment: .leading)

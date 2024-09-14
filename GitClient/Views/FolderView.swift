@@ -13,8 +13,9 @@ struct FolderView: View {
     @State private var isLoading = false
     @State private var showingBranches = false
     @State private var showingCreateNewBranchFrom: Branch?
+    @State private var showingStashChanged = false
     @State private var branch: Branch?
-    @State private var selectionLogID: String? 
+    @State private var selectionLogID: String?
     var folder: Folder
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
@@ -68,6 +69,14 @@ struct FolderView: View {
                 Task {
                     await setModels()
                 }
+            }
+        })
+        .sheet(isPresented: $showingStashChanged, content: {
+            VStack {
+                Text("Stash Changed")
+                    .onTapGesture {
+                        showingStashChanged.toggle()
+                    }
             }
         })
         .navigationTitle(folder.displayName)
@@ -193,7 +202,7 @@ struct FolderView: View {
 
     fileprivate func stashButton() -> some View {
         Button {
-
+            showingStashChanged.toggle()
         } label: {
             Image(systemName: "tray")
         }

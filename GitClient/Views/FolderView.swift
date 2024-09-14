@@ -80,6 +80,7 @@ struct FolderView: View {
                 ProgressView()
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
+                stashButton()
                 reloadButton()
                 pullButton()
                 pushButton()
@@ -188,6 +189,15 @@ struct FolderView: View {
                 .padding()
             }
         }
+    }
+
+    fileprivate func stashButton() -> some View {
+        Button {
+
+        } label: {
+            Image(systemName: "tray")
+        }
+        .help("Stashed Changes")
     }
 
     fileprivate func reloadButton() -> some View {

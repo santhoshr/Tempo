@@ -89,8 +89,9 @@ struct FolderView: View {
                 ProgressView()
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
-                stashButton()
                 reloadButton()
+                stashButton()
+                    .padding(.trailing)
                 pullButton()
                 pushButton()
             }

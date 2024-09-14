@@ -73,7 +73,7 @@ struct FolderView: View {
         })
         .sheet(isPresented: $showingStashChanged, content: {
             VStack {
-                Text("Stash Changed")
+                StashChangedView()
                     .onTapGesture {
                         showingStashChanged.toggle()
                     }

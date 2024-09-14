@@ -35,7 +35,7 @@ struct SectionHeader: View {
                 }
                 .buttonStyle(.accessoryBar)
             }
-            .padding(.vertical, 9)
+            .padding(.vertical)
             .padding(.horizontal)
         }
         .textSelection(.disabled)

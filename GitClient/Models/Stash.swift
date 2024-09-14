@@ -8,6 +8,7 @@
 import Foundation
 
 struct Stash: Identifiable {
-    var id: Int
+    var id: Int { index }
+    var index: Int
     var message: String
 }

@@ -139,6 +139,12 @@ struct CommitView: View {
                         }
                         .disabled(cachedDiffRaw.isEmpty)
                         .layoutPriority(2)
+                        Button {
+                            print("Stash All")
+                        } label: {
+                            Image(systemName: "tray.and.arrow.down")
+                        }
+                        .help("Stash All")
                     }
                     .textSelection(.disabled)
                     .padding(.vertical, 10)

@@ -16,7 +16,9 @@ struct SectionHeader: View {
             Divider()
             HStack {
                 Text(title)
+                    .font(.title3)
                     .fontWeight(.bold)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button {
                     withAnimation {
@@ -35,11 +37,9 @@ struct SectionHeader: View {
             }
             .padding(.vertical, 9)
             .padding(.horizontal)
-            Divider()
         }
         .textSelection(.disabled)
-        .background(Color(nsColor: .quaternarySystemFill))
-        .background(Color(nsColor: .textBackgroundColor))
+        .background(.bar)
     }
 }
 

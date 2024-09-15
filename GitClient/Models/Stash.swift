@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Stash: Identifiable {
+struct Stash: Identifiable, Hashable {
     var id: Int { index }
     var index: Int
     var message: String

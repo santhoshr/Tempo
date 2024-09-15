@@ -30,10 +30,11 @@ private struct StashChangedContentView: View {
     var folder: Folder
     @Binding var showingStashChanged: Bool
     var stashList: [Stash]?
+    @State var selectionStashID: Int?
 
     var body: some View {
         NavigationSplitView {
-            List {
+            List(selection: $selectionStashID) {
                 Text("Stash Changed")
                     .font(.title2)
                     .fontWeight(.bold)
@@ -52,7 +53,7 @@ private struct StashChangedContentView: View {
                 }
             }
         } detail: {
-
+            
         }
         .frame(minWidth: 600, minHeight: 500)
         .safeAreaInset(edge: .bottom, content: {

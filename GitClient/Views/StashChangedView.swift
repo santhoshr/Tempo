@@ -14,7 +14,7 @@ struct StashChangedView: View {
     @State private var error: Error?
 
     var body: some View {
-        StashChangedView(folder: folder, showingStashChanged: $showingStashChanged, stashList: stashList)
+        StashChangedContentView(folder: folder, showingStashChanged: $showingStashChanged, stashList: stashList)
         .task {
             do {
                stashList = try await Process.output(GitStashList(directory: folder.url))
@@ -33,35 +33,28 @@ private struct StashChangedContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            Section {
+            List {
+                Text("Stash Changed")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .lineLimit(2)
                 if let stashList {
                     if stashList.isEmpty {
-                        List {
-                            Text("No Content")
-                                .foregroundStyle(.secondary)
-                                .padding()
-                        }
+                        Text("No Content")
+                            .foregroundStyle(.secondary)
+                            .padding()
                     } else {
-                        List(stashList) { stash in
+                        ForEach(stashList) { stash in
                             Text(stash.message)
                                 .lineLimit(3)
                         }
                     }
-                } else {
-                    List {}
                 }
-            } header: {
-                VStack(alignment: .leading) {
-                    Text("Stash Changed")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                }
-                    .padding()
             }
         } detail: {
 
         }
-        .frame(minWidth: 500, minHeight: 400)
+        .frame(minWidth: 600, minHeight: 500)
         .safeAreaInset(edge: .bottom, content: {
             VStack (spacing: 0) {
                 Divider()
@@ -86,3 +79,4 @@ private struct StashChangedContentView: View {
     @State var showingStashChanged = false
     return StashChangedContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingStashChanged: $showingStashChanged)
 }
+

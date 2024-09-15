@@ -8,28 +8,58 @@
 import SwiftUI
 
 struct StashChangedView: View {
-    @State var stashList: [Stash] = [
-        .init(index: 0, raw: "stash@{0}: On checkoutmain: Hello \nworld"),
-        .init(index: 1, raw: "stash@{1}: WIP on add-widget: 3f04a57 Merge pull request #20 from maoyama/add-screenshot-text"),
-    ]
+    var folder: Folder
+    @Binding var showingStashChanged: Bool
+    @State var stashList: [Stash]?
+    @State private var error: Error?
 
     var body: some View {
         NavigationSplitView {
-            List(stashList) { stash in
-                Text(stash.message)
-                    .lineLimit(3)
+            if let stashList {
+                if stashList.isEmpty {
+                    List {
+                        Text("No Content")
+                            .foregroundStyle(.secondary)
+                            .padding()
+                    }
+                } else {
+                    List(stashList) { stash in
+                        Text(stash.message)
+                            .lineLimit(3)
+                    }
+                }
+            } else {
+                List {}
             }
         } detail: {
 
         }
         .navigationTitle("Stash Changed")
-        .frame(minWidth: 300, minHeight: 200)
-    }
-}
+        .frame(minWidth: 500, minHeight: 400)
+        .task {
+            do {
+               stashList = try await Process.output(GitStashList(directory: folder.url))
+            } catch {
+                self.error = error
+            }
+        }
+        .safeAreaInset(edge: .bottom, content: {
+            VStack (spacing: 0) {
+                Divider()
+                HStack {
+                    Spacer()
+                    Button("Cancel") {
+                        showingStashChanged.toggle()
+                    }
+                    Button("Apply") {
 
-#Preview {
-    StashChangedView(stashList: [
-        .init(index: 0, raw: "stash@{0}: On checkoutmain: Hello \nworld"),
-        .init(index: 1, raw: "stash@{1}: WIP on add-widget: 3f04a57 Merge pull request #20 from maoyama/add-screenshot-text"),
-    ])
+                    }
+                    .keyboardShortcut(.init(.return))
+                }
+                .padding()
+            }
+            .background(.bar)
+        })
+        .errorAlert($error)
+    }
 }

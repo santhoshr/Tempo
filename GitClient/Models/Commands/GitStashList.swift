@@ -17,6 +17,7 @@ struct GitStashList: Git {
     var directory: URL
 
     func parse(for stdOut: String) throws -> [Stash] {
+        guard !stdOut.isEmpty else { return [] }
         let stashList = stdOut.components(separatedBy: .newlines)
         return stashList.enumerated().map { i, stash in
             return Stash(index: i, raw: stash)

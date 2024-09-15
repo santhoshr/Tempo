@@ -72,12 +72,7 @@ struct FolderView: View {
             }
         })
         .sheet(isPresented: $showingStashChanged, content: {
-            VStack {
-                StashChangedView()
-                    .onTapGesture {
-                        showingStashChanged.toggle()
-                    }
-            }
+            StashChangedView(folder: folder, showingStashChanged: $showingStashChanged)
         })
         .navigationTitle(folder.displayName)
         .navigationSubtitle(branch?.name ?? "")

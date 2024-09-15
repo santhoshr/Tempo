@@ -14,28 +14,7 @@ struct StashChangedView: View {
     @State private var error: Error?
 
     var body: some View {
-        NavigationSplitView {
-            if let stashList {
-                if stashList.isEmpty {
-                    List {
-                        Text("No Content")
-                            .foregroundStyle(.secondary)
-                            .padding()
-                    }
-                } else {
-                    List(stashList) { stash in
-                        Text(stash.message)
-                            .lineLimit(3)
-                    }
-                }
-            } else {
-                List {}
-            }
-        } detail: {
-
-        }
-        .navigationTitle("Stash Changed")
-        .frame(minWidth: 500, minHeight: 400)
+        StashChangedView(folder: folder, showingStashChanged: $showingStashChanged, stashList: stashList)
         .task {
             do {
                stashList = try await Process.output(GitStashList(directory: folder.url))
@@ -43,6 +22,46 @@ struct StashChangedView: View {
                 self.error = error
             }
         }
+        .errorAlert($error)
+    }
+}
+
+private struct StashChangedContentView: View {
+    var folder: Folder
+    @Binding var showingStashChanged: Bool
+    var stashList: [Stash]?
+
+    var body: some View {
+        NavigationSplitView {
+            Section {
+                if let stashList {
+                    if stashList.isEmpty {
+                        List {
+                            Text("No Content")
+                                .foregroundStyle(.secondary)
+                                .padding()
+                        }
+                    } else {
+                        List(stashList) { stash in
+                            Text(stash.message)
+                                .lineLimit(3)
+                        }
+                    }
+                } else {
+                    List {}
+                }
+            } header: {
+                VStack(alignment: .leading) {
+                    Text("Stash Changed")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                }
+                    .padding()
+            }
+        } detail: {
+
+        }
+        .frame(minWidth: 500, minHeight: 400)
         .safeAreaInset(edge: .bottom, content: {
             VStack (spacing: 0) {
                 Divider()
@@ -60,6 +79,10 @@ struct StashChangedView: View {
             }
             .background(.bar)
         })
-        .errorAlert($error)
     }
+}
+
+#Preview {
+    @State var showingStashChanged = false
+    return StashChangedContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingStashChanged: $showingStashChanged)
 }

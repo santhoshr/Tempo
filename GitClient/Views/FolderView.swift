@@ -34,6 +34,7 @@ struct FolderView: View {
                         Spacer()
                         Text(commit.authorDateRelative)
                     }
+                    .lineLimit(1)
                     .foregroundStyle(.tertiary)
                 }
                     .contextMenu {

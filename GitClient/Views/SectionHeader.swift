@@ -42,7 +42,7 @@ struct SectionHeader: View {
             }
         }
         .textSelection(.disabled)
-        .background(.background)
+        .background(Color(NSColor.textBackgroundColor))
     }
 }
 

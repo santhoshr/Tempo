@@ -27,7 +27,15 @@ struct FolderView: View {
                 Text("Not Committed")
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
-                Text(commit.title)
+                VStack (alignment: .leading) {
+                    Text(commit.title)
+                    HStack {
+                        Text(commit.author)
+                        Spacer()
+                        Text(commit.authorDateRelative)
+                    }
+                    .foregroundStyle(.tertiary)
+                }
                     .contextMenu {
                         Button("Checkout") {
                             Task {

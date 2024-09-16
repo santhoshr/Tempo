@@ -48,6 +48,7 @@ struct StashChangedDetailContentView: View {
                 }
             }
         }
+        .textSelection(.enabled)
     }
 
     private func chunkView(_ chunk: Chunk) -> some View {

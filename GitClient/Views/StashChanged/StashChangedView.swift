@@ -53,26 +53,43 @@ private struct StashChangedContentView: View {
                 }
             }
         } detail: {
-            
+            VStack(spacing: 0) {
+                if let selectionStashID {
+                    StashChangedDetailView(index: selectionStashID, folder: folder)
+                } else {
+                    Spacer()
+                    Text("No Selection")
+                        .foregroundStyle(.secondary)
+                        .padding()
+                }
+                Spacer(minLength: 0)
+            }
+            .safeAreaInset(edge: .bottom, content: {
+                VStack (spacing: 0) {
+                    Divider()
+                    HStack {
+                        Spacer()
+                        Button("Cancel") {
+                            showingStashChanged.toggle()
+                        }
+                        Button("Apply") {
+                            Task {
+                                do {
+
+                                } catch {
+
+                                }
+                            }
+                        }
+                        .keyboardShortcut(.init(.return))
+                        .disabled(selectionStashID == nil)
+                    }
+                    .padding()
+                    .background(.bar)
+                }
+            })
         }
         .frame(minWidth: 600, minHeight: 500)
-        .safeAreaInset(edge: .bottom, content: {
-            VStack (spacing: 0) {
-                Divider()
-                HStack {
-                    Spacer()
-                    Button("Cancel") {
-                        showingStashChanged.toggle()
-                    }
-                    Button("Apply") {
-
-                    }
-                    .keyboardShortcut(.init(.return))
-                }
-                .padding()
-            }
-            .background(.bar)
-        })
     }
 }
 

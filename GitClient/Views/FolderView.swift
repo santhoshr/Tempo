@@ -13,8 +13,9 @@ struct FolderView: View {
     @State private var isLoading = false
     @State private var showingBranches = false
     @State private var showingCreateNewBranchFrom: Branch?
+    @State private var showingStashChanged = false
     @State private var branch: Branch?
-    @State private var selectionLogID: String? 
+    @State private var selectionLogID: String?
     var folder: Folder
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
@@ -70,6 +71,9 @@ struct FolderView: View {
                 }
             }
         })
+        .sheet(isPresented: $showingStashChanged, content: {
+            StashChangedView(folder: folder, showingStashChanged: $showingStashChanged)
+        })
         .navigationTitle(folder.displayName)
         .navigationSubtitle(branch?.name ?? "")
         .toolbar {
@@ -81,8 +85,15 @@ struct FolderView: View {
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
                 reloadButton()
+                stashButton()
+                    .padding(.trailing)
                 pullButton()
                 pushButton()
+            }
+        }
+        .onChange(of: showingStashChanged) { old, new in
+            if old && !new {
+                isRefresh = true
             }
         }
     }
@@ -188,6 +199,15 @@ struct FolderView: View {
                 .padding()
             }
         }
+    }
+
+    fileprivate func stashButton() -> some View {
+        Button {
+            showingStashChanged.toggle()
+        } label: {
+            Image(systemName: "tray")
+        }
+        .help("Stashed Changes")
     }
 
     fileprivate func reloadButton() -> some View {

@@ -21,6 +21,7 @@ struct StagedView: View {
                         Text("No Changed")
                             .foregroundStyle(.secondary)
                             .padding()
+                            .padding(.bottom)
                             .padding(.trailing)
                             .padding(.trailing)
                     }

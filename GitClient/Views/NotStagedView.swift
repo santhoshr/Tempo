@@ -25,7 +25,7 @@ struct NotStagedView: View {
                             .padding()
                             .padding(.trailing)
                             .padding(.trailing)
-                            .padding(.bottom, 16)
+                            .padding(.bottom, 32)
                     }
                 }
 

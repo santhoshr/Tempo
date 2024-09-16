@@ -87,6 +87,10 @@ struct ContentView: View {
                     onCommit: {
                         selectionLog = nil
                         folderIsRefresh = true
+                    },
+                    onStash: {
+                        selectionLog = nil
+                        folderIsRefresh = true
                     }
                 )
             case .committed(let commit):

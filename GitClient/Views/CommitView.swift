@@ -45,6 +45,7 @@ struct CommitView: View {
     @State private var amendCommit: Commit?
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
+    var onStash: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -139,14 +140,25 @@ struct CommitView: View {
                         }
                         .disabled(cachedDiffRaw.isEmpty)
                         .layoutPriority(2)
+                        Button {
+                            Task {
+                                do {
+                                    try await Process.output(GitStash(directory: folder.url))
+                                    onStash()
+                                } catch {
+                                    self.error = error
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "tray.and.arrow.down")
+                        }
+                        .help("Stash include untracked")
                     }
                     .textSelection(.disabled)
                     .padding(.vertical, 10)
                     .padding(.horizontal)
                 }
                 .background(Color(nsColor: .textBackgroundColor))
-                .compositingGroup()
-                .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.15), radius: 2.5)
             })
             .textSelection(.enabled)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -157,8 +169,7 @@ struct CommitView: View {
                 VStack(spacing: 2) {
                     ZStack {
                             TextEditor(text: $commitMessage)
-                                .padding(.horizontal, 4)
-                                .padding(.vertical, 8)
+                                .padding(12)
                             if commitMessage.isEmpty {
                                 Text("Enter commit message here")
                                     .foregroundColor(.secondary)

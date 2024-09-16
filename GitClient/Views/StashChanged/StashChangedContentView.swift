@@ -12,6 +12,7 @@ struct StashChangedContentView: View {
     @Binding var showingStashChanged: Bool
     var stashList: [Stash]?
     @State var selectionStashID: Int?
+    @State private var error: Error?
 
     var body: some View {
         NavigationSplitView {
@@ -56,9 +57,10 @@ struct StashChangedContentView: View {
                         Button("Apply") {
                             Task {
                                 do {
-
+                                    try await Process.output(GitStashApply(directory: folder.url, index: selectionStashID!))
+                                    showingStashChanged = false
                                 } catch {
-
+                                    self.error = error
                                 }
                             }
                         }
@@ -71,6 +73,7 @@ struct StashChangedContentView: View {
             })
         }
         .frame(minWidth: 600, minHeight: 500)
+        .errorAlert($error)
     }
 }
 

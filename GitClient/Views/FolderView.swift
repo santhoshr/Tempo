@@ -91,6 +91,11 @@ struct FolderView: View {
                 pushButton()
             }
         }
+        .onChange(of: showingStashChanged) { old, new in
+            if old && !new {
+                isRefresh = true
+            }
+        }
     }
 
     fileprivate func setModels() async {

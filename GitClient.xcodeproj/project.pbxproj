@@ -274,6 +274,17 @@
 			path = StashChanged;
 			sourceTree = "<group>";
 		};
+		616C6FCA2C97C2E800A419DE /* GitStash */ = {
+			isa = PBXGroup;
+			children = (
+				616C6FBF2C96BF9F00A419DE /* GitStash.swift */,
+				616C6FC12C96C3B500A419DE /* GitStashDrop.swift */,
+				6130BDE92C958B710050E70F /* GitStashList.swift */,
+				616C6FBD2C96BA1500A419DE /* GitStashShowDiff.swift */,
+			);
+			path = GitStash;
+			sourceTree = "<group>";
+		};
 		6172E4C728D70EEC0015C958 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -339,12 +350,9 @@
 		61E290DC28E884C200BCEB04 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				616C6FCA2C97C2E800A419DE /* GitStash */,
 				61E290CC28E09FDD00BCEB04 /* Git.swift */,
 				61E290C828E098DB00BCEB04 /* GitLog.swift */,
-				616C6FBF2C96BF9F00A419DE /* GitStash.swift */,
-				616C6FC12C96C3B500A419DE /* GitStashDrop.swift */,
-				6130BDE92C958B710050E70F /* GitStashList.swift */,
-				616C6FBD2C96BA1500A419DE /* GitStashShowDiff.swift */,
 				61839DBE2B9229A30015215B /* GitShow.swift */,
 				61E290D228E1EFC600BCEB04 /* GitDiff.swift */,
 				61E290D428E1F05000BCEB04 /* GitDiffCached.swift */,

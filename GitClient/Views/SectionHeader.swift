@@ -36,9 +36,13 @@ struct SectionHeader: View {
             }
             .padding(.vertical)
             .padding(.horizontal)
+            if isExpanded {
+                Divider()
+                    .padding(.horizontal)
+            }
         }
         .textSelection(.disabled)
-        .background(.bar)
+        .background(.background)
     }
 }
 

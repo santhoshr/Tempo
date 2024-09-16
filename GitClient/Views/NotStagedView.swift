@@ -23,9 +23,9 @@ struct NotStagedView: View {
                         Text("No Changed")
                             .foregroundStyle(.secondary)
                             .padding()
+                            .padding()
+                            .padding(.bottom)
                             .padding(.trailing)
-                            .padding(.trailing)
-                            .padding(.bottom, 32)
                     }
                 }
 
@@ -76,12 +76,12 @@ struct NotStagedView: View {
 
                 if !untrackedFiles.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
-                        Divider()
                         Text("Untracked Files")
                             .foregroundStyle(.secondary)
                             .font(.caption)
+                            .padding(.top)
+                        Divider()
                             .padding(.bottom)
-
                         ForEach(untrackedFiles, id: \.self) { file in
                             HStack {
                                 Text(file)
@@ -99,6 +99,7 @@ struct NotStagedView: View {
                         }
                     }
                     .padding(.horizontal)
+                    .padding(.bottom)
                     .padding(.bottom)
                 }
             } header: {

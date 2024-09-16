@@ -34,6 +34,7 @@
 		616C6FC22C96C3B500A419DE /* GitStashDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616C6FC12C96C3B500A419DE /* GitStashDrop.swift */; };
 		616C6FC42C96E00100A419DE /* StashChangedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616C6FC32C96E00100A419DE /* StashChangedDetailView.swift */; };
 		616C6FC62C96E3D100A419DE /* StashChangedDetailContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616C6FC52C96E3D100A419DE /* StashChangedDetailContentView.swift */; };
+		616C6FC92C97BC8200A419DE /* StashChangedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616C6FC82C97BC8200A419DE /* StashChangedContentView.swift */; };
 		6172E4C428D70B3C0015C958 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6172E4C328D70B3C0015C958 /* Folder.swift */; };
 		6172E4C628D70EE30015C958 /* Commit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6172E4C528D70EE30015C958 /* Commit.swift */; };
 		6175B89E2BEF686B00554227 /* Collection+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6175B89D2BEF686B00554227 /* Collection+.swift */; };
@@ -128,6 +129,7 @@
 		616C6FC12C96C3B500A419DE /* GitStashDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitStashDrop.swift; sourceTree = "<group>"; };
 		616C6FC32C96E00100A419DE /* StashChangedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashChangedDetailView.swift; sourceTree = "<group>"; };
 		616C6FC52C96E3D100A419DE /* StashChangedDetailContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashChangedDetailContentView.swift; sourceTree = "<group>"; };
+		616C6FC82C97BC8200A419DE /* StashChangedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashChangedContentView.swift; sourceTree = "<group>"; };
 		6172E4C328D70B3C0015C958 /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
 		6172E4C528D70EE30015C958 /* Commit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commit.swift; sourceTree = "<group>"; };
 		6175B89D2BEF686B00554227 /* Collection+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+.swift"; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 			isa = PBXGroup;
 			children = (
 				6130BDE52C957A450050E70F /* StashChangedView.swift */,
+				616C6FC82C97BC8200A419DE /* StashChangedContentView.swift */,
 				616C6FC32C96E00100A419DE /* StashChangedDetailView.swift */,
 				616C6FC52C96E3D100A419DE /* StashChangedDetailContentView.swift */,
 			);
@@ -529,6 +532,7 @@
 				6172E4C428D70B3C0015C958 /* Folder.swift in Sources */,
 				61A2D35D28DF5ACB009A3EEC /* View+.swift in Sources */,
 				61839DC12B922B0D0015215B /* CommitLogView.swift in Sources */,
+				616C6FC92C97BC8200A419DE /* StashChangedContentView.swift in Sources */,
 				61FAF49E2C68DBFB000B7ACB /* GitCommitAmend.swift in Sources */,
 				612208AB2C032D500047B454 /* ShowMedium.swift in Sources */,
 				61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */,

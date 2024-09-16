@@ -45,6 +45,7 @@ struct CommitView: View {
     @State private var amendCommit: Commit?
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
+    var onStash: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -140,11 +141,18 @@ struct CommitView: View {
                         .disabled(cachedDiffRaw.isEmpty)
                         .layoutPriority(2)
                         Button {
-                            print("Stash All")
+                            Task {
+                                do {
+                                    try await Process.output(GitStash(directory: folder.url))
+                                    onStash()
+                                } catch {
+                                    self.error = error
+                                }
+                            }
                         } label: {
                             Image(systemName: "tray.and.arrow.down")
                         }
-                        .help("Stash All")
+                        .help("Stash include untracked")
                     }
                     .textSelection(.disabled)
                     .padding(.vertical, 10)

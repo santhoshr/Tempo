@@ -18,7 +18,6 @@ struct SectionHeader: View {
                 Text(title)
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundStyle(.secondary)
                 Spacer()
                 Button {
                     withAnimation {

@@ -68,8 +68,7 @@ struct StagedView: View {
                     }
                 }
                 .font(Font.system(.body, design: .monospaced))
-                .padding([.trailing, .bottom, .leading])
-                .padding(.top, 6)
+                .padding()
             } header: {
                 SectionHeader(title: "Staged", isExpanded: $isExpanded)
             }

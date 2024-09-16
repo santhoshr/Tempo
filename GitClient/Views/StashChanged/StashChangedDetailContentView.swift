@@ -17,16 +17,6 @@ struct StashChangedDetailContentView: View {
         ScrollView {
             if let fileDiffs = parsedDiff?.fileDiffs {
                 LazyVStack(alignment: .leading) {
-                    if fileDiffs.isEmpty {
-                        LazyVStack(alignment: .center) {
-                            Text("No Changed")
-                                .foregroundStyle(.secondary)
-                                .padding()
-                                .padding(.bottom)
-                                .padding(.trailing)
-                                .padding(.trailing)
-                        }
-                    }
                     ForEach(fileDiffs) { fileDiff in
                         HStack {
                             VStack(alignment: .leading) {

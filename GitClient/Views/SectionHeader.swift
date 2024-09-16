@@ -16,7 +16,7 @@ struct SectionHeader: View {
             Divider()
             HStack {
                 Text(title)
-                    .font(.title2)
+                    .font(.title)
                     .fontWeight(.bold)
                     .foregroundStyle(.secondary)
                 Spacer()

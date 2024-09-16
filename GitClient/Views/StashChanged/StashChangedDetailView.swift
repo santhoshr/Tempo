@@ -16,12 +16,23 @@ struct StashChangedDetailView: View {
     var body: some View {
         StashChangedDetailContentView(diff: diff)
             .task {
-                do {
-                    diff = try await Process.output(GitStashShowDiff(directory: folder.url, index: index))
-                } catch {
-                    self.error = error
+                await updateDiff()
+            }
+            .onChange(of: index) { oldValue, newValue in
+                if oldValue != newValue {
+                    Task {
+                        await updateDiff()
+                    }
                 }
             }
             .errorAlert($error)
+    }
+
+    private func updateDiff() async {
+        do {
+            diff = try await Process.output(GitStashShowDiff(directory: folder.url, index: index))
+        } catch {
+            self.error = error
+        }
     }
 }

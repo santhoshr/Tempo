@@ -74,8 +74,7 @@ struct FolderView: View {
         .sheet(isPresented: $showingStashChanged, content: {
             StashChangedView(folder: folder, showingStashChanged: $showingStashChanged)
         })
-        .navigationTitle(folder.displayName)
-        .navigationSubtitle(branch?.name ?? "")
+        .navigationTitle(branch?.name ?? "")
         .toolbar {
             navigationToolbar()
         }

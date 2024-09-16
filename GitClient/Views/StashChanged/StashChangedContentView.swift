@@ -13,6 +13,7 @@ struct StashChangedContentView: View {
     var stashList: [Stash]?
     @State var selectionStashID: Int?
     @State private var error: Error?
+    var onTapDropButton: ((Stash) -> Void)?
 
     var body: some View {
         NavigationSplitView {
@@ -30,6 +31,12 @@ struct StashChangedContentView: View {
                         ForEach(stashList) { stash in
                             Text(stash.message)
                                 .lineLimit(3)
+                                .contextMenu {
+                                    Button("Drop") {
+                                        onTapDropButton?(stash)
+                                        selectionStashID = nil
+                                    }
+                                }
                         }
                     }
                 }

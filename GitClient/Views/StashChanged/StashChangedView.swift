@@ -14,7 +14,16 @@ struct StashChangedView: View {
     @State private var error: Error?
 
     var body: some View {
-        StashChangedContentView(folder: folder, showingStashChanged: $showingStashChanged, stashList: stashList)
+        StashChangedContentView(folder: folder, showingStashChanged: $showingStashChanged, stashList: stashList, onTapDropButton: { stash in
+            Task {
+                do {
+                    try await Process.output(GitStashDrop(directory: folder.url, index: stash.index))
+                    stashList = try await Process.output(GitStashList(directory: folder.url))
+                } catch {
+                    self.error = error
+                }
+            }
+        })
         .task {
             do {
                stashList = try await Process.output(GitStashList(directory: folder.url))

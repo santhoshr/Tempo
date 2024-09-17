@@ -62,6 +62,7 @@ struct CommitView: View {
                             restorePatch(newDiff)
                         }
                     )
+                    .padding(.vertical)
                 }
 
                 if let diff {
@@ -87,6 +88,7 @@ struct CommitView: View {
                             }
                         }
                     )
+                    .padding(.vertical)
                 }
 
                 if let updateChangesError {
@@ -157,6 +159,7 @@ struct CommitView: View {
                     .textSelection(.disabled)
                     .padding(.vertical, 10)
                     .padding(.horizontal)
+                    Divider()
                 }
                 .background(Color(nsColor: .textBackgroundColor))
             })

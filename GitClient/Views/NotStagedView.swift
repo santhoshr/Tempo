@@ -100,7 +100,6 @@ struct NotStagedView: View {
                     }
                     .padding(.horizontal)
                     .padding(.bottom)
-                    .padding(.bottom)
                 }
             } header: {
                 SectionHeader(title: "Not Staged", isExpanded: $isExpanded)

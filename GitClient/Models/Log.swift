@@ -23,5 +23,6 @@ enum Log: Identifiable, Hashable {
 struct NotCommitted: Hashable {
     var diff: String
     var diffCached: String
-    var isEmpty: Bool { (diff + diffCached).isEmpty }
+    var status: Status
+    var isEmpty: Bool { (diff + diffCached).isEmpty && status.untrackedFiles.isEmpty }
 }

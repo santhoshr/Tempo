@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Status {
+struct Status: Hashable {
     var untrackedFiles: [String]
     var untrackedFilesShortStat: String {
         if untrackedFiles.isEmpty {

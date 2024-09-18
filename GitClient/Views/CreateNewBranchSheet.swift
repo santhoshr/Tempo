@@ -36,7 +36,7 @@ struct CreateNewBranchSheet: View {
                         Task {
                             do {
                                 try await Process.output(
-                                    GitCheckoutB(directory: folder.url, newBranchName: newBranchName, startPoint: showingCreateNewBranchFrom!.name)
+                                    GitCheckoutB(directory: folder.url, newBranchName: newBranchName, startPoint: showingCreateNewBranchFrom!.point)
                                 )
                                 showingCreateNewBranchFrom = nil
                                 onCreate()

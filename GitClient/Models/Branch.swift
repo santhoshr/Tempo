@@ -13,6 +13,13 @@ struct Branch: Hashable, Identifiable {
     }
     var name: String
     var isCurrent: Bool
+    var point: String {
+        let detachedPrefix = "(HEAD detached at "
+        if name.hasPrefix(detachedPrefix) {
+            return String(name.dropFirst(detachedPrefix.count).dropLast(1))
+        }
+        return name
+    }
 }
 
 extension [Branch] {

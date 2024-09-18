@@ -19,11 +19,24 @@ struct CommitLogView: View {
             return nil
         }
     }
+    @State private var tags: [String] = []
     @State private var error: Error?
 
     var body: some View {   
         VStack(spacing: 0) {
             ScrollView {
+                if !tags.isEmpty {
+                    ScrollView(.horizontal) {
+                        LazyHStack(spacing: 16) {
+                            ForEach(tags, id: \.self) { tag in
+                                Label(tag, systemImage: "tag")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.top)
+                }
                 if let model = showMedium {
                     GitShowMediumView(showMedium: model)
                         .textSelection(.enabled)
@@ -43,6 +56,7 @@ struct CommitLogView: View {
             Task {
                 do {
                     gitShow = try await Process.output(GitShow(directory: folder.url, object: commitHash))
+                    tags = try await Process.output(GitTagPointsAt(directory: folder.url, object: commitHash))
                 } catch {
                     self.error = error
                 }

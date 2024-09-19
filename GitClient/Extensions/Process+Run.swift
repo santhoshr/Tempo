@@ -58,7 +58,7 @@ extension Process {
 
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
-            let errorMessageWhen = "An error occurred while executing the '" + arguments.joined(separator: " ") + "'\n\n"
+            let errorMessageWhen = "An error occurred while executing the \"" + arguments.joined(separator: " ") + "\"\n\n"
             throw ProcessError(
                 description: errorMessageWhen + (stdOut ?? "") + "\n" + (errOut ?? "")
             )

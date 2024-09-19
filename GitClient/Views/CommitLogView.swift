@@ -31,10 +31,10 @@ struct CommitLogView: View {
                             ForEach(tags, id: \.self) { tag in
                                 Label(tag, systemImage: "tag")
                                     .foregroundColor(.secondary)
+                                    .padding(.leading)
                             }
                         }
                     }
-                    .padding(.horizontal)
                     .padding(.top)
                 }
                 if let model = showMedium {

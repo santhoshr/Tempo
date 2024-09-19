@@ -38,7 +38,6 @@ struct CommitLogView: View {
                                 }
                                 .padding(.horizontal)
                             }
-
                         }
                         if !tags.isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {

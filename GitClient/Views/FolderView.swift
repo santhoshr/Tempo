@@ -254,6 +254,7 @@ struct FolderView: View {
             Task {
                 do {
                     try await Process.output(GitPush(directory: folder.url))
+                    await setModels()
                 } catch {
                     self.error = error
                 }

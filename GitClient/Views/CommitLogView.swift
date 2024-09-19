@@ -26,25 +26,29 @@ struct CommitLogView: View {
     var body: some View {   
         VStack(spacing: 0) {
             ScrollView {
-                if !branches.isEmpty {
-                    ScrollView(.horizontal) {
-                        LazyHStack(spacing: 16) {
-                            ForEach(branches) { branch in
-                                Label(branch.name, systemImage: "arrow.triangle.branch")
-                                    .foregroundColor(.secondary)
-                                    .padding(.leading)
+                if !branches.isEmpty || !tags.isEmpty {
+                    VStack {
+                        if !branches.isEmpty {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 14) {
+                                    ForEach(branches) { branch in
+                                        Label(branch.name, systemImage: "arrow.triangle.branch")
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding(.horizontal)
                             }
+
                         }
-                    }
-                    .padding(.top)
-                }
-                if !tags.isEmpty {
-                    ScrollView(.horizontal) {
-                        LazyHStack(spacing: 16) {
-                            ForEach(tags, id: \.self) { tag in
-                                Label(tag, systemImage: "tag")
-                                    .foregroundColor(.secondary)
-                                    .padding(.leading)
+                        if !tags.isEmpty {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 14) {
+                                    ForEach(tags, id: \.self) { tag in
+                                        Label(tag, systemImage: "tag")
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding(.horizontal)
                             }
                         }
                     }

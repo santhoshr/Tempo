@@ -20,11 +20,24 @@ struct CommitLogView: View {
         }
     }
     @State private var tags: [String] = []
+    @State private var branches: [Branch] = []
     @State private var error: Error?
 
     var body: some View {   
         VStack(spacing: 0) {
             ScrollView {
+                if !branches.isEmpty {
+                    ScrollView(.horizontal) {
+                        LazyHStack(spacing: 16) {
+                            ForEach(branches) { branch in
+                                Label(branch.name, systemImage: "arrow.triangle.branch")
+                                    .foregroundColor(.secondary)
+                                    .padding(.leading)
+                            }
+                        }
+                    }
+                    .padding(.top)
+                }
                 if !tags.isEmpty {
                     ScrollView(.horizontal) {
                         LazyHStack(spacing: 16) {
@@ -57,6 +70,7 @@ struct CommitLogView: View {
                 do {
                     gitShow = try await Process.output(GitShow(directory: folder.url, object: commitHash))
                     tags = try await Process.output(GitTagPointsAt(directory: folder.url, object: commitHash))
+                    branches = try await Process.output(GitBranchPointsAt(directory: folder.url, object: commitHash))
                 } catch {
                     self.error = error
                 }

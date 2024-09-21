@@ -234,6 +234,13 @@ struct FolderView: View {
         .popover(isPresented: $showingTags, content: {
             TagsView(folder: folder, showingTags: $showingTags)
         })
+        .onChange(of: showingTags) { oldValue, newValue in
+            if oldValue && !newValue {
+                Task {
+                    await setModels()
+                }
+            }
+        }
     }
 
     fileprivate func stashButton() -> some View {

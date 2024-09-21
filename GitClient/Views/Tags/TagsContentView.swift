@@ -40,7 +40,14 @@ struct TagsContentView: View {
                         }
                 }
                 .onChange(of: selection ?? "", { _, newValue in
-                    
+                    Task {
+                        do {
+                            try await Process.output(GitCheckout(directory: folder.url, commitHash: newValue))
+                            showingTags = false
+                        } catch {
+                            self.error = error
+                        }
+                    }
                 })
                 .errorAlert($error)
                 .scrollContentBackground(.hidden)

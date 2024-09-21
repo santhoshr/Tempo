@@ -105,6 +105,8 @@ struct FolderView: View {
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
                 reloadButton()
+                    .padding(.trailing)
+                tagButton()
                 stashButton()
                     .padding(.trailing)
                 pullButton()
@@ -220,6 +222,15 @@ struct FolderView: View {
                 .padding()
             }
         }
+    }
+
+    fileprivate func tagButton() -> some View {
+        Button {
+//            showingStashChanged.toggle()
+        } label: {
+            Image(systemName: "tag")
+        }
+        .help("Tags")
     }
 
     fileprivate func stashButton() -> some View {

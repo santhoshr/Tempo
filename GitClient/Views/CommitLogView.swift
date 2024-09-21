@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CommitLogView: View {
+    @Environment(\.isRemoteUpdating) var isRemoteUpdating: Bool
     var commitHash: String
     var folder: Folder
     @State private var gitShow = ""
@@ -76,6 +77,18 @@ struct CommitLogView: View {
                     branches = try await Process.output(GitBranchPointsAt(directory: folder.url, object: commitHash))
                 } catch {
                     self.error = error
+                }
+            }
+        })
+        .onChange(of: isRemoteUpdating, { oldValue, newValue in
+            if oldValue && !newValue {
+                Task {
+                    do {
+                        tags = try await Process.output(GitTagPointsAt(directory: folder.url, object: commitHash))
+                        branches = try await Process.output(GitBranchPointsAt(directory: folder.url, object: commitHash))
+                    } catch {
+                        self.error = error
+                    }
                 }
             }
         })

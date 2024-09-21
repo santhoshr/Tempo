@@ -95,9 +95,6 @@ struct FolderView: View {
         .sheet(isPresented: $showingStashChanged, content: {
             StashChangedView(folder: folder, showingStashChanged: $showingStashChanged)
         })
-        .popover(isPresented: $showingTags, content: {
-            TagsView(folder: folder, showingTags: $showingTags)
-        })
         .navigationTitle(branch?.name ?? "")
         .toolbar {
             navigationToolbar()
@@ -234,6 +231,9 @@ struct FolderView: View {
             Image(systemName: "tag")
         }
         .help("Tags")
+        .popover(isPresented: $showingTags, content: {
+            TagsView(folder: folder, showingTags: $showingTags)
+        })
     }
 
     fileprivate func stashButton() -> some View {

@@ -25,6 +25,7 @@ struct TagsView: View {
                 }
             }
         })
+        .frame(width: 300, height: 660)
         .task {
             do {
                 tags = try await Process.output(GitTag(directory: folder.url))

@@ -15,8 +15,16 @@ struct TagsContentView: View {
 
     var body: some View {
         if let tags {
-            List(tags, id: \.self) { tag in
-                Text(tag)
+            if tags.isEmpty {
+                VStack {
+                    Text("No Content")
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                List(tags, id: \.self) { tag in
+                    Text(tag)
+                }
+                .scrollContentBackground(.hidden)
             }
         }
     }
@@ -24,5 +32,12 @@ struct TagsContentView: View {
 
 #Preview {
     @Previewable @State var showingTags = false
-    TagsContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingTags: $showingTags, onTapDeleteButton: { _ in })
+    TagsContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingTags: $showingTags, tags: ["v1.0.0", "v1.1.0", "v2.0.0"], onTapDeleteButton: { _ in })
+        .frame(width: 300, height: 660)
+}
+
+#Preview("No Content") {
+    @Previewable @State var showingTags = false
+    TagsContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingTags: $showingTags, tags: [], onTapDeleteButton: { _ in })
+        .frame(width: 300, height: 660)
 }

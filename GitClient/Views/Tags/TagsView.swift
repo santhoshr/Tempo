@@ -15,24 +15,15 @@ struct TagsView: View {
     @State private var error: Error?
 
     var body: some View {
-        TagsContentView(folder: folder, showingTags: $showingTags, tags: tags, onTapDeleteButton: { tagname in
-            Task {
+        TagsContentView(folder: folder, showingTags: $showingTags, tags: tags)
+            .frame(width: 300, height: 660)
+            .task {
                 do {
-                    try await Process.output(GitTagDelete(directory: folder.url, tagname: tagname))
                     tags = try await Process.output(GitTag(directory: folder.url))
                 } catch {
                     self.error = error
                 }
             }
-        })
-        .frame(width: 300, height: 660)
-        .task {
-            do {
-                tags = try await Process.output(GitTag(directory: folder.url))
-            } catch {
-                self.error = error
-            }
-        }
-        .errorAlert($error)
+            .errorAlert($error)
     }
 }

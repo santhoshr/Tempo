@@ -22,7 +22,6 @@ struct FolderView: View {
     @State private var branch: Branch?
     @State private var selectionLogID: String?
 
-
     var body: some View {
         List(logs, selection: $selectionLogID) {
             switch $0 {

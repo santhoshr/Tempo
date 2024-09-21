@@ -78,7 +78,6 @@ struct CommitMessageSnippetView: View {
                 .keyboardShortcut(.init(.return))
                 .disabled(editCommitMessageSnippet.isEmpty)
                 .padding()
-
             }
             .frame(height: 80)
             .background(Color(NSColor.textBackgroundColor))

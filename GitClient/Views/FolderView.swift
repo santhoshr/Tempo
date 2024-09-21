@@ -11,16 +11,16 @@ struct FolderView: View {
     var folder: Folder
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
-    @Binding var isLoading:Bool
-
+    @State private var isLoading = false
     @State private var logs: [Log] = []
     @State private var error: Error?
     @State private var showingBranches = false
     @State private var showingCreateNewBranchFrom: Branch?
     @State private var showingStashChanged = false
+    @State private var showingTags = false
+    @State private var showingCreateNewTagAt: Commit?
     @State private var branch: Branch?
     @State private var selectionLogID: String?
-
 
     var body: some View {
         List(logs, selection: $selectionLogID) {
@@ -60,6 +60,9 @@ struct FolderView: View {
                                 }
                             }
                         }
+                        Button("Tag") {
+                            showingCreateNewTagAt = commit
+                        }
                     }
             }
         }
@@ -92,6 +95,13 @@ struct FolderView: View {
                 }
             }
         })
+        .sheet(item: $showingCreateNewTagAt, content: { _ in
+            CreateNewTagSheet(folder: folder, showingCreateNewTagAt: $showingCreateNewTagAt) {
+                Task {
+                    await setModels()
+                }
+            }
+        })
         .sheet(isPresented: $showingStashChanged, content: {
             StashChangedView(folder: folder, showingStashChanged: $showingStashChanged)
         })
@@ -105,6 +115,8 @@ struct FolderView: View {
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
                 reloadButton()
+                    .padding(.trailing)
+                tagButton()
                 stashButton()
                     .padding(.trailing)
                 pullButton()
@@ -130,6 +142,10 @@ struct FolderView: View {
                 newLogs.insert(.notCommitted, at: 0)
             }
             logs = newLogs
+            if let selectionLog {
+                let newSelection = logs.first { $0.id == selectionLog.id }
+                self.selectionLog = newSelection
+            }
         } catch {
             self.error = error
             branch = nil
@@ -222,6 +238,25 @@ struct FolderView: View {
         }
     }
 
+    fileprivate func tagButton() -> some View {
+        Button {
+            showingTags.toggle()
+        } label: {
+            Image(systemName: "tag")
+        }
+        .help("Tags")
+        .popover(isPresented: $showingTags, content: {
+            TagsView(folder: folder, showingTags: $showingTags)
+        })
+        .onChange(of: showingTags) { oldValue, newValue in
+            if oldValue && !newValue {
+                Task {
+                    await setModels()
+                }
+            }
+        }
+    }
+
     fileprivate func stashButton() -> some View {
         Button {
             showingStashChanged.toggle()
@@ -282,9 +317,12 @@ struct FolderView: View {
 struct CommitsView_Previews: PreviewProvider {
     @State static var selection: Log?
     @State static var refresh = false
-    @State static var isLoading = false
 
     static var previews: some View {
-        FolderView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), selectionLog: $selection, isRefresh: $refresh, isLoading: $isLoading)
+        FolderView(
+            folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
+            selectionLog: $selection,
+            isRefresh: $refresh
+        )
     }
 }

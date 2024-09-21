@@ -28,10 +28,10 @@ struct CreateNewBranchSheet: View {
                     TextField("New Branch name", text: $newBranchName)
                 }
                 HStack {
-                    Spacer()
                     Button("Cancel") {
                         showingCreateNewBranchFrom = nil
                     }
+                    Spacer()
                     Button("Create") {
                         Task {
                             do {

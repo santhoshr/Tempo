@@ -11,7 +11,10 @@ struct TagsContentView: View {
     var folder: Folder
     @Binding var showingTags: Bool
     var tags: [String]?
-    var onTapDeleteButton: (String) -> Void
+    var onSelect: ((String) -> Void)?
+    var onTapDeleteButton: ((String) -> Void)?
+    @State private var selection: String?
+    @State private var error: Error?
 
     var body: some View {
         if let tags {
@@ -21,9 +24,25 @@ struct TagsContentView: View {
                         .foregroundStyle(.secondary)
                 }
             } else {
-                List(tags, id: \.self) { tag in
+                List(tags, id: \.self, selection: $selection) { tag in
                     Text(tag)
+                        .contextMenu {
+                            Button("Delete") {
+                                Task {
+                                    do {
+                                        try await Process.output(GitTagDelete(directory: folder.url, tagname: tag))
+                                        showingTags = false
+                                    } catch {
+                                        self.error = error
+                                    }
+                                }
+                            }
+                        }
                 }
+                .onChange(of: selection ?? "", { _, newValue in
+                    
+                })
+                .errorAlert($error)
                 .scrollContentBackground(.hidden)
             }
         }

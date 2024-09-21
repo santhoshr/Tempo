@@ -85,7 +85,7 @@ struct StashChangedContentView: View {
 }
 
 #Preview {
-    @State var showingStashChanged = false
+    @Previewable @State var showingStashChanged = false
     return StashChangedContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingStashChanged: $showingStashChanged)
 }
 

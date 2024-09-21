@@ -46,6 +46,6 @@ struct SectionHeader: View {
 }
 
 #Preview {
-    @State var value: Bool = true
+    @Previewable @State var value: Bool = true
     return SectionHeader(title: "Staged", isExpanded: $value)
 }

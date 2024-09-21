@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage (AppStorageKey.folder.rawValue) var folders: Data?
+    @AppStorage(AppStorageKey.folder.rawValue) var folders: Data?
     private var decodedFolders: [Folder] {
         guard let folders else { return [] }
         do {

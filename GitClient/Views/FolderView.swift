@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct FolderView: View {
+    @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
@@ -126,6 +127,13 @@ struct FolderView: View {
         .onChange(of: showingStashChanged) { old, new in
             if old && !new {
                 isRefresh = true
+            }
+        }
+        .onChange(of: appearsActive) { old, new in
+            if !old && new {
+                Task {
+                    await setModels()
+                }
             }
         }
     }

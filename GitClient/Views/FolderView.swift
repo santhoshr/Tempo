@@ -50,6 +50,16 @@ struct FolderView: View {
                                 }
                             }
                         }
+                        Button("Revert") {
+                            Task {
+                                do {
+                                    try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
+                                    await setModels()
+                                } catch {
+                                    self.error = error
+                                }
+                            }
+                        }
                     }
             }
         }

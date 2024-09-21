@@ -39,7 +39,7 @@ struct GitLog: Git {
                 title: separated[3],
                 rawBody: separated[4],
                 branches: refs.filter { !$0.hasPrefix("tag: ") },
-                tags: refs.filter { $0.hasPrefix("tag: ") }
+                tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) }
             )
         }
     }

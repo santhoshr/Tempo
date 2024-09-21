@@ -17,6 +17,7 @@ struct GitLog: Git {
         + .formatSeparator + "%ar"
         + .formatSeparator + "%s"
         + .formatSeparator + "%B"
+        + .formatSeparator + "%D"
         + .formatSeparator,
     ]
     var directory: URL
@@ -25,12 +26,20 @@ struct GitLog: Git {
         let logs = stdOut.components(separatedBy: String.formatSeparator + "\n")
         return logs.map { log in
             let separated = log.components(separatedBy: String.formatSeparator)
+            let refs: [String]
+            if separated[5].isEmpty {
+                refs = []
+            } else {
+                refs = separated[5].components(separatedBy: ", ")
+            }
             return Commit(
                 hash: separated[0],
                 author: separated[1],
                 authorDateRelative: separated[2],
                 title: separated[3],
-                rawBody: separated[4]
+                rawBody: separated[4],
+                branches: refs.filter { !$0.hasPrefix("tag: ") },
+                tags: refs.filter { $0.hasPrefix("tag: ") }
             )
         }
     }

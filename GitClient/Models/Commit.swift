@@ -13,4 +13,6 @@ struct Commit: Hashable {
     var authorDateRelative: String
     var title: String
     var rawBody: String
+    var branches: [String]
+    var tags: [String]
 }

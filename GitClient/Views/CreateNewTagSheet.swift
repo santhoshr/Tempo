@@ -28,10 +28,10 @@ struct CreateNewTagSheet: View {
                     TextField("New Tagname", text: $newTagname)
                 }
                 HStack {
-                    Spacer()
                     Button("Cancel") {
                         showingCreateNewTagAt = nil
                     }
+                    Spacer()
                     Button("Create") {
                         Task {
                             do {

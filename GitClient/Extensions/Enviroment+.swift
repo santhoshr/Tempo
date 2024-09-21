@@ -8,5 +8,5 @@
 import SwiftUI
 
 extension EnvironmentValues {
-    @Entry var isRemoteUpdating = false
+    @Entry var isRemoteRepositoryUpdating = false
 }

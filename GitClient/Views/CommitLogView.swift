@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CommitLogView: View {
-    @Environment(\.isRemoteUpdating) var isRemoteUpdating: Bool
+    @Environment(\.isRemoteRepositoryUpdating) var isRemoteUpdating: Bool
     var commitHash: String
     var folder: Folder
     @State private var gitShow = ""

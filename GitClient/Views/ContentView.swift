@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.isRemoteUpdating) var isRemoteUpdating: Bool
+    @Environment(\.isRemoteRepositoryUpdating) var isRemoteUpdating: Bool
     @AppStorage(AppStorageKey.folder.rawValue) var folders: Data?
     private var decodedFolders: [Folder] {
         guard let folders else { return [] }
@@ -112,7 +112,7 @@ struct ContentView: View {
             selectionLog = nil
         })
         .errorAlert($error)
-        .environment(\.isRemoteUpdating, folderIsLoading)
+        .environment(\.isRemoteRepositoryUpdating, folderIsLoading)
     }
 }
 

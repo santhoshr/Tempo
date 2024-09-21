@@ -18,6 +18,7 @@ struct FolderView: View {
     @State private var showingCreateNewBranchFrom: Branch?
     @State private var showingStashChanged = false
     @State private var showingTags = false
+    @State private var showingCreateTagAt: Commit?
     @State private var branch: Branch?
     @State private var selectionLogID: String?
 
@@ -58,6 +59,9 @@ struct FolderView: View {
                                     self.error = error
                                 }
                             }
+                        }
+                        Button("Tag") {
+                            showingCreateTagAt = commit
                         }
                     }
             }

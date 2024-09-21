@@ -18,7 +18,7 @@ struct FolderView: View {
     @State private var showingCreateNewBranchFrom: Branch?
     @State private var showingStashChanged = false
     @State private var showingTags = false
-    @State private var showingCreateTagAt: Commit?
+    @State private var showingCreateNewTagAt: Commit?
     @State private var branch: Branch?
     @State private var selectionLogID: String?
 
@@ -61,7 +61,7 @@ struct FolderView: View {
                             }
                         }
                         Button("Tag") {
-                            showingCreateTagAt = commit
+                            showingCreateNewTagAt = commit
                         }
                     }
             }
@@ -90,6 +90,13 @@ struct FolderView: View {
         .errorAlert($error)
         .sheet(item: $showingCreateNewBranchFrom, content: { _ in
             CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
+                Task {
+                    await setModels()
+                }
+            }
+        })
+        .sheet(item: $showingCreateNewTagAt, content: { _ in
+            CreateNewTagSheet(folder: folder, showingCreateNewTagAt: $showingCreateNewTagAt) {
                 Task {
                     await setModels()
                 }

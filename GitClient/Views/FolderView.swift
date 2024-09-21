@@ -18,6 +18,7 @@ struct FolderView: View {
     @State private var showingBranches = false
     @State private var showingCreateNewBranchFrom: Branch?
     @State private var showingStashChanged = false
+    @State private var showingTags = false
     @State private var branch: Branch?
     @State private var selectionLogID: String?
 
@@ -94,6 +95,9 @@ struct FolderView: View {
         })
         .sheet(isPresented: $showingStashChanged, content: {
             StashChangedView(folder: folder, showingStashChanged: $showingStashChanged)
+        })
+        .popover(isPresented: $showingTags, content: {
+            TagsView(folder: folder, showingTags: $showingTags)
         })
         .navigationTitle(branch?.name ?? "")
         .toolbar {
@@ -226,7 +230,7 @@ struct FolderView: View {
 
     fileprivate func tagButton() -> some View {
         Button {
-//            showingStashChanged.toggle()
+            showingTags.toggle()
         } label: {
             Image(systemName: "tag")
         }

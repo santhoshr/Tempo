@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.isRemoteRepositoryUpdating) var isRemoteUpdating: Bool
     @AppStorage(AppStorageKey.folder.rawValue) var folders: Data?
     private var decodedFolders: [Folder] {
         guard let folders else { return [] }
@@ -25,7 +24,6 @@ struct ContentView: View {
     }
     @State private var selectionLog: Log?
     @State private var folderIsRefresh = false
-    @State private var folderIsLoading = false
     @State private var error: Error?
 
     var body: some View {
@@ -78,8 +76,7 @@ struct ContentView: View {
                 FolderView(
                     folder: folder,
                     selectionLog: $selectionLog,
-                    isRefresh: $folderIsRefresh,
-                    isLoading: $folderIsLoading
+                    isRefresh: $folderIsRefresh
                 )
             } else {
                 Text("No Folder Selection")
@@ -112,7 +109,6 @@ struct ContentView: View {
             selectionLog = nil
         })
         .errorAlert($error)
-        .environment(\.isRemoteRepositoryUpdating, folderIsLoading)
     }
 }
 

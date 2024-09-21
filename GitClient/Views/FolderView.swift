@@ -11,8 +11,7 @@ struct FolderView: View {
     var folder: Folder
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
-    @Binding var isLoading:Bool
-
+    @State private var isLoading = false
     @State private var logs: [Log] = []
     @State private var error: Error?
     @State private var showingBranches = false
@@ -303,9 +302,12 @@ struct FolderView: View {
 struct CommitsView_Previews: PreviewProvider {
     @State static var selection: Log?
     @State static var refresh = false
-    @State static var isLoading = false
 
     static var previews: some View {
-        FolderView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), selectionLog: $selection, isRefresh: $refresh, isLoading: $isLoading)
+        FolderView(
+            folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
+            selectionLog: $selection,
+            isRefresh: $refresh
+        )
     }
 }

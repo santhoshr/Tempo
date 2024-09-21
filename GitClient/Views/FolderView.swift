@@ -142,6 +142,10 @@ struct FolderView: View {
                 newLogs.insert(.notCommitted, at: 0)
             }
             logs = newLogs
+            if let selectionLog {
+                let newSelection = logs.first { $0.id == selectionLog.id }
+                self.selectionLog = newSelection
+            }
         } catch {
             self.error = error
             branch = nil

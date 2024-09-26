@@ -13,6 +13,9 @@ struct GitClientApp: App {
         WindowGroup {
             ContentView()
         }
+        Settings {
+            SettingsView()
+        }
         Window("Commit Message Snippets", id: WindowID.commitMessageSnippets.rawValue) {
             CommitMessageSnippetView()
         }

@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct GitClientApp: App {
+    @StateObject var keychainStorage = KeyChainStorage(openAIAPISecretKey: "")
+
     var body: some Scene {
         WindowGroup {
             ContentView()

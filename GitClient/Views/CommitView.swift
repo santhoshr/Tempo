@@ -180,7 +180,16 @@ struct CommitView: View {
                             }
                     }
                     .frame(height: 80)
-                    CommitMessageSuggestionView()
+                    HStack(spacing: 0) {
+                        CommitMessageSuggestionView()
+                        Button {
+                            print("Generate")
+                        } label: {
+                            Image(systemName: "sparkle")
+                        }
+                        .help("Generate commit message")
+                        .padding(.horizontal)
+                    }
                 }
                 Divider()
                 VStack(alignment: .trailing, spacing: 11) {

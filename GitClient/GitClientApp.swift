@@ -14,10 +14,12 @@ struct GitClientApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.openAIAPISecretKey, keychainStorage.openAIAPISecretKey)
                 .errorAlert($keychainStorage.error)
         }
         Settings {
             SettingsView()
+                .environment(\.openAIAPISecretKey, keychainStorage.openAIAPISecretKey)
         }
         Window("Commit Message Snippets", id: WindowID.commitMessageSnippets.rawValue) {
             CommitMessageSnippetView()

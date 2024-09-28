@@ -71,7 +71,7 @@
 		61B7F0492C5F3EBF00BFAA34 /* FileDiffsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61B7F0482C5F3EBF00BFAA34 /* FileDiffsView.swift */; };
 		61C9A16E2C835167001A8903 /* GitRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C9A16D2C835167001A8903 /* GitRestore.swift */; };
 		61D2BC3D2C8D8BB10059317E /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D2BC3C2C8D8BB10059317E /* SectionHeader.swift */; };
-		61D34C7D2CA7A4080032A22A /* KeyChainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C7C2CA7A3FC0032A22A /* KeyChainStorage.swift */; };
+		61D34C7D2CA7A4080032A22A /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C7C2CA7A3FC0032A22A /* KeychainStorage.swift */; };
 		61D34C802CA8548F0032A22A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 61D34C7F2CA8548F0032A22A /* KeychainAccess */; };
 		61D58EAE2C69A29000873860 /* GitCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D58EAD2C69A29000873860 /* GitCheckout.swift */; };
 		61E290C328DFE29500BCEB04 /* FolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290C228DFE29500BCEB04 /* FolderView.swift */; };
@@ -181,7 +181,7 @@
 		61B7F0482C5F3EBF00BFAA34 /* FileDiffsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDiffsView.swift; sourceTree = "<group>"; };
 		61C9A16D2C835167001A8903 /* GitRestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitRestore.swift; sourceTree = "<group>"; };
 		61D2BC3C2C8D8BB10059317E /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
-		61D34C7C2CA7A3FC0032A22A /* KeyChainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainStorage.swift; sourceTree = "<group>"; };
+		61D34C7C2CA7A3FC0032A22A /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
 		61D58EAD2C69A29000873860 /* GitCheckout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCheckout.swift; sourceTree = "<group>"; };
 		61E290C228DFE29500BCEB04 /* FolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderView.swift; sourceTree = "<group>"; };
 		61E290C428E095AE00BCEB04 /* Process+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Process+Run.swift"; sourceTree = "<group>"; };
@@ -341,7 +341,7 @@
 				619759492C8A76DA00E9CA4F /* Status.swift */,
 				619759532C8C95F700E9CA4F /* DiffStat.swift */,
 				6130BDE72C95821C0050E70F /* Stash.swift */,
-				61D34C7C2CA7A3FC0032A22A /* KeyChainStorage.swift */,
+				61D34C7C2CA7A3FC0032A22A /* KeychainStorage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -597,7 +597,7 @@
 				6172E4C428D70B3C0015C958 /* Folder.swift in Sources */,
 				61A2D35D28DF5ACB009A3EEC /* View+.swift in Sources */,
 				616C6FCC2C97C3CC00A419DE /* GitStashApply.swift in Sources */,
-				61D34C7D2CA7A4080032A22A /* KeyChainStorage.swift in Sources */,
+				61D34C7D2CA7A4080032A22A /* KeychainStorage.swift in Sources */,
 				61839DC12B922B0D0015215B /* CommitLogView.swift in Sources */,
 				61702D0D2C9E8BFF00FE7E35 /* GitTagCreate.swift in Sources */,
 				616C6FC92C97BC8200A419DE /* StashChangedContentView.swift in Sources */,

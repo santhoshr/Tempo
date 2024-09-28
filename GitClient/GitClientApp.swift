@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct GitClientApp: App {
-    @StateObject var keychainStorage = KeyChainStorage()
+    @StateObject var keychainStorage = KeychainStorage()
 
     var body: some Scene {
         WindowGroup {

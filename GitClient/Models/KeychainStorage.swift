@@ -1,5 +1,5 @@
 //
-//  KeyChainStorage.swift
+//  KeychainStorage.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2024/09/28.
@@ -8,7 +8,7 @@
 import Foundation
 import KeychainAccess
 
-final class KeyChainStorage: ObservableObject {
+final class KeychainStorage: ObservableObject {
     @Published var openAIAPISecretKey: String {
         didSet {
             do {

@@ -18,7 +18,7 @@ struct GitClientApp: App {
                 .errorAlert($keychainStorage.error)
         }
         Settings {
-            SettingsView()
+            SettingsView(openAIAPISecretKey: $keychainStorage.openAIAPISecretKey)
                 .environment(\.openAIAPISecretKey, keychainStorage.openAIAPISecretKey)
         }
         Window("Commit Message Snippets", id: WindowID.commitMessageSnippets.rawValue) {

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var openAIAPISecretKey = ""
+    @Binding var openAIAPISecretKey: String
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -39,5 +39,6 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    @Previewable @State var openAIAPISecretKey = ""
+    SettingsView(openAIAPISecretKey: $openAIAPISecretKey)
 }

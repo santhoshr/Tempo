@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct CommitView: View {
+    @Environment(\.openAIAPISecretKey) var openAIAPISecretKey: String
+    @Environment(\.openSettings) var openSettings: OpenSettingsAction
+
     var folder: Folder
     @State private var cachedDiffShortStat = ""
     @State private var diffShortStat = ""
@@ -183,9 +186,18 @@ struct CommitView: View {
                     HStack(spacing: 0) {
                         CommitMessageSuggestionView()
                         Button {
-                            print("Generate")
+                            guard !openAIAPISecretKey.isEmpty else {
+                                openSettings()
+                                return
+                            }
+                            print("Generate with" + openAIAPISecretKey)
                         } label: {
-                            Image(systemName: "sparkle")
+                            if openAIAPISecretKey.isEmpty {
+                                Image(systemName: "sparkle")
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Image(systemName: "sparkle")
+                            }
                         }
                         .help("Generate commit message")
                         .padding(.horizontal)

@@ -9,11 +9,12 @@ import SwiftUI
 
 @main
 struct GitClientApp: App {
-    @StateObject var keychainStorage = KeyChainStorage(openAIAPISecretKey: "")
+    @StateObject var keychainStorage = KeyChainStorage()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .errorAlert($keychainStorage.error)
         }
         Settings {
             SettingsView()

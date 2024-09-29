@@ -20,11 +20,6 @@ struct AIService {
         var required = ["commitMessage"]
         var additionalProperties = false
     }
-
-    struct Message: Codable {
-        var role: String
-        var content: String
-    }
     struct JSONSchema: Codable {
         var name = "generated_git_commit_message"
         var schema = CommitMessageSchema()
@@ -38,6 +33,10 @@ struct AIService {
             case type
             case jsonSchema = "json_schema"
         }
+    }
+    struct Message: Codable {
+        var role: String
+        var content: String
     }
     struct RequestBody: Codable {
         var model = "gpt-4o-mini"

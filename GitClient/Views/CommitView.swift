@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct CommitView: View {
+    @Environment(\.openAIAPISecretKey) var openAIAPISecretKey: String
+    @Environment(\.openSettings) var openSettings: OpenSettingsAction
+
     var folder: Folder
     @State private var cachedDiffShortStat = ""
     @State private var diffShortStat = ""
@@ -43,6 +46,7 @@ struct CommitView: View {
     @State private var error: Error?
     @State private var isAmend = false
     @State private var amendCommit: Commit?
+    @State private var isGeneratingCommitMessage = false
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
     var onStash: () -> Void
@@ -172,7 +176,8 @@ struct CommitView: View {
                 VStack(spacing: 2) {
                     ZStack {
                             TextEditor(text: $commitMessage)
-                                .padding(12)
+                                .padding(.top, 12)
+                                .padding(.horizontal, 12)
                             if commitMessage.isEmpty {
                                 Text("Enter commit message here")
                                     .foregroundColor(.secondary)
@@ -180,7 +185,37 @@ struct CommitView: View {
                             }
                     }
                     .frame(height: 80)
-                    CommitMessageSuggestionView()
+                    HStack(spacing: 0) {
+                        CommitMessageSuggestionView()
+                        Button {
+                            guard !openAIAPISecretKey.isEmpty else {
+                                openSettings()
+                                return
+                            }
+                            Task {
+                                isGeneratingCommitMessage = true
+                                do {
+                                    commitMessage = try await AIService(bearer: openAIAPISecretKey).commitMessage(stagedDiff: cachedDiffRaw)
+                                } catch {
+                                    self.error = error
+                                }
+                                isGeneratingCommitMessage = false
+                            }
+                        } label: {
+                            if isGeneratingCommitMessage {
+                                ProgressView()
+                                    .scaleEffect(x: 0.4, y: 0.4, anchor: .center)
+                                    .frame(width: 15, height: 10)
+                            } else {
+                                Image(systemName: "sparkle")
+                                    .foregroundStyle(openAIAPISecretKey.isEmpty ? .secondary : .primary)
+                                    .frame(width: 15, height: 10)
+                            }
+                        }
+                        .help("Generate commit message")
+                        .padding(.horizontal)
+                        .disabled(cachedDiffRaw.isEmpty)
+                    }
                 }
                 Divider()
                 VStack(alignment: .trailing, spacing: 11) {

@@ -115,8 +115,6 @@ struct FolderView: View {
                 ProgressView()
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
-                reloadButton()
-                    .padding(.trailing)
                 tagButton()
                 stashButton()
                     .padding(.trailing)
@@ -272,16 +270,6 @@ struct FolderView: View {
             Image(systemName: "tray")
         }
         .help("Stashed Changes")
-    }
-
-    fileprivate func reloadButton() -> some View {
-        return Button {
-            isRefresh = true
-        } label: {
-            Image(systemName: "arrow.clockwise")
-        }
-        .keyboardShortcut("r")
-        .help("Reload")
     }
 
     fileprivate func pullButton() -> some View {

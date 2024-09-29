@@ -23,7 +23,7 @@ struct CommitMessageSuggestionView: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack {
             ScrollView(.horizontal) {
                 LazyHStack {
                     ForEach(decodedCommitMessageSnippet, id: \.self) { snippet in
@@ -37,7 +37,7 @@ struct CommitMessageSuggestionView: View {
                         }
                     }
                 }
-                .padding(.leading, 14)
+                .padding(.leading)
             }
             .frame(height: 44)
             Button(action: {
@@ -45,7 +45,6 @@ struct CommitMessageSuggestionView: View {
             }, label: {
                 Image(systemName: "list.dash")
             })
-            .padding([.horizontal], 14)
         }
         .errorAlert($error)
     }

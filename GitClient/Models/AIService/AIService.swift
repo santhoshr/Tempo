@@ -43,10 +43,6 @@ struct AIService {
             case responseFormat = "response_format"
         }
     }
-
-    private struct GeneratedCommiMessage: Codable {
-        var commitMessage: String
-    }
     private struct Choice: Codable {
         struct Message: Codable {
             var content: String

@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  CommitMessageProperties.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2024/09/29.
@@ -12,4 +12,8 @@ struct CommitMessageProperties: Codable {
         var type = "string"
     }
     var commitMessage = CommitMessage()
+}
+
+struct GeneratedCommiMessage: Codable {
+    var commitMessage: String
 }

@@ -108,7 +108,7 @@ struct AIService {
         let body = RequestBody(
             messages: [
                 .init(role: "system", content:"""
-The first message is a diff that has already been staged. The second message is an unstaged diff. The third message consists of untracked files, separated by new lines. Please advise on what changes should be committed next. It's fine if you think it is appropriate to commit everything together.
+The first message is the diff that has already been staged. The second message is the unstaged diff. The third message consists of untracked files, separated by new lines. Please advise on what changes should be committed next. It's fine if you think it is appropriate to commit everything together.
 
 For the unstaged diff, please indicate which hunks should be committed by answering with booleans so that the response can be used as input for git add -p. For the untracked files, please also answer with booleans for each file.
 

@@ -137,7 +137,34 @@ struct CommitView: View {
                         .disabled(diffRaw.isEmpty)
                         .layoutPriority(2)
                         Button {
-                            print("Stage")
+                            Task {
+                                isStagingChanges = true
+                                do {
+                                    let res = try await AIService(bearer: openAIAPISecretKey).stagingChanges(
+                                        stagedDiff: cachedDiffRaw,
+                                        notStagedDiff: diffRaw,
+                                        untrackedFiles: status?.untrackedFiles ?? []
+                                    )
+                                    try await Process.output(GitAddPatch(directory: folder.url, inputs: res.hunksToStage.map { $0 ? "y" : "n" }))
+                                    let files = status?.untrackedFiles.enumerated().map({ e in
+                                        if let needsStage = res.filesToStage[safe: e.offset], needsStage {
+                                            return e.element
+                                        }
+                                        return ""
+                                    })
+                                    if let files {
+                                        let filterd = files.filter { !$0.isEmpty }
+                                        for pathspec in filterd {
+                                            try await Process.output(GitAddPathspec(directory: folder.url, pathspec: pathspec))
+                                        }
+                                    }
+                                    await updateChanges()
+                                    commitMessage = res.commitMessage
+                                } catch {
+                                    self.error = error
+                                }
+                                isStagingChanges = false
+                            }
                         } label: {
                             if isStagingChanges {
                                 ProgressView()

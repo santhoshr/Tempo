@@ -8,29 +8,27 @@
 import Foundation
 
 struct AIService {
-    struct GeneratedCommiMessage: Codable {
-        var commitMessage: String
-    }
-    struct CommitMessageSchema: Codable {
-        struct Properties: Codable {
-            struct CommitMessage: Codable {
-                var type = "string"
-            }
-            var commitMessage = CommitMessage()
+    struct CommitMessageProperties: Codable {
+        struct CommitMessage: Codable {
+            var type = "string"
         }
+        var commitMessage = CommitMessage()
+    }
+
+    struct Schema<T: Codable>: Codable {
         var type = "object"
-        var properties = Properties()
-        var required = ["commitMessage"]
+        var properties: T
+        var required: [String]
         var additionalProperties = false
     }
-    struct JSONSchema: Codable {
-        var name = "generated_git_commit_message"
-        var schema = CommitMessageSchema()
+    struct JSONSchema<T: Codable>: Codable {
+        var name: String
+        var schema: Schema<T>
         var strict = true
     }
-    struct ResponseFormat: Codable {
+    struct ResponseFormat<T: Codable>: Codable {
         var type = "json_schema"
-        var jsonSchema = JSONSchema()
+        var jsonSchema: JSONSchema<T>
 
         enum CodingKeys: String, CodingKey {
             case type
@@ -41,16 +39,20 @@ struct AIService {
         var role: String
         var content: String
     }
-    struct RequestBody: Codable {
+    struct RequestBody<T: Codable>: Codable {
         var model = "gpt-4o-mini"
         var messages: [Message]
-        var responseFormat = ResponseFormat()
+        var responseFormat: ResponseFormat<T>
 
         enum CodingKeys: String, CodingKey {
             case model
             case messages
             case responseFormat = "response_format"
         }
+    }
+
+    struct GeneratedCommiMessage: Codable {
+        var commitMessage: String
     }
     struct Choice: Codable {
         struct Message: Codable {
@@ -76,10 +78,18 @@ struct AIService {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization")
-        let body = RequestBody(messages: [
-            .init(role: "system", content: "Tell me commit message of this changes for git."),
-            .init(role: "user", content: stagedDiff)
-        ])
+        let body = RequestBody(
+            messages: [
+                .init(role: "system", content: "Tell me commit message of this changes for git."),
+                .init(role: "user", content: stagedDiff)
+            ],
+            responseFormat: .init(
+                jsonSchema: .init(
+                    name: "generated_git_commit_message",
+                    schema: Schema(properties: CommitMessageProperties(), required: ["commitMessage"])
+                )
+            )
+        )
         let bodyData = try jsonEncoder.encode(body)
         request.httpBody = bodyData
         if let jsonString = String(data: bodyData, encoding: .utf8) {

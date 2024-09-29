@@ -214,6 +214,7 @@ struct CommitView: View {
                         }
                         .help("Generate commit message")
                         .padding(.horizontal)
+                        .disabled(cachedDiffRaw.isEmpty)
                     }
                 }
                 Divider()

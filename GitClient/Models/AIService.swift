@@ -8,6 +8,9 @@
 import Foundation
 
 struct AIService {
+    struct GeneratedCommiMessage: Codable {
+        var commitMessage: String
+    }
     struct CommitMessageSchema: Codable {
         struct Properties: Codable {
             struct CommitMessage: Codable {
@@ -49,6 +52,16 @@ struct AIService {
             case responseFormat = "response_format"
         }
     }
+    struct Choice: Codable {
+        struct Message: Codable {
+            var content: String
+            var refusal: String?
+        }
+        var message: Message
+    }
+    struct Response: Codable {
+        var choices: [Choice]
+    }
 
     var bearer: String
     private let endpoint = URL(string: "https://api.openai.com/v1/chat/completions")!
@@ -74,6 +87,17 @@ struct AIService {
         }
         let data = try await URLSession.shared.data(for: request)
         print(try JSONSerialization.jsonObject(with: data.0))
-        return ""
+        let response = try JSONDecoder().decode(Response.self, from: data.0)
+        guard response.choices.count > 0 else {
+            throw GenericError(errorDescription: "OpenAI API response error")
+        }
+        if let refusal = response.choices[0].message.refusal, !refusal.isEmpty {
+            throw GenericError(errorDescription: "OpenAI API refusal error: " + refusal)
+        }
+        guard let contentData = response.choices[0].message.content.data(using: .utf8) else {
+            throw GenericError(errorDescription: "API Response handling error")
+        }
+        let message = try JSONDecoder().decode(GeneratedCommiMessage.self, from: contentData)
+        return message.commitMessage
     }
 }

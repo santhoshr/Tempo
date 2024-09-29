@@ -191,6 +191,13 @@ struct CommitView: View {
                                 return
                             }
                             print("Generate with" + openAIAPISecretKey)
+                            Task {
+                                do {
+                                    try await AIService(bearer: openAIAPISecretKey).commitMessage(stagedDiff: cachedDiffRaw)
+                                } catch {
+                                    print(error)
+                                }
+                            }
                         } label: {
                             if openAIAPISecretKey.isEmpty {
                                 Image(systemName: "sparkle")

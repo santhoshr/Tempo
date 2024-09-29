@@ -25,11 +25,14 @@ struct SettingsView: View {
                     }
                 } footer: {
                     Text("""
-    You can generate a commit message from the staged hunk using the OpenAI API.
+You can generate a commit message from the staged hunk using the OpenAI API.
 
-    Please enter the Secret Key, which can be created from the link https://platform.openai.com/api-keys.
-    Grant “Write” permission to the Secret Key for the “/v1/chat/completions” endpoint.
-    """)
+Please enter the Secret Key, which can be created from the link https://platform.openai.com/api-keys.
+Grant “Write” permission to the Secret Key for the “/v1/chat/completions” endpoint.
+
+Each time the Generate button is clicked, a request for changes will be sent to the API. You can check the costs associated with using the API here. https://platform.openai.com/usage
+"""
+                    )
                 }
             }
         }

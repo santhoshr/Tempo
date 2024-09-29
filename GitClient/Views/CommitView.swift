@@ -46,6 +46,7 @@ struct CommitView: View {
     @State private var error: Error?
     @State private var isAmend = false
     @State private var amendCommit: Commit?
+    @State private var isGeneratingCommitMessage = false
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
     var onStash: () -> Void
@@ -191,15 +192,24 @@ struct CommitView: View {
                                 return
                             }
                             Task {
+                                isGeneratingCommitMessage = true
                                 do {
                                     commitMessage = try await AIService(bearer: openAIAPISecretKey).commitMessage(stagedDiff: cachedDiffRaw)
                                 } catch {
                                     self.error = error
                                 }
+                                isGeneratingCommitMessage = false
                             }
                         } label: {
-                            Image(systemName: "sparkle")
-                                .foregroundStyle(openAIAPISecretKey.isEmpty ? .secondary : .primary)
+                            if isGeneratingCommitMessage {
+                                ProgressView()
+                                    .scaleEffect(x: 0.4, y: 0.4, anchor: .center)
+                                    .frame(width: 15, height: 10)
+                            } else {
+                                Image(systemName: "sparkle")
+                                    .foregroundStyle(openAIAPISecretKey.isEmpty ? .secondary : .primary)
+                                    .frame(width: 15, height: 10)
+                            }
                         }
                         .help("Generate commit message")
                         .padding(.horizontal)

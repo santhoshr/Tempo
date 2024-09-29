@@ -35,6 +35,18 @@ struct CommitView: View {
             return diffShortStat
         }
     }
+    private var canStage: Bool {
+        if !diffRaw.isEmpty {
+            return true
+        }
+        if let untrackedFiles = status?.untrackedFiles {
+            if !untrackedFiles.isEmpty {
+                return true
+            }
+        }
+
+        return false
+    }
     @State private var cachedDiffRaw = ""
     @State private var diffRaw = ""
     @State private var cachedDiff: Diff?
@@ -46,6 +58,7 @@ struct CommitView: View {
     @State private var error: Error?
     @State private var isAmend = false
     @State private var amendCommit: Commit?
+    @State private var isStagingChanges = false
     @State private var isGeneratingCommitMessage = false
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
@@ -122,6 +135,7 @@ struct CommitView: View {
                         .foregroundColor(.secondary)
                         Spacer(minLength: 0)
                             .foregroundColor(.accentColor)
+
                         Button("Stage All") {
                             Task {
                                 do {
@@ -132,8 +146,24 @@ struct CommitView: View {
                                 }
                             }
                         }
-                        .disabled(diffRaw.isEmpty)
+                        .disabled(!canStage)
                         .layoutPriority(2)
+                        Button {
+                            stageWithAIButtonAction()
+                        } label: {
+                            if isStagingChanges {
+                                ProgressView()
+                                    .scaleEffect(x: 0.4, y: 0.4, anchor: .center)
+                                    .frame(width: 15, height: 10)
+                            } else {
+                                Image(systemName: "sparkle")
+                                    .foregroundStyle(openAIAPISecretKey.isEmpty ? .secondary : .primary)
+                                    .frame(width: 15, height: 10)
+                            }
+                        }
+                        .help("Stage with AI")
+                        .disabled(!canStage)
+
                         Button("Unstage All") {
                             Task {
                                 do {
@@ -145,6 +175,7 @@ struct CommitView: View {
                             }
                         }
                         .disabled(cachedDiffRaw.isEmpty)
+                        .padding(.leading, 7)
                         .layoutPriority(2)
                         Button {
                             Task {
@@ -159,6 +190,7 @@ struct CommitView: View {
                             Image(systemName: "tray.and.arrow.down")
                         }
                         .help("Stash include untracked")
+                        .padding(.leading, 7)
                     }
                     .textSelection(.disabled)
                     .padding(.vertical, 10)
@@ -212,7 +244,7 @@ struct CommitView: View {
                                     .frame(width: 15, height: 10)
                             }
                         }
-                        .help("Generate commit message")
+                        .help("Generate commit message with AI")
                         .padding(.horizontal)
                         .disabled(cachedDiffRaw.isEmpty)
                     }
@@ -315,6 +347,37 @@ struct CommitView: View {
             } catch {
                 self.error = error
             }
+        }
+    }
+
+    private func stageWithAIButtonAction() {
+        Task {
+            isStagingChanges = true
+            do {
+                let res = try await AIService(bearer: openAIAPISecretKey).stagingChanges(
+                    stagedDiff: cachedDiffRaw,
+                    notStagedDiff: diffRaw,
+                    untrackedFiles: status?.untrackedFiles ?? []
+                )
+                try await Process.output(GitAddPatch(directory: folder.url, inputs: res.hunksToStage.map { $0 ? "y" : "n" }))
+                let files = status?.untrackedFiles.enumerated().map({ e in
+                    if let needsStage = res.filesToStage[safe: e.offset], needsStage {
+                        return e.element
+                    }
+                    return ""
+                })
+                if let files {
+                    let filterd = files.filter { !$0.isEmpty }
+                    for pathspec in filterd {
+                        try await Process.output(GitAddPathspec(directory: folder.url, pathspec: pathspec))
+                    }
+                }
+                await updateChanges()
+                commitMessage = res.commitMessage
+            } catch {
+                self.error = error
+            }
+            isStagingChanges = false
         }
     }
 }

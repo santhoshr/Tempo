@@ -103,4 +103,28 @@ struct AIService {
         let message: GeneratedCommiMessage = try await callEndpint(requestBody: body)
         return message.commitMessage
     }
+
+    func stagingChanges(stagedDiff: String, notStagedDiff: String, untrackedFiles: [String]) async throws  -> StagingChanges {
+        let body = RequestBody(
+            messages: [
+                .init(role: "system", content:"""
+The first message is the diff that has already been staged. The second message is the unstaged diff. The third message consists of untracked files, separated by new lines. Please advise on what changes should be committed next. It's fine if you think it is appropriate to commit everything together.
+
+For the unstaged diff, please indicate which hunks should be committed by answering with booleans so that the response can be used as input for git add -p. For the untracked files, please also answer with booleans for each file.
+
+Additionally, please provide a commit message that can be used if all these changes are staged.
+"""),
+                .init(role: "user", content: stagedDiff),
+                .init(role: "user", content: notStagedDiff),
+                .init(role: "user", content: untrackedFiles.joined(separator: "\n"))
+            ],
+            responseFormat: .init(
+                jsonSchema: .init(
+                    name: "stage_changes",
+                    schema: Schema(properties: StagingChangesProperties(), required: ["hunksToStage", "filesToStage", "commitMessage"])
+                )
+            )
+        )
+        return try await callEndpint(requestBody: body)
+    }
 }

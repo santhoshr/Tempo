@@ -8,25 +8,18 @@
 import Foundation
 
 struct AIService {
-    struct CommitMessageProperties: Codable {
-        struct CommitMessage: Codable {
-            var type = "string"
-        }
-        var commitMessage = CommitMessage()
-    }
-
-    struct Schema<T: Codable>: Codable {
+    private struct Schema<T: Codable>: Codable {
         var type = "object"
         var properties: T
         var required: [String]
         var additionalProperties = false
     }
-    struct JSONSchema<T: Codable>: Codable {
+    private struct JSONSchema<T: Codable>: Codable {
         var name: String
         var schema: Schema<T>
         var strict = true
     }
-    struct ResponseFormat<T: Codable>: Codable {
+    private struct ResponseFormat<T: Codable>: Codable {
         var type = "json_schema"
         var jsonSchema: JSONSchema<T>
 
@@ -35,11 +28,11 @@ struct AIService {
             case jsonSchema = "json_schema"
         }
     }
-    struct Message: Codable {
+    private struct Message: Codable {
         var role: String
         var content: String
     }
-    struct RequestBody<T: Codable>: Codable {
+    private struct RequestBody<T: Codable>: Codable {
         var model = "gpt-4o-mini"
         var messages: [Message]
         var responseFormat: ResponseFormat<T>
@@ -51,17 +44,17 @@ struct AIService {
         }
     }
 
-    struct GeneratedCommiMessage: Codable {
+    private struct GeneratedCommiMessage: Codable {
         var commitMessage: String
     }
-    struct Choice: Codable {
+    private struct Choice: Codable {
         struct Message: Codable {
             var content: String
             var refusal: String?
         }
         var message: Message
     }
-    struct Response: Codable {
+    private struct Response: Codable {
         var choices: [Choice]
     }
 
@@ -73,24 +66,12 @@ struct AIService {
         return jsonEncoder
     }
 
-    func commitMessage(stagedDiff: String) async throws -> String {
+    private func callEndpint<SchemaProperties: Codable, DecodeType: Codable>(requestBody: RequestBody<SchemaProperties>) async throws -> DecodeType {
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization")
-        let body = RequestBody(
-            messages: [
-                .init(role: "system", content: "Tell me commit message of this changes for git."),
-                .init(role: "user", content: stagedDiff)
-            ],
-            responseFormat: .init(
-                jsonSchema: .init(
-                    name: "generated_git_commit_message",
-                    schema: Schema(properties: CommitMessageProperties(), required: ["commitMessage"])
-                )
-            )
-        )
-        let bodyData = try jsonEncoder.encode(body)
+        let bodyData = try jsonEncoder.encode(requestBody)
         request.httpBody = bodyData
         if let jsonString = String(data: bodyData, encoding: .utf8) {
             print(jsonString)
@@ -107,7 +88,23 @@ struct AIService {
         guard let contentData = response.choices[0].message.content.data(using: .utf8) else {
             throw GenericError(errorDescription: "API Response handling error")
         }
-        let message = try JSONDecoder().decode(GeneratedCommiMessage.self, from: contentData)
+        return try JSONDecoder().decode(DecodeType.self, from: contentData)
+    }
+
+    func commitMessage(stagedDiff: String) async throws -> String {
+        let body = RequestBody(
+            messages: [
+                .init(role: "system", content: "Tell me commit message of this changes for git."),
+                .init(role: "user", content: stagedDiff)
+            ],
+            responseFormat: .init(
+                jsonSchema: .init(
+                    name: "generated_git_commit_message",
+                    schema: Schema(properties: CommitMessageProperties(), required: ["commitMessage"])
+                )
+            )
+        )
+        let message: GeneratedCommiMessage = try await callEndpint(requestBody: body)
         return message.commitMessage
     }
 }

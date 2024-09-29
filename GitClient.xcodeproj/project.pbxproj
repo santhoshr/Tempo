@@ -75,6 +75,7 @@
 		61D34C802CA8548F0032A22A /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 61D34C7F2CA8548F0032A22A /* KeychainAccess */; };
 		61D34C822CA85DC70032A22A /* EnviromentValues+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C812CA85DBF0032A22A /* EnviromentValues+.swift */; };
 		61D34C842CA8D0E30032A22A /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C832CA8D0DD0032A22A /* AIService.swift */; };
+		61D34C872CA91F620032A22A /* CommitMessageProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C862CA91F5F0032A22A /* CommitMessageProperties.swift */; };
 		61D58EAE2C69A29000873860 /* GitCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D58EAD2C69A29000873860 /* GitCheckout.swift */; };
 		61E290C328DFE29500BCEB04 /* FolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290C228DFE29500BCEB04 /* FolderView.swift */; };
 		61E290C528E095AE00BCEB04 /* Process+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290C428E095AE00BCEB04 /* Process+Run.swift */; };
@@ -186,6 +187,7 @@
 		61D34C7C2CA7A3FC0032A22A /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
 		61D34C812CA85DBF0032A22A /* EnviromentValues+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EnviromentValues+.swift"; sourceTree = "<group>"; };
 		61D34C832CA8D0DD0032A22A /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
+		61D34C862CA91F5F0032A22A /* CommitMessageProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitMessageProperties.swift; sourceTree = "<group>"; };
 		61D58EAD2C69A29000873860 /* GitCheckout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCheckout.swift; sourceTree = "<group>"; };
 		61E290C228DFE29500BCEB04 /* FolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderView.swift; sourceTree = "<group>"; };
 		61E290C428E095AE00BCEB04 /* Process+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Process+Run.swift"; sourceTree = "<group>"; };
@@ -331,6 +333,7 @@
 		6172E4C728D70EEC0015C958 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				61D34C852CA91F400032A22A /* AIService */,
 				61E290DC28E884C200BCEB04 /* Commands */,
 				6172E4C328D70B3C0015C958 /* Folder.swift */,
 				6172E4C528D70EE30015C958 /* Commit.swift */,
@@ -346,7 +349,6 @@
 				619759532C8C95F700E9CA4F /* DiffStat.swift */,
 				6130BDE72C95821C0050E70F /* Stash.swift */,
 				61D34C7C2CA7A3FC0032A22A /* KeychainStorage.swift */,
-				61D34C832CA8D0DD0032A22A /* AIService.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -394,6 +396,15 @@
 				61A2D35C28DF5ACB009A3EEC /* View+.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		61D34C852CA91F400032A22A /* AIService */ = {
+			isa = PBXGroup;
+			children = (
+				61D34C832CA8D0DD0032A22A /* AIService.swift */,
+				61D34C862CA91F5F0032A22A /* CommitMessageProperties.swift */,
+			);
+			path = AIService;
 			sourceTree = "<group>";
 		};
 		61E290DC28E884C200BCEB04 /* Commands */ = {
@@ -608,6 +619,7 @@
 				61839DC12B922B0D0015215B /* CommitLogView.swift in Sources */,
 				61702D0D2C9E8BFF00FE7E35 /* GitTagCreate.swift in Sources */,
 				616C6FC92C97BC8200A419DE /* StashChangedContentView.swift in Sources */,
+				61D34C872CA91F620032A22A /* CommitMessageProperties.swift in Sources */,
 				61FAF49E2C68DBFB000B7ACB /* GitCommitAmend.swift in Sources */,
 				612208AB2C032D500047B454 /* ShowMedium.swift in Sources */,
 				61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */,

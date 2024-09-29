@@ -199,12 +199,8 @@ struct CommitView: View {
                                 }
                             }
                         } label: {
-                            if openAIAPISecretKey.isEmpty {
-                                Image(systemName: "sparkle")
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                Image(systemName: "sparkle")
-                            }
+                            Image(systemName: "sparkle")
+                                .foregroundStyle(openAIAPISecretKey.isEmpty ? .secondary : .primary)
                         }
                         .help("Generate commit message")
                         .padding(.horizontal)

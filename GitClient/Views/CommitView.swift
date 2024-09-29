@@ -190,7 +190,6 @@ struct CommitView: View {
                                 openSettings()
                                 return
                             }
-                            print("Generate with" + openAIAPISecretKey)
                             Task {
                                 do {
                                     commitMessage = try await AIService(bearer: openAIAPISecretKey).commitMessage(stagedDiff: cachedDiffRaw)

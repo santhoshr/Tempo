@@ -351,6 +351,11 @@ struct CommitView: View {
     }
 
     private func stageWithAIButtonAction() {
+        guard !openAIAPISecretKey.isEmpty else {
+            openSettings()
+            return
+        }
+
         Task {
             isStagingChanges = true
             do {

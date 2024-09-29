@@ -35,6 +35,18 @@ struct CommitView: View {
             return diffShortStat
         }
     }
+    private var canStage: Bool {
+        if !diffRaw.isEmpty {
+            return true
+        }
+        if let untrackedFiles = status?.untrackedFiles {
+            if !untrackedFiles.isEmpty {
+                return true
+            }
+        }
+
+        return false
+    }
     @State private var cachedDiffRaw = ""
     @State private var diffRaw = ""
     @State private var cachedDiff: Diff?
@@ -134,37 +146,10 @@ struct CommitView: View {
                                 }
                             }
                         }
-                        .disabled(diffRaw.isEmpty)
+                        .disabled(!canStage)
                         .layoutPriority(2)
                         Button {
-                            Task {
-                                isStagingChanges = true
-                                do {
-                                    let res = try await AIService(bearer: openAIAPISecretKey).stagingChanges(
-                                        stagedDiff: cachedDiffRaw,
-                                        notStagedDiff: diffRaw,
-                                        untrackedFiles: status?.untrackedFiles ?? []
-                                    )
-                                    try await Process.output(GitAddPatch(directory: folder.url, inputs: res.hunksToStage.map { $0 ? "y" : "n" }))
-                                    let files = status?.untrackedFiles.enumerated().map({ e in
-                                        if let needsStage = res.filesToStage[safe: e.offset], needsStage {
-                                            return e.element
-                                        }
-                                        return ""
-                                    })
-                                    if let files {
-                                        let filterd = files.filter { !$0.isEmpty }
-                                        for pathspec in filterd {
-                                            try await Process.output(GitAddPathspec(directory: folder.url, pathspec: pathspec))
-                                        }
-                                    }
-                                    await updateChanges()
-                                    commitMessage = res.commitMessage
-                                } catch {
-                                    self.error = error
-                                }
-                                isStagingChanges = false
-                            }
+                            stageWithAIButtonAction()
                         } label: {
                             if isStagingChanges {
                                 ProgressView()
@@ -177,7 +162,7 @@ struct CommitView: View {
                             }
                         }
                         .help("Stage with AI")
-                        .disabled(diffRaw.isEmpty)
+                        .disabled(!canStage)
 
                         Button("Unstage All") {
                             Task {
@@ -362,6 +347,37 @@ struct CommitView: View {
             } catch {
                 self.error = error
             }
+        }
+    }
+
+    private func stageWithAIButtonAction() {
+        Task {
+            isStagingChanges = true
+            do {
+                let res = try await AIService(bearer: openAIAPISecretKey).stagingChanges(
+                    stagedDiff: cachedDiffRaw,
+                    notStagedDiff: diffRaw,
+                    untrackedFiles: status?.untrackedFiles ?? []
+                )
+                try await Process.output(GitAddPatch(directory: folder.url, inputs: res.hunksToStage.map { $0 ? "y" : "n" }))
+                let files = status?.untrackedFiles.enumerated().map({ e in
+                    if let needsStage = res.filesToStage[safe: e.offset], needsStage {
+                        return e.element
+                    }
+                    return ""
+                })
+                if let files {
+                    let filterd = files.filter { !$0.isEmpty }
+                    for pathspec in filterd {
+                        try await Process.output(GitAddPathspec(directory: folder.url, pathspec: pathspec))
+                    }
+                }
+                await updateChanges()
+                commitMessage = res.commitMessage
+            } catch {
+                self.error = error
+            }
+            isStagingChanges = false
         }
     }
 }

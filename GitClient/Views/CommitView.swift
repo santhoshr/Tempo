@@ -46,6 +46,7 @@ struct CommitView: View {
     @State private var error: Error?
     @State private var isAmend = false
     @State private var amendCommit: Commit?
+    @State private var isStagingChanges = false
     @State private var isGeneratingCommitMessage = false
     @Binding var isRefresh: Bool
     var onCommit: () -> Void
@@ -122,6 +123,7 @@ struct CommitView: View {
                         .foregroundColor(.secondary)
                         Spacer(minLength: 0)
                             .foregroundColor(.accentColor)
+
                         Button("Stage All") {
                             Task {
                                 do {
@@ -134,6 +136,22 @@ struct CommitView: View {
                         }
                         .disabled(diffRaw.isEmpty)
                         .layoutPriority(2)
+                        Button {
+                            print("Stage")
+                        } label: {
+                            if isStagingChanges {
+                                ProgressView()
+                                    .scaleEffect(x: 0.4, y: 0.4, anchor: .center)
+                                    .frame(width: 15, height: 10)
+                            } else {
+                                Image(systemName: "sparkle")
+                                    .foregroundStyle(openAIAPISecretKey.isEmpty ? .secondary : .primary)
+                                    .frame(width: 15, height: 10)
+                            }
+                        }
+                        .help("Stage with AI")
+                        .disabled(diffRaw.isEmpty)
+
                         Button("Unstage All") {
                             Task {
                                 do {
@@ -145,6 +163,7 @@ struct CommitView: View {
                             }
                         }
                         .disabled(cachedDiffRaw.isEmpty)
+                        .padding(.leading, 7)
                         .layoutPriority(2)
                         Button {
                             Task {
@@ -159,6 +178,7 @@ struct CommitView: View {
                             Image(systemName: "tray.and.arrow.down")
                         }
                         .help("Stash include untracked")
+                        .padding(.leading, 7)
                     }
                     .textSelection(.disabled)
                     .padding(.vertical, 10)
@@ -212,7 +232,7 @@ struct CommitView: View {
                                     .frame(width: 15, height: 10)
                             }
                         }
-                        .help("Generate commit message")
+                        .help("Generate commit message with AI")
                         .padding(.horizontal)
                         .disabled(cachedDiffRaw.isEmpty)
                     }

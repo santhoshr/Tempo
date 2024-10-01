@@ -18,12 +18,12 @@ struct GitLog: Git {
         + .formatSeparator + "%s"
         + .formatSeparator + "%B"
         + .formatSeparator + "%D"
-        + .formatSeparator,
+        + .componentSeparator,
     ]
     var directory: URL
 
     func parse(for stdOut: String) throws -> [Commit] {
-        let logs = stdOut.components(separatedBy: String.formatSeparator + "\n")
+        let logs = stdOut.components(separatedBy: String.componentSeparator + "\n")
         return logs.map { log in
             let separated = log.components(separatedBy: String.formatSeparator)
             let refs: [String]

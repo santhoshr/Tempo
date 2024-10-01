@@ -77,6 +77,7 @@
 		61D34C842CA8D0E30032A22A /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C832CA8D0DD0032A22A /* AIService.swift */; };
 		61D34C872CA91F620032A22A /* CommitMessageProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C862CA91F5F0032A22A /* CommitMessageProperties.swift */; };
 		61D34C8B2CA943540032A22A /* StagingChangesProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C8A2CA943380032A22A /* StagingChangesProperties.swift */; };
+		61D34C8D2CAC394A0032A22A /* GitLogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D34C8C2CAC394A0032A22A /* GitLogTests.swift */; };
 		61D58EAE2C69A29000873860 /* GitCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D58EAD2C69A29000873860 /* GitCheckout.swift */; };
 		61E290C328DFE29500BCEB04 /* FolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290C228DFE29500BCEB04 /* FolderView.swift */; };
 		61E290C528E095AE00BCEB04 /* Process+Run.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E290C428E095AE00BCEB04 /* Process+Run.swift */; };
@@ -190,6 +191,7 @@
 		61D34C832CA8D0DD0032A22A /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		61D34C862CA91F5F0032A22A /* CommitMessageProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitMessageProperties.swift; sourceTree = "<group>"; };
 		61D34C8A2CA943380032A22A /* StagingChangesProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StagingChangesProperties.swift; sourceTree = "<group>"; };
+		61D34C8C2CAC394A0032A22A /* GitLogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitLogTests.swift; sourceTree = "<group>"; };
 		61D58EAD2C69A29000873860 /* GitCheckout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCheckout.swift; sourceTree = "<group>"; };
 		61E290C228DFE29500BCEB04 /* FolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderView.swift; sourceTree = "<group>"; };
 		61E290C428E095AE00BCEB04 /* Process+Run.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Process+Run.swift"; sourceTree = "<group>"; };
@@ -287,6 +289,7 @@
 				612208AC2C0333CC0047B454 /* ShowMediumTest.swift */,
 				619759552C8C9A9300E9CA4F /* GitDiffNumStatTests.swift */,
 				61B5BBB62C9B97310087A9F6 /* BranchTests.swift */,
+				61D34C8C2CAC394A0032A22A /* GitLogTests.swift */,
 			);
 			path = GitClientTests;
 			sourceTree = "<group>";
@@ -675,6 +678,7 @@
 				61B5BBB72C9B97310087A9F6 /* BranchTests.swift in Sources */,
 				619759562C8C9A9300E9CA4F /* GitDiffNumStatTests.swift in Sources */,
 				612208AD2C0333CC0047B454 /* ShowMediumTest.swift in Sources */,
+				61D34C8D2CAC394A0032A22A /* GitLogTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

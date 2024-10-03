@@ -26,6 +26,9 @@ struct FolderView: View {
     var body: some View {
         List(logs, selection: $selectionLogID) { log in
             logsRow(log)
+                .task {
+                    print(log.id)
+                }
         }
         .onChange(of: folder, initial: true, {
             Task {

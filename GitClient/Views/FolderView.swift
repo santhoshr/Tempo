@@ -24,48 +24,8 @@ struct FolderView: View {
     @State private var selectionLogID: String?
 
     var body: some View {
-        List(logs, selection: $selectionLogID) {
-            switch $0 {
-            case .notCommitted:
-                Text("Not Committed")
-                    .foregroundStyle(Color.secondary)
-            case .committed(let commit):
-                VStack (alignment: .leading) {
-                    Text(commit.title)
-                    HStack {
-                        Text(commit.author)
-                        Spacer()
-                        Text(commit.authorDateRelative)
-                    }
-                    .lineLimit(1)
-                    .foregroundStyle(.tertiary)
-                }
-                    .contextMenu {
-                        Button("Checkout") {
-                            Task {
-                                do {
-                                    try await Process.output(GitCheckout(directory: folder.url, commitHash: commit.hash))
-                                    await setModels()
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        }
-                        Button("Revert") {
-                            Task {
-                                do {
-                                    try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
-                                    await setModels()
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        }
-                        Button("Tag") {
-                            showingCreateNewTagAt = commit
-                        }
-                    }
-            }
+        List(logs, selection: $selectionLogID) { log in
+            logsRow(log)
         }
         .onChange(of: folder, initial: true, {
             Task {
@@ -241,6 +201,53 @@ struct FolderView: View {
                 .frame(width: 300, height: 660)
                 .padding()
             }
+        }
+    }
+
+    fileprivate func logsRow(_ log: Log) -> VStack<_ConditionalContent<Text, some View>> {
+        return VStack {
+            switch log {
+            case .notCommitted:
+                Text("Not Committed")
+                    .foregroundStyle(Color.secondary)
+            case .committed(let commit):
+                VStack (alignment: .leading) {
+                    Text(commit.title)
+                    HStack {
+                        Text(commit.author)
+                        Spacer()
+                        Text(commit.authorDateRelative)
+                    }
+                    .lineLimit(1)
+                    .foregroundStyle(.tertiary)
+                }
+                .contextMenu {
+                    Button("Checkout") {
+                        Task {
+                            do {
+                                try await Process.output(GitCheckout(directory: folder.url, commitHash: commit.hash))
+                                await setModels()
+                            } catch {
+                                self.error = error
+                            }
+                        }
+                    }
+                    Button("Revert") {
+                        Task {
+                            do {
+                                try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
+                                await setModels()
+                            } catch {
+                                self.error = error
+                            }
+                        }
+                    }
+                    Button("Tag") {
+                        showingCreateNewTagAt = commit
+                    }
+                }
+            }
+
         }
     }
 

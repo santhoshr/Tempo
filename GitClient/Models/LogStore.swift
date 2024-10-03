@@ -72,5 +72,12 @@ final class LogStore: ObservableObject {
     /// logs.last以前のコミットを取得し追加
     private func loadMore() async {
         // git log -n 500 logs.last.commitHash^
+        guard let last = commits.last else { return }
+        do {
+            commits += try await Process.output(GitLog(directory: directory, number: number, revisionRange: last.hash + "^"))
+
+        } catch {
+            self.error = error
+        }
     }
 }

@@ -21,9 +21,9 @@ final class LogStore: ObservableObject {
     }
     @Published var error: Error?
 
-    init(directory: URL, commits: [Commit]=[]) {
+    init(directory: URL) {
         self.directory = directory
-        self.commits = commits
+        self.commits = []
     }
 
     /// 最新500件取得しlogsを差し替え

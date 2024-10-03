@@ -52,7 +52,14 @@ final class LogStore: ObservableObject {
 
     /// logビューの表示時に呼び出しし必要に応じてlogsを追加読み込み
     func logViewTask(_ log: Log) async {
-
+        switch log {
+        case .notCommitted:
+            return
+        case .committed(let commit):
+            if commit == commits.last {
+                await loadMore()
+            }
+        }
     }
 
     private func notCommited() async throws -> NotCommitted {

@@ -8,25 +8,30 @@
 import Foundation
 
 final class LogStore: ObservableObject {
+    let number = 500
     var directory: URL
-    @Published private(set)var logs: [Log]
+    @Published var commits: [Commit]
+    @Published var notCommitted: NotCommitted?
+    var logs: [Log] {
+        var logs = commits.map { Log.committed($0) }
+        if let notCommitted, !notCommitted.isEmpty {
+            logs.insert(.notCommitted, at: 0)
+        }
+        return logs
+    }
     @Published var error: Error?
 
-    init(directory: URL, logs: [Log]=[]) {
+    init(directory: URL, commits: [Commit]=[]) {
         self.directory = directory
-        self.logs = logs
+        self.commits = commits
     }
 
     /// 最新500件取得しlogsを差し替え
     func refresh() async {
         // git log -n 500
         do {
-            var newLogs = try await Process.output(GitLog(directory: directory)).map { Log.committed($0) }
-            let newNotCommitted = try await notCommited()
-            if !newNotCommitted.isEmpty {
-                newLogs.insert(.notCommitted, at: 0)
-            }
-            logs = newLogs
+            notCommitted = try await notCommited()
+            commits = try await Process.output(GitLog(directory: directory, number: number))
         } catch {
             self.error = error
         }
@@ -35,9 +40,14 @@ final class LogStore: ObservableObject {
     /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加
     func update() async {
         // git log -n logs.count logs.first.commitHash
-
-
-        // git log logs.first.commitHash..
+        do {
+            notCommitted = try await notCommited()
+            let current = try await Process.output(GitLog(directory: directory, number: commits.count, revisionRange: commits.first?.hash ?? ""))
+            let adding = try await Process.output(GitLog(directory: directory, revisionRange: commits.first.map { $0.hash + ".."} ?? ""))
+            commits = adding + current
+        } catch {
+            self.error = error
+        }
     }
 
     /// logビューの表示時に呼び出しし必要に応じてlogsを追加読み込み
@@ -49,7 +59,7 @@ final class LogStore: ObservableObject {
         let gitDiff = try await Process.output(GitDiff(directory: directory))
         let gitDiffCached = try await Process.output(GitDiffCached(directory: directory))
         let status = try await Process.output(GitStatus(directory: directory))
-        return  NotCommitted(diff: gitDiff, diffCached: gitDiffCached, status: status)
+        return NotCommitted(diff: gitDiff, diffCached: gitDiffCached, status: status)
     }
 
     /// logs.last以前のコミットを取得し追加

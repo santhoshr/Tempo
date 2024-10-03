@@ -28,7 +28,6 @@ final class LogStore: ObservableObject {
 
     /// 最新500件取得しlogsを差し替え
     func refresh() async {
-        // git log -n 500
         do {
             notCommitted = try await notCommited()
             commits = try await Process.output(GitLog(directory: directory, number: number))
@@ -39,7 +38,6 @@ final class LogStore: ObservableObject {
 
     /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加
     func update() async {
-        // git log -n logs.count logs.first.commitHash
         do {
             notCommitted = try await notCommited()
             let current = try await Process.output(GitLog(directory: directory, number: commits.count, revisionRange: commits.first?.hash ?? ""))
@@ -71,7 +69,6 @@ final class LogStore: ObservableObject {
 
     /// logs.last以前のコミットを取得し追加
     private func loadMore() async {
-        // git log -n 500 logs.last.commitHash^
         guard let last = commits.last else { return }
         do {
             commits += try await Process.output(GitLog(directory: directory, number: number, revisionRange: last.hash + "^"))

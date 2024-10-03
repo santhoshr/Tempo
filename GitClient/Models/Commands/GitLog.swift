@@ -9,18 +9,29 @@ import Foundation
 
 struct GitLog: Git {
     typealias OutputModel = [Commit]
-    let arguments = [
-        "git",
-        "log",
-        "--pretty=format:%H"
-        + .formatSeparator + "%an"
-        + .formatSeparator + "%ar"
-        + .formatSeparator + "%s"
-        + .formatSeparator + "%B"
-        + .formatSeparator + "%D"
-        + .componentSeparator,
-    ]
+    var arguments: [String] {
+        var args = [
+            "git",
+            "log",
+            "--pretty=format:%H"
+            + .formatSeparator + "%an"
+            + .formatSeparator + "%ar"
+            + .formatSeparator + "%s"
+            + .formatSeparator + "%B"
+            + .formatSeparator + "%D"
+            + .componentSeparator,
+        ]
+        if number > 0 {
+            args.append("-\(number)")
+        }
+        if !revisionRange.isEmpty {
+            args.append(revisionRange)
+        }
+        return args
+    }
     var directory: URL
+    var number = 0
+    var revisionRange = ""
 
     func parse(for stdOut: String) throws -> [Commit] {
         let logs = stdOut.components(separatedBy: String.componentSeparator + "\n")

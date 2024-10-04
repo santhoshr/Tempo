@@ -89,14 +89,14 @@ struct FolderView: View {
         .onChange(of: showingStashChanged) { _, new in
             if !new {
                 Task {
-                    await logStore.update()
+                    await updateModels()
                 }
             }
         }
         .onChange(of: appearsActive) { _, new in
             if new {
                 Task {
-                    await logStore.update()
+                    await updateModels()
                 }
             }
         }
@@ -117,6 +117,20 @@ struct FolderView: View {
             logStore.removeAll()
         }
     }
+
+    fileprivate func updateModels() async {
+        do {
+            let currentBranch = try await Process.output(GitBranch(directory: folder.url)).current
+            guard currentBranch == branch else {
+                await refreshModels()
+                return
+            }
+            await logStore.update()
+        } catch {
+            self.error = error
+        }
+    }
+
 
     fileprivate func navigationToolbar() -> ToolbarItem<(), some View> {
         return ToolbarItem(placement: .navigation) {

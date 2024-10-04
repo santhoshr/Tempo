@@ -77,8 +77,9 @@ final class LogStore: ObservableObject {
     private func loadMore() async {
         guard let last = commits.last else { return }
         do {
-            commits += try await Process.output(GitLog(directory: directory, number: number, revisionRange: last.hash + "^"))
-
+            // revisionRangeをlast.hash^で指定すると最初のコミットに到達した際に存在しないのでunknown revisionとエラーになる
+            // なのでlast.hashで指定し重複する最初の要素をドロップする
+            commits += try await Process.output(GitLog(directory: directory, number: number + 1, revisionRange: last.hash)).dropFirst()
         } catch {
             self.error = error
         }

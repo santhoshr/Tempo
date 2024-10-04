@@ -27,7 +27,7 @@ struct FolderView: View {
         List(logStore.logs, selection: $selectionLogID) { log in
             logsRow(log)
                 .task {
-                    print(log.id)
+                    await logStore.logViewTask(log)
                 }
         }
         .onChange(of: folder, initial: true, {

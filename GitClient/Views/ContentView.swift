@@ -75,6 +75,7 @@ struct ContentView: View {
             if let folder = selectionFolder {
                 FolderView(
                     folder: folder,
+                    logStore: LogStore(directory: folder.url),
                     selectionLog: $selectionLog,
                     isRefresh: $folderIsRefresh
                 )

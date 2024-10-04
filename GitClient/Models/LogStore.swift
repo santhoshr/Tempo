@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 final class LogStore: ObservableObject {
     let number = 500
     var directory: URL
@@ -46,6 +47,11 @@ final class LogStore: ObservableObject {
         } catch {
             self.error = error
         }
+    }
+
+    func removeAll() {
+        commits = []
+        notCommitted = nil
     }
 
     /// logビューの表示時に呼び出しし必要に応じてlogsを追加読み込み

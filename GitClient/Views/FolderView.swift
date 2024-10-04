@@ -10,10 +10,10 @@ import SwiftUI
 struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
+    @StateObject var logStore: LogStore
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
     @State private var isLoading = false
-    @State private var logs: [Log] = []
     @State private var error: Error?
     @State private var showingBranches = false
     @State private var showingCreateNewBranchFrom: Branch?
@@ -24,7 +24,7 @@ struct FolderView: View {
     @State private var selectionLogID: String?
 
     var body: some View {
-        List(logs, selection: $selectionLogID) { log in
+        List(logStore.logs, selection: $selectionLogID) { log in
             logsRow(log)
                 .task {
                     print(log.id)
@@ -32,11 +32,11 @@ struct FolderView: View {
         }
         .onChange(of: folder, initial: true, {
             Task {
-                await setModels()
+                await refreshModels()
             }
         })
         .onChange(of: selectionLogID, {
-            selectionLog = logs.first { $0.id == selectionLogID }
+            selectionLog = logStore.logs.first { $0.id == selectionLogID }
         })
         .onChange(of: selectionLog, {
             if selectionLog == nil {
@@ -46,23 +46,24 @@ struct FolderView: View {
         .onChange(of: isRefresh, { oldValue, newValue in
             if newValue {
                 Task {
-                    await setModels()
+                    await refreshModels()
                     isRefresh = false
                 }
             }
         })
         .errorAlert($error)
+        .errorAlert($logStore.error)
         .sheet(item: $showingCreateNewBranchFrom, content: { _ in
             CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
                 Task {
-                    await setModels()
+                    await refreshModels()
                 }
             }
         })
         .sheet(item: $showingCreateNewTagAt, content: { _ in
             CreateNewTagSheet(folder: folder, showingCreateNewTagAt: $showingCreateNewTagAt) {
                 Task {
-                    await setModels()
+                    await refreshModels()
                 }
             }
         })
@@ -85,40 +86,35 @@ struct FolderView: View {
                 pushButton()
             }
         }
-        .onChange(of: showingStashChanged) { old, new in
-            if old && !new {
-                isRefresh = true
+        .onChange(of: showingStashChanged) { _, new in
+            if !new {
+                Task {
+                    await logStore.update()
+                }
             }
         }
-        .onChange(of: appearsActive) { old, new in
-            if !old && new {
+        .onChange(of: appearsActive) { _, new in
+            if new {
                 Task {
-                    await setModels()
+                    await logStore.update()
                 }
             }
         }
     }
 
-    fileprivate func setModels() async {
+    fileprivate func refreshModels() async {
         do {
             branch = try await Process.output(GitBranch(directory: folder.url)).current
-            var newLogs = try await Process.output(GitLog(directory: folder.url)).map { Log.committed($0) }
-            let gitDiff = try await Process.output(GitDiff(directory: folder.url))
-            let gitDiffCached = try await Process.output(GitDiffCached(directory: folder.url))
-            let status = try await Process.output(GitStatus(directory: folder.url))
-            let newNotCommitted = NotCommitted(diff: gitDiff, diffCached: gitDiffCached, status: status)
-            if !newNotCommitted.isEmpty {
-                newLogs.insert(.notCommitted, at: 0)
-            }
-            logs = newLogs
+            logStore.directory = folder.url
+            await logStore.refresh()
             if let selectionLog {
-                let newSelection = logs.first { $0.id == selectionLog.id }
+                let newSelection = logStore.logs.first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
         } catch {
             self.error = error
             branch = nil
-            logs = []
+            logStore.removeAll()
         }
     }
 
@@ -144,7 +140,7 @@ struct FolderView: View {
                                 } catch {
                                     self.error = error
                                 }
-                                await setModels()
+                                await refreshModels()
                                 showingBranches = false
                             }
                         }, onSelectMergeInto: { mergeIntoBranch in
@@ -154,7 +150,7 @@ struct FolderView: View {
                                 } catch {
                                     self.error = error
                                 }
-                                await setModels()
+                                await refreshModels()
                                 showingBranches = false
                             }
                         },
@@ -178,7 +174,7 @@ struct FolderView: View {
                                 } catch {
                                     self.error = error
                                 }
-                                await setModels()
+                                await refreshModels()
                                 showingBranches = false
                             }
                         }, onSelectMergeInto: { mergeIntoBranch in
@@ -188,7 +184,7 @@ struct FolderView: View {
                                 } catch {
                                     self.error = error
                                 }
-                                await setModels()
+                                await refreshModels()
                                 showingBranches = false
                             }
                         },
@@ -229,7 +225,7 @@ struct FolderView: View {
                         Task {
                             do {
                                 try await Process.output(GitCheckout(directory: folder.url, commitHash: commit.hash))
-                                await setModels()
+                                await refreshModels()
                             } catch {
                                 self.error = error
                             }
@@ -239,7 +235,7 @@ struct FolderView: View {
                         Task {
                             do {
                                 try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
-                                await setModels()
+                                await refreshModels()
                             } catch {
                                 self.error = error
                             }
@@ -267,7 +263,7 @@ struct FolderView: View {
         .onChange(of: showingTags) { oldValue, newValue in
             if oldValue && !newValue {
                 Task {
-                    await setModels()
+                    await refreshModels()
                 }
             }
         }
@@ -288,7 +284,7 @@ struct FolderView: View {
             Task {
                 do {
                     try await Process.output(GitPull(directory: folder.url))
-                    await setModels()
+                    await refreshModels()
                 } catch {
                     self.error = error
                 }
@@ -327,6 +323,7 @@ struct CommitsView_Previews: PreviewProvider {
     static var previews: some View {
         FolderView(
             folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
+            logStore: .init(directory: URL(string: "file:///maoyama/Projects/")!),
             selectionLog: $selection,
             isRefresh: $refresh
         )

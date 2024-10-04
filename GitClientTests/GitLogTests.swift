@@ -32,4 +32,10 @@ Swift SVN r30314
         #expect(commits.count == 2)
     }
 
+    @Test func parseEmpty() async throws {
+        let gitlog = GitLog(directory: URL(string: "file:///maoyama/Projects/")!)
+        let output = ""
+        let commits = try gitlog.parse(for: output)
+        #expect(commits.count == 0)
+    }
 }

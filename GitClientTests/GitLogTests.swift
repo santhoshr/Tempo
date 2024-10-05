@@ -7,7 +7,7 @@
 
 import Testing
 import Foundation
-@testable import GitClient
+@testable import Tempo
 
 struct GitLogTests {
 

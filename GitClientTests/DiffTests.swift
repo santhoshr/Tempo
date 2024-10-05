@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import GitClient
+@testable import Tempo
 
 final class DiffTests: XCTestCase {
     let raw = """

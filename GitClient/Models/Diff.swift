@@ -162,7 +162,7 @@ struct FileDiff: Identifiable {
 struct Chunk: Identifiable {
     struct Line: Identifiable {
         enum Kind {
-            case removed, added, unchanged
+            case removed, added, unchanged, header
         }
         var id: Int
         var kind: Kind {
@@ -173,6 +173,8 @@ struct Chunk: Identifiable {
                 return .added
             case " ":
                 return .unchanged
+            case "@":
+                return .header
             default:
                 return .unchanged
             }

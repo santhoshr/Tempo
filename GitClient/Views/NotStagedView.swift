@@ -119,6 +119,8 @@ struct NotStagedView: View {
 
     private func chunkLineColor(_ line: Chunk.Line) -> Color {
         switch line.kind {
+        case .header:
+            return .secondary
         case .removed:
             return .red
         case .added:

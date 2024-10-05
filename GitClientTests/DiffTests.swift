@@ -215,15 +215,20 @@ struct DiffView_Previews: PreviewProvider {
         )
 
         XCTAssertEqual(chunk.lines.count, 9)
-        XCTAssertEqual(chunk.lines[0].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[0].kind, Chunk.Line.Kind.header)
+        XCTAssertEqual(chunk.lines[0].toFileLineNumber, nil)
         XCTAssertEqual(chunk.lines[1].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[1].toFileLineNumber, 24)
         XCTAssertEqual(chunk.lines[2].kind, Chunk.Line.Kind.unchanged)
         XCTAssertEqual(chunk.lines[3].kind, Chunk.Line.Kind.unchanged)
         XCTAssertEqual(chunk.lines[4].kind, Chunk.Line.Kind.removed)
+        XCTAssertEqual(chunk.lines[4].toFileLineNumber, nil)
         XCTAssertEqual(chunk.lines[5].kind, Chunk.Line.Kind.added)
+        XCTAssertEqual(chunk.lines[5].toFileLineNumber, 27)
         XCTAssertEqual(chunk.lines[6].kind, Chunk.Line.Kind.unchanged)
         XCTAssertEqual(chunk.lines[7].kind, Chunk.Line.Kind.unchanged)
         XCTAssertEqual(chunk.lines[8].kind, Chunk.Line.Kind.unchanged)
+        XCTAssertEqual(chunk.lines[8].toFileLineNumber, 30)
     }
 
     func testStage() throws {

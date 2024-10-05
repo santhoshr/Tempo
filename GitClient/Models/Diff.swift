@@ -179,6 +179,7 @@ struct Chunk: Identifiable {
                 return .unchanged
             }
         }
+        var toFileLineNumber: Int?
         var raw: String
 
         init(id: Int, raw: String) {
@@ -204,7 +205,31 @@ struct Chunk: Identifiable {
     }
 
     init(raw: String) {
+        let toFileRange = raw.split(separator: "+", maxSplits: 1)[safe: 1]?.split(separator: " ", maxSplits: 1)[safe: 0]
+        let splitedRange = toFileRange?.split(separator: ",", maxSplits: 1)
+        let startLine = splitedRange?[safe: 0].map { String($0) }
+        var currnetLine = startLine.map{ Int($0) } ?? nil
+
         self.raw = raw
-        self.lines = raw.split(separator: "\n").enumerated().map { Line(id: $0.offset, raw: String($0.element)) }
+        self.lines = raw.split(separator: "\n").enumerated().map {
+            var line = Line(id: $0.offset, raw: String($0.element))
+            switch line.kind {
+            case .removed:
+                break
+            case .added:
+                if let currnetLine1 = currnetLine {
+                    line.toFileLineNumber = currnetLine1
+                    currnetLine = currnetLine! + 1
+                }
+            case .unchanged:
+                if let currnetLine1 = currnetLine {
+                    line.toFileLineNumber = currnetLine1
+                    currnetLine = currnetLine! + 1
+                }
+            case .header:
+                break
+            }
+            return line
+        }
     }
 }

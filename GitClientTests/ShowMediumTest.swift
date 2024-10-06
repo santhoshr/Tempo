@@ -76,7 +76,7 @@ Date:   Fri Mar 1 23:54:45 2024 +0900
 """
         let showMedium = try ShowMedium(raw: raw)
         XCTAssertEqual(showMedium.commitHashWithLabel, "commit da82a43b5d274fecbf8e02b64b4e6298caab8709")
-        XCTAssertEqual(showMedium.merge, "Merge: 1506e13 b842015")
+        XCTAssertEqual(showMedium.mergeWithLabel, "Merge: 1506e13 b842015")
         XCTAssertEqual(showMedium.mergeParents!.0, "1506e13")
         XCTAssertEqual(showMedium.mergeParents!.1, "b842015")
         XCTAssertEqual(showMedium.author, "Author: Makoto Aoyama <m@aoyama.dev>")

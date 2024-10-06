@@ -12,12 +12,12 @@ struct ShowMedium {
     var commitHash: String {
         return commitHashWithLabel.split(separator: " ", maxSplits: 1)[safe: 1].map { String($0)} ?? ""
     }
-    var merge: String?
+    var mergeWithLabel: String?
     var mergeParents: (String, String)? {
-        guard let merge else {
+        guard let mergeWithLabel else {
             return nil
         }
-        let splitted = merge.split(separator: " ", maxSplits: 2).map { String($0) }
+        let splitted = mergeWithLabel.split(separator: " ", maxSplits: 2).map { String($0) }
         guard let parent1 = splitted[safe: 1], let parent2 = splitted[safe: 2] else {
             return nil
         }
@@ -37,7 +37,7 @@ struct ShowMedium {
             let commitInfo = raw
             let commitInfoSplited = commitInfo.split(separator: "\n", maxSplits: 4).map { String($0)}
             commitHashWithLabel = commitInfoSplited[0]
-            merge = commitInfoSplited[1]
+            mergeWithLabel = commitInfoSplited[1]
             author = commitInfoSplited[2]
             date = commitInfoSplited[3]
             commitMessage = commitInfoSplited[4]

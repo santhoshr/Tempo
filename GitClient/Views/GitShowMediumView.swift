@@ -15,7 +15,7 @@ struct GitShowMediumView: View {
             VStack (alignment: .leading) {
                 Text(showMedium.commitHashWithLabel)
                     .foregroundStyle(.orange)
-                if let merge = showMedium.merge {
+                if let merge = showMedium.mergeWithLabel {
                     Text(merge)
                 }
                 Text(showMedium.author)

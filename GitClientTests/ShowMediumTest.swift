@@ -34,7 +34,7 @@ index ca7d6df..b9d9984 100644
        }
 """
         )
-        XCTAssertEqual(showMedium.commitHash, "commit 4396d158bfa68710f0fef091599e7d1cea310791")
+        XCTAssertEqual(showMedium.commitHashWithLabel, "commit 4396d158bfa68710f0fef091599e7d1cea310791")
         XCTAssertEqual(showMedium.author, "Author: Makoto Aoyama <m@aoyama.dev>")
         XCTAssertEqual(showMedium.date, "Date:   Sun May 26 17:57:42 2024 +0900")
         XCTAssertEqual(showMedium.commitMessage, """
@@ -74,7 +74,7 @@ Date:   Fri Mar 1 23:54:45 2024 +0900
 
 """
         let showMedium = try ShowMedium(raw: raw)
-        XCTAssertEqual(showMedium.commitHash, "commit da82a43b5d274fecbf8e02b64b4e6298caab8709")
+        XCTAssertEqual(showMedium.commitHashWithLabel, "commit da82a43b5d274fecbf8e02b64b4e6298caab8709")
         XCTAssertEqual(showMedium.author, "Author: Makoto Aoyama <m@aoyama.dev>")
         XCTAssertEqual(showMedium.date, "Date:   Fri Mar 1 23:54:45 2024 +0900")
         XCTAssertEqual(showMedium.commitMessage, """

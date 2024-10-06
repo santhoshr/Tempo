@@ -8,7 +8,10 @@
 import Foundation
 
 struct ShowMedium {
-    var commitHash: String
+    var commitHashWithLabel: String
+    var commitHash: String {
+        return commitHashWithLabel.split(separator: " ", maxSplits: 1)[safe: 1].map { String($0)} ?? ""
+    }
     var merge: String?
     var author: String
     var date: String
@@ -23,7 +26,7 @@ struct ShowMedium {
         guard spliteDiff.count == 2 else {
             let commitInfo = raw
             let commitInfoSplited = commitInfo.split(separator: "\n", maxSplits: 4).map { String($0)}
-            commitHash = commitInfoSplited[0]
+            commitHashWithLabel = commitInfoSplited[0]
             merge = commitInfoSplited[1]
             author = commitInfoSplited[2]
             date = commitInfoSplited[3]
@@ -35,7 +38,7 @@ struct ShowMedium {
         guard commitInfoSplited.count == 4 else {
             throw GenericError(errorDescription: "Format error for '\n' in ShowMedium")
         }
-        commitHash = commitInfoSplited[0]
+        commitHashWithLabel = commitInfoSplited[0]
         author = commitInfoSplited[1]
         date = commitInfoSplited[2]
         commitMessage = commitInfoSplited[3]

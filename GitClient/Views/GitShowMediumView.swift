@@ -13,7 +13,7 @@ struct GitShowMediumView: View {
     var body: some View {
         HStack {
             VStack (alignment: .leading) {
-                Text(showMedium.commitHash)
+                Text(showMedium.commitHashWithLabel)
                     .foregroundStyle(.orange)
                 if let merge = showMedium.merge {
                     Text(merge)

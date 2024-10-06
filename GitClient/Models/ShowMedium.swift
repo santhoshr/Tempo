@@ -27,7 +27,7 @@ struct ShowMedium {
     var author: String {
         return authorWithLabel.split(separator: " ", maxSplits: 1)[safe: 1].map { String($0)} ?? ""
     }
-    var date: String
+    var dateWithLabel: String
     var commitMessage: String
     var diff: Diff?
 
@@ -42,7 +42,7 @@ struct ShowMedium {
             commitHashWithLabel = commitInfoSplited[0]
             mergeWithLabel = commitInfoSplited[1]
             authorWithLabel = commitInfoSplited[2]
-            date = commitInfoSplited[3]
+            dateWithLabel = commitInfoSplited[3]
             commitMessage = commitInfoSplited[4]
             return
         }
@@ -53,7 +53,7 @@ struct ShowMedium {
         }
         commitHashWithLabel = commitInfoSplited[0]
         authorWithLabel = commitInfoSplited[1]
-        date = commitInfoSplited[2]
+        dateWithLabel = commitInfoSplited[2]
         commitMessage = commitInfoSplited[3]
         diff = try Diff(raw: "diff" + spliteDiff[1])
     }

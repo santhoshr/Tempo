@@ -28,6 +28,9 @@ struct ShowMedium {
         return authorWithLabel.split(separator: " ", maxSplits: 1)[safe: 1].map { String($0)} ?? ""
     }
     var dateWithLabel: String
+    var date: String {
+        return dateWithLabel.split(separator: "   ", maxSplits: 1)[safe: 1].map { String($0)} ?? ""
+    }
     var commitMessage: String
     var diff: Diff?
 

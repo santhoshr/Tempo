@@ -39,6 +39,7 @@ index ca7d6df..b9d9984 100644
         XCTAssertEqual(showMedium.authorWithLabel, "Author: Makoto Aoyama <m@aoyama.dev>")
         XCTAssertEqual(showMedium.author, "Makoto Aoyama <m@aoyama.dev>")
         XCTAssertEqual(showMedium.dateWithLabel, "Date:   Sun May 26 17:57:42 2024 +0900")
+        XCTAssertEqual(showMedium.date, "Sun May 26 17:57:42 2024 +0900")
         XCTAssertEqual(showMedium.commitMessage, """
 
     Test comment

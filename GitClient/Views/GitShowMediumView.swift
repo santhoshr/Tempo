@@ -15,6 +15,7 @@ struct GitShowMediumView: View {
             VStack (alignment: .leading) {
                 Text(showMedium.commitHash)
                     .foregroundStyle(.orange)
+                    .font(Font.system(.body, design: .rounded))
                 Text(showMedium.commitMessage)
                     .font(.title)
                 HStack {
@@ -24,7 +25,8 @@ struct GitShowMediumView: View {
                 }
                 .foregroundStyle(.secondary)
                 if let merge = showMedium.mergeParents {
-                    Text("2 parents " + merge.0 + " + " + merge.1)
+                    Label("2 parents " + merge.0 + " + " + merge.1, systemImage: "arrow.triangle.merge")
+                        .padding(.top)
                 }
 
                 if let fileDiffs = showMedium.diff?.fileDiffs {

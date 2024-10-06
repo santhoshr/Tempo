@@ -54,7 +54,6 @@ struct CommitLogView: View {
                 if let model = showMedium {
                     GitShowMediumView(showMedium: model)
                         .textSelection(.enabled)
-                        .font(Font.system(.body, design: .monospaced))
                         .padding()
                 } else {
                     Text(gitShow)

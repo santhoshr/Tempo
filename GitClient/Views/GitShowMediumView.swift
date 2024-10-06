@@ -13,16 +13,24 @@ struct GitShowMediumView: View {
     var body: some View {
         HStack {
             VStack (alignment: .leading) {
-                Text(showMedium.commitHashWithLabel)
+                Text(showMedium.commitHash)
                     .foregroundStyle(.orange)
-                if let merge = showMedium.mergeWithLabel {
-                    Text(merge)
-                }
-                Text(showMedium.authorWithLabel)
-                Text(showMedium.dateWithLabel)
                 Text(showMedium.commitMessage)
+                    .font(.title)
+                HStack {
+                    Text(showMedium.author)
+                    Spacer()
+                    Text(showMedium.date)
+                }
+                .foregroundStyle(.secondary)
+                if let merge = showMedium.mergeParents {
+                    Text("2 parents " + merge.0 + " + " + merge.1)
+                }
+
                 if let fileDiffs = showMedium.diff?.fileDiffs {
                     FileDiffsView(fileDiffs: fileDiffs)
+                        .font(Font.system(.body, design: .monospaced))
+                        .padding(.top)
                 }
             }
             Spacer()
@@ -36,7 +44,7 @@ commit 4396d158bfa68710f0fef091599e7d1cea310791
 Author: Makoto Aoyama <m@aoyama.dev>
 Date:   Sun May 26 17:57:42 2024 +0900
 
-    Test comment
+    Hi
 
     message
 
@@ -58,7 +66,6 @@ index ca7d6df..b9d9984 100644
     )
     return GitShowMediumView(showMedium: model)
         .background(Color(NSColor.textBackgroundColor))
-
 }
 
 #Preview("Merge commit") {

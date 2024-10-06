@@ -36,7 +36,7 @@ index ca7d6df..b9d9984 100644
         )
         XCTAssertEqual(showMedium.commitHashWithLabel, "commit 4396d158bfa68710f0fef091599e7d1cea310791")
         XCTAssertEqual(showMedium.commitHash, "4396d158bfa68710f0fef091599e7d1cea310791")
-        XCTAssertEqual(showMedium.author, "Author: Makoto Aoyama <m@aoyama.dev>")
+        XCTAssertEqual(showMedium.authorWithLabel, "Author: Makoto Aoyama <m@aoyama.dev>")
         XCTAssertEqual(showMedium.date, "Date:   Sun May 26 17:57:42 2024 +0900")
         XCTAssertEqual(showMedium.commitMessage, """
 
@@ -79,7 +79,7 @@ Date:   Fri Mar 1 23:54:45 2024 +0900
         XCTAssertEqual(showMedium.mergeWithLabel, "Merge: 1506e13 b842015")
         XCTAssertEqual(showMedium.mergeParents!.0, "1506e13")
         XCTAssertEqual(showMedium.mergeParents!.1, "b842015")
-        XCTAssertEqual(showMedium.author, "Author: Makoto Aoyama <m@aoyama.dev>")
+        XCTAssertEqual(showMedium.authorWithLabel, "Author: Makoto Aoyama <m@aoyama.dev>")
         XCTAssertEqual(showMedium.date, "Date:   Fri Mar 1 23:54:45 2024 +0900")
         XCTAssertEqual(showMedium.commitMessage, """
 

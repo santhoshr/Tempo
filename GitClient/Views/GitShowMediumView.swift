@@ -18,7 +18,7 @@ struct GitShowMediumView: View {
                 if let merge = showMedium.mergeWithLabel {
                     Text(merge)
                 }
-                Text(showMedium.author)
+                Text(showMedium.authorWithLabel)
                 Text(showMedium.date)
                 Text(showMedium.commitMessage)
                 if let fileDiffs = showMedium.diff?.fileDiffs {

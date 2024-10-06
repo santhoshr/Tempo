@@ -23,7 +23,7 @@ struct ShowMedium {
         }
         return (parent1, parent2)
     }
-    var author: String
+    var authorWithLabel: String
     var date: String
     var commitMessage: String
     var diff: Diff?
@@ -38,7 +38,7 @@ struct ShowMedium {
             let commitInfoSplited = commitInfo.split(separator: "\n", maxSplits: 4).map { String($0)}
             commitHashWithLabel = commitInfoSplited[0]
             mergeWithLabel = commitInfoSplited[1]
-            author = commitInfoSplited[2]
+            authorWithLabel = commitInfoSplited[2]
             date = commitInfoSplited[3]
             commitMessage = commitInfoSplited[4]
             return
@@ -49,7 +49,7 @@ struct ShowMedium {
             throw GenericError(errorDescription: "Format error for '\n' in ShowMedium")
         }
         commitHashWithLabel = commitInfoSplited[0]
-        author = commitInfoSplited[1]
+        authorWithLabel = commitInfoSplited[1]
         date = commitInfoSplited[2]
         commitMessage = commitInfoSplited[3]
         diff = try Diff(raw: "diff" + spliteDiff[1])

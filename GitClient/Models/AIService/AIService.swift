@@ -90,7 +90,7 @@ struct AIService {
     func commitMessage(stagedDiff: String) async throws -> String {
         let body = RequestBody(
             messages: [
-                .init(role: "system", content: "Tell me commit message of this changes for git."),
+                .init(role: "system", content: "Tell me commit message of this changes for git. You don't need a period at the end of the commit message title."),
                 .init(role: "user", content: stagedDiff)
             ],
             responseFormat: .init(
@@ -113,6 +113,7 @@ The first message is the diff that has already been staged. The second message i
 For the unstaged diff, please indicate which hunks should be committed by answering with booleans so that the response can be used as input for git add -p. For the untracked files, please also answer with booleans for each file.
 
 Additionally, please provide a commit message that can be used if all these changes are staged.
+You don't need a period at the end of the commit message title.
 """),
                 .init(role: "user", content: stagedDiff),
                 .init(role: "user", content: notStagedDiff),

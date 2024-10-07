@@ -19,6 +19,7 @@ struct CommitLogView: View {
             return nil
         }
     }
+    @State private var commitDetail: CommitDetail?
     @State private var error: Error?
 
     var body: some View {   
@@ -69,6 +70,8 @@ struct CommitLogView: View {
             Task {
                 do {
                     gitShow = try await Process.output(GitShowMedium(directory: folder.url, object: commit.hash))
+                    commitDetail = try await Process.output(GitShow(directory: folder.url, object: commit.hash))
+                    print(commitDetail)
                 } catch {
                     self.error = error
                 }

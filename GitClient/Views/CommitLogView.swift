@@ -68,7 +68,7 @@ struct CommitLogView: View {
         .onChange(of: commit, initial: true, {
             Task {
                 do {
-                    gitShow = try await Process.output(GitShow(directory: folder.url, object: commit.hash))
+                    gitShow = try await Process.output(GitShowMedium(directory: folder.url, object: commit.hash))
                 } catch {
                     self.error = error
                 }

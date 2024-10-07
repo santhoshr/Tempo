@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GitShow: Git {
+struct GitShowMedium: Git {
     typealias OutputModel = String
     var arguments: [String] {
         [

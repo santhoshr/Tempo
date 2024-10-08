@@ -24,6 +24,7 @@ struct FileDiffsView: View {
                         .fontWeight(.bold)
                 }
                 chunksViews(fileDiff.chunks)
+                    .padding(.top, 8)
             }
         }
     }
@@ -40,7 +41,7 @@ struct FileDiffsView: View {
             }
         }
         return views.reduce(Text("")) { partialResult, text in
-            partialResult + text
+            partialResult + text + Text("\n")
         }
     }
 

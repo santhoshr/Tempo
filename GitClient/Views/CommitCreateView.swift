@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CommitView: View {
+struct CommitCreateView: View {
     @Environment(\.openAIAPISecretKey) var openAIAPISecretKey: String
     @Environment(\.openSettings) var openSettings: OpenSettingsAction
 

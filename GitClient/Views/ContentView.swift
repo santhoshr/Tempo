@@ -86,7 +86,7 @@ struct ContentView: View {
         } detail: {
             switch selectionLog {
             case .notCommitted:
-                CommitView(
+                CommitCreateView(
                     folder: selectionFolder!,
                     isRefresh: $folderIsRefresh,
                     onCommit: {

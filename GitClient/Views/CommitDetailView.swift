@@ -43,6 +43,7 @@ struct CommitDetailView: View {
                             }
                         }
                         .padding(.top)
+                        .padding(.top)
                     }
                     HStack {
                         VStack (alignment: .leading) {
@@ -55,6 +56,7 @@ struct CommitDetailView: View {
                                 .font(.body)
                             HStack {
                                 Text(commit.author)
+                                Text(commit.authorEmail)
                                 Spacer()
                                 Text(commit.authorDate)
                             }
@@ -70,6 +72,8 @@ struct CommitDetailView: View {
                         }
                         Spacer()
                     }
+                    .padding(.horizontal)
+                    .padding(.top, (!commit.branches.isEmpty || !commit.tags.isEmpty) ? 0 : 32)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

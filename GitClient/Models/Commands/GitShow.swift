@@ -47,7 +47,7 @@ struct GitShow: Git {
             body: separated[5],
             branches: refs.filter { !$0.hasPrefix("tag: ") },
             tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) },
-            diff: String(splits[1])
+            diff: try Diff(raw: String(splits[1]))
         )
     }
 }

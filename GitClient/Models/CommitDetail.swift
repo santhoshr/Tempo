@@ -16,5 +16,5 @@ struct CommitDetail {
     var body: String
     var branches: [String]
     var tags: [String]
-    var diff: String
+    var diff: Diff
 }

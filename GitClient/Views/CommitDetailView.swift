@@ -50,14 +50,15 @@ struct CommitDetailView: View {
                             Text(commit.hash)
                                 .foregroundStyle(.orange)
                                 .font(Font.system(.body, design: .rounded))
-                            Text(commit.title)
+                            Text(commit.title.trimmingCharacters(in: .whitespacesAndNewlines))
                                 .font(.title)
                                 .padding(.leading)
                                 .padding(.vertical)
                             if !commit.body.isEmpty {
-                                Text(commit.body)
+                                Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
                                     .font(.body)
                                     .padding(.leading)
+                                    .padding(.bottom, 8)
                             }
                             HStack {
                                 Text(commit.author)
@@ -67,7 +68,7 @@ struct CommitDetailView: View {
                                 Spacer()
                                 Text(commit.authorDate)
                             }
-                            .padding(.top)
+                            .padding(.top, 6)
                             .foregroundStyle(.secondary)
                             if commit.abbreviatedParentHashes.count == 2 {
                                 Label("2 parents " + commit.abbreviatedParentHashes[0] + " + " + commit.abbreviatedParentHashes[1], systemImage: "arrow.triangle.merge")
@@ -76,7 +77,6 @@ struct CommitDetailView: View {
                             FileDiffsView(fileDiffs: commit.diff.fileDiffs)
                                 .font(Font.system(.body, design: .monospaced))
                                 .padding(.top)
-
                         }
                         Spacer()
                     }

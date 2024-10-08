@@ -12,7 +12,6 @@
 		6103A59E28EE46E30083A2F5 /* GitCheckoutB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */; };
 		6103A5A028EE47790083A2F5 /* GitMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103A59F28EE47790083A2F5 /* GitMerge.swift */; };
 		612208A92C032A0D0047B454 /* NotStagedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208A82C032A0D0047B454 /* NotStagedView.swift */; };
-		612208AD2C0333CC0047B454 /* ShowMediumTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612208AC2C0333CC0047B454 /* ShowMediumTest.swift */; };
 		6130BDE62C957A450050E70F /* StashChangedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6130BDE52C957A450050E70F /* StashChangedView.swift */; };
 		6130BDE82C95821C0050E70F /* Stash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6130BDE72C95821C0050E70F /* Stash.swift */; };
 		6130BDEA2C958B710050E70F /* GitStashList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6130BDE92C958B710050E70F /* GitStashList.swift */; };
@@ -122,7 +121,6 @@
 		6103A59D28EE46E30083A2F5 /* GitCheckoutB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCheckoutB.swift; sourceTree = "<group>"; };
 		6103A59F28EE47790083A2F5 /* GitMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitMerge.swift; sourceTree = "<group>"; };
 		612208A82C032A0D0047B454 /* NotStagedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotStagedView.swift; sourceTree = "<group>"; };
-		612208AC2C0333CC0047B454 /* ShowMediumTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMediumTest.swift; sourceTree = "<group>"; };
 		6130BDE52C957A450050E70F /* StashChangedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashChangedView.swift; sourceTree = "<group>"; };
 		6130BDE72C95821C0050E70F /* Stash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stash.swift; sourceTree = "<group>"; };
 		6130BDE92C958B710050E70F /* GitStashList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitStashList.swift; sourceTree = "<group>"; };
@@ -286,7 +284,6 @@
 			isa = PBXGroup;
 			children = (
 				61347EFF28D5D16D00625FC4 /* DiffTests.swift */,
-				612208AC2C0333CC0047B454 /* ShowMediumTest.swift */,
 				619759552C8C9A9300E9CA4F /* GitDiffNumStatTests.swift */,
 				61B5BBB62C9B97310087A9F6 /* BranchTests.swift */,
 				61D34C8C2CAC394A0032A22A /* GitLogTests.swift */,
@@ -677,7 +674,6 @@
 				61347F0028D5D16D00625FC4 /* DiffTests.swift in Sources */,
 				61B5BBB72C9B97310087A9F6 /* BranchTests.swift in Sources */,
 				619759562C8C9A9300E9CA4F /* GitDiffNumStatTests.swift in Sources */,
-				612208AD2C0333CC0047B454 /* ShowMediumTest.swift in Sources */,
 				61D34C8D2CAC394A0032A22A /* GitLogTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

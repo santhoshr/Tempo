@@ -71,7 +71,6 @@ struct CommitLogView: View {
                 do {
                     gitShow = try await Process.output(GitShowMedium(directory: folder.url, object: commit.hash))
                     commitDetail = try await Process.output(GitShow(directory: folder.url, object: commit.hash))
-                    print(commitDetail)
                 } catch {
                     self.error = error
                 }

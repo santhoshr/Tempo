@@ -10,7 +10,8 @@ import Foundation
 struct CommitDetail {
     var hash: String
     var author: String
-    var authorDateRelative: String
+    var authorEmail: String
+    var authorDate: String
     var title: String
     var body: String
     var branches: [String]

@@ -14,6 +14,7 @@ struct GitShow: Git {
             "git",
             "show",
             "--pretty=format:%H"
+            + .formatSeparator + "%p"
             + .formatSeparator + "%an"
             + .formatSeparator + "%ae"
             + .formatSeparator + "%ai"
@@ -33,18 +34,19 @@ struct GitShow: Git {
         let commitInfo = splits[0]
         let separated = commitInfo.components(separatedBy: String.formatSeparator)
         let refs: [String]
-        if separated[6].isEmpty {
+        if separated[7].isEmpty {
             refs = []
         } else {
-            refs = separated[6].components(separatedBy: ", ")
+            refs = separated[7].components(separatedBy: ", ")
         }
         return CommitDetail(
             hash: separated[0],
-            author: separated[1],
-            authorEmail: separated[2],
-            authorDate: separated[3],
-            title: separated[4],
-            body: separated[5],
+            abbreviatedParentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
+            author: separated[2],
+            authorEmail: separated[3],
+            authorDate: separated[4],
+            title: separated[5],
+            body: separated[6],
             branches: refs.filter { !$0.hasPrefix("tag: ") },
             tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) },
             diff: try Diff(raw: String(splits[safe: 1] ?? ""))

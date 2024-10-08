@@ -9,6 +9,7 @@ import Foundation
 
 struct CommitDetail {
     var hash: String
+    var abbreviatedParentHashes: [String]
     var author: String
     var authorEmail: String
     var authorDate: String

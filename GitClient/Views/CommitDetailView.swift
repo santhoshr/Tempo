@@ -54,9 +54,11 @@ struct CommitDetailView: View {
                                 .font(.title)
                                 .padding(.leading)
                                 .padding(.vertical)
-                            Text(commit.body)
-                                .font(.body)
-                                .padding(.leading)
+                            if !commit.body.isEmpty {
+                                Text(commit.body)
+                                    .font(.body)
+                                    .padding(.leading)
+                            }
                             HStack {
                                 Text(commit.author)
                                 Divider()
@@ -65,11 +67,12 @@ struct CommitDetailView: View {
                                 Spacer()
                                 Text(commit.authorDate)
                             }
+                            .padding(.top)
                             .foregroundStyle(.secondary)
-    //                        if let merge = showMedium.mergeParents {
-    //                            Label("2 parents " + merge.0 + " + " + merge.1, systemImage: "arrow.triangle.merge")
-    //                                .padding(.top)
-    //                        }
+                            if commit.abbreviatedParentHashes.count == 2 {
+                                Label("2 parents " + commit.abbreviatedParentHashes[0] + " + " + commit.abbreviatedParentHashes[1], systemImage: "arrow.triangle.merge")
+                                    .padding(.top)
+                            }
                             FileDiffsView(fileDiffs: commit.diff.fileDiffs)
                                 .font(Font.system(.body, design: .monospaced))
                                 .padding(.top)

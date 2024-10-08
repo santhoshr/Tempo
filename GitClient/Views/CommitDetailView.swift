@@ -77,6 +77,7 @@ struct CommitDetailView: View {
                             FileDiffsView(fileDiffs: commit.diff.fileDiffs)
                                 .font(Font.system(.body, design: .monospaced))
                                 .padding(.top)
+                                .textSelection(.enabled)
                         }
                         Spacer()
                     }

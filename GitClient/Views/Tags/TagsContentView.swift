@@ -11,46 +11,64 @@ struct TagsContentView: View {
     var folder: Folder
     @Binding var showingTags: Bool
     var tags: [String]?
+    private var filteredTags: [String]? {
+        guard !filterText.isEmpty else { return tags }
+        return tags?.filter { $0.lowercased().contains(filterText.lowercased()) }
+    }
+    @State private var filterText: String = ""
     @State private var selection: String?
     @State private var error: Error?
 
     var body: some View {
-        if let tags {
-            if tags.isEmpty {
-                VStack {
-                    Text("No Content")
-                        .foregroundStyle(.secondary)
+        VStack(spacing: 0) {
+            HStack(spacing: 4) {
+                Image(systemName: "line.3.horizontal.decrease")
+                TextField(text: $filterText) {
+                    Text("Filter")
                 }
-            } else {
-                List(tags, id: \.self, selection: $selection) { tag in
-                    Text(tag)
-                        .contextMenu {
-                            Button("Delete") {
-                                Task {
-                                    do {
-                                        try await Process.output(GitTagDelete(directory: folder.url, tagname: tag))
-                                        showingTags = false
-                                    } catch {
-                                        self.error = error
+            }
+            .textFieldStyle(.roundedBorder)
+            .padding()
+            Divider()
+            if let filteredTags {
+                if filteredTags.isEmpty {
+                    ScrollView {
+                            Text("No Content")
+                                .foregroundStyle(.secondary)
+                                .padding()
+                                .padding(.top, 220)
+                    }
+                } else {
+                    List(filteredTags, id: \.self, selection: $selection) { tag in
+                        Text(tag)
+                            .contextMenu {
+                                Button("Delete") {
+                                    Task {
+                                        do {
+                                            try await Process.output(GitTagDelete(directory: folder.url, tagname: tag))
+                                            showingTags = false
+                                        } catch {
+                                            self.error = error
+                                        }
                                     }
                                 }
                             }
-                        }
-                }
-                .onChange(of: selection ?? "", { _, newValue in
-                    Task {
-                        do {
-                            try await Process.output(GitCheckout(directory: folder.url, commitHash: newValue))
-                            showingTags = false
-                        } catch {
-                            self.error = error
-                        }
                     }
-                })
-                .errorAlert($error)
-                .scrollContentBackground(.hidden)
+                    .onChange(of: selection ?? "", { _, newValue in
+                        Task {
+                            do {
+                                try await Process.output(GitCheckout(directory: folder.url, commitHash: newValue))
+                                showingTags = false
+                            } catch {
+                                self.error = error
+                            }
+                        }
+                    })
+                }
             }
         }
+        .scrollContentBackground(.hidden)
+        .errorAlert($error)
     }
 }
 

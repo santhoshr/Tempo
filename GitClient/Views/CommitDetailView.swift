@@ -70,6 +70,8 @@ struct CommitDetailView: View {
                             }
                             .padding(.top, 6)
                             .foregroundStyle(.secondary)
+                            Divider()
+                                .padding(.top)
                             if commit.abbreviatedParentHashes.count == 2 {
                                 Label("2 parents " + commit.abbreviatedParentHashes[0] + " + " + commit.abbreviatedParentHashes[1], systemImage: "arrow.triangle.merge")
                                     .padding(.top)

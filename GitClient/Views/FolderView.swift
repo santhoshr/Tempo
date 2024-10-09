@@ -245,10 +245,10 @@ struct FolderView: View {
                             }
                         }
                     }
-                    Button("Revert") {
+                    Button("Revert" + (commit.abbreviatedParentHashes.count == 2 ? " -m 1 (\(commit.abbreviatedParentHashes[0]))" : "")) {
                         Task {
                             do {
-                                if commit.abbreviatedParentHashes.count > 1 {
+                                if commit.abbreviatedParentHashes.count == 2 {
                                     try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash, parentNumber: 1))
                                 } else {
                                     try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))

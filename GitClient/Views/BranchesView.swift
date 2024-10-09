@@ -64,7 +64,7 @@ struct BranchesView: View {
                 .background(.ultraThinMaterial)
             List(filteredBranch, id: \.name) { branch in
                 HStack {
-                    Text(branch.name)
+                    Label(branch.name, systemImage: "arrow.triangle.branch")
                     Spacer()
                 }
                 .contentShape(Rectangle())

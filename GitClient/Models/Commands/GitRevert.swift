@@ -15,6 +15,7 @@ struct GitRevert: Git {
             "revert",
         ]
         if let parentNumber {
+            args.append("-m")
             args.append(String(parentNumber))
         }
         args.append(commitHash)

@@ -51,6 +51,7 @@ struct StagedView: View {
                             .padding()
                         }
                     }
+                    .padding()
                     ForEach(fileDiff.chunks) { chunk in
                         HStack {
                             chunkView(chunk)
@@ -64,10 +65,10 @@ struct StagedView: View {
                             .help("Unstage this hunk")
                             .padding()
                         }
+                        .padding(.horizontal)
                     }
                 }
                 .font(Font.system(.body, design: .monospaced))
-                .padding()
             } header: {
                 SectionHeader(title: "Staged", isExpanded: $isExpanded)
             }

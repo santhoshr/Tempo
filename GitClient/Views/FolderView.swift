@@ -248,7 +248,11 @@ struct FolderView: View {
                     Button("Revert") {
                         Task {
                             do {
-                                try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
+                                if commit.abbreviatedParentHashes.count > 1 {
+                                    try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash, parentNumber: 1))
+                                } else {
+                                    try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
+                                }
                                 await refreshModels()
                             } catch {
                                 self.error = error

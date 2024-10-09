@@ -79,7 +79,7 @@ struct StashChangedContentView: View {
                 }
             })
         }
-        .frame(minWidth: 600, minHeight: 500)
+        .frame(minWidth: 800, minHeight: 700)
         .errorAlert($error)
     }
 }

@@ -28,7 +28,6 @@ struct NotStagedView: View {
                             .padding(.trailing)
                     }
                 }
-
                 ForEach(fileDiffs) { fileDiff in
                     HStack {
                         VStack(alignment: .leading) {
@@ -55,6 +54,7 @@ struct NotStagedView: View {
                             .padding()
                         }
                     }
+                    .padding()
 
                     ForEach(fileDiff.chunks) { chunk in
                         HStack {
@@ -69,10 +69,10 @@ struct NotStagedView: View {
                             .help("Stage this hunk")
                             .padding()
                         }
+                        .padding(.horizontal)
                     }
                 }
                 .font(Font.system(.body, design: .monospaced))
-                .padding()
 
                 if !untrackedFiles.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {

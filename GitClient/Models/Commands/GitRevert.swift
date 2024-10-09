@@ -10,14 +10,19 @@ import Foundation
 struct GitRevert: Git {
     typealias OutputModel = Void
     var arguments: [String] {
-        [
+        var args = [
             "git",
             "revert",
-            commitHash,
         ]
+        if let parentNumber {
+            args.append(String(parentNumber))
+        }
+        args.append(commitHash)
+        return args
     }
     var directory: URL
     var commitHash: String
+    var parentNumber: Int?
 
     func parse(for stdOut: String) -> Void {}
 }

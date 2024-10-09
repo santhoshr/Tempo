@@ -29,7 +29,7 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             List(decodedFolders, id: \.url, selection: $selectionFolderURL) { folder in
-                Text(folder.displayName)
+                Label(folder.displayName, systemImage: "folder")
                     .help(folder.url.path)
                     .contextMenu {
                         Button("Delete") {

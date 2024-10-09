@@ -311,7 +311,6 @@ struct FolderView: View {
         } label: {
             Image(systemName: "arrow.down")
         }
-        .keyboardShortcut(.init(.downArrow))
         .help("Pull")
     }
 
@@ -329,7 +328,6 @@ struct FolderView: View {
         } label: {
             Image(systemName: "arrow.up")
         }
-        .keyboardShortcut(.init(.upArrow))
         .help("Push origin HEAD")
     }
 }

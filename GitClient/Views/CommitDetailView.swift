@@ -77,7 +77,6 @@ struct CommitDetailView: View {
                             FileDiffsView(fileDiffs: commit.diff.fileDiffs)
                                 .font(Font.system(.body, design: .monospaced))
                                 .padding(.top)
-                                .textSelection(.enabled)
                         }
                         Spacer()
                     }
@@ -87,6 +86,7 @@ struct CommitDetailView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(NSColor.textBackgroundColor))
+            .textSelection(.enabled)
         }
         .onChange(of: commitHash, initial: true, {
             Task {

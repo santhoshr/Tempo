@@ -40,7 +40,7 @@ struct TagsContentView: View {
                     }
                 } else {
                     List(filteredTags, id: \.self, selection: $selection) { tag in
-                        Text(tag)
+                        Label(tag, systemImage: "tag")
                             .contextMenu {
                                 Button("Delete") {
                                     Task {

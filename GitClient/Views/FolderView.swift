@@ -217,22 +217,32 @@ struct FolderView: View {
         }
     }
 
-    fileprivate func logsRow(_ log: Log) -> VStack<_ConditionalContent<Text, some View>> {
+    fileprivate func logsRow(_ log: Log) -> some View {
         return VStack {
             switch log {
             case .notCommitted:
-                Text("Not Committed")
-                    .foregroundStyle(Color.secondary)
+                HStack {
+                    Image(systemName: "plus.forwardslash.minus")
+                        .frame(width: 12)
+                        .foregroundStyle(.tertiary)
+                    Text("Not Committed")
+                        .foregroundStyle(.secondary)
+                }
             case .committed(let commit):
-                VStack (alignment: .leading) {
-                    Text(commit.title)
-                    HStack {
-                        Text(commit.author)
-                        Spacer()
-                        Text(commit.authorDateRelative)
+                HStack {
+                    Image(systemName: commit.abbreviatedParentHashes.count == 2 ? "asterisk.circle.fill" : "asterisk")
+                        .foregroundStyle(.tertiary)
+                        .frame(width: 12)
+                    VStack (alignment: .leading) {
+                        Text(commit.title)
+                        HStack {
+                            Text(commit.author)
+                            Spacer()
+                            Text(commit.authorDateRelative)
+                        }
+                        .lineLimit(1)
+                        .foregroundStyle(.tertiary)
                     }
-                    .lineLimit(1)
-                    .foregroundStyle(.tertiary)
                 }
                 .contextMenu {
                     Button("Checkout") {

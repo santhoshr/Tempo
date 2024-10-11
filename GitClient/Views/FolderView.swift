@@ -225,7 +225,12 @@ struct FolderView: View {
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
                 VStack (alignment: .leading) {
-                    Text(commit.title)
+                    HStack {
+                        Text(commit.title)
+                        Spacer()
+                        Text(commit.hash.prefix(5))
+                            .font(Font.system(.caption, design: .rounded))
+                    }
                     HStack {
                         Text(commit.author)
                         Spacer()

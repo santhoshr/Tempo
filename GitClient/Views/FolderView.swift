@@ -223,18 +223,16 @@ struct FolderView: View {
             case .notCommitted:
                 HStack {
                     Image(systemName: "plus.forwardslash.minus")
-                        .frame(width: 10)
+                        .frame(width: 12)
                         .foregroundStyle(.tertiary)
-                        .font(Font.caption)
                     Text("Not Committed")
                         .foregroundStyle(.secondary)
                 }
             case .committed(let commit):
                 HStack {
                     Image(systemName: commit.abbreviatedParentHashes.count == 2 ? "asterisk.circle.fill" : "asterisk")
-                        .font(Font.caption)
                         .foregroundStyle(.tertiary)
-                        .frame(width: 10)
+                        .frame(width: 12)
                     VStack (alignment: .leading) {
                         Text(commit.title)
                         HStack {

@@ -99,7 +99,7 @@ struct ContentView: View {
                     }
                 )
             case .committed(let commit):
-                CommitDetailView(commitHash: commit.hash, folder: selectionFolder!)
+                CommitDetailStackView(commit: commit, folder: selectionFolder!)
             case nil:
                 Text("No Selection")
                     .foregroundColor(.secondary)

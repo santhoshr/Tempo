@@ -42,8 +42,7 @@ struct CommitDetailView: View {
                                 }
                             }
                         }
-                        .padding(.top)
-                        .padding(.top)
+                        .padding(.top, 32)
                     }
                     HStack {
                         VStack (alignment: .leading) {
@@ -73,8 +72,13 @@ struct CommitDetailView: View {
                             Divider()
                                 .padding(.vertical)
                             if commit.abbreviatedParentHashes.count == 2 {
-                                Label("2 parents " + commit.abbreviatedParentHashes[0] + " + " + commit.abbreviatedParentHashes[1], systemImage: "arrow.triangle.merge")
-                                    .padding(.top)
+                                HStack(alignment: .center) {
+                                    Image(systemName: "arrow.triangle.merge")
+                                    Text("2 parents")
+                                    NavigationLink(commit.abbreviatedParentHashes[0], value: commit.abbreviatedParentHashes[0])
+                                    Text("+")
+                                    NavigationLink(commit.abbreviatedParentHashes[1], value: commit.abbreviatedParentHashes[1])
+                                }
                             }
                             FileDiffsView(fileDiffs: commit.diff.fileDiffs)
                                 .font(Font.system(.body, design: .monospaced))

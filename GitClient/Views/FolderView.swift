@@ -230,6 +230,7 @@ struct FolderView: View {
                         Spacer()
                         Text(commit.hash.prefix(5))
                             .font(Font.system(.caption, design: .rounded))
+                            .foregroundStyle(.tertiary)
                     }
                     HStack {
                         Text(commit.author)

@@ -24,7 +24,7 @@ struct CommitDetailStackView: View {
             .padding(.vertical, 8)
             Spacer()
         }
-        .background(Color(NSColor.textBackgroundColor).opacity(0.9))
+        .background(Color(NSColor.textBackgroundColor).opacity(0.98))
     }
     
     var body: some View {

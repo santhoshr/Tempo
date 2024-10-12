@@ -22,6 +22,12 @@ struct GitLog: Git {
             + .formatSeparator + "%D"
             + .componentSeparator,
         ]
+        if merges {
+            args.append("--merges")
+        }
+        if ancestryPath {
+            args.append("--ancestry-path")
+        }
         if number > 0 {
             args.append("-\(number)")
         }
@@ -31,6 +37,8 @@ struct GitLog: Git {
         return args
     }
     var directory: URL
+    var merges = false
+    var ancestryPath = false
     var number = 0
     var revisionRange = ""
 

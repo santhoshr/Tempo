@@ -11,6 +11,7 @@ struct CommitDetailView: View {
     var commitHash: String
     var folder: Folder
     @State private var commit: CommitDetail?
+    @State private var mergedIn: Commit?
     @State private var error: Error?
 
     var body: some View {
@@ -46,9 +47,21 @@ struct CommitDetailView: View {
                     }
                     HStack {
                         VStack (alignment: .leading) {
-                            Text(commit.hash)
-                                .foregroundStyle(.orange)
-                                .font(Font.system(.body, design: .rounded))
+                            HStack {
+                                Text(commit.hash)
+                                    .foregroundStyle(.orange)
+                                    .font(Font.system(.body, design: .rounded))
+                                if let mergedIn {
+                                    Divider()
+                                        .frame(height: 10)
+                                    HStack(spacing: 4) {
+                                        Text("Merged in")
+                                            .foregroundStyle(.secondary)
+                                        NavigationLink(mergedIn.hash.prefix(5), value: mergedIn.hash)
+                                            .buttonStyle(.link)
+                                    }
+                                }
+                            }
                             Text(commit.title.trimmingCharacters(in: .whitespacesAndNewlines))
                                 .font(.title)
                                 .padding(.leading)
@@ -97,6 +110,13 @@ struct CommitDetailView: View {
             Task {
                 do {
                     commit = try await Process.output(GitShow(directory: folder.url, object: commitHash))
+                    mergedIn = try await Process.output(GitLog(
+                        directory: folder.url,
+                        merges: true,
+                        ancestryPath: true,
+                        number: 1,
+                        revisionRange: "\(commitHash)..HEAD"
+                    )).first
                 } catch {
                     self.error = error
                 }

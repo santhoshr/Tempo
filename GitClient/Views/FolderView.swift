@@ -225,12 +225,16 @@ struct FolderView: View {
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
                 VStack (alignment: .leading) {
-                    HStack {
+                    HStack(alignment: .firstTextBaseline) {
                         Text(commit.title)
                         Spacer()
                         Text(commit.hash.prefix(5))
                             .font(Font.system(.body, design: .rounded))
                             .foregroundStyle(.tertiary)
+                        if commit.abbreviatedParentHashes.count == 2 {
+                            Image(systemName: "arrow.triangle.merge")
+                                .foregroundStyle(.tertiary)
+                        }
                     }
                     HStack {
                         Text(commit.author)

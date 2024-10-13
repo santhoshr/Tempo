@@ -85,16 +85,11 @@ struct CommitDetailView: View {
                             Divider()
                                 .padding(.vertical)
                             if commit.abbreviatedParentHashes.count == 2 {
-                                HStack(alignment: .center) {
-                                    Image(systemName: "arrow.triangle.merge")
-                                    Text("2 parents")
-                                    NavigationLink(commit.abbreviatedParentHashes[0], value: commit.abbreviatedParentHashes[0])
-                                    Text("+")
-                                    NavigationLink(commit.abbreviatedParentHashes[1], value: commit.abbreviatedParentHashes[1])
-                                }
+                                MergeCommitContentView(mergeCommit: commit)
+                            } else {
+                                FileDiffsView(fileDiffs: commit.diff.fileDiffs)
+                                    .font(Font.system(.body, design: .monospaced))
                             }
-                            FileDiffsView(fileDiffs: commit.diff.fileDiffs)
-                                .font(Font.system(.body, design: .monospaced))
                         }
                         Spacer()
                     }

@@ -85,7 +85,7 @@ struct CommitDetailView: View {
                             Divider()
                                 .padding(.vertical)
                             if commit.abbreviatedParentHashes.count == 2 {
-                                MergeCommitContentView(mergeCommit: commit)
+                                MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
                             } else {
                                 FileDiffsView(fileDiffs: commit.diff.fileDiffs)
                                     .font(Font.system(.body, design: .monospaced))

@@ -108,15 +108,28 @@ struct CommitDetailView: View {
         }
         .onChange(of: commitHash, initial: true, {
             Task {
+                commit = nil
+                mergedIn = nil
+
                 do {
                     commit = try await Process.output(GitShow(directory: folder.url, object: commitHash))
-                    mergedIn = try await Process.output(GitLog(
+                    let mergeCommit = try await Process.output(GitLog(
                         directory: folder.url,
                         merges: true,
                         ancestryPath: true,
-                        number: 1,
+                        reverse: true,
                         revisionRange: "\(commitHash)..HEAD"
                     )).first
+                    if let mergeCommit {
+                        let mergedInCommits = try await Process.output(GitLog(
+                            directory: folder.url,
+                            revisionRange: "\(mergeCommit.abbreviatedParentHashes[0])..\(mergeCommit.hash)"
+                        ))
+                        let contains = mergedInCommits.contains { $0.hash == commitHash }
+                        if contains  {
+                            mergedIn = mergeCommit
+                        }
+                    }
                 } catch {
                     self.error = error
                 }

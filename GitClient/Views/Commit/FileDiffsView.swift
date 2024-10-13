@@ -27,6 +27,7 @@ struct FileDiffsView: View {
                     .padding(.top, 8)
             }
         }
+        .font(Font.system(.body, design: .monospaced))
     }
 
     // to be able to select multiple lines of text

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Diff {
+struct Diff: Hashable {
     var fileDiffs: [FileDiff]
     var raw: String
 
@@ -61,7 +61,7 @@ struct Diff {
     }
 }
 
-struct FileDiff: Identifiable {
+struct FileDiff: Identifiable, Hashable {
     var id: String { raw }
     var header: String
     var extendedHeaderLines: [String]
@@ -159,8 +159,8 @@ struct FileDiff: Identifiable {
     }
 }
 
-struct Chunk: Identifiable {
-    struct Line: Identifiable {
+struct Chunk: Identifiable, Hashable {
+    struct Line: Identifiable, Hashable {
         enum Kind {
             case removed, added, unchanged, header
         }

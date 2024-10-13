@@ -11,6 +11,7 @@ struct CommitDetailView: View {
     var commitHash: String
     var folder: Folder
     @State private var commit: CommitDetail?
+    @State private var mergedIn: Commit?
     @State private var error: Error?
 
     var body: some View {
@@ -42,14 +43,25 @@ struct CommitDetailView: View {
                                 }
                             }
                         }
-                        .padding(.top)
-                        .padding(.top)
+                        .padding(.top, 32)
                     }
                     HStack {
                         VStack (alignment: .leading) {
-                            Text(commit.hash)
-                                .foregroundStyle(.orange)
-                                .font(Font.system(.body, design: .rounded))
+                            HStack {
+                                Text(commit.hash)
+                                    .foregroundStyle(.orange)
+                                    .font(Font.system(.body, design: .rounded))
+                                if let mergedIn {
+                                    Divider()
+                                        .frame(height: 10)
+                                    HStack(spacing: 4) {
+                                        Text("Merged in")
+                                            .foregroundStyle(.secondary)
+                                        NavigationLink(mergedIn.hash.prefix(5), value: mergedIn.hash)
+                                            .buttonStyle(.link)
+                                    }
+                                }
+                            }
                             Text(commit.title.trimmingCharacters(in: .whitespacesAndNewlines))
                                 .font(.title)
                                 .padding(.leading)
@@ -72,12 +84,11 @@ struct CommitDetailView: View {
                             .foregroundStyle(.secondary)
                             Divider()
                                 .padding(.vertical)
-                            if commit.abbreviatedParentHashes.count == 2 {
-                                Label("2 parents " + commit.abbreviatedParentHashes[0] + " + " + commit.abbreviatedParentHashes[1], systemImage: "arrow.triangle.merge")
-                                    .padding(.top)
+                            if commit.parentHashes.count == 2 {
+                                MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
+                            } else {
+                                FileDiffsView(fileDiffs: commit.diff.fileDiffs)
                             }
-                            FileDiffsView(fileDiffs: commit.diff.fileDiffs)
-                                .font(Font.system(.body, design: .monospaced))
                         }
                         Spacer()
                     }
@@ -91,8 +102,28 @@ struct CommitDetailView: View {
         }
         .onChange(of: commitHash, initial: true, {
             Task {
+                commit = nil
+                mergedIn = nil
+
                 do {
                     commit = try await Process.output(GitShow(directory: folder.url, object: commitHash))
+                    let mergeCommit = try await Process.output(GitLog(
+                        directory: folder.url,
+                        merges: true,
+                        ancestryPath: true,
+                        reverse: true,
+                        revisionRange: "\(commitHash)..HEAD"
+                    )).first
+                    if let mergeCommit {
+                        let mergedInCommits = try await Process.output(GitLog(
+                            directory: folder.url,
+                            revisionRange: "\(mergeCommit.abbreviatedParentHashes[0])..\(mergeCommit.hash)"
+                        ))
+                        let contains = mergedInCommits.contains { $0.hash == commitHash }
+                        if contains  {
+                            mergedIn = mergeCommit
+                        }
+                    }
                 } catch {
                     self.error = error
                 }

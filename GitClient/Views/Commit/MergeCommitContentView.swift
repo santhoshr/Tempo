@@ -28,9 +28,9 @@ struct MergeCommitContentView: View {
                             Text("2 parents")
                         }
                         HStack {
-                            NavigationLink(mergeCommit.abbreviatedParentHashes[0], value: mergeCommit.abbreviatedParentHashes[0])
+                            NavigationLink(mergeCommit.parentHashes[0].prefix(5), value: mergeCommit.parentHashes[0])
                             Text("+")
-                            NavigationLink(mergeCommit.abbreviatedParentHashes[1], value: mergeCommit.abbreviatedParentHashes[1])
+                            NavigationLink(mergeCommit.parentHashes[1].prefix(5), value: mergeCommit.parentHashes[1])
                         }
                     }
                     .buttonStyle(.link)
@@ -41,7 +41,7 @@ struct MergeCommitContentView: View {
         .onChange(of: mergeCommit, initial: true) { _, _ in
             Task {
                 do {
-                    commits = try await Array(Process.output(GitLog(directory: directoryURL, revisionRange: "\(mergeCommit.abbreviatedParentHashes[0])..\(mergeCommit.hash)")).dropFirst())
+                    commits = try await Array(Process.output(GitLog(directory: directoryURL, revisionRange: "\(mergeCommit.parentHashes[0])..\(mergeCommit.hash)")).dropFirst())
                 } catch {
                     self.error = error
                 }
@@ -56,7 +56,7 @@ struct MergeCommitContentView: View {
         MergeCommitContentView(
             mergeCommit: .init(
                 hash: "11fff",
-                abbreviatedParentHashes: ["21fff", "31fff"],
+                parentHashes: ["21fff", "31fff"],
                 author: "maoyama",
                 authorEmail: "a@aoyama.dev",
                 authorDate: "1 seconds ago",

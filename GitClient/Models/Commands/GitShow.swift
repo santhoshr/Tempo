@@ -14,7 +14,7 @@ struct GitShow: Git {
             "git",
             "show",
             "--pretty=format:%H"
-            + .formatSeparator + "%p"
+            + .formatSeparator + "%P"
             + .formatSeparator + "%an"
             + .formatSeparator + "%ae"
             + .formatSeparator + "%ai"
@@ -41,7 +41,7 @@ struct GitShow: Git {
         }
         return CommitDetail(
             hash: separated[0],
-            abbreviatedParentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
+            parentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
             author: separated[2],
             authorEmail: separated[3],
             authorDate: separated[4],

@@ -11,7 +11,7 @@ struct MergeCommitContentView: View {
     var mergeCommit: CommitDetail
     var directoryURL: URL
     @State private var commits: [Commit] = []
-    @State private var filesChanged: FileDiff?
+    @State private var filesChanged: Diff?
     @State private var error: Error?
     @State private var tab = 0
 
@@ -36,12 +36,19 @@ struct MergeCommitContentView: View {
                     .buttonStyle(.link)
                 }
             }
+            if tab == 1, let fileDiffs = filesChanged?.fileDiffs {
+                FileDiffsView(fileDiffs: fileDiffs)
+            }
         }
         .padding(.bottom)
         .onChange(of: mergeCommit, initial: true) { _, _ in
             Task {
                 do {
                     commits = try await Array(Process.output(GitLog(directory: directoryURL, revisionRange: "\(mergeCommit.parentHashes[0])..\(mergeCommit.hash)")).dropFirst())
+                    let diffRaw = try await Process.output(
+                        GitDiff(directory: directoryURL, noRenames: false, commitsRange: mergeCommit.parentHashes[0] + ".." + mergeCommit.hash)
+                    )
+                    filesChanged = try Diff(raw: diffRaw)
                 } catch {
                     self.error = error
                 }

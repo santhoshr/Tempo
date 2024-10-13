@@ -88,7 +88,6 @@ struct CommitDetailView: View {
                                 MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
                             } else {
                                 FileDiffsView(fileDiffs: commit.diff.fileDiffs)
-                                    .font(Font.system(.body, design: .monospaced))
                             }
                         }
                         Spacer()

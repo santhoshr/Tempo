@@ -43,6 +43,10 @@ struct ContentView: View {
                         }
                     }
             }
+            .safeAreaInset(edge: .bottom, content: {
+                PreviewBadge()
+                    .padding()
+            })
             .toolbar {
                 ToolbarItemGroup {
                     Button {

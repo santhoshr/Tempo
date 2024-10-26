@@ -83,10 +83,10 @@ struct CommitsView: View {
     var commits: [Commit]
 
     var body: some View {
-        LazyVStack {
+        LazyVStack(spacing: 4) {
             ForEach(commits) { commit in
                 NavigationLink(value: commit.hash) {
-                    VStack (alignment: .leading) {
+                    VStack (alignment: .leading, spacing: 6) {
                         HStack(alignment: .firstTextBaseline) {
                             Text(commit.title)
                             Spacer()
@@ -94,7 +94,6 @@ struct CommitsView: View {
                                 .font(Font.system(.body, design: .rounded))
                                 .foregroundStyle(.tertiary)
                         }
-                        .padding(.bottom, 4)
                         HStack {
                             AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 14*3)) { image in
                                 image.resizable()

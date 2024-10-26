@@ -13,6 +13,7 @@ struct CommitDetailView: View {
     @State private var commit: CommitDetail?
     @State private var mergedIn: Commit?
     @State private var error: Error?
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         VStack(spacing: 0) {
@@ -73,13 +74,17 @@ struct CommitDetailView: View {
                                     .padding(.bottom, 8)
                             }
                             HStack {
-                                AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 24*3)) { image in
+                                AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 26*3)) { image in
                                     image.resizable()
                                 } placeholder: {
                                     Circle()
                                 }
-                                    .frame(width: 24, height: 24)
+                                    .frame(width: 26, height: 26)
                                     .clipShape(Circle())
+                                    .onTapGesture {
+                                        guard let url = URL.gravater(email: commit.authorEmail, size: 400) else { return }
+                                        openURL(url)
+                                    }
                                 Text(commit.author)
                                 Divider()
                                     .frame(height: 10)

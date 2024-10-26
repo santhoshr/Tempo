@@ -20,7 +20,7 @@ struct NotStagedView: View {
             Section (isExpanded: $isExpanded) {
                 if fileDiffs.isEmpty && untrackedFiles.isEmpty {
                     LazyVStack(alignment: .center) {
-                        Text("No Changed")
+                        Label("No Changed", systemImage: "plusminus")
                             .foregroundStyle(.secondary)
                             .padding()
                             .padding()

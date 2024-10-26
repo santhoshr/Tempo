@@ -211,7 +211,7 @@ struct CommitCreateView: View {
                                 .padding(.top, 12)
                                 .padding(.horizontal, 12)
                             if commitMessage.isEmpty {
-                                Text("Enter commit message here")
+                                Label("Enter commit message here", systemImage: "plus.bubble")
                                     .foregroundColor(.secondary)
                                     .allowsHitTesting(false)
                             }

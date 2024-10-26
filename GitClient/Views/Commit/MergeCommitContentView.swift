@@ -22,6 +22,8 @@ struct MergeCommitContentView: View {
             if tab == 0 {
                 HStack(alignment: .top, spacing: 16) {
                     CommitsView(commits: commits)
+                    Divider()
+                        .frame(height: 44)
                     VStack(alignment: .leading) {
                         HStack {
                             Image(systemName: "arrow.triangle.merge")

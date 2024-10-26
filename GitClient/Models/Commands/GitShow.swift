@@ -16,7 +16,7 @@ struct GitShow: Git {
             "--pretty=format:%H"
             + .formatSeparator + "%P"
             + .formatSeparator + "%an"
-            + .formatSeparator + "%ae"
+            + .formatSeparator + "%aE"
             + .formatSeparator + "%ai"
             + .formatSeparator + "%s"
             + .formatSeparator + "%b"

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CryptoKit
 
 struct CommitDetail: Hashable {
     var hash: String

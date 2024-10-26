@@ -73,6 +73,13 @@ struct CommitDetailView: View {
                                     .padding(.bottom, 8)
                             }
                             HStack {
+                                AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 24*3)) { image in
+                                    image.resizable()
+                                } placeholder: {
+                                    Circle()
+                                }
+                                    .frame(width: 24, height: 24)
+                                    .clipShape(Circle())
                                 Text(commit.author)
                                 Divider()
                                     .frame(height: 10)

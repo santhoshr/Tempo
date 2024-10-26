@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import CryptoKit
 
 struct Commit: Hashable, Identifiable {
     var id: String { hash }
     var hash: String
     var abbreviatedParentHashes: [String]
     var author: String
+    var authorEmail: String
     var authorDateRelative: String
     var title: String
     var rawBody: String

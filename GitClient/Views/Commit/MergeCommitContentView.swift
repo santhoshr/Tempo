@@ -98,10 +98,10 @@ struct CommitsView: View {
                             AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 14*3)) { image in
                                 image.resizable()
                             } placeholder: {
-                                Circle()
+                                RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular)
                             }
                                 .frame(width: 14, height: 14)
-                                .clipShape(Circle())
+                                .clipShape(RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular))
                             Text(commit.author)
                             Spacer()
                             Text(commit.authorDateRelative)

@@ -77,10 +77,10 @@ struct CommitDetailView: View {
                                 AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 26*3)) { image in
                                     image.resizable()
                                 } placeholder: {
-                                    Circle()
+                                    RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular)
                                 }
                                     .frame(width: 26, height: 26)
-                                    .clipShape(Circle())
+                                    .clipShape(RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular))
                                     .onTapGesture {
                                         guard let url = URL.gravater(email: commit.authorEmail, size: 400) else { return }
                                         openURL(url)

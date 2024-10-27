@@ -6,6 +6,15 @@
 //
 
 import SwiftUI
+import Sourceful
+
+struct ChunkView: View {
+    @State var chunk: Chunk
+
+    var body: some View {
+        SourceCodeTextEditor(text: $chunk.raw)
+    }
+}
 
 struct FileDiffsView: View {
     var fileDiffs: [FileDiff]
@@ -23,11 +32,18 @@ struct FileDiffsView: View {
                     Text(line)
                         .fontWeight(.bold)
                 }
-                chunksViews(fileDiff.chunks)
+                chunksView2(fileDiff.chunks)
+                    .frame(height: 100)
                     .padding(.top, 8)
             }
         }
         .font(Font.system(.body, design: .monospaced))
+    }
+
+    private func chunksView2(_ chunks: [Chunk]) -> some View {
+        ForEach(chunks) { chunk in
+            ChunkView(chunk: chunk)
+        }
     }
 
     // to be able to select multiple lines of text
@@ -46,7 +62,7 @@ struct FileDiffsView: View {
         }
     }
 
-    private func chunkLineColor(_ line: Chunk.Line) -> Color {
+    private func chunkLineColor(_ line: Chunk.Line) -> SwiftUI.Color {
         switch line.kind {
         case .header:
             return .secondary

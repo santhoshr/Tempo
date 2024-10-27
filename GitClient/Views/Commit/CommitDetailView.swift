@@ -78,6 +78,7 @@ struct CommitDetailView: View {
                                     image.resizable()
                                 } placeholder: {
                                     RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular)
+                                        .foregroundStyle(.quinary)
                                 }
                                     .frame(width: 26, height: 26)
                                     .clipShape(RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular))

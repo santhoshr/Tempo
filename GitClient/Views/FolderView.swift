@@ -241,6 +241,7 @@ struct FolderView: View {
                             image.resizable()
                         } placeholder: {
                             RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular)
+                                .foregroundStyle(.quinary)
                         }
                             .frame(width: 14, height: 14)
                             .clipShape(RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular))

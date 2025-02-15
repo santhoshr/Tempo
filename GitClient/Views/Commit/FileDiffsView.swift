@@ -12,9 +12,24 @@ struct ChunkView: View {
     @State var chunk: Chunk
 
     var body: some View {
-        SourceCodeTextEditor(text: $chunk.raw)
+        SourceCodeTextEditor(
+            text: $chunk.raw,
+            customization: .init(
+                didChangeText: {_ in },
+                insertionPointColor: { Sourceful.Color.white },
+                lexerForSource: { _ in SwiftLexer() },
+                textViewDidBeginEditing: { _ in },
+                theme: { FileDiffTheme() }
+            )
+        )
     }
 }
+
+#Preview {
+    var text = "Hello world!\n\nHello world!"
+    ChunkView(chunk: Chunk(raw: text))
+}
+
 
 struct FileDiffsView: View {
     var fileDiffs: [FileDiff]
@@ -33,7 +48,6 @@ struct FileDiffsView: View {
                         .fontWeight(.bold)
                 }
                 chunksView2(fileDiff.chunks)
-                    .frame(height: 100)
                     .padding(.top, 8)
             }
         }

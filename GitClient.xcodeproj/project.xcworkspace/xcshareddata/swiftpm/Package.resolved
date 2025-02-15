@@ -1,5 +1,5 @@
 {
-  "originHash" : "5a73e28c0681dc0fa8f73f9101959d52cd6d783d97aa7793d68c2a6b86b2292a",
+  "originHash" : "379830b20f63c3bd19e6bfff9ae222a55b14462ed8f412dc2335d2fff2755362",
   "pins" : [
     {
       "identity" : "keychainaccess",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "84e546727d66f1adc5439debad16270d0fdd04e7",
         "version" : "4.2.2"
-      }
-    },
-    {
-      "identity" : "sourceful?tab=readme-ov-file",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/twostraws/Sourceful?tab=readme-ov-file",
-      "state" : {
-        "revision" : "77317c0043dc0330e2baf02c43d415bc7cc8a784",
-        "version" : "0.4.0"
       }
     }
   ],

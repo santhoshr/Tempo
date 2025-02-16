@@ -21,12 +21,12 @@ public struct FileDiffTheme: SourceCodeTheme {
     }
 
     private static var lineNumbersColor: Color {
-        return NSColor.secondaryLabelColor
+        return NSColor.tertiaryLabelColor
     }
 
     public let lineNumbersStyle: LineNumbersStyle? = LineNumbersStyle(font: font, textColor: lineNumbersColor)
 
-    public let gutterStyle: GutterStyle = GutterStyle(backgroundColor: NSColor.windowBackgroundColor, minimumWidth: 32)
+    public let gutterStyle: GutterStyle = GutterStyle(backgroundColor: NSColor.textBackgroundColor, minimumWidth: 32)
 
     public var font: NSFont {
         FileDiffTheme.font

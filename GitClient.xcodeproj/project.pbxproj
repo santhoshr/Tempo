@@ -455,7 +455,6 @@
 		61F5B7AB2CBA1978005C736E /* Commit */ = {
 			isa = PBXGroup;
 			children = (
-				616156242D615C740034B1F1 /* FileDiffTheme.swift */,
 				61E290DA28E7C66200BCEB04 /* CommitCreateView.swift */,
 				6197594B2C8BE95900E9CA4F /* StagedView.swift */,
 				612208A82C032A0D0047B454 /* NotStagedView.swift */,
@@ -464,6 +463,7 @@
 				61B3C5632CB93CE500021B36 /* CommitDetailStackView.swift */,
 				61B3C5612CB557CA00021B36 /* CommitDetailView.swift */,
 				61F5B7AE2CBBB066005C736E /* MergeCommitContentView.swift */,
+				616156242D615C740034B1F1 /* FileDiffTheme.swift */,
 				61B7F0482C5F3EBF00BFAA34 /* FileDiffsView.swift */,
 				61FAF4932C6835EC000B7ACB /* CommitMessageSnippetView.swift */,
 			);

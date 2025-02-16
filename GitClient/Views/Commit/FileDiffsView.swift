@@ -17,10 +17,10 @@ struct ChunkView: View {
             customization: .init(
                 didChangeText: {_ in },
                 insertionPointColor: { Sourceful.Color.white },
-                lexerForSource: { _ in SwiftLexer() },
+                lexerForSource: { _ in SwiftLexer() }, // TODO: 言語によって切り替え
                 textViewDidBeginEditing: { _ in },
                 theme: { FileDiffTheme() }
-            )
+            )// TODO: line numberの設定
         )
     }
 }

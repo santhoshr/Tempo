@@ -38,8 +38,14 @@ struct ChunkView: View {
          return CGSize(width: width, height: height)
      }
 """
-    ChunkView(chunk: Chunk(raw: text))
-        .frame(width: 400)
+    ScrollView {
+        LazyVStack {
+            ChunkView(chunk: Chunk(raw: text))
+            ChunkView(chunk: Chunk(raw: text))
+            ChunkView(chunk: Chunk(raw: text))
+        }
+            .frame(width: 400)
+    }
 }
 
 

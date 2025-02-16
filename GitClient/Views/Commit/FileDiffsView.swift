@@ -26,8 +26,20 @@ struct ChunkView: View {
 }
 
 #Preview {
-    var text = "Hello world!\n\nHello world!"
+    var text = """
+@@ -127,9 +127,6 @@ public struct SourceCodeTextEditor: _ViewRepresentable {
+     // Comment
+     public func sizeThatFits(_ proposal: ProposedViewSize, nsView: SyntaxTextView, context: Context) -> CGSize? {
+         guard let width = proposal.width else { return nil }
+         let height = fittingHeight(for: nsView.contentTextView, width: width)
+-        print("gutterWidth", nsView.textView.gutterWidth)
+-        print("Computed Size:", CGSize(width: width, height: height))
+-
+         return CGSize(width: width, height: height)
+     }
+"""
     ChunkView(chunk: Chunk(raw: text))
+        .frame(width: 400)
 }
 
 

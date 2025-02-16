@@ -8,36 +8,42 @@
 
 import Foundation
 import Sourceful
+import AppKit
+
 
 public struct FileDiffTheme: SourceCodeTheme {
 
-	public init() {
-		
-	}
-	
-	private static var lineNumbersColor: Color {
-		return Color(red: 100/255, green: 100/255, blue: 100/255, alpha: 1.0)
-	}
-	
-	public let lineNumbersStyle: LineNumbersStyle? = LineNumbersStyle(font: Font(name: "Menlo", size: 16)!, textColor: lineNumbersColor)
-	
-	public let gutterStyle: GutterStyle = GutterStyle(backgroundColor: Color(red: 21/255.0, green: 22/255, blue: 31/255, alpha: 1.0), minimumWidth: 32)
-	
-	public let font = Font(name: "Menlo", size: 15)!
-	
-	public let backgroundColor = Color(red: 31/255.0, green: 32/255, blue: 41/255, alpha: 1.0)
-	
-	public func color(for syntaxColorType: SourceCodeTokenType) -> Color {
-		
-		switch syntaxColorType {
-		case .plain:
-			return .white
-			
-		case .number:
-			return Color(red: 116/255, green: 109/255, blue: 176/255, alpha: 1.0)
-			
-		case .string:
-			return Color(red: 211/255, green: 35/255, blue: 46/255, alpha: 1.0)
+    public init() {}
+
+    public static var font: NSFont {
+        let baseFont = NSFont.preferredFont(forTextStyle: .body)
+        return NSFont.monospacedSystemFont(ofSize: baseFont.pointSize, weight: .regular)
+    }
+
+    private static var lineNumbersColor: Color {
+        return NSColor.secondaryLabelColor
+    }
+
+    public let lineNumbersStyle: LineNumbersStyle? = LineNumbersStyle(font: font, textColor: lineNumbersColor)
+
+    public let gutterStyle: GutterStyle = GutterStyle(backgroundColor: NSColor.windowBackgroundColor, minimumWidth: 32)
+
+    public var font: NSFont {
+        FileDiffTheme.font
+    }
+
+    public let backgroundColor = NSColor.textBackgroundColor
+
+    public func color(for syntaxColorType: SourceCodeTokenType) -> Color {
+        switch syntaxColorType {
+        case .plain:
+            return NSColor.textColor
+
+        case .number:
+            return Color(red: 116/255, green: 109/255, blue: 176/255, alpha: 1.0)
+
+        case .string:
+            return Color(red: 211/255, green: 35/255, blue: 46/255, alpha: 1.0)
 			
 		case .identifier:
 			return Color(red: 20/255, green: 156/255, blue: 146/255, alpha: 1.0)

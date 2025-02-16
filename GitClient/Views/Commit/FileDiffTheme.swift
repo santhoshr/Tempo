@@ -44,20 +44,18 @@ public struct FileDiffTheme: SourceCodeTheme {
 
         case .string:
             return Color(red: 211/255, green: 35/255, blue: 46/255, alpha: 1.0)
-			
-		case .identifier:
-			return Color(red: 20/255, green: 156/255, blue: 146/255, alpha: 1.0)
-			
-		case .keyword:
-			return Color(red: 215/255, green: 0, blue: 143/255, alpha: 1.0)
-			
-		case .comment:
-			return Color(red: 69.0/255.0, green: 187.0/255.0, blue: 62.0/255.0, alpha: 1.0)
-			
-		case .editorPlaceholder:
-			return backgroundColor
-		}
-		
+
+        case .identifier:
+            return Color(red: 20/255, green: 156/255, blue: 146/255, alpha: 1.0)
+
+        case .keyword:
+            return Color(red: 215/255, green: 0, blue: 143/255, alpha: 1.0)
+
+        case .comment:
+            return Color(red: 69.0/255.0, green: 187.0/255.0, blue: 62.0/255.0, alpha: 1.0)
+
+        case .editorPlaceholder:
+            return backgroundColor
+        }
 	}
-	
 }

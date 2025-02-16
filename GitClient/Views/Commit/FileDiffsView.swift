@@ -32,7 +32,7 @@ struct ChunkView: View {
      public func sizeThatFits(_ proposal: ProposedViewSize, nsView: SyntaxTextView, context: Context) -> CGSize? {
          guard let width = proposal.width else { return nil }
          let height = fittingHeight(for: nsView.contentTextView, width: width)
--        print("gutterWidth", nsView.textView.gutterWidth)
++        print("gutterWidth", nsView.textView.gutterWidth)
 -        print("Computed Size:", CGSize(width: width, height: height))
 -
          return CGSize(width: width, height: height)

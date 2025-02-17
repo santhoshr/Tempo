@@ -20,7 +20,8 @@ struct ChunkView: View {
                 lexerForSource: { _ in SwiftLexer() }, // TODO: 言語によって切り替え
                 textViewDidBeginEditing: { _ in },
                 theme: { FileDiffTheme() }
-            )// TODO: line numberの設定
+            ),
+            lineNumbers: $chunk.lineNumbers
         )
     }
 }
@@ -38,10 +39,24 @@ struct ChunkView: View {
          return CGSize(width: width, height: height)
      }
 """
+
+    var text2 = """
+@@ -12,9 +12,6 @@ public struct SourceCodeTextEditor: _ViewRepresentable {
+     // Comment
+     public func sizeThatFits(_ proposal: ProposedViewSize, nsView: SyntaxTextView, context: Context) -> CGSize? {
+         guard let width = proposal.width else { return nil }
+         let height = fittingHeight(for: nsView.contentTextView, width: width)
++        print("gutterWidth", nsView.textView.gutterWidth)
+-        print("Computed Size:", CGSize(width: width, height: height))
+-
+         return CGSize(width: width, height: height)
+     }
+"""
+
     ScrollView {
         LazyVStack {
             ChunkView(chunk: Chunk(raw: text))
-            ChunkView(chunk: Chunk(raw: text))
+            ChunkView(chunk: Chunk(raw: text2))
             ChunkView(chunk: Chunk(raw: text))
         }
             .frame(width: 400)

@@ -26,7 +26,7 @@ public struct FileDiffTheme: SourceCodeTheme {
 
     public let lineNumbersStyle: LineNumbersStyle? = LineNumbersStyle(font: font, textColor: lineNumbersColor)
 
-    public let gutterStyle: GutterStyle = GutterStyle(backgroundColor: NSColor.textBackgroundColor, minimumWidth: 32)
+    public let gutterStyle: GutterStyle = GutterStyle(backgroundColor: NSColor.textBackgroundColor, minimumWidth: 42) // コードのインデントをラインナンバーが3桁と2桁を揃えるため、minimumWidth = 42に設定
 
     public var font: NSFont {
         FileDiffTheme.font

@@ -189,6 +189,7 @@ struct Chunk: Identifiable, Hashable {
     }
     var id: String { raw }
     var lines: [Line]
+    var lineNumbers: [String]
     var raw: String
     var stage: Bool?
     var stageString: String {
@@ -231,5 +232,11 @@ struct Chunk: Identifiable, Hashable {
             }
             return line
         }
+        self.lineNumbers = lines.map({ line in
+            if let toFileLineNumber = line.toFileLineNumber {
+                return "\(toFileLineNumber)"
+            }
+            return ""
+        })
     }
 }

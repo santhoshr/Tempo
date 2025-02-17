@@ -10,6 +10,12 @@ import Sourceful
 
 struct ChunkView: View {
     @State var chunk: Chunk
+    var fileDiffHeader: String
+    var lexer: Lexer {
+        get {
+            Language.lexer(fileDiffHeader: fileDiffHeader)
+        }
+    }
 
     var body: some View {
         SourceCodeTextEditor(
@@ -17,7 +23,7 @@ struct ChunkView: View {
             customization: .init(
                 didChangeText: {_ in },
                 insertionPointColor: { Sourceful.Color.white },
-                lexerForSource: { _ in SwiftLexer() }, // TODO: 言語によって切り替え
+                lexerForSource: { _ in lexer },
                 textViewDidBeginEditing: { _ in },
                 theme: { FileDiffTheme() }
             ),
@@ -27,6 +33,7 @@ struct ChunkView: View {
 }
 
 #Preview {
+    var fileDiffHeader = "diff --git a/GitClient/Models/Language.swift b/GitClient/Models/Language.swift"
     var text = """
 @@ -127,9 +127,6 @@ public struct SourceCodeTextEditor: _ViewRepresentable {
      // Comment
@@ -55,9 +62,9 @@ struct ChunkView: View {
 
     ScrollView {
         LazyVStack {
-            ChunkView(chunk: Chunk(raw: text))
-            ChunkView(chunk: Chunk(raw: text2))
-            ChunkView(chunk: Chunk(raw: text))
+            ChunkView(chunk: Chunk(raw: text), fileDiffHeader: fileDiffHeader)
+            ChunkView(chunk: Chunk(raw: text2), fileDiffHeader: fileDiffHeader)
+            ChunkView(chunk: Chunk(raw: text), fileDiffHeader: fileDiffHeader)
         }
             .frame(width: 400)
     }
@@ -80,16 +87,16 @@ struct FileDiffsView: View {
                     Text(line)
                         .fontWeight(.bold)
                 }
-                chunksView2(fileDiff.chunks)
+                chunksView2(fileDiff.chunks, fileDiffHeader: fileDiff.header)
                     .padding(.top, 8)
             }
         }
         .font(Font.system(.body, design: .monospaced))
     }
 
-    private func chunksView2(_ chunks: [Chunk]) -> some View {
+    private func chunksView2(_ chunks: [Chunk], fileDiffHeader: String) -> some View {
         ForEach(chunks) { chunk in
-            ChunkView(chunk: chunk)
+            ChunkView(chunk: chunk, fileDiffHeader: fileDiffHeader)
         }
     }
 

@@ -54,7 +54,7 @@ struct StagedView: View {
                     .padding()
                     ForEach(fileDiff.chunks) { chunk in
                         HStack {
-                            chunkView(chunk)
+                            ChunkView(chunk: chunk, fileDiffHeader: fileDiff.header)
                             Spacer()
                             Button {
                                 onSelectChunk?(fileDiff, chunk)
@@ -72,29 +72,6 @@ struct StagedView: View {
             } header: {
                 SectionHeader(title: "Staged", isExpanded: $isExpanded)
             }
-        }
-    }
-
-    private func chunkView(_ chunk: Chunk) -> some View {
-        chunk.lines.map { line in
-            Text(line.raw)
-                .foregroundStyle(chunkLineColor(line))
-        }
-        .reduce(Text("")) { partialResult, text in
-            partialResult + text + Text("\n")
-        }
-    }
-
-    private func chunkLineColor(_ line: Chunk.Line) -> Color {
-        switch line.kind {
-        case .header:
-            return .secondary
-        case .removed:
-            return .red
-        case .added:
-            return .green
-        case .unchanged:
-            return .primary
         }
     }
 }

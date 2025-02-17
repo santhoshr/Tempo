@@ -11,10 +11,10 @@ import Sourceful
 
 struct ChunkView: View {
     @State var chunk: Chunk
-    var fileDiffHeader: String
+    var filePath: String
     var lexer: Lexer {
         get {
-            Language.lexer(fileDiffHeader: fileDiffHeader)
+            Language.lexer(filePath: filePath)
         }
     }
 
@@ -34,7 +34,7 @@ struct ChunkView: View {
 }
 
 #Preview {
-    var fileDiffHeader = "diff --git a/GitClient/Models/Language.swift b/GitClient/Models/Language.swift"
+    var filePath = "GitClient/Models/Language.swift"
     var text = """
 @@ -127,9 +127,6 @@ public struct SourceCodeTextEditor: _ViewRepresentable {
      // Comment
@@ -63,9 +63,9 @@ struct ChunkView: View {
 
     ScrollView {
         LazyVStack {
-            ChunkView(chunk: Chunk(raw: text), fileDiffHeader: fileDiffHeader)
-            ChunkView(chunk: Chunk(raw: text2), fileDiffHeader: fileDiffHeader)
-            ChunkView(chunk: Chunk(raw: text), fileDiffHeader: fileDiffHeader)
+            ChunkView(chunk: Chunk(raw: text), filePath: filePath)
+            ChunkView(chunk: Chunk(raw: text2), filePath: filePath)
+            ChunkView(chunk: Chunk(raw: text), filePath: filePath)
         }
             .frame(width: 400)
     }

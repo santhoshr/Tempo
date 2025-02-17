@@ -64,6 +64,17 @@ struct Diff: Hashable {
 struct FileDiff: Identifiable, Hashable {
     var id: String { raw }
     var header: String
+    var filePath: String {
+        let components = header.components(separatedBy: " ")
+        guard components.count > 2 else {
+            return ""
+        }
+
+        guard let filePath = components.last?.dropFirst(2) else {
+            return ""
+        }
+        return String(filePath)
+    }
     var extendedHeaderLines: [String]
     var fromFileToFileLines: [String]
     var chunks: [Chunk]

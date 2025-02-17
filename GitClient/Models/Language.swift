@@ -11,16 +11,7 @@ import Sourceful
 enum Language: String {
     case swift, python, javascript, typescript, java, kotlin, c, cpp, csharp, ruby, php, go, rust, shell, perl, html, css, markdown, ocaml
 
-    private static func detect(fileDiffHeader: String) -> Language? {
-        let components = fileDiffHeader.components(separatedBy: " ")
-        guard components.count > 2 else {
-            return nil
-        }
-
-        guard let filePath = components.last?.dropFirst(2) else {
-            return nil
-        }
-
+    private static func detect(filePath: String) -> Language? {
         let ext = URL(fileURLWithPath: String(filePath)).pathExtension.lowercased()
 
         switch ext {
@@ -47,8 +38,8 @@ enum Language: String {
         }
     }
 
-    static func lexer(fileDiffHeader: String) -> Lexer {
-        switch detect(fileDiffHeader: fileDiffHeader) {
+    static func lexer(filePath: String) -> Lexer {
+        switch detect(filePath: filePath) {
         case .java:
             return JavaLexer()
         case .javascript:

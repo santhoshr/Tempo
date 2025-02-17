@@ -23,16 +23,16 @@ struct FileDiffsView: View {
                     Text(line)
                         .fontWeight(.bold)
                 }
-                chunksView(fileDiff.chunks, fileDiffHeader: fileDiff.header)
+                chunksView(fileDiff.chunks, filePath: fileDiff.filePath)
                     .padding(.top, 8)
             }
         }
         .font(Font.system(.body, design: .monospaced))
     }
 
-    private func chunksView(_ chunks: [Chunk], fileDiffHeader: String) -> some View {
+    private func chunksView(_ chunks: [Chunk], filePath: String) -> some View {
         ForEach(chunks) { chunk in
-            ChunkView(chunk: chunk, fileDiffHeader: fileDiffHeader)
+            ChunkView(chunk: chunk, filePath: filePath)
         }
     }
 }

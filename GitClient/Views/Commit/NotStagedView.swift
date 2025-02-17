@@ -58,7 +58,7 @@ struct NotStagedView: View {
 
                     ForEach(fileDiff.chunks) { chunk in
                         HStack {
-                            ChunkView(chunk: chunk, fileDiffHeader: fileDiff.header)
+                            ChunkView(chunk: chunk, filePath: fileDiff.filePath)
                             Spacer()
                             Button {
                                 onSelectChunk?(fileDiff, chunk)

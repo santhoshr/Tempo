@@ -50,6 +50,10 @@ enum Language: String {
         switch detect(fileDiffHeader: fileDiffHeader) {
         case .java:
             return JavaLexer()
+        case .javascript:
+            return JavaScriptLexer()
+        case .python:
+            return Python3Lexer()
         case .swift:
             return SwiftLexer()
         default:

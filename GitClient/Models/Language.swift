@@ -9,7 +9,7 @@ import Foundation
 import Sourceful
 
 enum Language: String {
-    case swift, python, javascript, typescript, java, kotlin, c, cpp, csharp, ruby, php, go, rust, shell, perl, html, css, markdown
+    case swift, python, javascript, typescript, java, kotlin, c, cpp, csharp, ruby, php, go, rust, shell, perl, html, css, markdown, ocaml
 
     private static func detect(fileDiffHeader: String) -> Language? {
         let components = fileDiffHeader.components(separatedBy: " ")
@@ -42,6 +42,7 @@ enum Language: String {
         case "html": return .html
         case "css": return .css
         case "md": return .markdown
+        case "ml": return .ocaml
         default: return nil
         }
     }
@@ -56,6 +57,8 @@ enum Language: String {
             return Python3Lexer()
         case .swift:
             return SwiftLexer()
+        case .ocaml:
+            return OCamlLexer()
         default:
             return PlainLexer()
         }

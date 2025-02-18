@@ -59,6 +59,15 @@ public struct FileDiffTheme: SourceCodeTheme {
         }
 	}
 
+    public func color(for diffType: GitDiffOutputChunkTokenType) -> Color? {
+        switch diffType {
+        case .header:
+            return NSColor.tertiaryLabelColor
+        default:
+            return nil
+        }
+    }
+
     public func backGroundColor(for diffType: GitDiffOutputChunkTokenType) -> Color? {
         switch diffType {
         case .header, .unchanged:

@@ -42,7 +42,7 @@ enum Language: String {
         switch detect(filePath: filePath) {
         case .java:
             return JavaLexer()
-        case .javascript:
+        case .javascript, .typescript:
             return JavaScriptLexer()
         case .python:
             return Python3Lexer()

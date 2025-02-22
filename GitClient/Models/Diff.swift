@@ -64,6 +64,35 @@ struct Diff: Hashable {
 struct FileDiff: Identifiable, Hashable {
     var id: String { raw }
     var header: String
+
+    var fromFilePath: String {
+        let components = header.components(separatedBy: " ")
+        guard components.count > 2 else {
+            return ""
+        }
+        let filePath = components[2].dropFirst(2)
+        return String(filePath)
+    }
+
+    var toFilePath: String {
+        let components = header.components(separatedBy: " ")
+        guard components.count > 3 else {
+            return ""
+        }
+        let filePath = components[3].dropFirst(2)
+        return String(filePath)
+    }
+
+    var filePathDisplay: String {
+        if fromFilePath == toFilePath {
+            return fromFilePath
+        }
+        if !fromFilePath.isEmpty && !toFilePath.isEmpty && fromFilePath != toFilePath {
+            return fromFilePath + " => " + toFilePath
+        }
+        return ""
+    }
+
     var extendedHeaderLines: [String]
     var fromFileToFileLines: [String]
     var chunks: [Chunk]
@@ -189,6 +218,7 @@ struct Chunk: Identifiable, Hashable {
     }
     var id: String { raw }
     var lines: [Line]
+    var lineNumbers: [String]
     var raw: String
     var stage: Bool?
     var stageString: String {
@@ -231,5 +261,11 @@ struct Chunk: Identifiable, Hashable {
             }
             return line
         }
+        self.lineNumbers = lines.map({ line in
+            if let toFileLineNumber = line.toFileLineNumber {
+                return "\(toFileLineNumber)"
+            }
+            return ""
+        })
     }
 }

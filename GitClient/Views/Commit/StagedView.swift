@@ -26,46 +26,26 @@ struct StagedView: View {
                     }
                 }
                 ForEach(fileDiffs) { fileDiff in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(fileDiff.header)
-                                .fontWeight(.bold)
-                            ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
-                                Text(line)
-                                    .fontWeight(.bold)
-                            }
-                            ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
-                                Text(line)
-                                    .fontWeight(.bold)
-                            }
-                        }
-                        Spacer()
-                        if fileDiff.chunks.isEmpty {
-                            Button {
-                                onSelectFileDiff?(fileDiff)
-                            } label: {
-                                Image(systemName: "minus.circle")
-                            }
-                            .buttonStyle(.accessoryBar)
-                            .help("Unstage this hunk")
+                    LazyVStack(spacing: 0) {
+                        StageFileDiffHeaderView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff)
                             .padding()
-                        }
-                    }
-                    .padding()
-                    ForEach(fileDiff.chunks) { chunk in
-                        HStack {
-                            ChunkView(chunk: chunk, filePath: fileDiff.filePath)
-                            Spacer()
-                            Button {
-                                onSelectChunk?(fileDiff, chunk)
-                            } label: {
-                                Image(systemName: "minus.circle")
+
+                        ForEach(fileDiff.chunks) { chunk in
+                            HStack {
+                                ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
+                                Spacer()
+                                Button {
+                                    onSelectChunk?(fileDiff, chunk)
+                                } label: {
+                                    Image(systemName: "minus.circle")
+                                }
+                                .buttonStyle(.accessoryBar)
+                                .help("Unstage this hunk")
+                                .padding()
                             }
-                            .buttonStyle(.accessoryBar)
-                            .help("Unstage this hunk")
-                            .padding()
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
+                        .padding(.bottom)
                     }
                 }
                 .font(Font.system(.body, design: .monospaced))

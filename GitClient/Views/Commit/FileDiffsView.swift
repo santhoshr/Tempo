@@ -11,20 +11,17 @@ struct FileDiffsView: View {
     var fileDiffs: [FileDiff]
 
     var body: some View {
-        LazyVStack(alignment: .leading) {
+        LazyVStack(alignment: .leading, spacing: 0) {
             ForEach(fileDiffs) { fileDiff in
-                Text(fileDiff.header)
-                    .fontWeight(.bold)
-                ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
-                    Text(line)
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    Text(fileDiff.filePathDisplay)
                         .fontWeight(.bold)
+                        .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
+                        .font(Font.system(.body, design: .default))
+                        .padding(.bottom)
+                    chunksView(fileDiff.chunks, filePath: fileDiff.toFilePath)
                 }
-                ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
-                    Text(line)
-                        .fontWeight(.bold)
-                }
-                chunksView(fileDiff.chunks, filePath: fileDiff.filePath)
-                    .padding(.top, 8)
+                .padding(.bottom)
             }
         }
         .font(Font.system(.body, design: .monospaced))
@@ -33,6 +30,7 @@ struct FileDiffsView: View {
     private func chunksView(_ chunks: [Chunk], filePath: String) -> some View {
         ForEach(chunks) { chunk in
             ChunkView(chunk: chunk, filePath: filePath)
+                .padding(.bottom)
         }
     }
 }

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -573,7 +573,7 @@
 			mainGroup = 61347EE128D5D16C00625FC4;
 			packageReferences = (
 				61D34C7E2CA8548F0032A22A /* XCRemoteSwiftPackageReference "KeychainAccess" */,
-				61DE74102CCFCEA60085E8A4 /* XCLocalSwiftPackageReference "../Sourceful" */,
+				61CA2ACA2D69BAC5007B8E56 /* XCRemoteSwiftPackageReference "Sourceful" */,
 			);
 			productRefGroup = 61347EEB28D5D16C00625FC4 /* Products */;
 			projectDirPath = "";
@@ -1035,14 +1035,15 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		61DE74102CCFCEA60085E8A4 /* XCLocalSwiftPackageReference "../Sourceful" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Sourceful;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
+		61CA2ACA2D69BAC5007B8E56 /* XCRemoteSwiftPackageReference "Sourceful" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maoyama/Sourceful";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		61D34C7E2CA8548F0032A22A /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";

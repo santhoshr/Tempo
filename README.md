@@ -1,7 +1,7 @@
 # Tempo - GUI Git Client
 
-A Mac app that is a GUI Git client, written in SwiftUI and AppKit.
-Tempo.app replaces CLI-based Git operations with a Mac-specific, clear GUI.
+A Mac app that is a GUI Git client, written in SwiftUI and AppKit.  
+Tempo.app replaces CLI-based Git operations with a Mac-specific, clear GUI.  
 Instead of typing numerous commands, you can focus on coding while effortlessly managing Git tasks with simple button clicks.
 
 By setting the OpenAI API secret key in the app, you can generate commit messages and perform staging by hunk using the OpenAI API.

@@ -6,6 +6,8 @@ Instead of typing numerous commands, you can focus on coding while effortlessly 
 
 By setting the OpenAI API secret key in the app, you can generate commit messages and perform staging by hunk using the OpenAI API.
 
+![Screenshot](/Screenshot.png)
+
 ## Features
 
 This app provides the following Git features:

@@ -30,3 +30,8 @@ This app provides the following Git features:
     - Filter
 - Stash
     - Apply
+
+## Installation
+
+Download the latest [release](https://github.com/maoyama/Tempo/releases), unzip, and run Tempo.app.
+

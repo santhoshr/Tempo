@@ -10,6 +10,7 @@ import SwiftUI
 struct CommitCreateView: View {
     @Environment(\.openAIAPISecretKey) var openAIAPISecretKey: String
     @Environment(\.openSettings) var openSettings: OpenSettingsAction
+    @Environment(\.appearsActive) private var appearsActive
 
     var folder: Folder
     @State private var cachedDiffShortStat = ""
@@ -295,6 +296,13 @@ struct CommitCreateView: View {
             })
         }
         .onChange(of: isRefresh, { oldValue, newValue in
+            if newValue {
+                Task {
+                    await updateChanges()
+                }
+            }
+        })
+        .onChange(of: appearsActive, { oldValue, newValue in
             if newValue {
                 Task {
                     await updateChanges()

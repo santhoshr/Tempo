@@ -16,32 +16,8 @@ struct StashChangedDetailContentView: View {
     var body: some View {
         ScrollView {
             if let fileDiffs = parsedDiff?.fileDiffs {
-                LazyVStack(alignment: .leading) {
-                    ForEach(fileDiffs) { fileDiff in
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(fileDiff.header)
-                                    .fontWeight(.bold)
-                                ForEach(fileDiff.extendedHeaderLines, id: \.self) { line in
-                                    Text(line)
-                                        .fontWeight(.bold)
-                                }
-                                ForEach(fileDiff.fromFileToFileLines, id: \.self) { line in
-                                    Text(line)
-                                        .fontWeight(.bold)
-                                }
-                            }
-                        }
-                        ForEach(fileDiff.chunks) { chunk in
-                            HStack {
-                                chunkView(chunk)
-                            }
-                        }
-                    }
-                    .font(Font.system(.body, design: .monospaced))
-                    .padding([.trailing, .bottom, .leading])
-                    .padding(.top, 6)
-                }
+                FileDiffsView(fileDiffs: fileDiffs)
+                    .padding()
             } else {
                 VStack(alignment: .leading) {
                     Text(diff)
@@ -49,29 +25,6 @@ struct StashChangedDetailContentView: View {
             }
         }
         .textSelection(.enabled)
-    }
-
-    private func chunkView(_ chunk: Chunk) -> some View {
-        chunk.lines.map { line in
-            Text(line.raw)
-                .foregroundStyle(chunkLineColor(line))
-        }
-        .reduce(Text("")) { partialResult, text in
-            partialResult + text + Text("\n")
-        }
-    }
-
-    private func chunkLineColor(_ line: Chunk.Line) -> Color {
-        switch line.kind {
-        case .header:
-            return .secondary
-        case .removed:
-            return .red
-        case .added:
-            return .green
-        case .unchanged:
-            return .primary
-        }
     }
 }
 

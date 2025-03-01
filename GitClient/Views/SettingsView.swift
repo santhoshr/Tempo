@@ -22,6 +22,7 @@ struct SettingsView: View {
                         SecureField(text: $openAIAPISecretKey) {
                             Text("SECRET KEY")
                         }
+                        .focusable(false)
                     }
                 } footer: {
                     Text("""
@@ -45,6 +46,7 @@ Grant “Write” permission to the Secret Key for the “/v1/chat/completions�
 Each time the Generate button is clicked, a request for changes will be sent to the API(using GPT-4o mini). Using GPT-4o-mini via the API costs 15 cents per 1M input tokens and 60 cents per 1M output tokens (roughly the equivalent of 2500 pages in a standard book). You can check the costs associated with using the API here. https://platform.openai.com/usage
 """)
             }
+            .padding(.bottom)
             HStack {
                 Image(systemName: "shield")
                     .frame(width: 20)
@@ -52,7 +54,7 @@ Each time the Generate button is clicked, a request for changes will be sent to 
 This Git client app and OpenAI API also do not use the inputs and outputs for model training. https://openai.com/enterprise-privacy
 """)
             }
-
+            .padding(.bottom)
         }
         .padding()
         .padding(.horizontal)

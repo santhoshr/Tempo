@@ -1,0 +1,19 @@
+name: test workflow
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Test
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test
+        run: |
+          xcodebuild -scheme GitClient -destination "platform=macOS" clean test

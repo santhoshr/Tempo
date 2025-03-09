@@ -17,6 +17,9 @@ jobs:
       - name: Check git
         run: |
           which git
+      - name: Check Xcode
+        run: |
+          xcode-select -p
       - name: Set PATH for Git
         run: |
           export PATH="/opt/homebrew/bin:$PATH"

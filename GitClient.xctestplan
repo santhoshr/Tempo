@@ -9,6 +9,12 @@
     }
   ],
   "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "SRCROOT",
+        "value" : "$(SRCROOT)"
+      }
+    ],
     "targetForVariableExpansion" : {
       "containerPath" : "container:GitClient.xcodeproj",
       "identifier" : "61347EE928D5D16C00625FC4",

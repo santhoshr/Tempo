@@ -9,6 +9,11 @@ import Foundation
 import CryptoKit
 
 extension URL {
+    static var testFixture: URL? {
+        guard let srcroot = ProcessInfo.processInfo.environment["SRCROOT"] else { return nil }
+        return URL(fileURLWithPath: srcroot).appending(path: "TestFixtures").appending(path: "SyntaxHighlight")
+    }
+
     static func gravater(email: String, size: Int=80) -> URL? {
         guard let data = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased().data(using: .utf8) else {
             return nil

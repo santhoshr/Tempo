@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Select Xcode
         run: |
-          xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+          sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
       - name: Checkout
         uses: actions/checkout@v4
       - name: Check PATH

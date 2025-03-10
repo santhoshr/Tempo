@@ -17,6 +17,9 @@ jobs:
       - name: Check git
         run: |
           which git
+      - name: Check git version
+        run: |
+          git --version
       - name: Check Xcode
         run: |
           xcode-select -p

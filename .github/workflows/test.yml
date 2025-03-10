@@ -15,18 +15,9 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Check PATH
-        run: |
-          echo $PATH
-      - name: Check git
-        run: |
-          which git
       - name: Check git version
         run: |
           git --version
-      - name: Set PATH for Git
-        run: |
-          export PATH="/opt/homebrew/bin:$PATH"
       - name: Test
         run: |
           xcodebuild clean test -scheme GitClient CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -destination "platform=macOS" -disableAutomaticPackageResolution

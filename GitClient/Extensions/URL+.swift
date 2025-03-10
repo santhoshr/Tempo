@@ -10,6 +10,7 @@ import CryptoKit
 
 extension URL {
     static var testFixture: URL? {
+        print(ProcessInfo.processInfo.environment)
         guard let srcroot = ProcessInfo.processInfo.environment["SRCROOT"] else { return nil }
         return URL(fileURLWithPath: srcroot).appending(path: "TestFixtures").appending(path: "SyntaxHighlight")
     }

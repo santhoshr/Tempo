@@ -10,19 +10,19 @@ jobs:
     name: Test
     runs-on: macos-15
     env:
-      DEVELOPER_DIR: /Applications/Xcode_16.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Check PATH
+        run: |
+          echo $PATH
       - name: Check git
         run: |
           which git
       - name: Check git version
         run: |
           git --version
-      - name: Check Xcode
-        run: |
-          xcode-select -p
       - name: Set PATH for Git
         run: |
           export PATH="/opt/homebrew/bin:$PATH"

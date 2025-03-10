@@ -10,6 +10,8 @@ jobs:
     name: Test
     runs-on: macos-15
     steps:
+      - name: Set SRCROOT
+        run: echo "SRCROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Select Xcode
         run: |
           sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer

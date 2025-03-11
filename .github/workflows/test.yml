@@ -20,4 +20,4 @@ jobs:
           git --version
       - name: Test
         run: |
-          SRCROOT=$GITHUB_WORKSPACE xcodebuild clean test -scheme GitClient CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -destination "platform=macOS" -disableAutomaticPackageResolution
+          SRCROOT="$GITHUB_WORKSPACE/GitClient" xcodebuild clean test -scheme GitClient CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -destination "platform=macOS" -disableAutomaticPackageResolution

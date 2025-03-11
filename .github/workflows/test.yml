@@ -15,6 +15,9 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
       - name: Check git version
         run: |
           git --version

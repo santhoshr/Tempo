@@ -1,0 +1,3 @@
+[submodule "TestFixtures/SyntaxHighlight"]
+	path = TestFixtures/SyntaxHighlight
+	url = git@github.com:maoyama/SyntaxHighlight.git

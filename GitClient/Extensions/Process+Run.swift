@@ -45,8 +45,7 @@ extension Process {
         process.standardOutput = stdOutput
         process.standardError = stdError
         process.standardInput = stdInput
-        print(currentDirectoryURL)
-        print(process.environment)
+
         try process.run()
 
         if !inputs.isEmpty, let writeData = inputs.joined(separator: "\n").data(using: .utf8) {

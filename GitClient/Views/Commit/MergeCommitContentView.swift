@@ -16,7 +16,7 @@ struct MergeCommitContentView: View {
     @State private var tab = 0
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             CommitTabView(tab: $tab)
                 .padding(.bottom)
             if tab == 0 {

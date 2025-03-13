@@ -16,7 +16,7 @@ struct MergeCommitContentView: View {
     @State private var tab = 0
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             CommitTabView(tab: $tab)
                 .padding(.bottom)
             if tab == 0 {
@@ -126,21 +126,15 @@ struct CommitTabView: View {
 
     var body: some View {
         HStack {
-            Button {
-                tab = 0
-            } label: {
-                Image(systemName: "circle.circle")
-                Text("Commits")
+            Spacer()
+            Picker("", selection: $tab) {
+                Text("Commits").tag(0)
+                Text("Files Changed").tag(1)
             }
-            .disabled(tab == 0)
-            Divider()
-            Button {
-                tab = 1
-            } label: {
-                Image(systemName: "plusminus")
-                Text("Files Changed")
-            }
-            .disabled(tab == 1)
-        }.buttonStyle(.borderless)
+            .frame(maxWidth:400)
+            .pickerStyle(.segmented)
+            Spacer()
+        }
+
     }
 }

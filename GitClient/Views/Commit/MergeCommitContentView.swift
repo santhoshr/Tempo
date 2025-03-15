@@ -18,7 +18,7 @@ struct MergeCommitContentView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             CommitTabView(tab: $tab)
-                .padding(.bottom)
+                .padding(.vertical)
             if tab == 0 {
                 HStack(alignment: .top, spacing: 16) {
                     CommitsView(commits: commits)
@@ -37,6 +37,7 @@ struct MergeCommitContentView: View {
                     }
                     .buttonStyle(.link)
                 }
+                .padding(.top)
             }
             if tab == 1, let fileDiffs = filesChanged?.fileDiffs {
                 FileDiffsView(fileDiffs: fileDiffs)

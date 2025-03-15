@@ -26,27 +26,7 @@ struct StagedView: View {
                     }
                 }
                 ForEach(fileDiffs) { fileDiff in
-                    LazyVStack(spacing: 0) {
-                        StageFileDiffHeaderView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff)
-                            .padding()
-
-                        ForEach(fileDiff.chunks) { chunk in
-                            HStack {
-                                ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
-                                Spacer()
-                                Button {
-                                    onSelectChunk?(fileDiff, chunk)
-                                } label: {
-                                    Image(systemName: "minus.circle")
-                                }
-                                .buttonStyle(.accessoryBar)
-                                .help("Unstage this hunk")
-                                .padding()
-                            }
-                            .padding(.horizontal)
-                        }
-                        .padding(.bottom)
-                    }
+                    StagedFileDiffView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff, onSelectChunk: onSelectChunk)
                 }
                 .font(Font.system(.body, design: .monospaced))
             } header: {

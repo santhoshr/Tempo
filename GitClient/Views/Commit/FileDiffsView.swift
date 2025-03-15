@@ -13,13 +13,20 @@ struct FileDiffsView: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             ForEach(fileDiffs) { fileDiff in
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    Text(fileDiff.filePathDisplay)
-                        .fontWeight(.bold)
-                        .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
-                        .font(Font.system(.body, design: .default))
-                        .padding(.bottom)
-                    chunksView(fileDiff.chunks, filePath: fileDiff.toFilePath)
+                LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
+                    Section {
+                        chunksView(fileDiff.chunks, filePath: fileDiff.toFilePath)
+                    } header: {
+                        HStack {
+                            Text(fileDiff.filePathDisplay)
+                                .fontWeight(.bold)
+                                .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
+                                .font(Font.system(.body, design: .default))
+                            Spacer()
+                        }
+                            .padding(.vertical)
+                            .background(Color(NSColor.textBackgroundColor).opacity(0.98))
+                    }
                 }
                 .padding(.bottom)
             }

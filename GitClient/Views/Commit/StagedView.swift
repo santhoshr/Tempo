@@ -14,7 +14,7 @@ struct StagedView: View {
     @State private var isExpanded = true
 
     var body: some View {
-        LazyVStack(alignment: .leading) {
+        VStack(alignment: .leading) {
             Section (isExpanded: $isExpanded) {
                 if fileDiffs.isEmpty {
                     LazyVStack(alignment: .center) {
@@ -25,12 +25,7 @@ struct StagedView: View {
                             .padding(.trailing)
                     }
                 }
-                LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
-                    ForEach(fileDiffs) { fileDiff in
-                        StagedFileDiffView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff, onSelectChunk: onSelectChunk, selectChunkButtonImageSystemName: "minus.circle", selectChunkButtonHelp: "Unstage this hunk")
-                    }
-                    .font(Font.system(.body, design: .monospaced))
-                }
+                StagedFileDiffView(fileDiffs: fileDiffs, onSelectFileDiff: onSelectFileDiff, onSelectChunk: onSelectChunk, selectChunkButtonImageSystemName: "minus.circle", selectChunkButtonHelp: "Unstage this hunk")
             } header: {
                 SectionHeader(title: "Staged", isExpanded: $isExpanded)
             }

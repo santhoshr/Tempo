@@ -20,9 +20,10 @@ struct StagedFileDiffView: View {
                 StageFileDiffView(
                     isExpanded: isExpandedAll,
                     fileDiff: fileDiff,
-                    selectButtonImageSystemName:
-                    selectButtonImageSystemName,
-                    selectButtonHelp: selectButtonHelp
+                    selectButtonImageSystemName: selectButtonImageSystemName,
+                    selectButtonHelp: selectButtonHelp,
+                    onSelectFileDiff: onSelectFileDiff,
+                    onSelectChunk: onSelectChunk
                 )
             }
             .font(Font.system(.body, design: .monospaced))

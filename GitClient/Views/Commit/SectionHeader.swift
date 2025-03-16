@@ -18,20 +18,7 @@ struct SectionHeader: View {
                     .font(.title)
                     .fontWeight(.bold)
                 Spacer()
-                Button {
-                    withAnimation {
-                        isExpanded.toggle()
-                    }
-                } label: {
-                    if isExpanded {
-                        Image(systemName: "chevron.down")
-                            .frame(width: 20, height: 20)
-                    } else {
-                        Image(systemName: "chevron.right")
-                            .frame(width: 20, height: 20)
-                    }
-                }
-                .buttonStyle(.accessoryBar)
+                ExpandingButton(isExpanded: $isExpanded)
             }
             .padding(.vertical)
             .padding(.horizontal)

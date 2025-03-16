@@ -36,7 +36,7 @@ struct StagedFileDiffView: View {
                     .padding(.bottom)
                     if fileDiff.chunks.isEmpty {
                         HStack {
-                            VStack {
+                            VStack(alignment: .leading) {
                                 Text(fileDiff.header)
                                 Text(fileDiff.extendedHeaderLines.joined(separator: "\n"))
                                 Text(fileDiff.fromFileToFileLines.joined(separator: "\n"))

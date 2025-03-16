@@ -459,6 +459,7 @@
 				61C03CDF2D86F022008186F8 /* StageFileDiffView.swift */,
 				61CA2AC82D69B7D0007B8E56 /* StageFileDiffHeaderView.swift */,
 				61D2BC3C2C8D8BB10059317E /* SectionHeader.swift */,
+				61C03CE32D86F3C7008186F8 /* ExpandingButton.swift */,
 				6154D69B2C6739C700448AB4 /* CommitMessageSuggestionView.swift */,
 				61B3C5632CB93CE500021B36 /* CommitDetailStackView.swift */,
 				61B3C5612CB557CA00021B36 /* CommitDetailView.swift */,
@@ -468,7 +469,6 @@
 				61C03CE12D86F268008186F8 /* FileDiffView.swift */,
 				61D140D62D640122007BD12D /* ChunkView.swift */,
 				61FAF4932C6835EC000B7ACB /* CommitMessageSnippetView.swift */,
-				61C03CE32D86F3C7008186F8 /* ExpandingButton.swift */,
 			);
 			path = Commit;
 			sourceTree = "<group>";

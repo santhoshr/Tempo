@@ -11,19 +11,29 @@ struct ExpandingButton: View {
     @Binding var isExpanded: Bool
 
     var body: some View {
-        Button {
-            withAnimation {
-                isExpanded.toggle()
+        HStack {
+            Button {
+                withAnimation {
+                    isExpanded.toggle()
+                }
+            } label: {
+                if isExpanded {
+                    Image(systemName: "chevron.down")
+                        .frame(width: 20, height: 20)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .frame(width: 20, height: 20)
+                }
             }
-        } label: {
-            if isExpanded {
-                Image(systemName: "chevron.down")
-                    .frame(width: 20, height: 20)
-            } else {
-                Image(systemName: "chevron.right")
-                    .frame(width: 20, height: 20)
+            .buttonStyle(.accessoryBar)
+        }
+        .contextMenu {
+            Button("Expand All") {
+                print("Expand All")
+            }
+            Button("Collapse All") {
+                print("Collapse All")
             }
         }
-        .buttonStyle(.accessoryBar)
     }
 }

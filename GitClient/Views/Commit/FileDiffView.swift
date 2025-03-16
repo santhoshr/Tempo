@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct FileDiffView: View {
+    @State var isExpanded: Bool
     var fileDiff: FileDiff
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
-            Section {
+            Section(isExpanded: $isExpanded) {
                 chunksView(fileDiff.chunks, filePath: fileDiff.toFilePath)
             } header: {
                 HStack {
@@ -21,6 +22,7 @@ struct FileDiffView: View {
                         .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
                         .font(Font.system(.body, design: .default))
                     Spacer()
+                    ExpandingButton(isExpanded: $isExpanded)
                 }
                     .padding(.vertical)
                     .background(Color(NSColor.textBackgroundColor).opacity(0.98))

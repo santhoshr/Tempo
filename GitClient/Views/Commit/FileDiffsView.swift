@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct FileDiffsView: View {
+    @State private var isExpandedAll = true
     var fileDiffs: [FileDiff]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(fileDiffs) { fileDiff in
-                FileDiffView(fileDiff: fileDiff)
+                FileDiffView(isExpanded: isExpandedAll, fileDiff: fileDiff)
                 .padding(.bottom)
             }
         }

@@ -10,12 +10,10 @@ struct StagedFileDiffView: View {
     var fileDiff: FileDiff
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
+    @State private var isExpanded = true
 
     var body: some View {
-        LazyVStack(spacing: 0) {
-            StageFileDiffHeaderView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff)
-                .padding()
-
+        Section(isExpanded: $isExpanded) {
             ForEach(fileDiff.chunks) { chunk in
                 HStack {
                     ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
@@ -32,6 +30,19 @@ struct StagedFileDiffView: View {
                 .padding(.horizontal)
             }
             .padding(.bottom)
+        } header: {
+            HStack {
+                StageFileDiffHeaderView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff)
+                Spacer()
+            }
+                .padding()
+                .background(Color(NSColor.textBackgroundColor).opacity(0.98))
+                .onTapGesture {
+                    print("Hi")
+                    withAnimation {
+                        isExpanded.toggle()
+                    }
+                }
         }
     }
 }

@@ -29,5 +29,6 @@ struct StageFileDiffHeaderView: View {
                 .padding()
             }
         }
+        .background(Color(NSColor.textBackgroundColor).opacity(0.98))
     }
 }

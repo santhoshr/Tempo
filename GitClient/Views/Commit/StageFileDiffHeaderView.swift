@@ -9,7 +9,6 @@ import SwiftUI
 
 struct StageFileDiffHeaderView: View {
     var fileDiff: FileDiff
-    var onSelectFileDiff: ((FileDiff) -> Void)?
 
     var body: some View {
         HStack {
@@ -18,16 +17,6 @@ struct StageFileDiffHeaderView: View {
                 .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
                 .font(Font.system(.body, design: .default))
             Spacer()
-            if fileDiff.chunks.isEmpty {
-                Button {
-                    onSelectFileDiff?(fileDiff)
-                } label: {
-                    Image(systemName: "plus.circle")
-                }
-                .buttonStyle(.accessoryBar)
-                .help("Stage this hunk")
-                .padding()
-            }
         }
         .background(Color(NSColor.textBackgroundColor).opacity(0.98))
     }

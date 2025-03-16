@@ -34,9 +34,28 @@ struct StagedFileDiffView: View {
                         .padding(.horizontal)
                     }
                     .padding(.bottom)
+                    if fileDiff.chunks.isEmpty {
+                        HStack {
+                            VStack {
+                                Text(fileDiff.header)
+                                Text(fileDiff.extendedHeaderLines.joined(separator: "\n"))
+                                Text(fileDiff.fromFileToFileLines.joined(separator: "\n"))
+                            }
+                            Spacer()
+                            Button {
+                                onSelectFileDiff?(fileDiff)
+                            } label: {
+                                Image(systemName: selectChunkButtonImageSystemName)
+                            }
+                            .buttonStyle(.accessoryBar)
+                            .help(selectChunkButtonHelp)
+                            .padding()
+                        }
+                        .padding(.horizontal)
+                    }
                 } header: {
                     HStack {
-                        StageFileDiffHeaderView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff)
+                        StageFileDiffHeaderView(fileDiff: fileDiff)
                         Spacer()
                     }
                         .padding()

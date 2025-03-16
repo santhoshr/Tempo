@@ -27,7 +27,7 @@ struct StagedView: View {
                 }
                 LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
                     ForEach(fileDiffs) { fileDiff in
-                        StagedFileDiffView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff, onSelectChunk: onSelectChunk)
+                        StagedFileDiffView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff, onSelectChunk: onSelectChunk, selectChunkButtonImageSystemName: "minus.circle", selectChunkButtonHelp: "Unstage this hunk")
                     }
                     .font(Font.system(.body, design: .monospaced))
                 }

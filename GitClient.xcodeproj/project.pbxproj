@@ -60,7 +60,7 @@
 		619759562C8C9A9300E9CA4F /* GitDiffNumStatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619759552C8C9A9300E9CA4F /* GitDiffNumStatTests.swift */; };
 		619D876128F154AB00DD1D4E /* CreateNewBranchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619D876028F154AB00DD1D4E /* CreateNewBranchSheet.swift */; };
 		619DA6932CA62A1000E58DF9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619DA6922CA62A1000E58DF9 /* SettingsView.swift */; };
-		61A0D0F82D8502CC005AF36C /* StagedFileDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A0D0F72D8502CC005AF36C /* StagedFileDiffView.swift */; };
+		61A0D0F82D8502CC005AF36C /* StageFileDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A0D0F72D8502CC005AF36C /* StageFileDiffView.swift */; };
 		61A2D35728DE9CCC009A3EEC /* GenericError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A2D35628DE9CCC009A3EEC /* GenericError.swift */; };
 		61A2D35D28DF5ACB009A3EEC /* View+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A2D35C28DF5ACB009A3EEC /* View+.swift */; };
 		61B3C55E2CB4A74C00021B36 /* GitShow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61B3C55D2CB4A74700021B36 /* GitShow.swift */; };
@@ -175,7 +175,7 @@
 		619759552C8C9A9300E9CA4F /* GitDiffNumStatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitDiffNumStatTests.swift; sourceTree = "<group>"; };
 		619D876028F154AB00DD1D4E /* CreateNewBranchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewBranchSheet.swift; sourceTree = "<group>"; };
 		619DA6922CA62A1000E58DF9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		61A0D0F72D8502CC005AF36C /* StagedFileDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StagedFileDiffView.swift; sourceTree = "<group>"; };
+		61A0D0F72D8502CC005AF36C /* StageFileDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageFileDiffView.swift; sourceTree = "<group>"; };
 		61A2D35628DE9CCC009A3EEC /* GenericError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericError.swift; sourceTree = "<group>"; };
 		61A2D35C28DF5ACB009A3EEC /* View+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+.swift"; sourceTree = "<group>"; };
 		61B3C55D2CB4A74700021B36 /* GitShow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitShow.swift; sourceTree = "<group>"; };
@@ -448,7 +448,7 @@
 			children = (
 				61E290DA28E7C66200BCEB04 /* CommitCreateView.swift */,
 				6197594B2C8BE95900E9CA4F /* StagedView.swift */,
-				61A0D0F72D8502CC005AF36C /* StagedFileDiffView.swift */,
+				61A0D0F72D8502CC005AF36C /* StageFileDiffView.swift */,
 				612208A82C032A0D0047B454 /* NotStagedView.swift */,
 				61CA2AC82D69B7D0007B8E56 /* StageFileDiffHeaderView.swift */,
 				61D2BC3C2C8D8BB10059317E /* SectionHeader.swift */,
@@ -625,7 +625,7 @@
 				61D34C822CA85DC70032A22A /* EnviromentValues+.swift in Sources */,
 				61E290C928E098DB00BCEB04 /* GitLog.swift in Sources */,
 				610134C12C71D5860071677C /* GitFetch.swift in Sources */,
-				61A0D0F82D8502CC005AF36C /* StagedFileDiffView.swift in Sources */,
+				61A0D0F82D8502CC005AF36C /* StageFileDiffView.swift in Sources */,
 				61347EEE28D5D16C00625FC4 /* GitClientApp.swift in Sources */,
 				61E290DB28E7C66300BCEB04 /* CommitCreateView.swift in Sources */,
 				61B3C5602CB4A9CE00021B36 /* CommitDetail.swift in Sources */,

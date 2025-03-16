@@ -10,6 +10,8 @@ struct StagedFileDiffView: View {
     var fileDiff: FileDiff
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
+    var selectChunkButtonImageSystemName: String
+    var selectChunkButtonHelp: String
     @State private var isExpanded = true
 
     var body: some View {
@@ -21,10 +23,10 @@ struct StagedFileDiffView: View {
                     Button {
                         onSelectChunk?(fileDiff, chunk)
                     } label: {
-                        Image(systemName: "minus.circle")
+                        Image(systemName: selectChunkButtonImageSystemName)
                     }
                     .buttonStyle(.accessoryBar)
-                    .help("Unstage this hunk")
+                    .help(selectChunkButtonHelp)
                     .padding()
                 }
                 .padding(.horizontal)

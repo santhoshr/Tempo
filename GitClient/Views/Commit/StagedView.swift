@@ -25,7 +25,13 @@ struct StagedView: View {
                             .padding(.trailing)
                     }
                 }
-                StagedFileDiffView(fileDiffs: fileDiffs, onSelectFileDiff: onSelectFileDiff, onSelectChunk: onSelectChunk, selectChunkButtonImageSystemName: "minus.circle", selectChunkButtonHelp: "Unstage this hunk")
+                StagedFileDiffView(
+                    fileDiffs: fileDiffs,
+                    selectButtonImageSystemName: "minus.circle",
+                    selectButtonHelp: "Unstage this hunk",
+                    onSelectFileDiff: onSelectFileDiff,
+                    onSelectChunk: onSelectChunk
+                )
             } header: {
                 SectionHeader(title: "Staged", isExpanded: $isExpanded)
             }

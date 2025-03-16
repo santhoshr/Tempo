@@ -8,10 +8,10 @@ import SwiftUI
 
 struct StagedFileDiffView: View {
     var fileDiffs: [FileDiff]
+    var selectButtonImageSystemName: String
+    var selectButtonHelp: String
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
-    var selectChunkButtonImageSystemName: String
-    var selectChunkButtonHelp: String
     @State private var isExpanded = true
 
     var body: some View {
@@ -25,10 +25,10 @@ struct StagedFileDiffView: View {
                             Button {
                                 onSelectChunk?(fileDiff, chunk)
                             } label: {
-                                Image(systemName: selectChunkButtonImageSystemName)
+                                Image(systemName: selectButtonImageSystemName)
                             }
                             .buttonStyle(.accessoryBar)
-                            .help(selectChunkButtonHelp)
+                            .help(selectButtonHelp)
                             .padding()
                         }
                         .padding(.horizontal)
@@ -45,10 +45,10 @@ struct StagedFileDiffView: View {
                             Button {
                                 onSelectFileDiff?(fileDiff)
                             } label: {
-                                Image(systemName: selectChunkButtonImageSystemName)
+                                Image(systemName: selectButtonImageSystemName)
                             }
                             .buttonStyle(.accessoryBar)
-                            .help(selectChunkButtonHelp)
+                            .help(selectButtonHelp)
                             .padding()
                         }
                         .padding(.horizontal)

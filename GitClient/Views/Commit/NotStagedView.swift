@@ -28,7 +28,13 @@ struct NotStagedView: View {
                             .padding(.trailing)
                     }
                 }
-                StagedFileDiffView(fileDiffs: fileDiffs, onSelectFileDiff: onSelectFileDiff, onSelectChunk: onSelectChunk, selectChunkButtonImageSystemName: "plus.circle", selectChunkButtonHelp: "Stage this hunk")
+                StagedFileDiffView(
+                    fileDiffs: fileDiffs,
+                    selectButtonImageSystemName: "plus.circle",
+                    selectButtonHelp: "Stage this hunk",
+                    onSelectFileDiff: onSelectFileDiff,
+                    onSelectChunk: onSelectChunk
+                )
 
                 if !untrackedFiles.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {

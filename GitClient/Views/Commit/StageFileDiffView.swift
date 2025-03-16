@@ -60,11 +60,6 @@ struct StageFileDiffView: View {
             }
                 .padding()
                 .background(Color(NSColor.textBackgroundColor).opacity(0.98))
-                .onTapGesture {
-                    withAnimation {
-                        isExpanded.toggle()
-                    }
-                }
         }
     }
 }

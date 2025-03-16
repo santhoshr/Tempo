@@ -28,30 +28,7 @@ struct NotStagedView: View {
                             .padding(.trailing)
                     }
                 }
-                ForEach(fileDiffs) { fileDiff in
-                    LazyVStack(spacing: 0) {
-                        StageFileDiffHeaderView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff)
-                            .padding()
-
-                        ForEach(fileDiff.chunks) { chunk in
-                            HStack {
-                                ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
-                                Spacer()
-                                Button {
-                                    onSelectChunk?(fileDiff, chunk)
-                                } label: {
-                                    Image(systemName: "plus.circle")
-                                }
-                                .buttonStyle(.accessoryBar)
-                                .help("Stage this hunk")
-                                .padding()
-                            }
-                            .padding(.horizontal)
-                        }
-                        .padding(.bottom)
-                    }
-                }
-                .font(Font.system(.body, design: .monospaced))
+                StagedFileDiffView(fileDiffs: fileDiffs, onSelectFileDiff: onSelectFileDiff, onSelectChunk: onSelectChunk, selectChunkButtonImageSystemName: "plus.circle", selectChunkButtonHelp: "Stage this hunk")
 
                 if !untrackedFiles.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {

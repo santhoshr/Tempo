@@ -8,24 +8,27 @@
 import SwiftUI
 
 struct FileDiffView: View {
-    @State var isExpanded: Bool
-    var fileDiff: FileDiff
+    @Binding var expandableFileDiff: ExpandableModel<FileDiff>
+    var onSelectAllExpanded: ((Bool) -> Void)
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
-            Section(isExpanded: $isExpanded) {
-                chunksView(fileDiff.chunks, filePath: fileDiff.toFilePath)
+            Section(isExpanded: $expandableFileDiff.isExpanded) {
+                chunksView(expandableFileDiff.model.chunks, filePath: expandableFileDiff.model.toFilePath)
             } header: {
                 HStack {
-                    Text(fileDiff.filePathDisplay)
+                    Text(expandableFileDiff.model.filePathDisplay)
                         .fontWeight(.bold)
-                        .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
+                        .help(expandableFileDiff.model.header + "\n" + (expandableFileDiff.model.extendedHeaderLines + expandableFileDiff.model.fromFileToFileLines).joined(separator: "\n"))
                         .font(Font.system(.body, design: .default))
                     Spacer()
-                    ExpandingButton(isExpanded: $isExpanded)
-                }
+                    ExpandingButton(
+                        isExpanded: $expandableFileDiff.isExpanded,
+                        onSelectExpandedAll: onSelectAllExpanded
+                    )
                     .padding(.vertical)
-                    .background(Color(NSColor.textBackgroundColor).opacity(0.98))
+                }
+                .background(Color(NSColor.textBackgroundColor).opacity(0.98))
             }
         }
     }

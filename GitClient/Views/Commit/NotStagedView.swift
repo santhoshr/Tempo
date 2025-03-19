@@ -14,6 +14,7 @@ struct NotStagedView: View {
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
     var onSelectUntrackedFile: ((String) -> Void)?
     @State private var isExpanded = true
+    @State private var isExpandedAllFiles = true
 
     var body: some View {
         LazyVStack(alignment: .leading) {
@@ -64,7 +65,13 @@ struct NotStagedView: View {
                     .padding(.bottom)
                 }
             } header: {
-                SectionHeader(title: "Not Staged", isExpanded: $isExpanded)
+                SectionHeader(
+                    title: "Not Staged",
+                    isExpanded: $isExpanded,
+                    onSelectExpandedAll: { isExpandedAll in
+
+                    }
+                )
             }
         }
     }

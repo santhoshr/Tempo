@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ExpandingButton: View {
     @Binding var isExpanded: Bool
+    var onSelectExpandedAll: ((Bool) -> Void)
 
     var body: some View {
         HStack {
@@ -28,11 +29,11 @@ struct ExpandingButton: View {
             .buttonStyle(.accessoryBar)
         }
         .contextMenu {
-            Button("Expand All") {
-                print("Expand All")
+            Button("Expand All Files") {
+                onSelectExpandedAll(true)
             }
-            Button("Collapse All") {
-                print("Collapse All")
+            Button("Collapse All Files") {
+                onSelectExpandedAll(false)
             }
         }
     }

@@ -12,6 +12,7 @@ struct StagedView: View {
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
     @State private var isExpanded = true
+    @State private var isExpandedAllFiles = true
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -33,7 +34,11 @@ struct StagedView: View {
                     onSelectChunk: onSelectChunk
                 )
             } header: {
-                SectionHeader(title: "Staged", isExpanded: $isExpanded)
+                SectionHeader(
+                    title: "Staged",
+                    isExpanded: $isExpanded) { isExpandedAll in
+                        
+                    }
             }
         }
     }

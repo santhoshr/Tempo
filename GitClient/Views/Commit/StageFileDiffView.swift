@@ -12,6 +12,7 @@ struct StageFileDiffView: View {
     var fileDiff: FileDiff
     var selectButtonImageSystemName: String
     var selectButtonHelp: String
+    var onSelectExpandedAll: (Bool) -> Void
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
 
@@ -56,7 +57,10 @@ struct StageFileDiffView: View {
             HStack {
                 StageFileDiffHeaderView(fileDiff: fileDiff)
                 Spacer()
-                ExpandingButton(isExpanded: $isExpanded)
+                ExpandingButton(
+                    isExpanded: $isExpanded,
+                    onSelectExpandedAll: onSelectExpandedAll
+                )
             }
                 .padding()
                 .background(Color(NSColor.textBackgroundColor).opacity(0.98))

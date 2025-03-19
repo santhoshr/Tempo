@@ -12,7 +12,7 @@ struct StashChangedDetailContentView: View {
 
     var body: some View {
         VStack {
-            FileDiffsView2(expandableFileDiffs: $fileDiffs)
+            FileDiffsView(expandableFileDiffs: $fileDiffs)
                     .padding()
         }
         .textSelection(.enabled)

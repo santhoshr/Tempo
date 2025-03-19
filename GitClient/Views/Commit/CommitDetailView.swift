@@ -11,6 +11,7 @@ struct CommitDetailView: View {
     var commitHash: String
     var folder: Folder
     @State private var commit: CommitDetail?
+    @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var mergedIn: Commit?
     @State private var error: Error?
     @Environment(\.openURL) private var openURL
@@ -100,7 +101,7 @@ struct CommitDetailView: View {
                             if commit.parentHashes.count == 2 {
                                 MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
                             } else {
-                                FileDiffsView(fileDiffs: commit.diff.fileDiffs)
+                                FileDiffsView(expandableFileDiffs: $fileDiffs)
                             }
                         }
                         Spacer()
@@ -140,6 +141,13 @@ struct CommitDetailView: View {
                 } catch {
                     self.error = error
                 }
+            }
+        })
+        .onChange(of: commit, { _, newValue in
+            if let newValue {
+                fileDiffs = newValue.diff.fileDiffs.map { .init(isExpanded: true, model: $0) }
+            } else {
+                fileDiffs = []
             }
         })
         .errorAlert($error)

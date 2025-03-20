@@ -51,7 +51,9 @@ struct CommitCreateView: View {
     @State private var cachedDiffRaw = ""
     @State private var diffRaw = ""
     @State private var cachedDiff: Diff?
+    @State private var cachedExpandableFileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var diff: Diff?
+    @State private var expandableFileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var status: Status?
     @State private var cachedDiffStat: DiffStat?
     @State private var updateChangesError: Error?
@@ -70,7 +72,7 @@ struct CommitCreateView: View {
             ScrollView {
                 if let cachedDiff {
                     StagedView(
-                        fileDiffs: cachedDiff.fileDiffs,
+                        fileDiffs: $cachedExpandableFileDiffs,
                         onSelectFileDiff: { fileDiff in
                             let newDiff = cachedDiff.updateFileDiffStage(fileDiff, stage: false)
                             restorePatch(newDiff)
@@ -85,7 +87,7 @@ struct CommitCreateView: View {
 
                 if let diff {
                     NotStagedView(
-                        fileDiffs: diff.fileDiffs,
+                        fileDiffs: $expandableFileDiffs,
                         untrackedFiles: status?.untrackedFiles ?? [],
                         onSelectFileDiff: { fileDiff in
                             let newDiff = diff.updateFileDiffStage(fileDiff, stage: true)
@@ -328,8 +330,12 @@ struct CommitCreateView: View {
             status = try await Process.output(GitStatus(directory: folder.url))
             cachedDiffRaw = try await Process.output(GitDiffCached(directory: folder.url))
             diffRaw = try await Process.output(GitDiff(directory: folder.url))
-            cachedDiff = try Diff(raw: cachedDiffRaw)
-            diff = try Diff(raw: diffRaw)
+            let newCachedDiff = try Diff(raw: cachedDiffRaw)
+            cachedDiff = newCachedDiff
+            cachedExpandableFileDiffs = newCachedDiff.fileDiffs.map { .init(isExpanded: true, model: $0) }
+            let newDiff = try Diff(raw: diffRaw)
+            diff = newDiff
+            expandableFileDiffs = newDiff.fileDiffs.map { .init(isExpanded: true, model: $0) }
             cachedDiffStat = try await Process.output(GitDiffNumStat(directory: folder.url, cached: true))
         } catch {
             updateChangesError = error

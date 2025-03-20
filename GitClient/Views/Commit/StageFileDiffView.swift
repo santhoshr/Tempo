@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct StageFileDiffView: View {
-    @State var isExpanded: Bool
-    var fileDiff: FileDiff
+    @Binding var expandableFileDiff: ExpandableModel<FileDiff>
+    var fileDiff: FileDiff {
+        expandableFileDiff.model
+    }
     var selectButtonImageSystemName: String
     var selectButtonHelp: String
     var onSelectExpandedAll: (Bool) -> Void
@@ -17,7 +19,7 @@ struct StageFileDiffView: View {
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
 
     var body: some View {
-        Section(isExpanded: $isExpanded) {
+        Section(isExpanded: $expandableFileDiff.isExpanded) {
             ForEach(fileDiff.chunks) { chunk in
                 HStack {
                     ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
@@ -58,7 +60,7 @@ struct StageFileDiffView: View {
                 StageFileDiffHeaderView(fileDiff: fileDiff)
                 Spacer()
                 ExpandingButton(
-                    isExpanded: $isExpanded,
+                    isExpanded: $expandableFileDiff.isExpanded,
                     onSelectExpandedAll: onSelectExpandedAll
                 )
             }

@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct StagedView: View {
-    var fileDiffs: [FileDiff]
+    @Binding var fileDiffs: [ExpandableModel<FileDiff>]
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
     @State private var isExpanded = true
-    @State private var isExpandedAllFiles = true
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -27,7 +26,7 @@ struct StagedView: View {
                     }
                 }
                 StagedFileDiffView(
-                    fileDiffs: fileDiffs,
+                    expandableFileDiffs: $fileDiffs,
                     selectButtonImageSystemName: "minus.circle",
                     selectButtonHelp: "Unstage this hunk",
                     onSelectFileDiff: onSelectFileDiff,
@@ -37,7 +36,7 @@ struct StagedView: View {
                 SectionHeader(
                     title: "Staged",
                     isExpanded: $isExpanded) { isExpandedAll in
-                        
+                        fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
                     }
             }
         }

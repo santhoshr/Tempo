@@ -30,10 +30,14 @@ struct ExpandingButton: View {
         }
         .contextMenu {
             Button("Expand All Files") {
-                onSelectExpandedAll(true)
+                withAnimation {
+                    onSelectExpandedAll(true)
+                }
             }
             Button("Collapse All Files") {
-                onSelectExpandedAll(false)
+                withAnimation {
+                    onSelectExpandedAll(false)
+                }
             }
         }
     }

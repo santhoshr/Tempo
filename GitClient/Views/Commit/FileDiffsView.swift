@@ -16,9 +16,7 @@ struct FileDiffsView: View {
                 FileDiffView(
                     expandableFileDiff: $expandedFileDiff,
                     onSelectAllExpanded: { isExpanded in
-                        withAnimation {
-                            expandableFileDiffs = expandableFileDiffs.map { .init(isExpanded: isExpanded, model: $0.model) }
-                        }
+                        expandableFileDiffs = expandableFileDiffs.map { .init(isExpanded: isExpanded, model: $0.model) }
                     }
                 )
                 .padding(.bottom)

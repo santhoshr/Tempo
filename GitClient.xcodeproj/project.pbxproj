@@ -20,7 +20,6 @@
 		61347EEE28D5D16C00625FC4 /* GitClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EED28D5D16C00625FC4 /* GitClientApp.swift */; };
 		61347EF028D5D16C00625FC4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EEF28D5D16C00625FC4 /* ContentView.swift */; };
 		61347EF228D5D16D00625FC4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61347EF128D5D16D00625FC4 /* Assets.xcassets */; };
-		61347EF528D5D16D00625FC4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61347EF428D5D16D00625FC4 /* Preview Assets.xcassets */; };
 		61347F0028D5D16D00625FC4 /* DiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EFF28D5D16D00625FC4 /* DiffTests.swift */; };
 		6154D69C2C6739C700448AB4 /* CommitMessageSuggestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6154D69B2C6739C700448AB4 /* CommitMessageSuggestionView.swift */; };
 		6156E4EC2C9CE1AF00929F2F /* GitBranchPointsAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6156E4EB2C9CE1AF00929F2F /* GitBranchPointsAt.swift */; };
@@ -133,7 +132,6 @@
 		61347EED28D5D16C00625FC4 /* GitClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitClientApp.swift; sourceTree = "<group>"; };
 		61347EEF28D5D16C00625FC4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		61347EF128D5D16D00625FC4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		61347EF428D5D16D00625FC4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		61347EF628D5D16D00625FC4 /* GitClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GitClient.entitlements; sourceTree = "<group>"; };
 		61347EFB28D5D16D00625FC4 /* GitClientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GitClientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		61347EFF28D5D16D00625FC4 /* DiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffTests.swift; sourceTree = "<group>"; };
@@ -281,7 +279,6 @@
 		61347EF328D5D16D00625FC4 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				61347EF428D5D16D00625FC4 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -562,7 +559,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				61347EF528D5D16D00625FC4 /* Preview Assets.xcassets in Resources */,
 				61347EF228D5D16D00625FC4 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

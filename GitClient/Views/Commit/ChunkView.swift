@@ -10,7 +10,7 @@ import SwiftUI
 import Sourceful
 
 struct ChunkView: View {
-    @State var chunk: Chunk
+    var chunk: Chunk
     var filePath: String
     var lexer: Lexer {
         get {
@@ -20,7 +20,7 @@ struct ChunkView: View {
 
     var body: some View {
         SourceCodeTextEditor(
-            text: $chunk.raw,
+            text: .constant(chunk.raw),
             customization: .init(
                 didChangeText: {_ in },
                 insertionPointColor: { Sourceful.Color.white },
@@ -28,14 +28,14 @@ struct ChunkView: View {
                 textViewDidBeginEditing: { _ in },
                 theme: { FileDiffTheme() }
             ),
-            lineNumbers: $chunk.lineNumbers
+            lineNumbers: .constant(chunk.lineNumbers)
         )
     }
 }
 
 #Preview {
-    var filePath = "GitClient/Models/Language.swift"
-    var text = """
+    let filePath = "GitClient/Models/Language.swift"
+    let text = """
 @@ -127,9 +127,6 @@ public struct SourceCodeTextEditor: _ViewRepresentable {
      // Comment
      public func sizeThatFits(_ proposal: ProposedViewSize, nsView: SyntaxTextView, context: Context) -> CGSize? {
@@ -48,7 +48,7 @@ struct ChunkView: View {
      }
 """
 
-    var text2 = """
+    let text2 = """
 @@ -12,9 +12,6 @@ public struct SourceCodeTextEditor: _ViewRepresentable {
      // Comment
      public func sizeThatFits(_ proposal: ProposedViewSize, nsView: SyntaxTextView, context: Context) -> CGSize? {

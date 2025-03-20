@@ -44,17 +44,15 @@ struct MergeCommitContentView: View {
             }
         }
         .padding(.bottom)
-        .onChange(of: mergeCommit, initial: true) { _, _ in
-            Task {
-                do {
-                    commits = try await Array(Process.output(GitLog(directory: directoryURL, revisionRange: "\(mergeCommit.parentHashes[0])..\(mergeCommit.hash)")).dropFirst())
-                    let diffRaw = try await Process.output(
-                        GitDiff(directory: directoryURL, noRenames: false, commitsRange: mergeCommit.parentHashes[0] + ".." + mergeCommit.hash)
-                    )
-                    filesChanged = try Diff(raw: diffRaw).fileDiffs.map { .init(isExpanded: true, model: $0) }
-                } catch {
-                    self.error = error
-                }
+        .task {
+            do {
+                commits = try await Array(Process.output(GitLog(directory: directoryURL, revisionRange: "\(mergeCommit.parentHashes[0])..\(mergeCommit.hash)")).dropFirst())
+                let diffRaw = try await Process.output(
+                    GitDiff(directory: directoryURL, noRenames: false, commitsRange: mergeCommit.parentHashes[0] + ".." + mergeCommit.hash)
+                )
+                filesChanged = try Diff(raw: diffRaw).fileDiffs.map { .init(isExpanded: true, model: $0) }
+            } catch {
+                self.error = error
             }
         }
         .errorAlert($error)

@@ -51,7 +51,7 @@ struct StashChangedContentView: View {
                         Spacer()
                         Text("No Selection")
                             .foregroundStyle(.secondary)
-                            .padding()
+                            .padding(.vertical, 250)
                     }
                     Spacer(minLength: 0)
                 }

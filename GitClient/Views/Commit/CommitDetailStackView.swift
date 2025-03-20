@@ -38,5 +38,8 @@ struct CommitDetailStackView: View {
                 }
                 .navigationBarBackButtonHidden()
         }
+        .task {
+            print("Commit detail:", commit.hash, commit.branches.joined())
+        }
     }
 }

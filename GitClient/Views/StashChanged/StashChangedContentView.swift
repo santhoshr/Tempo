@@ -11,7 +11,7 @@ struct StashChangedContentView: View {
     var folder: Folder
     @Binding var showingStashChanged: Bool
     var stashList: [Stash]?
-    @State var selectionStashID: Int?
+    @State private var selectionStashID: Int?
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var error: Error?
     var onTapDropButton: ((Stash) -> Void)?

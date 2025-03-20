@@ -9,7 +9,7 @@ import Foundation
 import CryptoKit
 
 struct Commit: Hashable, Identifiable {
-    var id: String { hash }
+    var id: String { hash + branches.joined() + tags.joined() }
     var hash: String
     var abbreviatedParentHashes: [String]
     var author: String

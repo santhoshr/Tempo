@@ -336,6 +336,7 @@ struct FolderView: View {
             Task {
                 do {
                     try await Process.output(GitPush(directory: folder.url))
+                    await updateModels()
                 } catch {
                     self.error = error
                 }

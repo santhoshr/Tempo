@@ -79,6 +79,7 @@ struct ContentView: View {
                     selectionLog: $selectionLog,
                     isRefresh: $folderIsRefresh
                 )
+                .id(folder)
             } else {
                 Text("No Folder Selection")
                     .foregroundColor(.secondary)
@@ -100,6 +101,7 @@ struct ContentView: View {
                 )
             case .committed(let commit):
                 CommitDetailStackView(commit: commit, folder: selectionFolder!)
+                    .id(selectionLog)
             case nil:
                 Text("No Selection")
                     .foregroundColor(.secondary)

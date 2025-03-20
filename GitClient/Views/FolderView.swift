@@ -30,11 +30,9 @@ struct FolderView: View {
                     await logStore.logViewTask(log)
                 }
         }
-        .onChange(of: folder, initial: true, {
-            Task {
-                await refreshModels()
-            }
-        })
+        .task {
+            await refreshModels()
+        }
         .onChange(of: selectionLogID, {
             selectionLog = logStore.logs.first { $0.id == selectionLogID }
         })

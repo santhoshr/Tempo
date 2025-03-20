@@ -114,35 +114,33 @@ struct CommitDetailView: View {
             .background(Color(NSColor.textBackgroundColor))
             .textSelection(.enabled)
         }
-        .onChange(of: commitHash, initial: true, {
-            Task {
-                commit = nil
-                mergedIn = nil
+        .task {
+            commit = nil
+            mergedIn = nil
 
-                do {
-                    commit = try await Process.output(GitShow(directory: folder.url, object: commitHash))
-                    let mergeCommit = try await Process.output(GitLog(
+            do {
+                commit = try await Process.output(GitShow(directory: folder.url, object: commitHash))
+                let mergeCommit = try await Process.output(GitLog(
+                    directory: folder.url,
+                    merges: true,
+                    ancestryPath: true,
+                    reverse: true,
+                    revisionRange: "\(commitHash)..HEAD"
+                )).first
+                if let mergeCommit {
+                    let mergedInCommits = try await Process.output(GitLog(
                         directory: folder.url,
-                        merges: true,
-                        ancestryPath: true,
-                        reverse: true,
-                        revisionRange: "\(commitHash)..HEAD"
-                    )).first
-                    if let mergeCommit {
-                        let mergedInCommits = try await Process.output(GitLog(
-                            directory: folder.url,
-                            revisionRange: "\(mergeCommit.abbreviatedParentHashes[0])..\(mergeCommit.hash)"
-                        ))
-                        let contains = mergedInCommits.contains { $0.hash == commitHash }
-                        if contains  {
-                            mergedIn = mergeCommit
-                        }
+                        revisionRange: "\(mergeCommit.abbreviatedParentHashes[0])..\(mergeCommit.hash)"
+                    ))
+                    let contains = mergedInCommits.contains { $0.hash == commitHash }
+                    if contains  {
+                        mergedIn = mergeCommit
                     }
-                } catch {
-                    self.error = error
                 }
+            } catch {
+                self.error = error
             }
-        })
+        }
         .onChange(of: commit, { _, newValue in
             if let newValue {
                 fileDiffs = newValue.diff.fileDiffs.map { .init(isExpanded: true, model: $0) }

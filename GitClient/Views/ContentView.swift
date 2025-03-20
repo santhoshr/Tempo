@@ -79,6 +79,7 @@ struct ContentView: View {
                     selectionLog: $selectionLog,
                     isRefresh: $folderIsRefresh
                 )
+                .id(folder)
             } else {
                 Text("No Folder Selection")
                     .foregroundColor(.secondary)

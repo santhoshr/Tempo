@@ -13,7 +13,7 @@ enum Log: Identifiable, Hashable {
         case .notCommitted:
             return "notCommitted"
         case .committed(let c):
-            return c.hash
+            return c.id
         }
     }
 

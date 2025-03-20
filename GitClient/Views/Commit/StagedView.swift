@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct StagedView: View {
-    var fileDiffs: [FileDiff]
+    @Binding var fileDiffs: [ExpandableModel<FileDiff>]
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
     @State private var isExpanded = true
 
     var body: some View {
-        LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
+        VStack(alignment: .leading) {
             Section (isExpanded: $isExpanded) {
                 if fileDiffs.isEmpty {
                     LazyVStack(alignment: .center) {
@@ -25,32 +25,19 @@ struct StagedView: View {
                             .padding(.trailing)
                     }
                 }
-                ForEach(fileDiffs) { fileDiff in
-                    LazyVStack(spacing: 0) {
-                        StageFileDiffHeaderView(fileDiff: fileDiff, onSelectFileDiff: onSelectFileDiff)
-                            .padding()
-
-                        ForEach(fileDiff.chunks) { chunk in
-                            HStack {
-                                ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
-                                Spacer()
-                                Button {
-                                    onSelectChunk?(fileDiff, chunk)
-                                } label: {
-                                    Image(systemName: "minus.circle")
-                                }
-                                .buttonStyle(.accessoryBar)
-                                .help("Unstage this hunk")
-                                .padding()
-                            }
-                            .padding(.horizontal)
-                        }
-                        .padding(.bottom)
-                    }
-                }
-                .font(Font.system(.body, design: .monospaced))
+                StagedFileDiffView(
+                    expandableFileDiffs: $fileDiffs,
+                    selectButtonImageSystemName: "minus.circle",
+                    selectButtonHelp: "Unstage this hunk",
+                    onSelectFileDiff: onSelectFileDiff,
+                    onSelectChunk: onSelectChunk
+                )
             } header: {
-                SectionHeader(title: "Staged", isExpanded: $isExpanded)
+                SectionHeader(
+                    title: "Staged",
+                    isExpanded: $isExpanded) { isExpandedAll in
+                        fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
+                    }
             }
         }
     }

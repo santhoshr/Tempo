@@ -10,7 +10,7 @@ import SwiftUI
 struct StashChangedView: View {
     var folder: Folder
     @Binding var showingStashChanged: Bool
-    @State var stashList: [Stash]?
+    @State private var stashList: [Stash]?
     @State private var error: Error?
 
     var body: some View {

@@ -11,7 +11,8 @@ struct StashChangedContentView: View {
     var folder: Folder
     @Binding var showingStashChanged: Bool
     var stashList: [Stash]?
-    @State var selectionStashID: Int?
+    @State private var selectionStashID: Int?
+    @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var error: Error?
     var onTapDropButton: ((Stash) -> Void)?
 
@@ -42,16 +43,18 @@ struct StashChangedContentView: View {
                 }
             }
         } detail: {
-            VStack(spacing: 0) {
-                if let selectionStashID {
-                    StashChangedDetailView(index: selectionStashID, folder: folder)
-                } else {
-                    Spacer()
-                    Text("No Selection")
-                        .foregroundStyle(.secondary)
-                        .padding()
+            ScrollView {
+                VStack(spacing: 0) {
+                    if selectionStashID != nil {
+                        StashChangedDetailContentView(fileDiffs: $fileDiffs)
+                    } else {
+                        Spacer()
+                        Text("No Selection")
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical, 250)
+                    }
+                    Spacer(minLength: 0)
                 }
-                Spacer(minLength: 0)
             }
             .safeAreaInset(edge: .bottom, content: {
                 VStack (spacing: 0) {
@@ -79,8 +82,26 @@ struct StashChangedContentView: View {
                 }
             })
         }
+        .onChange(of: selectionStashID, {
+            Task {
+                await updateDiff()
+            }
+        })
         .frame(minWidth: 800, minHeight: 700)
         .errorAlert($error)
+    }
+
+    private func updateDiff() async {
+        do {
+            if let index = selectionStashID {
+                let diff = try await Process.output(GitStashShowDiff(directory: folder.url, index: index))
+                fileDiffs = try Diff(raw: diff).fileDiffs.map { ExpandableModel(isExpanded: true, model: $0) }
+            } else {
+                fileDiffs = []
+            }
+        } catch {
+            self.error = error
+        }
     }
 }
 

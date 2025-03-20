@@ -11,14 +11,14 @@ struct MergeCommitContentView: View {
     var mergeCommit: CommitDetail
     var directoryURL: URL
     @State private var commits: [Commit] = []
-    @State private var filesChanged: Diff?
+    @State private var filesChanged: [ExpandableModel<FileDiff>] = []
     @State private var error: Error?
     @State private var tab = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             CommitTabView(tab: $tab)
-                .padding(.bottom)
+                .padding(.vertical)
             if tab == 0 {
                 HStack(alignment: .top, spacing: 16) {
                     CommitsView(commits: commits)
@@ -37,9 +37,10 @@ struct MergeCommitContentView: View {
                     }
                     .buttonStyle(.link)
                 }
+                .padding(.top)
             }
-            if tab == 1, let fileDiffs = filesChanged?.fileDiffs {
-                FileDiffsView(fileDiffs: fileDiffs)
+            if tab == 1 {
+                FileDiffsView(expandableFileDiffs: $filesChanged)
             }
         }
         .padding(.bottom)
@@ -50,7 +51,7 @@ struct MergeCommitContentView: View {
                     let diffRaw = try await Process.output(
                         GitDiff(directory: directoryURL, noRenames: false, commitsRange: mergeCommit.parentHashes[0] + ".." + mergeCommit.hash)
                     )
-                    filesChanged = try Diff(raw: diffRaw)
+                    filesChanged = try Diff(raw: diffRaw).fileDiffs.map { .init(isExpanded: true, model: $0) }
                 } catch {
                     self.error = error
                 }

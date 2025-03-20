@@ -10,6 +10,7 @@ import SwiftUI
 struct SectionHeader: View {
     var title: String
     @Binding var isExpanded: Bool
+    var onSelectExpandedAll: (Bool) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -18,20 +19,10 @@ struct SectionHeader: View {
                     .font(.title)
                     .fontWeight(.bold)
                 Spacer()
-                Button {
-                    withAnimation {
-                        isExpanded.toggle()
-                    }
-                } label: {
-                    if isExpanded {
-                        Image(systemName: "chevron.down")
-                            .frame(width: 20, height: 20)
-                    } else {
-                        Image(systemName: "chevron.right")
-                            .frame(width: 20, height: 20)
-                    }
-                }
-                .buttonStyle(.accessoryBar)
+                ExpandingButton(
+                    isExpanded: $isExpanded,
+                    onSelectExpandedAll: onSelectExpandedAll
+                )
             }
             .padding(.vertical)
             .padding(.horizontal)
@@ -47,5 +38,9 @@ struct SectionHeader: View {
 
 #Preview {
     @Previewable @State var value: Bool = true
-    return SectionHeader(title: "Staged", isExpanded: $value)
+    return SectionHeader(
+        title: "Staged",
+        isExpanded: $value,
+        onSelectExpandedAll: { _ in }
+    )
 }

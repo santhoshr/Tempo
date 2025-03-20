@@ -75,7 +75,7 @@ public struct FileDiffTheme: SourceCodeTheme {
         case .removed:
             return NSColor.red.withAlphaComponent(0.1)
         case .added:
-            return NSColor.green.withAlphaComponent(0.1)
+            return NSColor.green.withAlphaComponent(0.2)
         }
     }
 }

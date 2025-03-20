@@ -28,12 +28,13 @@ struct StageFileDiffView: View {
                         onSelectChunk?(fileDiff, chunk)
                     } label: {
                         Image(systemName: selectButtonImageSystemName)
+                            .frame(width: 20, height: 20)
                     }
                     .buttonStyle(.accessoryBar)
                     .help(selectButtonHelp)
                     .padding()
                 }
-                .padding(.horizontal)
+                .padding(.leading)
             }
             .padding(.bottom)
             if fileDiff.chunks.isEmpty {
@@ -48,6 +49,7 @@ struct StageFileDiffView: View {
                         onSelectFileDiff?(fileDiff)
                     } label: {
                         Image(systemName: selectButtonImageSystemName)
+                            .frame(width: 20, height: 20)
                     }
                     .buttonStyle(.accessoryBar)
                     .help(selectButtonHelp)

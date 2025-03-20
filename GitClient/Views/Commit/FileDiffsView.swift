@@ -19,7 +19,6 @@ struct FileDiffsView: View {
                         expandableFileDiffs = expandableFileDiffs.map { .init(isExpanded: isExpanded, model: $0.model) }
                     }
                 )
-                .padding(.bottom)
             }
         }
         .font(Font.system(.body, design: .monospaced))

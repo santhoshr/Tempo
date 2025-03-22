@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 struct AIService {
     private struct Schema<T: Codable>: Codable {
@@ -43,14 +44,20 @@ struct AIService {
             case responseFormat = "response_format"
         }
     }
-    private struct Choice: Codable {
+    private struct Choice: Codable, CustomStringConvertible {
+        var description: String { "Choice(message: \(message)"}
+
         struct Message: Codable {
             var content: String
             var refusal: String?
         }
         var message: Message
     }
-    private struct Response: Codable {
+    private struct Response: Codable, CustomStringConvertible {
+        var description: String {
+            "Response(choices: \(choices)"
+        }
+
         var choices: [Choice]
     }
 
@@ -63,6 +70,7 @@ struct AIService {
     }
 
     private func callEndpint<SchemaProperties: Codable, DecodeType: Codable>(requestBody: RequestBody<SchemaProperties>) async throws -> DecodeType {
+        let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "AIService")
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -70,11 +78,11 @@ struct AIService {
         let bodyData = try jsonEncoder.encode(requestBody)
         request.httpBody = bodyData
         if let jsonString = String(data: bodyData, encoding: .utf8) {
-            print(jsonString)
+            logger.debug("Body data: \(jsonString, privacy: .public)")
         }
         let data = try await URLSession.shared.data(for: request)
-        print(try JSONSerialization.jsonObject(with: data.0))
         let response = try JSONDecoder().decode(Response.self, from: data.0)
+        logger.debug("Response: \(response, privacy: .public)")
         guard response.choices.count > 0 else {
             throw GenericError(errorDescription: "OpenAI API response error")
         }

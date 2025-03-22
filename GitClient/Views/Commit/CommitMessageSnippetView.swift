@@ -17,6 +17,7 @@ struct CommitMessageSnippetView: View {
         }
     }
     @State private var editCommitMessageSnippet: String = ""
+    @State private var error: Error?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -38,7 +39,7 @@ struct CommitMessageSnippetView: View {
                             do {
                                 commitMessageSnippet = try JSONEncoder().encode(snippets)
                             } catch {
-                                print(error)
+                                self.error = error
                             }
                         }
                     }
@@ -49,7 +50,7 @@ struct CommitMessageSnippetView: View {
                     do {
                         commitMessageSnippet = try JSONEncoder().encode(t)
                     } catch {
-                        print(error)
+                        self.error = error
                     }
                 })
             }
@@ -72,7 +73,7 @@ struct CommitMessageSnippetView: View {
                         commitMessageSnippet = try JSONEncoder().encode(newCommitMessageSnippets)
                         editCommitMessageSnippet = ""
                     } catch {
-                        print(error)
+                        self.error = error
                     }
                 }
                 .keyboardShortcut(.init(.return))
@@ -82,6 +83,7 @@ struct CommitMessageSnippetView: View {
             .frame(height: 80)
             .background(Color(NSColor.textBackgroundColor))
         }
+        .errorAlert($error)
     }
 }
 

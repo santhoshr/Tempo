@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 struct ProcessError: Error, LocalizedError {
     private var description: String
@@ -24,13 +25,20 @@ struct ProcessError: Error, LocalizedError {
 
 
 extension Process {
-    struct Output {
+    struct Output: CustomStringConvertible {
         var standardOutput: String
         var standartError: String
+        var description: String {
+            "Output(standardOutput: \(standardOutput), standardError: \(standartError))"
+        }
     }
 
-    static func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
-        try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
+    static private func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
+        let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "process")
+        logger.debug("Process run: arguments: \(arguments), currentDirectoryURL: \(currentDirectoryURL?.description ?? ""), inputs: \(inputs, privacy: .public)")
+        let output = try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
+        logger.debug("Process output: \(output.standardOutput + output.standartError, privacy: .public)")
+        return output
     }
 
     private static func run(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) throws -> Output {
@@ -66,25 +74,13 @@ extension Process {
         return .init(standardOutput: stdOut ?? "", standartError: errOut ?? "")
     }
 
-    static func output<G: Git>(_ git: G, verbose: Bool=false) async throws -> G.OutputModel {
-        if verbose {
-            print(git)
-        }
+    static func output<G: Git>(_ git: G) async throws -> G.OutputModel {
         let output = try await Self.output(arguments: git.arguments, currentDirectoryURL: git.directory)
-        if verbose {
-            print(output)
-        }
         return try git.parse(for: output.standardOutput)
     }
 
-    static func output<G: InteractiveGit>(_ git: G, verbose: Bool=false) async throws -> G.OutputModel {
-        if verbose {
-            print(git)
-        }
+    static func output<G: InteractiveGit>(_ git: G) async throws -> G.OutputModel {
         let output = try await Self.output(arguments: git.arguments, currentDirectoryURL: git.directory, inputs: git.inputs)
-        if verbose {
-            print(output)
-        }
         return try git.parse(for: output.standardOutput)
     }
 

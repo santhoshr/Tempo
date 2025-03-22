@@ -35,15 +35,10 @@ extension Process {
 
     static private func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
         let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "process")
-        logger.debug("Process run: arguments: \(arguments), currentDirectoryURL: \(currentDirectoryURL?.description ?? ""), inputs: \(inputs)")
-        do {
-            let output = try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
-            logger.debug("Process output: \(output.standardOutput + output.standartError)")
-            return output
-        } catch {
-            logger.error("Process error: \(error)")
-            throw error
-        }
+        logger.debug("Process run: arguments: \(arguments), currentDirectoryURL: \(currentDirectoryURL?.description ?? ""), inputs: \(inputs, privacy: .public)")
+        let output = try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
+        logger.debug("Process output: \(output.standardOutput + output.standartError, privacy: .public)")
+        return output
     }
 
     private static func run(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) throws -> Output {

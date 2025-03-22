@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import os
 
 struct CommitMessageSnippetView: View {
     @AppStorage(AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippets
@@ -17,6 +18,7 @@ struct CommitMessageSnippetView: View {
         }
     }
     @State private var editCommitMessageSnippet: String = ""
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "CommitMessageSnippetView")
 
     var body: some View {
         VStack(spacing: 0) {
@@ -38,7 +40,7 @@ struct CommitMessageSnippetView: View {
                             do {
                                 commitMessageSnippet = try JSONEncoder().encode(snippets)
                             } catch {
-                                print(error)
+                                logger.error("\(error)")
                             }
                         }
                     }
@@ -49,7 +51,7 @@ struct CommitMessageSnippetView: View {
                     do {
                         commitMessageSnippet = try JSONEncoder().encode(t)
                     } catch {
-                        print(error)
+                        logger.error("\(error)")
                     }
                 })
             }
@@ -72,7 +74,7 @@ struct CommitMessageSnippetView: View {
                         commitMessageSnippet = try JSONEncoder().encode(newCommitMessageSnippets)
                         editCommitMessageSnippet = ""
                     } catch {
-                        print(error)
+                        logger.error("\(error)")
                     }
                 }
                 .keyboardShortcut(.init(.return))

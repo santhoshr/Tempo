@@ -79,25 +79,13 @@ extension Process {
         return .init(standardOutput: stdOut ?? "", standartError: errOut ?? "")
     }
 
-    static func output<G: Git>(_ git: G, verbose: Bool=false) async throws -> G.OutputModel {
-        if verbose {
-            print(git)
-        }
+    static func output<G: Git>(_ git: G) async throws -> G.OutputModel {
         let output = try await Self.output(arguments: git.arguments, currentDirectoryURL: git.directory)
-        if verbose {
-            print(output)
-        }
         return try git.parse(for: output.standardOutput)
     }
 
-    static func output<G: InteractiveGit>(_ git: G, verbose: Bool=false) async throws -> G.OutputModel {
-        if verbose {
-            print(git)
-        }
+    static func output<G: InteractiveGit>(_ git: G) async throws -> G.OutputModel {
         let output = try await Self.output(arguments: git.arguments, currentDirectoryURL: git.directory, inputs: git.inputs)
-        if verbose {
-            print(output)
-        }
         return try git.parse(for: output.standardOutput)
     }
 

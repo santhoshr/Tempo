@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 struct AIService {
     private struct Schema<T: Codable>: Codable {
@@ -43,14 +44,20 @@ struct AIService {
             case responseFormat = "response_format"
         }
     }
-    private struct Choice: Codable {
+    private struct Choice: Codable, CustomStringConvertible {
+        var description: String { "Choice(message: \(message)"}
+
         struct Message: Codable {
             var content: String
             var refusal: String?
         }
         var message: Message
     }
-    private struct Response: Codable {
+    private struct Response: Codable, CustomStringConvertible {
+        var description: String {
+            "Response(choices: \(choices)"
+        }
+
         var choices: [Choice]
     }
 
@@ -63,28 +70,34 @@ struct AIService {
     }
 
     private func callEndpint<SchemaProperties: Codable, DecodeType: Codable>(requestBody: RequestBody<SchemaProperties>) async throws -> DecodeType {
-        var request = URLRequest(url: endpoint)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization")
-        let bodyData = try jsonEncoder.encode(requestBody)
-        request.httpBody = bodyData
-        if let jsonString = String(data: bodyData, encoding: .utf8) {
-            print(jsonString)
+        let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "AIService")
+        do {
+            var request = URLRequest(url: endpoint)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization")
+            let bodyData = try jsonEncoder.encode(requestBody)
+            request.httpBody = bodyData
+            if let jsonString = String(data: bodyData, encoding: .utf8) {
+                logger.debug("Body data: \(jsonString)")
+            }
+            let data = try await URLSession.shared.data(for: request)
+            let response = try JSONDecoder().decode(Response.self, from: data.0)
+            logger.debug("Response: \(response)")
+            guard response.choices.count > 0 else {
+                throw GenericError(errorDescription: "OpenAI API response error")
+            }
+            if let refusal = response.choices[0].message.refusal, !refusal.isEmpty {
+                throw GenericError(errorDescription: "OpenAI API refusal error: " + refusal)
+            }
+            guard let contentData = response.choices[0].message.content.data(using: .utf8) else {
+                throw GenericError(errorDescription: "API Response handling error")
+            }
+            return try JSONDecoder().decode(DecodeType.self, from: contentData)
+        } catch {
+            logger.error("Error: \(error)")
+            throw error
         }
-        let data = try await URLSession.shared.data(for: request)
-        print(try JSONSerialization.jsonObject(with: data.0))
-        let response = try JSONDecoder().decode(Response.self, from: data.0)
-        guard response.choices.count > 0 else {
-            throw GenericError(errorDescription: "OpenAI API response error")
-        }
-        if let refusal = response.choices[0].message.refusal, !refusal.isEmpty {
-            throw GenericError(errorDescription: "OpenAI API refusal error: " + refusal)
-        }
-        guard let contentData = response.choices[0].message.content.data(using: .utf8) else {
-            throw GenericError(errorDescription: "API Response handling error")
-        }
-        return try JSONDecoder().decode(DecodeType.self, from: contentData)
     }
 
     func commitMessage(stagedDiff: String) async throws -> String {

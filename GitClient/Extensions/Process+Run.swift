@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 struct ProcessError: Error, LocalizedError {
     private var description: String
@@ -24,13 +25,25 @@ struct ProcessError: Error, LocalizedError {
 
 
 extension Process {
-    struct Output {
+    struct Output: CustomStringConvertible {
         var standardOutput: String
         var standartError: String
+        var description: String {
+            "Output(standardOutput: \(standardOutput), standardError: \(standartError))"
+        }
     }
 
-    static func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
-        try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
+    static private func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
+        let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "process")
+        logger.debug("Process run: arguments: \(arguments), currentDirectoryURL: \(currentDirectoryURL?.description ?? ""), inputs: \(inputs)")
+        do {
+            let output = try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
+            logger.debug("Process output: \(output.standardOutput + output.standartError)")
+            return output
+        } catch {
+            logger.error("Process error: \(error)")
+            throw error
+        }
     }
 
     private static func run(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) throws -> Output {

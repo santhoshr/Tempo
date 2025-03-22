@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import os
 
 struct CommitMessageSnippetView: View {
     @AppStorage(AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippets

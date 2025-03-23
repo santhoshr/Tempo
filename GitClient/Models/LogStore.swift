@@ -13,18 +13,19 @@ final class LogStore: ObservableObject {
     var directory: URL
     @Published var commits: [Commit]
     @Published var notCommitted: NotCommitted?
-    var logs: [Log] {
-        var logs = commits.map { Log.committed($0) }
-        if let notCommitted, !notCommitted.isEmpty {
-            logs.insert(.notCommitted, at: 0)
-        }
-        return logs
-    }
     @Published var error: Error?
 
     init(directory: URL) {
         self.directory = directory
         self.commits = []
+    }
+
+    func logs() -> [Log] {
+        var logs = commits.map { Log.committed($0) }
+        if let notCommitted, !notCommitted.isEmpty {
+            logs.insert(.notCommitted, at: 0)
+        }
+        return logs
     }
 
     /// 最新500件取得しlogsを差し替え

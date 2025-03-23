@@ -24,7 +24,6 @@ struct ContentView: View {
     }
     @State private var selectionLog: Log?
     @State private var folderIsRefresh = false
-    @State private var lastSyncDate: Date?
     @State private var error: Error?
 
     var body: some View {
@@ -78,8 +77,7 @@ struct ContentView: View {
                     folder: folder,
                     logStore: LogStore(directory: folder.url),
                     selectionLog: $selectionLog,
-                    isRefresh: $folderIsRefresh,
-                    lastSyncDate: $lastSyncDate
+                    isRefresh: $folderIsRefresh
                 )
                 .id(folder)
             } else {
@@ -93,17 +91,16 @@ struct ContentView: View {
                     folder: selectionFolder!,
                     isRefresh: $folderIsRefresh,
                     onCommit: {
-                        selectionLog = nil
+                        self.selectionLog = nil
                         folderIsRefresh = true
                     },
                     onStash: {
-                        selectionLog = nil
+                        self.selectionLog = nil
                         folderIsRefresh = true
                     }
                 )
             case .committed(let commit):
                 CommitDetailStackView(commit: commit, folder: selectionFolder!)
-                    .id(commit.hash + (lastSyncDate?.ISO8601Format() ?? ""))
             case nil:
                 Text("No Selection")
                     .foregroundColor(.secondary)
@@ -114,6 +111,7 @@ struct ContentView: View {
             selectionLog = nil
         })
         .errorAlert($error)
+
     }
 }
 

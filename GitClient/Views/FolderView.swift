@@ -13,7 +13,6 @@ struct FolderView: View {
     @StateObject var logStore: LogStore
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
-    @Binding var lastSyncDate: Date?
     @State private var isLoading = false
     @State private var error: Error?
     @State private var showingBranches = false
@@ -25,7 +24,7 @@ struct FolderView: View {
     @State private var selectionLogID: String?
 
     var body: some View {
-        List(logStore.logs, selection: $selectionLogID) { log in
+        List(logStore.logs(), selection: $selectionLogID) { log in
             logsRow(log)
                 .task {
                     await logStore.logViewTask(log)
@@ -35,7 +34,7 @@ struct FolderView: View {
             await refreshModels()
         }
         .onChange(of: selectionLogID, {
-            selectionLog = logStore.logs.first { $0.id == selectionLogID }
+            selectionLog = logStore.logs().first { $0.id == selectionLogID }
         })
         .onChange(of: selectionLog, {
             if selectionLog == nil {
@@ -107,10 +106,9 @@ struct FolderView: View {
             logStore.directory = folder.url
             await logStore.refresh()
             if let selectionLog {
-                let newSelection = logStore.logs.first { $0.id == selectionLog.id }
+                let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
-            lastSyncDate = Date()
         } catch {
             self.error = error
             branch = nil
@@ -123,11 +121,13 @@ struct FolderView: View {
             let currentBranch = try await Process.output(GitBranch(directory: folder.url)).current
             guard currentBranch == branch else {
                 await refreshModels()
-                lastSyncDate = Date()
                 return
             }
             await logStore.update()
-            lastSyncDate = Date()
+            if let selectionLog {
+                let newSelection = logStore.logs().first { $0.id == selectionLog.id }
+                self.selectionLog = newSelection
+            }
         } catch {
             self.error = error
         }
@@ -356,15 +356,13 @@ struct FolderView: View {
 struct CommitsView_Previews: PreviewProvider {
     @State static var selection: Log?
     @State static var refresh = false
-    @State static var lastSyncDate: Date?
 
     static var previews: some View {
         FolderView(
             folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
             logStore: .init(directory: URL(string: "file:///maoyama/Projects/")!),
             selectionLog: $selection,
-            isRefresh: $refresh,
-            lastSyncDate: $lastSyncDate
+            isRefresh: $refresh
         )
     }
 }

@@ -23,6 +23,7 @@ struct ContentView: View {
         return decodedFolders.first(where: { $0.url == selectionFolderURL })
     }
     @State private var selectionLog: Log?
+    @State private var selectionCommit: Commit?
     @State private var folderIsRefresh = false
     @State private var lastSyncDate: Date?
     @State private var error: Error?
@@ -78,6 +79,7 @@ struct ContentView: View {
                     folder: folder,
                     logStore: LogStore(directory: folder.url),
                     selectionLog: $selectionLog,
+                    selectionCommit: $selectionCommit,
                     isRefresh: $folderIsRefresh,
                     lastSyncDate: $lastSyncDate
                 )
@@ -103,7 +105,7 @@ struct ContentView: View {
                 )
             case .committed(let commit):
                 CommitDetailStackView(commit: commit, folder: selectionFolder!)
-                    .id(commit.hash + (lastSyncDate?.ISO8601Format() ?? ""))
+                    .id(commit.hash + (selectionCommit?.branches.joined() ?? ""))
             case nil:
                 Text("No Selection")
                     .foregroundColor(.secondary)

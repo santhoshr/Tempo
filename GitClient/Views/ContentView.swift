@@ -24,6 +24,7 @@ struct ContentView: View {
     }
     @State private var selectionLog: Log?
     @State private var folderIsRefresh = false
+    @State private var lastSyncDate: Date?
     @State private var error: Error?
 
     var body: some View {
@@ -77,7 +78,8 @@ struct ContentView: View {
                     folder: folder,
                     logStore: LogStore(directory: folder.url),
                     selectionLog: $selectionLog,
-                    isRefresh: $folderIsRefresh
+                    isRefresh: $folderIsRefresh,
+                    lastSyncDate: $lastSyncDate
                 )
                 .id(folder)
             } else {

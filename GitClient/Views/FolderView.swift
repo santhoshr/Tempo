@@ -13,6 +13,7 @@ struct FolderView: View {
     @StateObject var logStore: LogStore
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
+    @Binding var lastSyncDate: Date?
     @State private var isLoading = false
     @State private var error: Error?
     @State private var showingBranches = false
@@ -109,6 +110,7 @@ struct FolderView: View {
                 let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
+            lastSyncDate = Date()
         } catch {
             self.error = error
             branch = nil
@@ -121,6 +123,7 @@ struct FolderView: View {
             let currentBranch = try await Process.output(GitBranch(directory: folder.url)).current
             guard currentBranch == branch else {
                 await refreshModels()
+                lastSyncDate = Date()
                 return
             }
             await logStore.update()
@@ -128,6 +131,7 @@ struct FolderView: View {
                 let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
+            lastSyncDate = Date()
         } catch {
             self.error = error
         }
@@ -364,7 +368,8 @@ struct CommitsView_Previews: PreviewProvider {
             folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
             logStore: .init(directory: URL(string: "file:///maoyama/Projects/")!),
             selectionLog: $selection,
-            isRefresh: $refresh
+            isRefresh: $refresh,
+            lastSyncDate: $lastSyncDate
         )
     }
 }

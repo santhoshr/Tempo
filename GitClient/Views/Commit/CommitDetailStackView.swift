@@ -37,6 +37,8 @@ struct CommitDetailStackView: View {
                         })
                 }
                 .navigationBarBackButtonHidden()
+                .id(commit)
         }
+
     }
 }

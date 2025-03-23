@@ -91,7 +91,6 @@ struct ContentView: View {
         } detail: {
             if let selectionCommit {
                 CommitDetailStackView(commit: selectionCommit, folder: selectionFolder!)
-                    .id(selectionCommit.hash + (selectionCommit.branches.joined()))
             } else if let selectionLog {
                 CommitCreateView(
                     folder: selectionFolder!,

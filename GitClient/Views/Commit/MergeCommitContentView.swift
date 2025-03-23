@@ -83,7 +83,7 @@ struct CommitsView: View {
 
     var body: some View {
         LazyVStack(spacing: 4) {
-            ForEach(commits) { commit in
+            ForEach(commits, id:\.self) { commit in
                 NavigationLink(value: commit.hash) {
                     VStack (alignment: .leading, spacing: 6) {
                         HStack(alignment: .firstTextBaseline) {

@@ -134,6 +134,10 @@ struct FolderView: View {
                 return
             }
             await logStore.update()
+            if let selectionLog {
+                let newSelection = logStore.logs.first { $0.id == selectionLog.id }
+                self.selectionLog = newSelection
+            }
             lastSyncDate = Date()
         } catch {
             self.error = error

@@ -89,24 +89,23 @@ struct ContentView: View {
                     .foregroundColor(.secondary)
             }
         } detail: {
-            switch selectionLog {
-            case .notCommitted:
+            if let selectionCommit {
+                CommitDetailStackView(commit: selectionCommit, folder: selectionFolder!)
+                    .id(selectionCommit.hash + (selectionCommit.branches.joined()))
+            } else if let selectionLog {
                 CommitCreateView(
                     folder: selectionFolder!,
                     isRefresh: $folderIsRefresh,
                     onCommit: {
-                        selectionLog = nil
+                        self.selectionLog = nil
                         folderIsRefresh = true
                     },
                     onStash: {
-                        selectionLog = nil
+                        self.selectionLog = nil
                         folderIsRefresh = true
                     }
                 )
-            case .committed(let commit):
-                CommitDetailStackView(commit: commit, folder: selectionFolder!)
-                    .id(commit.hash + (selectionCommit?.branches.joined() ?? ""))
-            case nil:
+            } else {
                 Text("No Selection")
                     .foregroundColor(.secondary)
             }
@@ -116,7 +115,7 @@ struct ContentView: View {
             selectionLog = nil
         })
         .onChange(of: selectionCommit, {
-            print("selectionCommit:",selectionCommit)
+            print("selectionCommit",selectionCommit)
         })
         .errorAlert($error)
 

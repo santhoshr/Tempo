@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CommitDetailStackView: View {
     @State private var path: [String] = []
-    var commitHash: String
+    var commit: Commit
     var folder: Folder
 
     fileprivate func backButtonBar() -> some View {
@@ -29,7 +29,7 @@ struct CommitDetailStackView: View {
     
     var body: some View {
         NavigationStack(path: $path) {
-            CommitDetailView(commitHash: commitHash, folder: folder)
+            CommitDetailView(commitHash: commit.hash, folder: folder)
                 .navigationDestination(for: String.self) { commitHash in
                     CommitDetailView(commitHash: commitHash, folder: folder)
                         .safeAreaInset(edge: .top, spacing: 0, content: {
@@ -37,6 +37,7 @@ struct CommitDetailStackView: View {
                         })
                 }
                 .navigationBarBackButtonHidden()
+                .id(commit)
         }
 
     }

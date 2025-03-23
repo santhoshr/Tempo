@@ -112,9 +112,6 @@ struct ContentView: View {
         .onChange(of: selectionFolder, {
             selectionLog = nil
         })
-        .onChange(of: selectionLog, {
-            print("selectionLog",selectionLog)
-        })
         .errorAlert($error)
 
     }

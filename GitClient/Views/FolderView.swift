@@ -12,7 +12,6 @@ struct FolderView: View {
     var folder: Folder
     @StateObject var logStore: LogStore
     @Binding var selectionLog: Log?
-    @Binding var selectionCommit: Commit?
     @Binding var isRefresh: Bool
     @Binding var lastSyncDate: Date?
     @State private var isLoading = false
@@ -39,12 +38,6 @@ struct FolderView: View {
             selectionLog = logStore.logs().first { $0.id == selectionLogID }
         })
         .onChange(of: selectionLog, {
-            switch selectionLog {
-            case .notCommitted, nil:
-                selectionCommit = nil
-            case .committed(let commit):
-                selectionCommit = commit
-            }
             if selectionLog == nil {
                 selectionLogID = nil
             }
@@ -375,7 +368,6 @@ struct CommitsView_Previews: PreviewProvider {
             folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
             logStore: .init(directory: URL(string: "file:///maoyama/Projects/")!),
             selectionLog: $selection,
-            selectionCommit: $selectionCommit,
             isRefresh: $refresh,
             lastSyncDate: $lastSyncDate
         )

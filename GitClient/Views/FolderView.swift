@@ -355,9 +355,7 @@ struct FolderView: View {
 
 struct CommitsView_Previews: PreviewProvider {
     @State static var selection: Log?
-    @State static var selectionCommit: Commit?
     @State static var refresh = false
-    @State static var lastSyncDate: Date?
 
     static var previews: some View {
         FolderView(

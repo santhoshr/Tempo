@@ -16,6 +16,14 @@ enum Log: Identifiable, Hashable {
             return c.hash
         }
     }
+    var commit: Commit? {
+        switch self {
+        case .notCommitted:
+            return nil
+        case .committed(let c):
+            return c
+        }
+    }
 
     case notCommitted, committed(Commit)
 }

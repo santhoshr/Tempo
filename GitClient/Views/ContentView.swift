@@ -117,6 +117,9 @@ struct ContentView: View {
         .onChange(of: selectionCommit, {
             print("selectionCommit",selectionCommit)
         })
+        .onChange(of: selectionLog, {
+            print("selectionLog",selectionLog)
+        })
         .errorAlert($error)
 
     }

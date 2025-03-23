@@ -26,7 +26,7 @@ struct FolderView: View {
     @State private var selectionLogID: String?
 
     var body: some View {
-        List(logStore.logs, selection: $selectionLogID) { log in
+        List(logStore.logs(), selection: $selectionLogID) { log in
             logsRow(log)
                 .task {
                     await logStore.logViewTask(log)
@@ -36,7 +36,7 @@ struct FolderView: View {
             await refreshModels()
         }
         .onChange(of: selectionLogID, {
-            selectionLog = logStore.logs.first { $0.id == selectionLogID }
+            selectionLog = logStore.logs().first { $0.id == selectionLogID }
         })
         .onChange(of: selectionLog, {
             switch selectionLog {
@@ -114,7 +114,7 @@ struct FolderView: View {
             logStore.directory = folder.url
             await logStore.refresh()
             if let selectionLog {
-                let newSelection = logStore.logs.first { $0.id == selectionLog.id }
+                let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
             lastSyncDate = Date()
@@ -135,7 +135,7 @@ struct FolderView: View {
             }
             await logStore.update()
             if let selectionLog {
-                let newSelection = logStore.logs.first { $0.id == selectionLog.id }
+                let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
             lastSyncDate = Date()

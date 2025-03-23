@@ -115,7 +115,11 @@ struct ContentView: View {
         .onChange(of: selectionFolder, {
             selectionLog = nil
         })
+        .onChange(of: selectionCommit, {
+            print("selectionCommit:",selectionCommit)
+        })
         .errorAlert($error)
+
     }
 }
 

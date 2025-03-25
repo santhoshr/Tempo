@@ -51,8 +51,7 @@ struct CommitDetailView: View {
                         VStack (alignment: .leading) {
                             HStack {
                                 Text(commit.hash)
-                                    .foregroundStyle(.orange)
-                                    .font(Font.system(.body, design: .rounded))
+                                    .foregroundColor(.secondary)
                                 if let mergedIn {
                                     Divider()
                                         .frame(height: 10)

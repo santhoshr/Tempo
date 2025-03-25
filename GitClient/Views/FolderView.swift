@@ -231,7 +231,6 @@ struct FolderView: View {
                         Text(commit.title)
                         Spacer()
                         Text(commit.hash.prefix(5))
-                            .font(Font.system(.body, design: .rounded))
                             .foregroundStyle(.tertiary)
                         if commit.abbreviatedParentHashes.count == 2 {
                             Image(systemName: "arrow.triangle.merge")

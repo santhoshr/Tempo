@@ -90,7 +90,6 @@ struct CommitsView: View {
                             Text(commit.title)
                             Spacer()
                             Text(commit.hash.prefix(5))
-                                .font(Font.system(.body, design: .rounded))
                                 .foregroundStyle(.tertiary)
                         }
                         HStack {

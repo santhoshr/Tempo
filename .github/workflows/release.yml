@@ -2,11 +2,6 @@ name: release workflow
 
 on:
   push:
-    branches:
-      - main
-  release:
-    types: [created]
-  push:
     tags:
       - "v*"
 jobs:

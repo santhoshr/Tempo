@@ -26,7 +26,7 @@ jobs:
           AC_USERNAME: ${{ secrets.AC_USERNAME }}
           AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
         run: |
-          xcrun notarytool submit Tempo/Tempo.app --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id TEAM_ID --wait
+          xcrun notarytool submit Tempo/Tempo.app --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id JRA6VW2DG4 --wait
       - name: Create ZIP Archive
         run: |
           ditto -c -k --keepParent Tempo/Tempo.app Tempo.zip

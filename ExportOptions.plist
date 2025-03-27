@@ -8,11 +8,5 @@
     <string>JRA6VW2DG4</string>
     <key>signingStyle</key>
     <string>automatic</string>
-    <key>destination</key>
-    <string>export</string>
-    <key>compileBitcode</key>
-    <false/>
-    <key>manageAppVersionAndBuildNumber</key>
-    <true/>
 </dict>
 </plist>

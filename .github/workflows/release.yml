@@ -54,7 +54,7 @@ jobs:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         run: |
           xcodebuild -scheme GitClient -configuration Release -archivePath Tempo.xcarchive archive
-          xcodebuild -exportArchive -archivePath Tempo.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath Tempo -allowProvisioningUpdates -authenticationKeyIssuerID $APPLE_API_ISSUER_ID -authenticationKeyID $APPLE_API_KEY_ID -authenticationKeyPath `pwd`/private_keys/AuthKey_$APPLE_API_KEY_ID.p8
+          xcodebuild -exportArchive -archivePath Tempo.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath Tempo
       - name: Notarize App
         env:
           AC_USERNAME: ${{ secrets.AC_USERNAME }}

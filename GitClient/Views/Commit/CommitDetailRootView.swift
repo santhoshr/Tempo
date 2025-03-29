@@ -115,7 +115,6 @@ struct CommitDetailRootView: View {
         }
         .onChange(of: commit, initial: true, { _, commit in
             Task {
-                commitDetail = nil
                 do {
                     commitDetail = try await Process.output(GitShow(directory: folder.url, object: commit.hash))
                     let mergeCommit = try await Process.output(GitLog(
@@ -136,6 +135,8 @@ struct CommitDetailRootView: View {
                         }
                     }
                 } catch {
+                    commitDetail = nil
+                    mergedIn = nil
                     self.error = error
                 }
             }

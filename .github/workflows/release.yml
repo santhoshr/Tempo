@@ -67,6 +67,6 @@ jobs:
         with:
           files: |
             Tempo.zip
-            Tempo.zip.sha256.txt
+            checksum.txt
           draft: true
           generate_release_notes: true

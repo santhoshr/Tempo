@@ -18,19 +18,44 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-      - name: Build and Archive App
+      - name: Install the Apple certificate
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+      - name: Archive App
         run: |
           xcodebuild -scheme GitClient -configuration Release -archivePath Tempo.xcarchive archive
-          xcodebuild -exportArchive -archivePath GitClient.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath Tempo
+      - name: Export App
+        run: |
+          xcodebuild -exportArchive -archivePath Tempo.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath Tempo
+      - name: Create ZIP Archive
+        run: |
+          ditto -c -k --keepParent Tempo/Tempo.app Tempo.zip
       - name: Notarize App
         env:
           AC_USERNAME: ${{ secrets.AC_USERNAME }}
           AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
         run: |
-          xcrun notarytool submit Tempo/Tempo.app --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id JRA6VW2DG4 --wait
-      - name: Create ZIP Archive
-        run: |
-          ditto -c -k --keepParent Tempo/Tempo.app Tempo.zip
+          xcrun notarytool submit Tempo.zip --apple-id "$AC_USERNAME" --password "$AC_PASSWORD" --team-id JRA6VW2DG4 --wait
       - name: Generate SHA256 Checksum
         run: |
           shasum -a 256 Tempo.zip > Tempo.zip.sha256.txt

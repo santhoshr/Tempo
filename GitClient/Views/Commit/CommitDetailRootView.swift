@@ -90,14 +90,16 @@ struct CommitDetailRootView: View {
                                 .frame(height: 10)
                             Text(commit.authorEmail)
                             Spacer()
-                            Text(CommitDetail?.authorDate)
+                            Text(commitDetail?.authorDate ?? "")
                         }
                         .padding(.top, 6)
                         .foregroundStyle(.secondary)
                         Divider()
                             .padding(.top)
-                        if commit.parentHashes.count == 2 {
-                            MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
+                        if commit.abbreviatedParentHashes.count == 2 {
+                            if let commitDetail {
+                                MergeCommitContentView(mergeCommit: commitDetail, directoryURL: folder.url)
+                            }
                         } else {
                             FileDiffsView(expandableFileDiffs: $fileDiffs)
                         }

@@ -19,7 +19,7 @@ struct GitLog: Git {
             + .formatSeparator + "%aE"
             + .formatSeparator + "%ar"
             + .formatSeparator + "%s"
-            + .formatSeparator + "%B"
+            + .formatSeparator + "%b"
             + .formatSeparator + "%D"
             + .componentSeparator,
         ]
@@ -65,7 +65,7 @@ struct GitLog: Git {
                 authorEmail: separated[3],
                 authorDateRelative: separated[4],
                 title: separated[5],
-                rawBody: separated[6],
+                body: separated[6],
                 branches: refs.filter { !$0.hasPrefix("tag: ") },
                 tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) }
             )

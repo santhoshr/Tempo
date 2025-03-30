@@ -16,7 +16,13 @@ struct Commit: Hashable, Identifiable {
     var authorEmail: String
     var authorDateRelative: String
     var title: String
-    var rawBody: String
+    var body: String
+    var rawBody: String {
+        guard !body.isEmpty else {
+            return title
+        }
+        return title + "\n\n" + body
+    }
     var branches: [String]
     var tags: [String]
 }

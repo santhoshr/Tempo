@@ -17,7 +17,7 @@ struct GitLog: Git {
             + .formatSeparator + "%p"
             + .formatSeparator + "%an"
             + .formatSeparator + "%aE"
-            + .formatSeparator + "%ai"
+            + .formatSeparator + "%aI"
             + .formatSeparator + "%ar"
             + .formatSeparator + "%s"
             + .formatSeparator + "%b"

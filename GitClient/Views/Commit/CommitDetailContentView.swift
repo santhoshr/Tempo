@@ -54,16 +54,16 @@ struct CommitDetailContentView: View {
                             }
                         }
                     }
-                    .padding(.horizontal)
                 }
                 .padding(.top)
                 .padding(.top)
+                .padding(.horizontal)
                 HStack {
                     VStack (alignment: .leading) {
                         Text(commit.title.trimmingCharacters(in: .whitespacesAndNewlines))
                             .font(.title)
                             .padding(.leading)
-                            .padding(.bottom)
+                            .padding(.vertical)
                         if !commit.body.isEmpty {
                             Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
                                 .font(.body)

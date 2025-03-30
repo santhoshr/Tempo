@@ -19,53 +19,51 @@ struct CommitDetailContentView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if !commit.branches.isEmpty || !commit.tags.isEmpty {
-                    VStack {
-                        if !commit.branches.isEmpty {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack(spacing: 14) {
-                                    ForEach(commit.branches, id: \.self) { branch in
-                                        Label(branch, systemImage: "arrow.triangle.branch")
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                .padding(.horizontal)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        Text(commit.hash)
+                            .foregroundColor(.secondary)
+                        if let mergedIn {
+                            Divider()
+                                .frame(height: 10)
+                            HStack(spacing: 4) {
+                                Text("Merged in")
+                                    .foregroundStyle(.secondary)
+                                NavigationLink(mergedIn.hash.prefix(5), value: mergedIn.hash)
+                                    .buttonStyle(.link)
                             }
                         }
                         if !commit.tags.isEmpty {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack(spacing: 14) {
-                                    ForEach(commit.tags, id: \.self) { tag in
-                                        Label(tag, systemImage: "tag")
-                                            .foregroundColor(.secondary)
-                                    }
+                            Divider()
+                                .frame(height: 10)
+                            HStack(spacing: 14) {
+                                ForEach(commit.tags, id: \.self) { tag in
+                                    Label(tag, systemImage: "tag")
+                                        .foregroundColor(.secondary)
                                 }
-                                .padding(.horizontal)
+                            }
+                        }
+                        if !commit.branches.isEmpty {
+                            Divider()
+                                .frame(height: 10)
+                            HStack(spacing: 14) {
+                                ForEach(commit.branches, id: \.self) { branch in
+                                    Label(branch, systemImage: "arrow.triangle.branch")
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
                     }
-                    .padding(.top, 32)
+                    .padding(.horizontal)
                 }
+                .padding(.top)
+                .padding(.top)
                 HStack {
                     VStack (alignment: .leading) {
-                        HStack {
-                            Text(commit.hash)
-                                .foregroundColor(.secondary)
-                            if let mergedIn {
-                                Divider()
-                                    .frame(height: 10)
-                                HStack(spacing: 4) {
-                                    Text("Merged in")
-                                        .foregroundStyle(.secondary)
-                                    NavigationLink(mergedIn.hash.prefix(5), value: mergedIn.hash)
-                                        .buttonStyle(.link)
-                                }
-                            }
-                        }
                         Text(commit.title.trimmingCharacters(in: .whitespacesAndNewlines))
                             .font(.title)
                             .padding(.leading)
-                            .padding(.vertical)
+                            .padding(.bottom)
                         if !commit.body.isEmpty {
                             Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
                                 .font(.body)
@@ -105,7 +103,7 @@ struct CommitDetailContentView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-                .padding(.top, (!commit.branches.isEmpty || !commit.tags.isEmpty) ? 0 : 32)
+                .padding(.top)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(NSColor.textBackgroundColor))

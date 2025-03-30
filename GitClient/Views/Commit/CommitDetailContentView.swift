@@ -100,7 +100,7 @@ struct CommitDetailContentView: View {
                             FileDiffsView(expandableFileDiffs: $fileDiffs)
                         }
                     }
-                    Spacer()
+                    Spacer(minLength: 0)
                 }
                 .padding(.horizontal)
                 .padding(.top)

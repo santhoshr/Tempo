@@ -17,7 +17,7 @@ struct GitShow: Git {
             + .formatSeparator + "%P"
             + .formatSeparator + "%an"
             + .formatSeparator + "%aE"
-            + .formatSeparator + "%ai"
+            + .formatSeparator + "%aI"
             + .formatSeparator + "%s"
             + .formatSeparator + "%b"
             + .formatSeparator + "%D"

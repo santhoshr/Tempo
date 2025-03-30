@@ -13,6 +13,7 @@ struct Commit: Hashable, Identifiable {
     var abbreviatedParentHashes: [String]
     var author: String
     var authorEmail: String
+    var authorDate: String
     var authorDateRelative: String
     var title: String
     var body: String

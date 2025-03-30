@@ -17,6 +17,7 @@ struct GitLog: Git {
             + .formatSeparator + "%p"
             + .formatSeparator + "%an"
             + .formatSeparator + "%aE"
+            + .formatSeparator + "%ai"
             + .formatSeparator + "%ar"
             + .formatSeparator + "%s"
             + .formatSeparator + "%b"
@@ -53,19 +54,20 @@ struct GitLog: Git {
         return logs.map { log in
             let separated = log.components(separatedBy: String.formatSeparator)
             let refs: [String]
-            if separated[7].isEmpty {
+            if separated[8].isEmpty {
                 refs = []
             } else {
-                refs = separated[7].components(separatedBy: ", ")
+                refs = separated[8].components(separatedBy: ", ")
             }
             return Commit(
                 hash: separated[0],
                 abbreviatedParentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
                 author: separated[2],
                 authorEmail: separated[3],
-                authorDateRelative: separated[4],
-                title: separated[5],
-                body: separated[6],
+                authorDate: separated[4],
+                authorDateRelative: separated[5],
+                title: separated[6],
+                body: separated[7],
                 branches: refs.filter { !$0.hasPrefix("tag: ") },
                 tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) }
             )

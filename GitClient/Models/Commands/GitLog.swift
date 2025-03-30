@@ -14,7 +14,7 @@ struct GitLog: Git {
             "git",
             "log",
             "--pretty=format:%H"
-            + .formatSeparator + "%p"
+            + .formatSeparator + "%P"
             + .formatSeparator + "%an"
             + .formatSeparator + "%aE"
             + .formatSeparator + "%aI"
@@ -60,7 +60,7 @@ struct GitLog: Git {
             }
             return Commit(
                 hash: separated[0],
-                abbreviatedParentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
+                parentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
                 author: separated[2],
                 authorEmail: separated[3],
                 authorDate: separated[4],

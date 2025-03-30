@@ -129,7 +129,7 @@ struct CommitDetailView: View {
                 if let mergeCommit {
                     let mergedInCommits = try await Process.output(GitLog(
                         directory: folder.url,
-                        revisionRange: "\(mergeCommit.abbreviatedParentHashes[0])..\(mergeCommit.hash)"
+                        revisionRange: "\(mergeCommit.parentHashes[0])..\(mergeCommit.hash)"
                     ))
                     let contains = mergedInCommits.contains { $0.hash == commitHash }
                     if contains  {

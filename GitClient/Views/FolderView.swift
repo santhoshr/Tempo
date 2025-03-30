@@ -232,7 +232,7 @@ struct FolderView: View {
                         Spacer()
                         Text(commit.hash.prefix(5))
                             .foregroundStyle(.tertiary)
-                        if commit.abbreviatedParentHashes.count == 2 {
+                        if commit.parentHashes.count == 2 {
                             Image(systemName: "arrow.triangle.merge")
                                 .foregroundStyle(.tertiary)
                         }
@@ -264,10 +264,10 @@ struct FolderView: View {
                             }
                         }
                     }
-                    Button("Revert" + (commit.abbreviatedParentHashes.count == 2 ? " -m 1 (\(commit.abbreviatedParentHashes[0]))" : "")) {
+                    Button("Revert" + (commit.parentHashes.count == 2 ? " -m 1 (\(commit.parentHashes[0].prefix(7)))" : "")) {
                         Task {
                             do {
-                                if commit.abbreviatedParentHashes.count == 2 {
+                                if commit.parentHashes.count == 2 {
                                     try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash, parentNumber: 1))
                                 } else {
                                     try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))

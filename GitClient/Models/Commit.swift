@@ -10,7 +10,7 @@ import Foundation
 struct Commit: Hashable, Identifiable {
     var id: String { hash }
     var hash: String
-    var abbreviatedParentHashes: [String]
+    var parentHashes: [String]
     var author: String
     var authorEmail: String
     var authorDate: String

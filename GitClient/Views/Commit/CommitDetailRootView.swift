@@ -66,8 +66,8 @@ struct CommitDetailRootView: View {
                             .font(.title)
                             .padding(.leading)
                             .padding(.vertical)
-                        if let commitDetail, !commitDetail.body.isEmpty {
-                            Text(commitDetail.body.trimmingCharacters(in: .whitespacesAndNewlines))
+                        if !commit.body.isEmpty {
+                            Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
                                 .font(.body)
                                 .padding(.leading)
                                 .padding(.bottom, 8)

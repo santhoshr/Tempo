@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CryptoKit
 
 struct Commit: Hashable, Identifiable {
     var id: String { hash }

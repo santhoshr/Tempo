@@ -14,12 +14,12 @@ struct GitLog: Git {
             "git",
             "log",
             "--pretty=format:%H"
-            + .formatSeparator + "%p"
+            + .formatSeparator + "%P"
             + .formatSeparator + "%an"
             + .formatSeparator + "%aE"
-            + .formatSeparator + "%ar"
+            + .formatSeparator + "%aI"
             + .formatSeparator + "%s"
-            + .formatSeparator + "%B"
+            + .formatSeparator + "%b"
             + .formatSeparator + "%D"
             + .componentSeparator,
         ]
@@ -60,12 +60,12 @@ struct GitLog: Git {
             }
             return Commit(
                 hash: separated[0],
-                abbreviatedParentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
+                parentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
                 author: separated[2],
                 authorEmail: separated[3],
-                authorDateRelative: separated[4],
+                authorDate: separated[4],
                 title: separated[5],
-                rawBody: separated[6],
+                body: separated[6],
                 branches: refs.filter { !$0.hasPrefix("tag: ") },
                 tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) }
             )

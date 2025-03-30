@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MergeCommitContentView: View {
-    var mergeCommit: CommitDetail
+    var mergeCommit: Commit
     var directoryURL: URL
     @State private var commits: [Commit] = []
     @State private var filesChanged: [ExpandableModel<FileDiff>] = []
@@ -67,12 +67,12 @@ struct MergeCommitContentView: View {
                 parentHashes: ["21fff", "31fff"],
                 author: "maoyama",
                 authorEmail: "a@aoyama.dev",
-                authorDate: "1 seconds ago",
+                authorDate: "2014-10-10T13:50:40+09:00",
                 title: "Hello world!",
                 body: "body",
                 branches: [],
-                tags: [],
-                diff: try! Diff(raw: "")),
+                tags: []
+            ),
             directoryURL: URL(string: "file:///maoyama/Projects/")!
         )
     }

@@ -14,6 +14,12 @@ struct Commit: Hashable, Identifiable {
     var author: String
     var authorEmail: String
     var authorDate: String
+    var authorDateDisplay: String {
+        guard let date = ISO8601DateFormatter().date(from: authorDate) else {
+            return ""
+        }
+        return DateFormatter.localizedString(from: date, dateStyle: .long, timeStyle: .long)
+    }
     var authorDateRelative: String {
         guard let date = ISO8601DateFormatter().date(from: authorDate) else {
             return ""

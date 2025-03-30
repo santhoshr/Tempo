@@ -90,7 +90,7 @@ struct CommitDetailContentView: View {
                                 .frame(height: 10)
                             Text(commit.authorEmail)
                             Spacer()
-                            Text(commit.authorDate)
+                            Text(commit.authorDateDisplay)
                         }
                         .padding(.top, 6)
                         .foregroundStyle(.secondary)

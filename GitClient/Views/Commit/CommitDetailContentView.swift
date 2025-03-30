@@ -1,5 +1,5 @@
 //
-//  CommitDetailRootView.swift
+//  CommitDetailContentView.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2025/03/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CommitDetailRootView: View {
+struct CommitDetailContentView: View {
     var commit: Commit
     var folder: Folder
     @State private var commitDetail: CommitDetail?

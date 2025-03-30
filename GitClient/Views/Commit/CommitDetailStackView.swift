@@ -29,7 +29,7 @@ struct CommitDetailStackView: View {
     
     var body: some View {
         NavigationStack(path: $path) {
-            CommitDetailRootView(commit: commit, folder: folder)
+            CommitDetailContentView(commit: commit, folder: folder)
                 .navigationDestination(for: String.self) { commitHash in
                     CommitDetailView(commitHash: commitHash, folder: folder)
                         .safeAreaInset(edge: .top, spacing: 0, content: {

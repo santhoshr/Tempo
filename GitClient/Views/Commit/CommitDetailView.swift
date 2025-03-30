@@ -16,7 +16,7 @@ struct CommitDetailView: View {
     var body: some View {
         VStack {
             if let commit {
-                CommitDetailRootView(commit: commit, folder: folder)
+                CommitDetailContentView(commit: commit, folder: folder)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

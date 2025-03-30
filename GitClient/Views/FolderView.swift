@@ -248,7 +248,7 @@ struct FolderView: View {
                             .clipShape(RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular))
                         Text(commit.author)
                         Spacer()
-                        Text(commit.authorDateRelative2)
+                        Text(commit.authorDateRelative)
                     }
                     .lineLimit(1)
                     .foregroundStyle(.tertiary)

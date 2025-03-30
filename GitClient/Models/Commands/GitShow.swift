@@ -39,7 +39,7 @@ struct GitShow: Git {
         } else {
             refs = separated[7].components(separatedBy: ", ")
         }
-        return CommitDetail(
+        let commit = Commit(
             hash: separated[0],
             parentHashes: separated[1].components(separatedBy: .whitespacesAndNewlines),
             author: separated[2],
@@ -48,7 +48,11 @@ struct GitShow: Git {
             title: separated[5],
             body: separated[6],
             branches: refs.filter { !$0.hasPrefix("tag: ") },
-            tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) },
+            tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) }
+        )
+        print(commit)
+        return CommitDetail(
+            commit: commit,
             diff: try Diff(raw: String(splits[safe: 1] ?? ""))
         )
     }

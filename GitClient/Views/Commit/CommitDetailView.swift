@@ -10,7 +10,7 @@ import SwiftUI
 struct CommitDetailView: View {
     var commitHash: String
     var folder: Folder
-    @State private var commit: CommitDetail?
+    @State private var commitDetail: CommitDetail?
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var mergedIn: Commit?
     @State private var error: Error?
@@ -19,13 +19,13 @@ struct CommitDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if let commit {
-                    if !commit.branches.isEmpty || !commit.tags.isEmpty {
+                if let commitDetail {
+                    if !commitDetail.commit.branches.isEmpty || !commitDetail.commit.tags.isEmpty {
                         VStack {
-                            if !commit.branches.isEmpty {
+                            if !commitDetail.commit.branches.isEmpty {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     LazyHStack(spacing: 14) {
-                                        ForEach(commit.branches, id: \.self) { branch in
+                                        ForEach(commitDetail.commit.branches, id: \.self) { branch in
                                             Label(branch, systemImage: "arrow.triangle.branch")
                                                 .foregroundColor(.secondary)
                                         }
@@ -33,10 +33,10 @@ struct CommitDetailView: View {
                                     .padding(.horizontal)
                                 }
                             }
-                            if !commit.tags.isEmpty {
+                            if !commitDetail.commit.tags.isEmpty {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     LazyHStack(spacing: 14) {
-                                        ForEach(commit.tags, id: \.self) { tag in
+                                        ForEach(commitDetail.commit.tags, id: \.self) { tag in
                                             Label(tag, systemImage: "tag")
                                                 .foregroundColor(.secondary)
                                         }
@@ -50,7 +50,7 @@ struct CommitDetailView: View {
                     HStack {
                         VStack (alignment: .leading) {
                             HStack {
-                                Text(commit.hash)
+                                Text(commitDetail.commit.hash)
                                     .foregroundColor(.secondary)
                                 if let mergedIn {
                                     Divider()
@@ -63,18 +63,18 @@ struct CommitDetailView: View {
                                     }
                                 }
                             }
-                            Text(commit.title.trimmingCharacters(in: .whitespacesAndNewlines))
+                            Text(commitDetail.commit.title.trimmingCharacters(in: .whitespacesAndNewlines))
                                 .font(.title)
                                 .padding(.leading)
                                 .padding(.vertical)
-                            if !commit.body.isEmpty {
-                                Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
+                            if !commitDetail.commit.body.isEmpty {
+                                Text(commitDetail.commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
                                     .font(.body)
                                     .padding(.leading)
                                     .padding(.bottom, 8)
                             }
                             HStack {
-                                AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 26*3)) { image in
+                                AsyncImage(url: URL.gravater(email: commitDetail.commit.authorEmail, size: 26*3)) { image in
                                     image.resizable()
                                 } placeholder: {
                                     RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular)
@@ -83,22 +83,22 @@ struct CommitDetailView: View {
                                     .frame(width: 26, height: 26)
                                     .clipShape(RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular))
                                     .onTapGesture {
-                                        guard let url = URL.gravater(email: commit.authorEmail, size: 400) else { return }
+                                        guard let url = URL.gravater(email: commitDetail.commit.authorEmail, size: 400) else { return }
                                         openURL(url)
                                     }
-                                Text(commit.author)
+                                Text(commitDetail.commit.author)
                                 Divider()
                                     .frame(height: 10)
-                                Text(commit.authorEmail)
+                                Text(commitDetail.commit.authorEmail)
                                 Spacer()
-                                Text(commit.authorDate)
+                                Text(commitDetail.commit.authorDate)
                             }
                             .padding(.top, 6)
                             .foregroundStyle(.secondary)
                             Divider()
                                 .padding(.top)
-                            if commit.parentHashes.count == 2 {
-                                MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
+                            if commitDetail.commit.parentHashes.count == 2 {
+                                MergeCommitContentView(mergeCommit: commitDetail.commit, directoryURL: folder.url)
                             } else {
                                 FileDiffsView(expandableFileDiffs: $fileDiffs)
                             }
@@ -106,7 +106,7 @@ struct CommitDetailView: View {
                         Spacer()
                     }
                     .padding(.horizontal)
-                    .padding(.top, (!commit.branches.isEmpty || !commit.tags.isEmpty) ? 0 : 32)
+                    .padding(.top, (!commitDetail.commit.branches.isEmpty || !commitDetail.commit.tags.isEmpty) ? 0 : 32)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -114,11 +114,11 @@ struct CommitDetailView: View {
             .textSelection(.enabled)
         }
         .task {
-            commit = nil
+            commitDetail = nil
             mergedIn = nil
 
             do {
-                commit = try await Process.output(GitShow(directory: folder.url, object: commitHash))
+                commitDetail = try await Process.output(GitShow(directory: folder.url, object: commitHash))
                 let mergeCommit = try await Process.output(GitLog(
                     directory: folder.url,
                     merges: true,
@@ -140,7 +140,7 @@ struct CommitDetailView: View {
                 self.error = error
             }
         }
-        .onChange(of: commit, { _, newValue in
+        .onChange(of: commitDetail, { _, newValue in
             if let newValue {
                 fileDiffs = newValue.diff.fileDiffs.map { .init(isExpanded: true, model: $0) }
             } else {

@@ -9,14 +9,6 @@ import Foundation
 import CryptoKit
 
 struct CommitDetail: Hashable {
-    var hash: String
-    var parentHashes: [String]
-    var author: String
-    var authorEmail: String
-    var authorDate: String
-    var title: String
-    var body: String
-    var branches: [String]
-    var tags: [String]
+    var commit: Commit
     var diff: Diff
 }

@@ -130,7 +130,11 @@ struct CommitDetailRootView: View {
                         let contains = mergedInCommits.contains { $0.hash == commit.hash }
                         if contains  {
                             mergedIn = mergeCommit
+                        } else {
+                            mergedIn = nil
                         }
+                    } else {
+                        mergedIn = nil
                     }
                 } catch {
                     commitDetail = nil

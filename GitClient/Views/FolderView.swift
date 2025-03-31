@@ -54,8 +54,17 @@ struct FolderView: View {
             if !searchText.isEmpty {
                 Text("grep:" + searchText).searchCompletion(SearchToken.grep(searchText))
                 Text("grep allMatch:" + searchText).searchCompletion(SearchToken.grepAllMatch(searchText))
-                Text("S:" + searchText).searchCompletion(SearchToken.s(searchText))
-                Text("G:" + searchText).searchCompletion(SearchToken.g(searchText))
+                if !searchTokens.contains(where: {
+                    switch $0 {
+                    case .s, .g:
+                        return true
+                    default:
+                        return false
+                    }
+                }) {
+                    Text("S:" + searchText).searchCompletion(SearchToken.s(searchText))
+                    Text("G:" + searchText).searchCompletion(SearchToken.g(searchText))
+                }
             }
         })
         .task {

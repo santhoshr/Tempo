@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+enum SearchToken: Identifiable, Hashable {
+    case grep(String), grepAllMatch(String), s(String), g(String)
+    var id: Self { self }
+}
+
 struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
@@ -22,6 +27,9 @@ struct FolderView: View {
     @State private var showingCreateNewTagAt: Commit?
     @State private var branch: Branch?
     @State private var selectionLogID: String?
+    @State private var searchText = ""
+    @State private var searchTokens: [SearchToken] = []
+    @State private var suggestedSearchTokens: [SearchToken] = []
 
     var body: some View {
         List(logStore.logs(), selection: $selectionLogID) { log in
@@ -30,6 +38,26 @@ struct FolderView: View {
                     await logStore.logViewTask(log)
                 }
         }
+        .searchable(text: $searchText, tokens: $searchTokens, prompt: "Search Commits", token: { token in
+            switch token {
+            case .grep(let text):
+                return Text("grep:" + text)
+            case .grepAllMatch(let text):
+                return Text("grep allMatch:" + text)
+            case .s(let text):
+                return Text("S:" + text)
+            case .g(let text):
+                return Text("G:" + text)
+            }
+        })
+        .searchSuggestions({
+            if !searchText.isEmpty {
+                Text("grep:" + searchText).searchCompletion(SearchToken.grep(searchText))
+                Text("grep allMatch:" + searchText).searchCompletion(SearchToken.grepAllMatch(searchText))
+                Text("S:" + searchText).searchCompletion(SearchToken.s(searchText))
+                Text("G:" + searchText).searchCompletion(SearchToken.g(searchText))
+            }
+        })
         .task {
             await refreshModels()
         }

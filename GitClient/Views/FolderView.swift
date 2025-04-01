@@ -7,9 +7,14 @@
 
 import SwiftUI
 
-enum SearchToken: Identifiable, Hashable {
-    case grep(String), grepAllMatch(String), s(String), g(String)
+enum SearchKind {
+    case grep, grepAllMatch, s, g
+}
+
+struct SearchToken: Identifiable, Hashable {
     var id: Self { self }
+    var kind: SearchKind
+    var text: String
 }
 
 struct FolderView: View {
@@ -38,33 +43,22 @@ struct FolderView: View {
                     await logStore.logViewTask(log)
                 }
         }
-        .searchable(text: $searchText, tokens: $searchTokens, prompt: "Search Commits", token: { token in
-            switch token {
-            case .grep(let text):
-                return Text("grep:" + text)
-            case .grepAllMatch(let text):
-                return Text("grep allMatch:" + text)
-            case .s(let text):
-                return Text("S:" + text)
-            case .g(let text):
-                return Text("G:" + text)
+        .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
+            Picker(selection: $token.kind) {
+                Text("Grep").tag(SearchKind.grep)
+                Text("Grep AM").tag(SearchKind.grepAllMatch)
+                Text("S").tag(SearchKind.s)
+                Text("G").tag(SearchKind.g)
+            } label: {
+                Text(token.text)
             }
         })
         .searchSuggestions({
             if !searchText.isEmpty {
-                Text("grep:" + searchText).searchCompletion(SearchToken.grep(searchText))
-                Text("grep allMatch:" + searchText).searchCompletion(SearchToken.grepAllMatch(searchText))
-                if !searchTokens.contains(where: {
-                    switch $0 {
-                    case .s, .g:
-                        return true
-                    default:
-                        return false
-                    }
-                }) {
-                    Text("S:" + searchText).searchCompletion(SearchToken.s(searchText))
-                    Text("G:" + searchText).searchCompletion(SearchToken.g(searchText))
-                }
+                Text("Grep - Message that matches the pattern: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
+                Text("Grep All Match (Match all given grep): " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
+                Text("S ('G' and 'S' cannot be used together):" + searchText).searchCompletion(SearchToken(kind: .s, text:searchText))
+                Text("G ('G' and 'S' cannot be used together):" + searchText).searchCompletion(SearchToken(kind: .g, text:searchText))
             }
         })
         .task {

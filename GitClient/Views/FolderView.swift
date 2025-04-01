@@ -46,7 +46,7 @@ struct FolderView: View {
         .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
             Picker(selection: $token.kind) {
                 Text("Grep").tag(SearchKind.grep)
-                Text("Grep AM").tag(SearchKind.grepAllMatch)
+                Text("Grep A").tag(SearchKind.grepAllMatch)
                 Text("S").tag(SearchKind.s)
                 Text("G").tag(SearchKind.g)
             } label: {
@@ -55,10 +55,14 @@ struct FolderView: View {
         })
         .searchSuggestions({
             if !searchText.isEmpty {
-                Text("Grep - Message that matches the pattern: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
-                Text("Grep All Match (Match all given grep): " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
-                Text("S ('G' and 'S' cannot be used together):" + searchText).searchCompletion(SearchToken(kind: .s, text:searchText))
-                Text("G ('G' and 'S' cannot be used together):" + searchText).searchCompletion(SearchToken(kind: .g, text:searchText))
+                Text("Grep: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
+                    .help("Search log messages matching the given pattern (regular expression).")
+                Text("Grep All Match: " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
+                    .help("Search log messages matching all given patterns instead of at least one.")
+                Text("S: " + searchText).searchCompletion(SearchToken(kind: .s, text:searchText))
+                    .help("Search commits where the number of occurrences of the specified string has changed (added/removed). Cannot use with 'G'.")
+                Text("G: " + searchText).searchCompletion(SearchToken(kind: .g, text:searchText))
+                    .help("Search commits with added/removed lines that match the specified regex. Cannot use with 'S'.")
             }
         })
         .task {

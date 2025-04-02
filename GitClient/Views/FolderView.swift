@@ -7,16 +7,6 @@
 
 import SwiftUI
 
-enum SearchKind {
-    case grep, grepAllMatch, s, g
-}
-
-struct SearchToken: Identifiable, Hashable {
-    var id: Self { self }
-    var kind: SearchKind
-    var text: String
-}
-
 struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
     var folder: Folder

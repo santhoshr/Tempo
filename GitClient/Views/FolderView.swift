@@ -55,24 +55,8 @@ struct FolderView: View {
                     .help("Search commits with added/removed lines that match the specified regex. Cannot use with 'S'.")
             }
         })
-        .onChange(of: searchTokens, { oldValue, newValue in
-            if let last = newValue.last {
-                switch last.kind {
-                case .grep, .grepAllMatch:
-                    searchTokens = newValue.map { value in
-                        switch value.kind {
-                        case .grep, .grepAllMatch:
-                            var newValue = value
-                            newValue.kind = last.kind
-                            return newValue
-                        default:
-                            return value
-                        }
-                    }
-                default:
-                    break
-                }
-            }
+        .onChange(of: searchTokens, { _, newValue in
+            searchTokens = SerachTokensHandler.handle(newValue)
         })
         .task {
             await refreshModels()

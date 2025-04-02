@@ -11,6 +11,10 @@ import Foundation
 final class LogStore: ObservableObject {
     let number = 500
     var directory: URL
+    var grep: [String] = []
+    var grepAllMatch = false
+    var s = ""
+    var g = ""
     @Published var commits: [Commit]
     @Published var notCommitted: NotCommitted?
     @Published var error: Error?
@@ -42,8 +46,23 @@ final class LogStore: ObservableObject {
     func update() async {
         do {
             notCommitted = try await notCommited()
-            let current = try await Process.output(GitLog(directory: directory, number: commits.count, revisionRange: commits.first?.hash ?? ""))
-            let adding = try await Process.output(GitLog(directory: directory, revisionRange: commits.first.map { $0.hash + ".."} ?? ""))
+            let current = try await Process.output(GitLog(
+                directory: directory,
+                number: commits.count,
+                revisionRange: commits.first?.hash ?? "",
+                grep: grep,
+                grepAllMatch: grepAllMatch,
+                s: s,
+                g: g
+            ))
+            let adding = try await Process.output(GitLog(
+                directory: directory,
+                revisionRange: commits.first.map { $0.hash + ".."} ?? "",
+                grep: grep,
+                grepAllMatch: grepAllMatch,
+                s: s,
+                g: g
+            ))
             commits = adding + current
         } catch {
             self.error = error

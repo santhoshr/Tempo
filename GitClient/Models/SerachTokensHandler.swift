@@ -10,20 +10,37 @@ struct SerachTokensHandler {
         if let last = newTokens.last {
             switch last.kind {
             case .grep, .grepAllMatch:
-                return newTokens.map { value in
-                    switch value.kind {
+                return newTokens.map { token in
+                    switch token.kind {
                     case .grep, .grepAllMatch:
-                        var newValue = value
-                        newValue.kind = last.kind
-                        return newValue
+                        var newToken = token
+                        newToken.kind = last.kind
+                        return newToken
                     default:
-                        return value
+                        return token
                     }
                 }
-            default:
-                break
+            case .s:
+                return newTokens.filter { token in
+                    switch token.kind {
+                    case .grep, .grepAllMatch, .s:
+                        return true
+                    case .g:
+                        return false
+                    }
+                }
+            case .g:
+                return newTokens.filter { token in
+                    switch token.kind {
+                    case .grep, .grepAllMatch, .g:
+                        return true
+                    case .s:
+                        return false
+                    }
+                }
             }
+        } else {
+            return newTokens
         }
-        return newTokens
     }
 }

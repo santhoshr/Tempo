@@ -10,9 +10,9 @@ import SwiftUI
 struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
-    @State var logStore: LogStore
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
+    @State private var logStore = LogStore()
     @State private var isLoading = false
     @State private var error: Error?
     @State private var showingBranches = false
@@ -389,7 +389,6 @@ struct CommitsView_Previews: PreviewProvider {
     static var previews: some View {
         FolderView(
             folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
-            logStore: .init(directory: URL(string: "file:///maoyama/Projects/")!),
             selectionLog: $selection,
             isRefresh: $refresh
         )

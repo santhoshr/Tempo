@@ -11,20 +11,15 @@ import Observation
 @MainActor
 @Observable class LogStore {
     let number = 500
-    var directory: URL
-    var grep: [String] = []
-    var grepAllMatch = false
-    var s = ""
-    var g = ""
+    var directory: URL?
+    private var grep: [String] = []
+    private var grepAllMatch = false
+    private var s = ""
+    private var g = ""
     var searchTokens: [SearchToken] = []
-    var commits: [Commit]
+    var commits: [Commit] = []
     var notCommitted: NotCommitted?
     var error: Error?
-
-    init(directory: URL) {
-        self.directory = directory
-        self.commits = []
-    }
 
     func logs() -> [Log] {
         var logs = commits.map { Log.committed($0) }
@@ -36,8 +31,13 @@ import Observation
 
     /// 最新500件取得しlogsを差し替え
     func refresh() async {
+        guard let directory else {
+            notCommitted = nil
+            commits = []
+            return
+        }
         do {
-            notCommitted = try await notCommited()
+            notCommitted = try await notCommited(directory: directory)
             commits = try await Process.output(GitLog(directory: directory, number: number))
         } catch {
             self.error = error
@@ -46,8 +46,14 @@ import Observation
 
     /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加
     func update() async {
+        guard let directory else {
+            notCommitted = nil
+            commits = []
+            return
+        }
+
         do {
-            notCommitted = try await notCommited()
+            notCommitted = try await notCommited(directory: directory)
             let current = try await Process.output(GitLog(
                 directory: directory,
                 number: commits.count,
@@ -82,13 +88,13 @@ import Observation
         case .notCommitted:
             return
         case .committed(let commit):
-            if commit == commits.last {
-                await loadMore()
+            if commit == commits.last, let directory {
+                await loadMore(directory: directory)
             }
         }
     }
 
-    private func notCommited() async throws -> NotCommitted {
+    private func notCommited(directory: URL) async throws -> NotCommitted {
         let gitDiff = try await Process.output(GitDiff(directory: directory))
         let gitDiffCached = try await Process.output(GitDiffCached(directory: directory))
         let status = try await Process.output(GitStatus(directory: directory))
@@ -96,7 +102,7 @@ import Observation
     }
 
     /// logs.last以前のコミットを取得し追加
-    private func loadMore() async {
+    private func loadMore(directory: URL) async {
         guard let last = commits.last else { return }
         do {
             // revisionRangeをlast.hash^で指定すると最初のコミットに到達した際に存在しないのでunknown revisionとエラーになる

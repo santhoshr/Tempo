@@ -6,16 +6,20 @@
 //
 
 struct SerachTokensHandler {
-    static func handle(_ newTokens: [SearchToken]) -> [SearchToken] {
-        if let last = newTokens.last {
-            switch last.kind {
+    static func newToken(old: [SearchToken], new: [SearchToken]) -> SearchToken? {
+        new.first { !old.contains($0) }
+    }
+
+    static func handle(oldTokens: [SearchToken], newTokens: [SearchToken]) -> [SearchToken] {
+        if let newToken = newToken(old: oldTokens, new: newTokens) {
+            switch newToken.kind {
             case .grep, .grepAllMatch:
                 return newTokens.map { token in
                     switch token.kind {
                     case .grep, .grepAllMatch:
-                        var newToken = token
-                        newToken.kind = last.kind
-                        return newToken
+                        var updateToken = token
+                        updateToken.kind = newToken.kind
+                        return updateToken
                     default:
                         return token
                     }

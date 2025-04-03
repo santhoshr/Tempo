@@ -55,8 +55,9 @@ struct FolderView: View {
                     .help("Search commits with added/removed lines that match the specified regex. Cannot use with 'S'.")
             }
         })
-        .onChange(of: searchTokens, { _, newValue in
-            searchTokens = SerachTokensHandler.handle(newValue)
+        .onChange(of: searchTokens, { oldValue, newValue in
+            print("on change search token", oldValue, newValue)
+            searchTokens = SerachTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
         })
         .task {
             await refreshModels()

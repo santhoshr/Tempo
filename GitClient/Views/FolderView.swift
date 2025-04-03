@@ -22,9 +22,6 @@ struct FolderView: View {
     @State private var showingCreateNewTagAt: Commit?
     @State private var branch: Branch?
     @State private var selectionLogID: String?
-    @State private var searchText = ""
-    @State private var searchTokens: [SearchToken] = []
-    @State private var suggestedSearchTokens: [SearchToken] = []
 
     var body: some View {
         List(logStore.logs(), selection: $selectionLogID) { log in
@@ -33,7 +30,7 @@ struct FolderView: View {
                     await logStore.logViewTask(log)
                 }
         }
-        .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
+        .searchable(text: $logStore.searchText, editableTokens: $logStore.searchTokens, prompt: "Search Commits", token: { $token in
             Picker(selection: $token.kind) {
                 Text("Grep").tag(SearchKind.grep)
                 Text("Grep A").tag(SearchKind.grepAllMatch)
@@ -44,21 +41,20 @@ struct FolderView: View {
             }
         })
         .searchSuggestions({
-            if !searchText.isEmpty {
-                Text("Grep: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
+            if !logStore.searchText.isEmpty {
+                Text("Grep: " + logStore.searchText).searchCompletion(SearchToken(kind: .grep, text: logStore.searchText))
                     .help("Search log messages matching the given pattern (regular expression).")
-                Text("Grep All Match: " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
+                Text("Grep All Match: " + logStore.searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: logStore.searchText))
                     .help("Search log messages matching all given patterns instead of at least one.")
-                Text("S: " + searchText).searchCompletion(SearchToken(kind: .s, text:searchText))
+                Text("S: " + logStore.searchText).searchCompletion(SearchToken(kind: .s, text: logStore.searchText))
                     .help("Search commits where the number of occurrences of the specified string has changed (added/removed). Cannot use with 'G'.")
-                Text("G: " + searchText).searchCompletion(SearchToken(kind: .g, text:searchText))
+                Text("G: " + logStore.searchText).searchCompletion(SearchToken(kind: .g, text: logStore.searchText))
                     .help("Search commits with added/removed lines that match the specified regex. Cannot use with 'S'.")
             }
         })
-        .onChange(of: searchTokens, { oldValue, newValue in
-            print("on change search token", oldValue, newValue)
-            searchTokens = SerachTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
-        })
+//        .onChange(of: logStore.searchTokens, { oldValue, newValue in
+//            logStore.searchTokens = SerachTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
+//        })
         .task {
             await refreshModels()
         }

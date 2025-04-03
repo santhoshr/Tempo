@@ -15,6 +15,8 @@ final class LogStore: ObservableObject {
     var grepAllMatch = false
     var s = ""
     var g = ""
+    @Published var searchTokens: [SearchToken] = []
+    @Published var searchText = ""
     @Published var commits: [Commit]
     @Published var notCommitted: NotCommitted?
     @Published var error: Error?

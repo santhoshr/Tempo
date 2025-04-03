@@ -38,6 +38,16 @@ struct GitLog: Git {
         if !revisionRange.isEmpty {
             args.append(revisionRange)
         }
+        args = args + grep.map { "--grep=\($0)" }
+        if grepAllMatch {
+            args.append("--all-match")
+        }
+        if !s.isEmpty {
+            args.append("-S \(s)")
+        }
+        if !g.isEmpty {
+            args.append("-G \(g)")
+        }
         return args
     }
     var directory: URL
@@ -46,6 +56,10 @@ struct GitLog: Git {
     var reverse = false
     var number = 0
     var revisionRange = ""
+    var grep: [String] = []
+    var grepAllMatch = false
+    var s = ""
+    var g = ""
 
     func parse(for stdOut: String) throws -> [Commit] {
         guard !stdOut.isEmpty else { return [] }

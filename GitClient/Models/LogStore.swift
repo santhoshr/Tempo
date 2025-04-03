@@ -62,7 +62,8 @@ import Observation
                 grep: grep,
                 grepAllMatch: grepAllMatch,
                 s: s,
-                g: g
+                g: g,
+                author: author
             ))
         } catch {
             self.error = error
@@ -86,7 +87,8 @@ import Observation
                 grep: grep,
                 grepAllMatch: grepAllMatch,
                 s: s,
-                g: g
+                g: g,
+                author: author
             ))
             let adding = try await Process.output(GitLog(
                 directory: directory,
@@ -94,7 +96,8 @@ import Observation
                 grep: grep,
                 grepAllMatch: grepAllMatch,
                 s: s,
-                g: g
+                g: g,
+                author: author
             ))
             commits = adding + current
         } catch {
@@ -139,7 +142,8 @@ import Observation
                 grep: grep,
                 grepAllMatch: grepAllMatch,
                 s: s,
-                g: g
+                g: g,
+                author: author
             )).dropFirst()
         } catch {
             self.error = error

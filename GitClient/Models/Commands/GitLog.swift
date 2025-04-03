@@ -48,6 +48,9 @@ struct GitLog: Git {
         if !g.isEmpty {
             args.append("-G \(g)")
         }
+        if !author.isEmpty {
+            args.append("--author=\(author)")
+        }
         return args
     }
     var directory: URL
@@ -60,6 +63,7 @@ struct GitLog: Git {
     var grepAllMatch = false
     var s = ""
     var g = ""
+    var author = ""
 
     func parse(for stdOut: String) throws -> [Commit] {
         guard !stdOut.isEmpty else { return [] }

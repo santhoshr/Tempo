@@ -26,25 +26,13 @@ import Observation
         searchTokens.contains { $0.kind == .grepAllMatch }
     }
     private var s: String {
-        searchTokens.filter { token in
-            switch token.kind {
-            case .s:
-                return true
-            default:
-                return false
-            }
-        }.map { $0.text }.first ?? ""
-
+        searchTokens.filter { $0.kind == .s }.map { $0.text }.first ?? ""
     }
     private var g: String {
-        searchTokens.filter { token in
-            switch token.kind {
-            case .g:
-                return true
-            default:
-                return false
-            }
-        }.map { $0.text }.first ?? ""
+        searchTokens.filter { $0.kind == .g }.map { $0.text }.first ?? ""
+    }
+    private var author: String {
+        searchTokens.filter { $0.kind == .author }.map { $0.text }.first ?? ""
     }
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []

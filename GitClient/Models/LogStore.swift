@@ -6,20 +6,20 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-final class LogStore: ObservableObject {
+@Observable class LogStore {
     let number = 500
     var directory: URL
     var grep: [String] = []
     var grepAllMatch = false
     var s = ""
     var g = ""
-    @Published var searchTokens: [SearchToken] = []
-    @Published var searchText = ""
-    @Published var commits: [Commit]
-    @Published var notCommitted: NotCommitted?
-    @Published var error: Error?
+    var searchTokens: [SearchToken] = []
+    var commits: [Commit]
+    var notCommitted: NotCommitted?
+    var error: Error?
 
     init(directory: URL) {
         self.directory = directory

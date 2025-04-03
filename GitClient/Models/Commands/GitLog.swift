@@ -38,7 +38,7 @@ struct GitLog: Git {
         if !revisionRange.isEmpty {
             args.append(revisionRange)
         }
-        args = args + grep.map { "--grep \($0)" }
+        args = args + grep.map { "--grep=\($0)" }
         if grepAllMatch {
             args.append("--all-match")
         }

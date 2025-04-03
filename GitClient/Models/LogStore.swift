@@ -68,7 +68,14 @@ import Observation
         }
         do {
             notCommitted = try await notCommited(directory: directory)
-            commits = try await Process.output(GitLog(directory: directory, number: number))
+            commits = try await Process.output(GitLog(
+                directory: directory,
+                number: number,
+                grep: grep,
+                grepAllMatch: grepAllMatch,
+                s: s,
+                g: g
+            ))
         } catch {
             self.error = error
         }
@@ -137,7 +144,15 @@ import Observation
         do {
             // revisionRangeをlast.hash^で指定すると最初のコミットに到達した際に存在しないのでunknown revisionとエラーになる
             // なのでlast.hashで指定し重複する最初の要素をドロップする
-            commits += try await Process.output(GitLog(directory: directory, number: number + 1, revisionRange: last.hash)).dropFirst()
+            commits += try await Process.output(GitLog(
+                directory: directory,
+                number: number + 1,
+                revisionRange: last.hash,
+                grep: grep,
+                grepAllMatch: grepAllMatch,
+                s: s,
+                g: g
+            )).dropFirst()
         } catch {
             self.error = error
         }

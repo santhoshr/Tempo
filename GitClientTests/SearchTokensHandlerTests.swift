@@ -49,6 +49,14 @@ struct SearchTokensHandlerTests {
         #expect(handledTokens.count == 2 )
     }
 
+    @Test func handleS2() async throws {
+        let oldTokens: [SearchToken] = [.init(kind: .grep, text: "c"), .init(kind: .s, text: "a")]
+        let newTokens: [SearchToken] = [.init(kind: .grep, text: "c"), .init(kind: .s, text: "a"), .init(kind: .s, text: "b"),]
+        let handledTokens = SerachTokensHandler.handle(oldTokens: oldTokens, newTokens: newTokens)
+        #expect(handledTokens == [.init(kind: .grep, text: "c"), .init(kind: .s, text: "b"),] )
+
+    }
+
     @Test func handleSInEdit() async throws {
         let oldTokens: [SearchToken] = [.init(kind: .g, text: "a"), .init(kind: .grep, text: "c")]
         let newTokens: [SearchToken] = [.init(kind: .s, text: "a"), .init(kind: .grep, text: "c")]
@@ -62,6 +70,13 @@ struct SearchTokensHandlerTests {
         let handledTokens = SerachTokensHandler.handle(oldTokens: oldTokens, newTokens: newTokens)
         #expect(handledTokens.last!.kind == .g )
         #expect(handledTokens.count == 2 )
+    }
+
+    @Test func handleG2() async throws {
+        let oldTokens: [SearchToken] = [.init(kind: .grep, text: "c"), .init(kind: .g, text: "a")]
+        let newTokens: [SearchToken] = [.init(kind: .grep, text: "c"), .init(kind: .g, text: "a"), .init(kind: .g, text: "b")]
+        let handledTokens = SerachTokensHandler.handle(oldTokens: oldTokens, newTokens: newTokens)
+        #expect(handledTokens == [.init(kind: .grep, text: "c"), .init(kind: .g, text: "b")])
     }
 
     @Test func handleGInEdit() async throws {

@@ -58,6 +58,9 @@ struct FolderView: View {
             if oldValue != newValue {
                 searchTokens = SerachTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
                 logStore.searchTokens = searchTokens
+                Task {
+                    await refreshModels()
+                }
             }
         })
         .task {

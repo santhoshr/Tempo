@@ -12,10 +12,40 @@ import Observation
 @Observable class LogStore {
     let number = 500
     var directory: URL?
-    private var grep: [String] = []
-    private var grepAllMatch = false
-    private var s = ""
-    private var g = ""
+    private var grep: [String] {
+        searchTokens.filter { token in
+            switch token.kind {
+            case .grep, .grepAllMatch:
+                return true
+            case .g, .s:
+                return false
+            }
+        }.map { $0.text }
+    }
+    private var grepAllMatch: Bool {
+        searchTokens.contains { $0.kind == .grepAllMatch }
+    }
+    private var s: String {
+        searchTokens.filter { token in
+            switch token.kind {
+            case .s:
+                return true
+            default:
+                return false
+            }
+        }.map { $0.text }.first ?? ""
+
+    }
+    private var g: String {
+        searchTokens.filter { token in
+            switch token.kind {
+            case .g:
+                return true
+            default:
+                return false
+            }
+        }.map { $0.text }.first ?? ""
+    }
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
     var notCommitted: NotCommitted?

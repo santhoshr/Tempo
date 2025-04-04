@@ -252,7 +252,6 @@ struct CommitCreateView: View {
                         Label(cachedDiffStat?.deletionsTotal.formatted() ?? "-", systemImage: "minus")
                     }
                     .font(.caption)
-                    .foregroundColor(.secondary)
                     Button("Commit") {
                         Task {
                             do {

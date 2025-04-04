@@ -32,6 +32,12 @@ struct FolderView: View {
                     await logStore.logViewTask(log)
                 }
         }
+        .overlay(content: {
+            if logStore.commits.isEmpty && !searchTokens.isEmpty  {
+                Text("No Commits History")
+                    .foregroundColor(.secondary)
+            }
+        })
         .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
             Picker(selection: $token.kind) {
                 Text("Grep").tag(SearchKind.grep)

@@ -145,10 +145,6 @@ struct CommitCreateView: View {
                             .font(.caption)
                         }
                         .padding(.horizontal)
-
-
-//                        Spacer(minLength: 0)
-//                            .foregroundColor(.accentColor)
                         Button("Stage All") {
                             Task {
                                 do {

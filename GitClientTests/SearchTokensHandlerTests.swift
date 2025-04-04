@@ -85,4 +85,25 @@ struct SearchTokensHandlerTests {
         let handledTokens = SerachTokensHandler.handle(oldTokens: oldTokens, newTokens: newTokens)
         #expect(handledTokens == newTokens )
     }
+
+    @Test func handleAuthor() async throws {
+        let oldTokens: [SearchToken] = [.init(kind: .grep, text: "c"), .init(kind: .s, text: "a")]
+        let newTokens: [SearchToken] = [.init(kind: .grep, text: "c"), .init(kind: .s, text: "a"), .init(kind: .author, text: "a")]
+        let handledTokens = SerachTokensHandler.handle(oldTokens: oldTokens, newTokens: newTokens)
+        #expect(handledTokens == [.init(kind: .grep, text: "c"), .init(kind: .s, text: "a"), .init(kind: .author, text: "a")] )
+    }
+
+    @Test func handleAuthor2() async throws {
+        let oldTokens: [SearchToken] = [.init(kind: .grep, text: "c"), .init(kind: .author, text: "a")]
+        let newTokens: [SearchToken] = [.init(kind: .grep, text: "c"), .init(kind: .author, text: "a"), .init(kind: .author, text: "b")]
+        let handledTokens = SerachTokensHandler.handle(oldTokens: oldTokens, newTokens: newTokens)
+        #expect(handledTokens == [.init(kind: .grep, text: "c"), .init(kind: .author, text: "b")] )
+    }
+
+    @Test func handleAuhorInEdit() async throws {
+        let oldTokens: [SearchToken] = [.init(kind: .author, text: "a"), .init(kind: .grep, text: "c")]
+        let newTokens: [SearchToken] = [.init(kind: .author, text: "a"), .init(kind: .author, text: "c")]
+        let handledTokens = SerachTokensHandler.handle(oldTokens: oldTokens, newTokens: newTokens)
+        #expect(handledTokens == [.init(kind: .author, text: "c")] )
+    }
 }

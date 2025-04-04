@@ -17,7 +17,7 @@ import Observation
             switch token.kind {
             case .grep, .grepAllMatch:
                 return true
-            case .g, .s:
+            case .g, .s, .author:
                 return false
             }
         }.map { $0.text }
@@ -26,25 +26,13 @@ import Observation
         searchTokens.contains { $0.kind == .grepAllMatch }
     }
     private var s: String {
-        searchTokens.filter { token in
-            switch token.kind {
-            case .s:
-                return true
-            default:
-                return false
-            }
-        }.map { $0.text }.first ?? ""
-
+        searchTokens.filter { $0.kind == .s }.map { $0.text }.first ?? ""
     }
     private var g: String {
-        searchTokens.filter { token in
-            switch token.kind {
-            case .g:
-                return true
-            default:
-                return false
-            }
-        }.map { $0.text }.first ?? ""
+        searchTokens.filter { $0.kind == .g }.map { $0.text }.first ?? ""
+    }
+    private var author: String {
+        searchTokens.filter { $0.kind == .author }.map { $0.text }.first ?? ""
     }
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
@@ -74,7 +62,8 @@ import Observation
                 grep: grep,
                 grepAllMatch: grepAllMatch,
                 s: s,
-                g: g
+                g: g,
+                author: author
             ))
         } catch {
             self.error = error
@@ -98,7 +87,8 @@ import Observation
                 grep: grep,
                 grepAllMatch: grepAllMatch,
                 s: s,
-                g: g
+                g: g,
+                author: author
             ))
             let adding = try await Process.output(GitLog(
                 directory: directory,
@@ -106,7 +96,8 @@ import Observation
                 grep: grep,
                 grepAllMatch: grepAllMatch,
                 s: s,
-                g: g
+                g: g,
+                author: author
             ))
             commits = adding + current
         } catch {
@@ -151,7 +142,8 @@ import Observation
                 grep: grep,
                 grepAllMatch: grepAllMatch,
                 s: s,
-                g: g
+                g: g,
+                author: author
             )).dropFirst()
         } catch {
             self.error = error

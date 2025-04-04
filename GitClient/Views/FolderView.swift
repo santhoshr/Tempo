@@ -38,6 +38,7 @@ struct FolderView: View {
                 Text("Grep A").tag(SearchKind.grepAllMatch)
                 Text("S").tag(SearchKind.s)
                 Text("G").tag(SearchKind.g)
+                Text("Author").tag(SearchKind.author)
             } label: {
                 Text(token.text)
             }
@@ -52,6 +53,8 @@ struct FolderView: View {
                     .help("Search commits where the number of occurrences of the specified string has changed (added/removed). Cannot use with 'G'.")
                 Text("G: " + searchText).searchCompletion(SearchToken(kind: .g, text: searchText))
                     .help("Search commits with added/removed lines that match the specified regex. Cannot use with 'S'.")
+                Text("Author: " + searchText).searchCompletion(SearchToken(kind: .author, text: searchText))
+                    .help("Search commits by author matching the given pattern (regular expression).")
             }
         })
         .onChange(of: searchTokens, { oldValue, newValue in

@@ -27,7 +27,7 @@ struct SerachTokensHandler {
             case .s:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch:
+                    case .grep, .grepAllMatch, .author:
                         return true
                     case .s:
                         return token == newToken
@@ -38,12 +38,21 @@ struct SerachTokensHandler {
             case .g:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch:
+                    case .grep, .grepAllMatch, .author:
                         return true
                     case .g:
                         return token == newToken
                     case .s:
                         return false
+                    }
+                }
+            case .author:
+                return newTokens.filter { token in
+                    switch token.kind {
+                    case .grep, .grepAllMatch, .g, .s:
+                        return true
+                    case .author:
+                        return token == newToken
                     }
                 }
             }

@@ -121,24 +121,34 @@ struct CommitCreateView: View {
             .safeAreaInset(edge: .top, spacing: 0, content: {
                 VStack(spacing: 0) {
                     HStack {
-                        VStack(alignment: .leading) {
-                            Text("Staged")
-                            Text("Not Staged")
+                        Button {
+                            Task {
+                                do {
+                                    try await Process.output(GitStash(directory: folder.url))
+                                    onStash()
+                                } catch {
+                                    self.error = error
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "tray.and.arrow.down")
                         }
-                        .lineLimit(1)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .layoutPriority(1)
-                        VStack(alignment: .leading) {
-                            Text(": " + stagedHeaderCaption)
-                            Text(": " + notStagedHeaderCaption)
+                        .help("Stash include untracked")
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                Text("Staged: " + stagedHeaderCaption)
+                                Divider()
+                                    .frame(height: 10)
+                                Text("Not Staged: " + notStagedHeaderCaption)
+                            }
+                            .lineLimit(1)
+                            .font(.caption)
                         }
-                        .lineLimit(1)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        Spacer(minLength: 0)
-                            .foregroundColor(.accentColor)
+                        .padding(.horizontal)
 
+
+//                        Spacer(minLength: 0)
+//                            .foregroundColor(.accentColor)
                         Button("Stage All") {
                             Task {
                                 do {
@@ -180,20 +190,6 @@ struct CommitCreateView: View {
                         .disabled(cachedDiffRaw.isEmpty)
                         .padding(.leading, 7)
                         .layoutPriority(2)
-                        Button {
-                            Task {
-                                do {
-                                    try await Process.output(GitStash(directory: folder.url))
-                                    onStash()
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        } label: {
-                            Image(systemName: "tray.and.arrow.down")
-                        }
-                        .help("Stash include untracked")
-                        .padding(.leading, 7)
                     }
                     .textSelection(.disabled)
                     .padding(.vertical, 10)

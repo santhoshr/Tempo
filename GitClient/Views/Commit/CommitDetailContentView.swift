@@ -91,7 +91,8 @@ struct CommitDetailContentView: View {
                             Spacer()
                             Text(commit.authorDateDisplay)
                         }
-                        .padding(.top, 6)
+                        .padding(.top)
+                        .padding(.top, 8)
                         .foregroundStyle(.secondary)
                         Divider()
                             .padding(.top)

@@ -31,6 +31,10 @@ This app provides the following Git features:
     - Filter
 - Stash
     - Apply
+- Search Commits
+    - Commit Message
+    - Changed(added/removed)
+    - Author
 
 ## Installation
 

@@ -141,8 +141,7 @@ struct CommitCreateView: View {
                                     .frame(height: 10)
                                 Text("Not Staged: " + notStagedHeaderCaption)
                             }
-                            .lineLimit(1)
-                            .font(.caption)
+                            .font(.callout)
                         }
                         .padding(.horizontal)
                         Button("Stage All") {

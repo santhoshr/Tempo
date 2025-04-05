@@ -11,6 +11,7 @@ struct CommitDetailContentView: View {
     var commit: Commit
     var folder: Folder
     @State private var commitDetail: CommitDetail?
+    @State private var shortstat = ""
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var mergedIn: Commit?
     @State private var error: Error?
@@ -90,10 +91,15 @@ struct CommitDetailContentView: View {
                             Spacer()
                             Text(commit.authorDateDisplay)
                         }
-                        .padding(.top, 6)
+                        .padding(.top)
+                        .padding(.top, 8)
                         .foregroundStyle(.secondary)
                         Divider()
                             .padding(.top)
+                        Text(shortstat)
+//                            .font(.callout)
+                            .padding(.vertical, 6)
+                        Divider()
                         if commit.parentHashes.count == 2 {
                             MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
                         } else {
@@ -146,6 +152,11 @@ struct CommitDetailContentView: View {
                 fileDiffs = newValue.diff.fileDiffs.map { .init(isExpanded: true, model: $0) }
             } else {
                 fileDiffs = []
+            }
+        })
+        .onChange(of: commit, initial: true, { _, commit in
+            Task {
+                shortstat = (try? await Process.output(GitShowShortstat(directory: folder.url, object: commit.hash))) ?? ""
             }
         })
         .errorAlert($error)

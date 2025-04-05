@@ -21,6 +21,6 @@ struct GitShowShortstat: Git {
 
     func parse(for stdOut: String) throws -> String {
         guard !stdOut.isEmpty else { throw GenericError(errorDescription: "Parse error: stdOut is empty.") }
-        return String(stdOut.split(separator: "\n").last ?? "")
+        return String(stdOut.split(separator: "\n").last ?? "").trimmingCharacters(in: .whitespaces)
     }
 }

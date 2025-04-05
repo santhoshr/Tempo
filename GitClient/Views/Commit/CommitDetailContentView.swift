@@ -11,6 +11,7 @@ struct CommitDetailContentView: View {
     var commit: Commit
     var folder: Folder
     @State private var commitDetail: CommitDetail?
+    @State private var shortstat = ""
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var mergedIn: Commit?
     @State private var error: Error?
@@ -146,6 +147,11 @@ struct CommitDetailContentView: View {
                 fileDiffs = newValue.diff.fileDiffs.map { .init(isExpanded: true, model: $0) }
             } else {
                 fileDiffs = []
+            }
+        })
+        .onChange(of: commit, initial: true, { _, commit in
+            Task {
+                shortstat = (try? await Process.output(GitShowShortstat(directory: folder.url, object: commit.hash))) ?? ""
             }
         })
         .errorAlert($error)

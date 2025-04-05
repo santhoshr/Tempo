@@ -1,5 +1,5 @@
 //
-//  GitShowStat.swift
+//  GitShowShortstat.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2025/04/05.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GitShowStat: Git {
+struct GitShowShortstat: Git {
     var arguments: [String] {
         [
             "git",

@@ -45,6 +45,7 @@ struct GitLog: Git {
         if !s.isEmpty {
             args.append("-S")
             args.append(s)
+            args.append("--pickaxe-regex")
         }
         if !g.isEmpty {
             args.append("-G")

@@ -58,7 +58,7 @@ struct FolderView: View {
                 Text("Changed: " + searchText).searchCompletion(SearchToken(kind: .g, text: searchText))
                     .help("Search commits with added/removed lines that match the specified regex. ")
                 Text("Changed(Occurrences): " + searchText).searchCompletion(SearchToken(kind: .s, text: searchText))
-                    .help("Search commits where the number of occurrences of the specified string has changed (added/removed).")
+                    .help("Search commits where the number of occurrences of the specified regex has changed (added/removed).")
                 Text("Author: " + searchText).searchCompletion(SearchToken(kind: .author, text: searchText))
                     .help("Search commits by author matching the given pattern (regular expression).")
             }

@@ -12,7 +12,7 @@ struct StageFileDiffHeaderView: View {
 
     var body: some View {
         HStack {
-            FilenameView(toFilePath: fileDiff.toFilePath, filePathDisplay: fileDiff.filePathDisplay)
+            FileNameView(toFilePath: fileDiff.toFilePath, filePathDisplay: fileDiff.filePathDisplay)
                 .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
             Spacer()
         }

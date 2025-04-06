@@ -1,5 +1,5 @@
 //
-//  FilenameView.swift
+//  FileNameView.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2025/04/06.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FilenameView: View {
+struct FileNameView: View {
     var toFilePath: String
     var filePathDisplay: String
 
@@ -32,21 +32,21 @@ struct FilenameView: View {
 
 #Preview {
     HStack {
-        FilenameView(
+        FileNameView(
             toFilePath: "Sources/MyFeature/File.swift",
             filePathDisplay: "Sources/MyFeature/File.swift"
         )
         Spacer()
     }
     HStack {
-        FilenameView(
+        FileNameView(
             toFilePath: "Sources/MyFeature/File.py",
             filePathDisplay: "Sources/MyFeature/File.py"
         )
         Spacer()
     }
     HStack {
-        FilenameView(
+        FileNameView(
             toFilePath: "Sources/MyFeature/File.pbj",
             filePathDisplay: "Sources/MyFeature/File.pbj"
         )

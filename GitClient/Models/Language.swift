@@ -7,9 +7,19 @@
 
 import Foundation
 import Sourceful
+import SwiftUI
 
 enum Language: String {
     case swift, python, javascript, typescript, java, kotlin, c, cpp, csharp, ruby, php, go, rust, shell, perl, html, css, markdown, ocaml
+
+    var thumbnail: SwiftUI.Image {
+        switch self {
+        case .swift:
+            return .init("Swift")
+        default:
+            return .init(systemName: "document")
+        }
+    }
 
     private static func detect(filePath: String) -> Language? {
         let ext = URL(fileURLWithPath: String(filePath)).pathExtension.lowercased()
@@ -54,5 +64,4 @@ enum Language: String {
             return PlainLexer()
         }
     }
-
 }

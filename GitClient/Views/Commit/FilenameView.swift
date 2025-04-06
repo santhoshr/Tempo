@@ -12,9 +12,15 @@ struct FilenameView: View {
     var filePathDisplay: String
 
     var body: some View {
-        Text(filePathDisplay)
-            .fontWeight(.bold)
-            .font(Font.system(.body, design: .default))
+        HStack {
+            Language.thumbnail(filePath: toFilePath)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20)
+            Text(filePathDisplay)
+                .fontWeight(.bold)
+                .font(Font.system(.body, design: .default))
+        }
     }
 }
 
@@ -22,5 +28,9 @@ struct FilenameView: View {
     FilenameView(
         toFilePath: "Sources/MyFeature/File.swift",
         filePathDisplay: "Sources/MyFeature/File.swift"
+    )
+    FilenameView(
+        toFilePath: "Sources/MyFeature/File.pbj",
+        filePathDisplay: "Sources/MyFeature/File.pbj"
     )
 }

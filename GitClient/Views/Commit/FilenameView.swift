@@ -40,6 +40,13 @@ struct FilenameView: View {
     }
     HStack {
         FilenameView(
+            toFilePath: "Sources/MyFeature/File.py",
+            filePathDisplay: "Sources/MyFeature/File.py"
+        )
+        Spacer()
+    }
+    HStack {
+        FilenameView(
             toFilePath: "Sources/MyFeature/File.pbj",
             filePathDisplay: "Sources/MyFeature/File.pbj"
         )

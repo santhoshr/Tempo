@@ -60,6 +60,8 @@ enum Language: String {
         switch detect(filePath: filePath) {
         case .swift:
             return "Swift"
+        case .python:
+            return "python"
         default:
             return nil
         }

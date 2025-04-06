@@ -10,10 +10,8 @@ import SwiftUI
 struct FileNameView: View {
     @Environment(\.openURL) private var openURL
 
-    @State var isHover = false
     var toFilePath: String
     var filePathDisplay: String
-
 
     var body: some View {
         HStack {
@@ -30,13 +28,9 @@ struct FileNameView: View {
             Text(filePathDisplay)
                 .fontWeight(.bold)
                 .font(Font.system(.body, design: .default))
-            if isHover {
-                Image(systemName: "arrow.right.circle.fill")
-            }
+            Image(systemName: "arrow.right.circle.fill")
+                .foregroundStyle(.tertiary)
             Spacer()
-        }
-        .onHover { hover in
-            isHover = hover
         }
     }
 }

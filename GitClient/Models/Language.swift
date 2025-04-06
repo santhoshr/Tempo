@@ -66,6 +66,8 @@ enum Language: String {
             return "ruby"
         case .rust:
             return "rust"
+        case .javascript:
+            return "js"
         default:
             return nil
         }

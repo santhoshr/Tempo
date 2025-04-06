@@ -16,7 +16,14 @@ struct FileDiffView: View {
             Section(isExpanded: $expandableFileDiff.isExpanded) {
                 chunksView(expandableFileDiff.model.chunks, filePath: expandableFileDiff.model.toFilePath)
             } header: {
-                FileDiffHeader(expandableFileDiff: $expandableFileDiff, onSelectAllExpanded: onSelectAllExpanded)
+                FileDiffHeader(
+                    isExpanded: $expandableFileDiff.isExpanded,
+                    filePathDisplay: expandableFileDiff.model.filePathDisplay,
+                    header: expandableFileDiff.model.header,
+                    extendedHeaderLines: expandableFileDiff.model.extendedHeaderLines,
+                    fromFileToFileLines: expandableFileDiff.model.fromFileToFileLines,
+                    onSelectAllExpanded: onSelectAllExpanded
+                )
             }
         }
     }

@@ -62,6 +62,8 @@ enum Language: String {
             return "Swift"
         case .python:
             return "python"
+        case .ruby:
+            return "ruby"
         default:
             return nil
         }

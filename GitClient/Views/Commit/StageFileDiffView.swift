@@ -21,9 +21,9 @@ struct StageFileDiffView: View {
     var body: some View {
         Section(isExpanded: $expandableFileDiff.isExpanded) {
             ForEach(fileDiff.chunks) { chunk in
-                HStack {
+                HStack(spacing: 0) {
                     ChunkView(chunk: chunk, filePath: fileDiff.toFilePath)
-                    Spacer()
+                    Spacer(minLength: 0)
                     Button {
                         onSelectChunk?(fileDiff, chunk)
                     } label: {
@@ -32,7 +32,8 @@ struct StageFileDiffView: View {
                     }
                     .buttonStyle(.accessoryBar)
                     .help(selectButtonHelp)
-                    .padding()
+                    .padding(.vertical)
+                    .padding(.trailing)
                 }
                 .padding(.leading)
             }

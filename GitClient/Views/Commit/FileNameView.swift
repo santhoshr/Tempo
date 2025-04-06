@@ -12,6 +12,9 @@ struct FileNameView: View {
 
     var toFilePath: String
     var filePathDisplay: String
+    var fileURL: URL? {
+        current?.appending(path: toFilePath)
+    }
 
     var body: some View {
         HStack {
@@ -30,9 +33,9 @@ struct FileNameView: View {
                 .font(Font.system(.body, design: .default))
             Image(systemName: "arrow.right.circle.fill")
                 .foregroundStyle(.tertiary)
+                .help("Open: " + (fileURL?.absoluteString ?? ""))
                 .onTapGesture {
-                    let url = current?.appending(path: toFilePath)
-                    NSWorkspace.shared.open(url!)
+                    NSWorkspace.shared.open(fileURL!)
                 }
             Spacer()
         }

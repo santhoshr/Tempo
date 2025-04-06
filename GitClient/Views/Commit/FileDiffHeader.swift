@@ -19,7 +19,6 @@ struct FileDiffHeader: View {
     var body: some View {
         HStack {
             FileNameView(toFilePath: toFilePath, filePathDisplay: filePathDisplay)
-                .help(header + "\n" + (extendedHeaderLines + fromFileToFileLines).joined(separator: "\n"))
             Spacer()
             ExpandingButton(
                 isExpanded: $isExpanded,

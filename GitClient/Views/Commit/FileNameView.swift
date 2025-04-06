@@ -17,10 +17,10 @@ struct FileNameView: View {
                 Image(asset)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 20)
+                    .frame(width: 18)
             } else {
                 Image(systemName: "doc")
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                     .fontWeight(.heavy)
             }
             Text(filePathDisplay)

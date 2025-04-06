@@ -7,6 +7,7 @@
 
 import Foundation
 import Sourceful
+import SwiftUI
 
 enum Language: String {
     case swift, python, javascript, typescript, java, kotlin, c, cpp, csharp, ruby, php, go, rust, shell, perl, html, css, markdown, ocaml
@@ -55,4 +56,22 @@ enum Language: String {
         }
     }
 
+    static func assetName(filePath: String) -> String? {
+        switch detect(filePath: filePath) {
+        case .swift:
+            return "Swift"
+        case .python:
+            return "python"
+        case .ruby:
+            return "ruby"
+        case .rust:
+            return "rust"
+        case .javascript:
+            return "js"
+        case .ocaml:
+            return "ocaml"
+        default:
+            return nil
+        }
+    }
 }

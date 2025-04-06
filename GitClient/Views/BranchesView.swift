@@ -80,6 +80,18 @@ struct BranchesView: View {
                     Button("New Branch from \"\(branch.name)\"") {
                         onSelectNewBranchFrom(branch)
                     }
+                    if self.branch != branch {
+                        Button("Delete") {
+                            Task {
+                                do {
+                                    try await Process.output(GitBranchDelete(directory: folder.url, isRemote: isRemote, branchName: branch.name))
+                                    branches = try await Process.output(GitBranch(directory: folder.url, isRemote: isRemote))
+                                } catch {
+                                    self.error = error
+                                }
+                            }
+                        }
+                    }
                 }
             }
             .scrollContentBackground(.hidden)

@@ -24,7 +24,7 @@ struct MergeCommitContentView: View {
                     CommitsView(commits: commits)
                     Divider()
                         .frame(height: 44)
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             Image(systemName: "arrow.triangle.merge")
                             Text("2 parents")

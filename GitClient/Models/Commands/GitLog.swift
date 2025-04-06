@@ -43,10 +43,13 @@ struct GitLog: Git {
             args.append("--all-match")
         }
         if !s.isEmpty {
-            args.append("-S \(s)")
+            args.append("-S")
+            args.append(s)
+            args.append("--pickaxe-regex")
         }
         if !g.isEmpty {
-            args.append("-G \(g)")
+            args.append("-G")
+            args.append(g)
         }
         if !author.isEmpty {
             args.append("--author=\(author)")

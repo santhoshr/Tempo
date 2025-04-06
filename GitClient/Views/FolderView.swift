@@ -40,10 +40,10 @@ struct FolderView: View {
         })
         .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
             Picker(selection: $token.kind) {
-                Text("Grep").tag(SearchKind.grep)
-                Text("Grep A").tag(SearchKind.grepAllMatch)
-                Text("S").tag(SearchKind.s)
-                Text("G").tag(SearchKind.g)
+                Text("Message").tag(SearchKind.grep)
+                Text("Message(A)").tag(SearchKind.grepAllMatch)
+                Text("Changed").tag(SearchKind.g)
+                Text("Changed(O)").tag(SearchKind.s)
                 Text("Author").tag(SearchKind.author)
             } label: {
                 Text(token.text)
@@ -51,14 +51,14 @@ struct FolderView: View {
         })
         .searchSuggestions({
             if !searchText.isEmpty {
-                Text("Grep: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
+                Text("Message: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
                     .help("Search log messages matching the given pattern (regular expression).")
-                Text("Grep All Match: " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
+                Text("Message(All Match): " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
                     .help("Search log messages matching all given patterns instead of at least one.")
-                Text("S: " + searchText).searchCompletion(SearchToken(kind: .s, text: searchText))
-                    .help("Search commits where the number of occurrences of the specified string has changed (added/removed). Cannot use with 'G'.")
-                Text("G: " + searchText).searchCompletion(SearchToken(kind: .g, text: searchText))
-                    .help("Search commits with added/removed lines that match the specified regex. Cannot use with 'S'.")
+                Text("Changed: " + searchText).searchCompletion(SearchToken(kind: .g, text: searchText))
+                    .help("Search commits with added/removed lines that match the specified regex. ")
+                Text("Changed(Occurrences): " + searchText).searchCompletion(SearchToken(kind: .s, text: searchText))
+                    .help("Search commits where the number of occurrences of the specified regex has changed (added/removed).")
                 Text("Author: " + searchText).searchCompletion(SearchToken(kind: .author, text: searchText))
                     .help("Search commits by author matching the given pattern (regular expression).")
             }

@@ -18,6 +18,7 @@ struct FileDiffView: View {
             } header: {
                 FileDiffHeader(
                     isExpanded: $expandableFileDiff.isExpanded,
+                    toFilePath: expandableFileDiff.model.toFilePath,
                     filePathDisplay: expandableFileDiff.model.filePathDisplay,
                     header: expandableFileDiff.model.header,
                     extendedHeaderLines: expandableFileDiff.model.extendedHeaderLines,

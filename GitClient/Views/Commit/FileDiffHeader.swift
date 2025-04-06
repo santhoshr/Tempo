@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FileDiffHeader: View {
     @Binding var isExpanded: Bool
+    var toFilePath: String
     var filePathDisplay: String
     var header: String
     var extendedHeaderLines: [String]
@@ -35,6 +36,7 @@ struct FileDiffHeader: View {
 #Preview {
     FileDiffHeader(
         isExpanded: .constant(true),
+        toFilePath: "Sources/MyFeature/File.swift",
         filePathDisplay: "Sources/MyFeature/File.swift",
         header: "diff --git a/Sources/MyFeature/File.swift b/Sources/MyFeature/File.swift",
         extendedHeaderLines: [

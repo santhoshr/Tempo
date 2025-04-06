@@ -17,10 +17,12 @@ struct GitBranchDelete: Git {
         if isRemote {
             arg.append("-r")
         }
+        arg.append(branchName)
         return arg
     }
     var directory: URL
     var isRemote = false
+    var branchName: String
 
     func parse(for stdOut: String) throws -> Void {}
 }

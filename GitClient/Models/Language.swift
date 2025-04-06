@@ -68,6 +68,8 @@ enum Language: String {
             return "rust"
         case .javascript:
             return "js"
+        case .ocaml:
+            return "ocaml"
         default:
             return nil
         }

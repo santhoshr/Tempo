@@ -61,7 +61,7 @@ enum Language: String {
         case .swift:
             return .init("Swift")
         default:
-            return .init(systemName: "document")
+            return .init(systemName: "doc")
         }
     }
 }

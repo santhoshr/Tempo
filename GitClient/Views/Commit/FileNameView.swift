@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FileNameView: View {
-    @Environment(\.openURL) private var openURL
+    @Environment(\.folder) private var current
 
     var toFilePath: String
     var filePathDisplay: String
@@ -30,6 +30,10 @@ struct FileNameView: View {
                 .font(Font.system(.body, design: .default))
             Image(systemName: "arrow.right.circle.fill")
                 .foregroundStyle(.tertiary)
+                .onTapGesture {
+                    let url = current?.appending(path: toFilePath)
+                    NSWorkspace.shared.open(url!)
+                }
             Spacer()
         }
     }

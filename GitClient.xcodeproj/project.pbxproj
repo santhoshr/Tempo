@@ -24,6 +24,7 @@
 		61347F0028D5D16D00625FC4 /* DiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EFF28D5D16D00625FC4 /* DiffTests.swift */; };
 		614DE8142DA0BFC100FC582E /* GitShowShortstat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614DE8132DA0BF9200FC582E /* GitShowShortstat.swift */; };
 		614DE8162DA0C2E700FC582E /* GitShowShortstatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614DE8152DA0C2E700FC582E /* GitShowShortstatTests.swift */; };
+		614DE8182DA21CFF00FC582E /* FileDiffHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614DE8172DA21CFF00FC582E /* FileDiffHeader.swift */; };
 		6154D69C2C6739C700448AB4 /* CommitMessageSuggestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6154D69B2C6739C700448AB4 /* CommitMessageSuggestionView.swift */; };
 		6156E4EC2C9CE1AF00929F2F /* GitBranchPointsAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6156E4EB2C9CE1AF00929F2F /* GitBranchPointsAt.swift */; };
 		616156252D615C750034B1F1 /* FileDiffTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616156242D615C740034B1F1 /* FileDiffTheme.swift */; };
@@ -148,6 +149,7 @@
 		61347F0B28D5D16D00625FC4 /* GitClientUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitClientUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		614DE8132DA0BF9200FC582E /* GitShowShortstat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitShowShortstat.swift; sourceTree = "<group>"; };
 		614DE8152DA0C2E700FC582E /* GitShowShortstatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitShowShortstatTests.swift; sourceTree = "<group>"; };
+		614DE8172DA21CFF00FC582E /* FileDiffHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDiffHeader.swift; sourceTree = "<group>"; };
 		6154D69B2C6739C700448AB4 /* CommitMessageSuggestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitMessageSuggestionView.swift; sourceTree = "<group>"; };
 		6156E4EB2C9CE1AF00929F2F /* GitBranchPointsAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitBranchPointsAt.swift; sourceTree = "<group>"; };
 		616156242D615C740034B1F1 /* FileDiffTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDiffTheme.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				616156242D615C740034B1F1 /* FileDiffTheme.swift */,
 				61B7F0482C5F3EBF00BFAA34 /* FileDiffsView.swift */,
 				61C03CE12D86F268008186F8 /* FileDiffView.swift */,
+				614DE8172DA21CFF00FC582E /* FileDiffHeader.swift */,
 				61D140D62D640122007BD12D /* ChunkView.swift */,
 				61FAF4932C6835EC000B7ACB /* CommitMessageSnippetView.swift */,
 			);
@@ -658,6 +661,7 @@
 				61EBD7D328E966190009ED92 /* GitSwitch.swift in Sources */,
 				61EBD7D128E940C30009ED92 /* Branch.swift in Sources */,
 				61D34C822CA85DC70032A22A /* EnviromentValues+.swift in Sources */,
+				614DE8182DA21CFF00FC582E /* FileDiffHeader.swift in Sources */,
 				61E290C928E098DB00BCEB04 /* GitLog.swift in Sources */,
 				610134C12C71D5860071677C /* GitFetch.swift in Sources */,
 				61A0D0F82D8502CC005AF36C /* StageFileDiffsView.swift in Sources */,

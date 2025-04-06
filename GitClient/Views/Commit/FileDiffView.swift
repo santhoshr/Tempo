@@ -16,19 +16,7 @@ struct FileDiffView: View {
             Section(isExpanded: $expandableFileDiff.isExpanded) {
                 chunksView(expandableFileDiff.model.chunks, filePath: expandableFileDiff.model.toFilePath)
             } header: {
-                HStack {
-                    Text(expandableFileDiff.model.filePathDisplay)
-                        .fontWeight(.bold)
-                        .help(expandableFileDiff.model.header + "\n" + (expandableFileDiff.model.extendedHeaderLines + expandableFileDiff.model.fromFileToFileLines).joined(separator: "\n"))
-                        .font(Font.system(.body, design: .default))
-                    Spacer()
-                    ExpandingButton(
-                        isExpanded: $expandableFileDiff.isExpanded,
-                        onSelectExpandedAll: onSelectAllExpanded
-                    )
-                    .padding(.vertical)
-                }
-                .background(Color(NSColor.textBackgroundColor).opacity(0.98))
+                FileDiffHeader(expandableFileDiff: $expandableFileDiff, onSelectAllExpanded: onSelectAllExpanded)
             }
         }
     }

@@ -12,10 +12,8 @@ struct StageFileDiffHeaderView: View {
 
     var body: some View {
         HStack {
-            Text(fileDiff.filePathDisplay)
-                .fontWeight(.bold)
+            FilenameView(toFilePath: fileDiff.toFilePath, filePathDisplay: fileDiff.filePathDisplay)
                 .help(fileDiff.header + "\n" + (fileDiff.extendedHeaderLines + fileDiff.fromFileToFileLines).joined(separator: "\n"))
-                .font(Font.system(.body, design: .default))
             Spacer()
         }
         .background(Color(NSColor.textBackgroundColor).opacity(0.98))

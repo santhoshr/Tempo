@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct FileNameView: View {
+    @Environment(\.openURL) private var openURL
+
+    @State var isHover = false
     var toFilePath: String
     var filePathDisplay: String
+
 
     var body: some View {
         HStack {
@@ -26,58 +30,47 @@ struct FileNameView: View {
             Text(filePathDisplay)
                 .fontWeight(.bold)
                 .font(Font.system(.body, design: .default))
+            if isHover {
+                Image(systemName: "arrow.right.circle.fill")
+            }
+            Spacer()
+        }
+        .onHover { hover in
+            isHover = hover
         }
     }
 }
 
 #Preview {
-    HStack {
-        FileNameView(
-            toFilePath: "Sources/MyFeature/File.swift",
-            filePathDisplay: "Sources/MyFeature/File.swift"
-        )
-        Spacer()
-    }
-    HStack {
-        FileNameView(
-            toFilePath: "Sources/MyFeature/File.py",
-            filePathDisplay: "Sources/MyFeature/File.py"
-        )
-        Spacer()
-    }
-    HStack {
-        FileNameView(
-            toFilePath: "Sources/MyFeature/File.rb",
-            filePathDisplay: "Sources/MyFeature/File.rb"
-        )
-        Spacer()
-    }
-    HStack {
-        FileNameView(
-            toFilePath: "Sources/MyFeature/File.rs",
-            filePathDisplay: "Sources/MyFeature/File.rs"
-        )
-        Spacer()
-    }
-    HStack {
-        FileNameView(
-            toFilePath: "Sources/MyFeature/File.js",
-            filePathDisplay: "Sources/MyFeature/File.js"
-        )
-        Spacer()
-    }
-    HStack {
-        FileNameView(
-            toFilePath: "Sources/MyFeature/File.ml",
-            filePathDisplay: "Sources/MyFeature/File.ml"
-        )
-        Spacer()
-    }
-    HStack {
-        FileNameView(
-            toFilePath: "Sources/MyFeature/File.pbj",
-            filePathDisplay: "Sources/MyFeature/File.pbj"
-        )
-        Spacer()
-    }
+
+    FileNameView(
+        toFilePath: "Sources/MyFeature/File.swift",
+        filePathDisplay: "Sources/MyFeature/File.swift"
+    )
+    FileNameView(
+        toFilePath: "Sources/MyFeature/File.py",
+        filePathDisplay: "Sources/MyFeature/File.py"
+    )
+    FileNameView(
+        toFilePath: "Sources/MyFeature/File.rb",
+        filePathDisplay: "Sources/MyFeature/File.rb"
+    )
+    FileNameView(
+        toFilePath: "Sources/MyFeature/File.rs",
+        filePathDisplay: "Sources/MyFeature/File.rs"
+    )
+
+    FileNameView(
+        toFilePath: "Sources/MyFeature/File.js",
+        filePathDisplay: "Sources/MyFeature/File.js"
+    )
+
+    FileNameView(
+        toFilePath: "Sources/MyFeature/File.ml",
+        filePathDisplay: "Sources/MyFeature/File.ml"
+    )
+    FileNameView(
+        toFilePath: "Sources/MyFeature/File.pbj",
+        filePathDisplay: "Sources/MyFeature/File.pbj"
+    )
 }

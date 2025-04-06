@@ -135,11 +135,9 @@ struct CommitCreateView: View {
                         }
                         .help("Stash include untracked")
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack {
+                            HStack(spacing: 16) {
                                 Text("Staged: ").foregroundStyle(.secondary)
                                 + Text(stagedHeaderCaption)
-                                Divider()
-                                    .frame(height: 10)
                                 Text("Not Staged: ").foregroundStyle(.secondary)
                                 + Text(notStagedHeaderCaption)
                             }

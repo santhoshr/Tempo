@@ -80,6 +80,13 @@ struct BranchesView: View {
                     Button("New Branch from \"\(branch.name)\"") {
                         onSelectNewBranchFrom(branch)
                     }
+                    if self.branch != branch {
+                        Button("Delete") {
+                            Task {
+
+                            }
+                        }
+                    }
                 }
             }
             .scrollContentBackground(.hidden)

@@ -13,10 +13,16 @@ struct FilenameView: View {
 
     var body: some View {
         HStack {
-            Language.thumbnail(filePath: toFilePath)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 20)
+            if let asset = Language.assetName(filePath: toFilePath) {
+                Image(asset)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20)
+            } else {
+                Image(systemName: "doc")
+                    .frame(width: 20, height: 20)
+                    .fontWeight(.heavy)
+            }
             Text(filePathDisplay)
                 .fontWeight(.bold)
                 .font(Font.system(.body, design: .default))
@@ -25,12 +31,18 @@ struct FilenameView: View {
 }
 
 #Preview {
-    FilenameView(
-        toFilePath: "Sources/MyFeature/File.swift",
-        filePathDisplay: "Sources/MyFeature/File.swift"
-    )
-    FilenameView(
-        toFilePath: "Sources/MyFeature/File.pbj",
-        filePathDisplay: "Sources/MyFeature/File.pbj"
-    )
+    HStack {
+        FilenameView(
+            toFilePath: "Sources/MyFeature/File.swift",
+            filePathDisplay: "Sources/MyFeature/File.swift"
+        )
+        Spacer()
+    }
+    HStack {
+        FilenameView(
+            toFilePath: "Sources/MyFeature/File.pbj",
+            filePathDisplay: "Sources/MyFeature/File.pbj"
+        )
+        Spacer()
+    }
 }

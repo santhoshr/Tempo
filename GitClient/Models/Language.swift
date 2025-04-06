@@ -56,12 +56,12 @@ enum Language: String {
         }
     }
 
-    static func thumbnail(filePath: String) -> SwiftUI.Image {
+    static func assetName(filePath: String) -> String? {
         switch detect(filePath: filePath) {
         case .swift:
-            return .init("Swift")
+            return "Swift"
         default:
-            return .init(systemName: "doc")
+            return nil
         }
     }
 }

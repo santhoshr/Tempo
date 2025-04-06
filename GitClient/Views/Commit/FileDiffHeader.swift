@@ -18,10 +18,8 @@ struct FileDiffHeader: View {
 
     var body: some View {
         HStack {
-            Text(filePathDisplay)
-                .fontWeight(.bold)
+            FilenameView(toFilePath: toFilePath, filePathDisplay: filePathDisplay)
                 .help(header + "\n" + (extendedHeaderLines + fromFileToFileLines).joined(separator: "\n"))
-                .font(Font.system(.body, design: .default))
             Spacer()
             ExpandingButton(
                 isExpanded: $isExpanded,

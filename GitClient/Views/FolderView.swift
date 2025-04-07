@@ -68,7 +68,9 @@ struct FolderView: View {
                 searchTokens = SerachTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
                 logStore.searchTokens = searchTokens
                 Task {
+                    isLoading = true
                     await refreshModels()
+                    isLoading = false
                 }
             }
         })

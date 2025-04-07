@@ -24,6 +24,7 @@ struct FolderView: View {
     @State private var selectionLogID: String?
     @State private var searchTokens: [SearchToken] = []
     @State private var searchText = ""
+    @State private var searchTask: Task<(), Never>?
 
     var body: some View {
         List(logStore.logs(), selection: $selectionLogID) { log in
@@ -67,8 +68,11 @@ struct FolderView: View {
             if oldValue != newValue {
                 searchTokens = SerachTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
                 logStore.searchTokens = searchTokens
-                Task {
+                searchTask?.cancel()
+                searchTask = Task {
+                    isLoading = true
                     await refreshModels()
+                    isLoading = false
                 }
             }
         })
@@ -147,14 +151,19 @@ struct FolderView: View {
             branch = try await Process.output(GitBranch(directory: folder.url)).current
             logStore.directory = folder.url
             await logStore.refresh()
+            if Task.isCancelled {
+                throw CancellationError()
+            }
             if let selectionLog {
                 let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
         } catch {
-            self.error = error
-            branch = nil
-            logStore.removeAll()
+            if !Task.isCancelled {
+                self.error = error
+                branch = nil
+                logStore.removeAll()
+            }
         }
     }
 

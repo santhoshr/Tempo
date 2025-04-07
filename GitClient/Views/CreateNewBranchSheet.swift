@@ -25,7 +25,7 @@ struct CreateNewBranchSheet: View {
                 }
                 HStack {
                     Text("    to:")
-                    TextField("New Branch name", text: $newBranchName)
+                    TextField("New Branch Name", text: $newBranchName)
                 }
                 HStack {
                     Button("Cancel") {

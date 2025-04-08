@@ -21,6 +21,7 @@ struct FolderView: View {
     @State private var showingStashChanged = false
     @State private var showingTags = false
     @State private var showingCreateNewTagAt: Commit?
+    @State private var showingAmendCommitAt: Commit?
     @State private var branch: Branch?
     @State private var selectionLogID: String?
     @State private var searchTokens: [SearchToken] = []
@@ -341,6 +342,19 @@ struct FolderView: View {
                     }
                     Button("Tag") {
                         showingCreateNewTagAt = commit
+                    }
+                    if commit == logStore.commits.first {
+                        if let notCommitted = logStore.notCommitted {
+                            if notCommitted.diffCached.isEmpty {
+                                Button("Amend") {
+                                    showingAmendCommitAt = commit
+                                }
+                            }
+                        } else {
+                            Button("Amend") {
+                                showingAmendCommitAt = commit
+                            }
+                        }
                     }
                 }
             }

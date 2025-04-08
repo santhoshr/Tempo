@@ -17,6 +17,7 @@ struct FolderView: View {
     @State private var error: Error?
     @State private var showingBranches = false
     @State private var showingCreateNewBranchFrom: Branch?
+    @State private var showingRenameBranch: Branch?
     @State private var showingStashChanged = false
     @State private var showingTags = false
     @State private var showingCreateNewTagAt: Commit?
@@ -104,6 +105,13 @@ struct FolderView: View {
                 }
             }
         })
+        .sheet(item: $showingRenameBranch, onDismiss: {
+            Task {
+                await updateModels()
+            }
+        }, content: { old in
+            RenameBranchSheet(folder: folder, showingRenameBranch: $showingRenameBranch)
+        })
         .sheet(item: $showingCreateNewTagAt, content: { _ in
             CreateNewTagSheet(folder: folder, showingCreateNewTagAt: $showingCreateNewTagAt) {
                 Task {
@@ -170,7 +178,7 @@ struct FolderView: View {
     fileprivate func updateModels() async {
         do {
             let currentBranch = try await Process.output(GitBranch(directory: folder.url)).current
-            guard currentBranch == branch else {
+            guard currentBranch == branch else { // Support for external changes made outside the app (e.g., via CLI)
                 await refreshModels()
                 return
             }
@@ -225,7 +233,7 @@ struct FolderView: View {
                             showingCreateNewBranchFrom = from
                         },
                         onSelectRenameBranch: { old in
-                            // TODO
+                            showingRenameBranch = old
                         }
                     )
                         .tabItem {

@@ -109,7 +109,7 @@ struct FolderView: View {
             Task {
                 await updateModels()
             }
-        }, content: { old in
+        }, content: { _ in
             RenameBranchSheet(folder: folder, showingRenameBranch: $showingRenameBranch)
         })
         .sheet(item: $showingCreateNewTagAt, content: { _ in

@@ -223,6 +223,9 @@ struct FolderView: View {
                         },
                         onSelectNewBranchFrom: { from in
                             showingCreateNewBranchFrom = from
+                        },
+                        onSelectRenameBranch: { old in
+                            // TODO
                         }
                     )
                         .tabItem {
@@ -258,7 +261,6 @@ struct FolderView: View {
                         onSelectNewBranchFrom: { from in
                             showingCreateNewBranchFrom = from
                         }
-
                     )
                         .tabItem {
                             Text("Remotes")

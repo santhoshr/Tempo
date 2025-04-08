@@ -14,6 +14,7 @@ struct BranchesView: View {
     var onSelect: ((Branch) -> Void)
     var onSelectMergeInto: ((Branch) -> Void)
     var onSelectNewBranchFrom: ((Branch) -> Void)
+    var onSelectRenameBranch: ((Branch) -> Void)?
     @State private var branches: [Branch] = []
     @State private var error: Error?
     @State private var selectedBranch: Branch?
@@ -80,6 +81,11 @@ struct BranchesView: View {
                     Button("New Branch from \"\(branch.name)\"") {
                         onSelectNewBranchFrom(branch)
                     }
+                    if !isRemote {
+                        Button("Rename") {
+                            onSelectRenameBranch?(branch)
+                        }
+                    }
                     if self.branch != branch {
                         Button("Delete") {
                             Task {
@@ -114,7 +120,8 @@ struct BranchesView_Previews: PreviewProvider {
             folder: .init(url: .init(string: "file://hoge")!),
             onSelect: { _ in }, 
             onSelectMergeInto: { _ in },
-            onSelectNewBranchFrom: { _ in }
+            onSelectNewBranchFrom: { _ in },
+            onSelectRenameBranch: { _ in }
         )
     }
 }

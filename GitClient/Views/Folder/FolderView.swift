@@ -123,6 +123,13 @@ struct FolderView: View {
         .sheet(isPresented: $showingStashChanged, content: {
             StashChangedView(folder: folder, showingStashChanged: $showingStashChanged)
         })
+//        .sheet(isPresented: $showingAmendCommitAt, content: {
+//            AmendCommitSheet(folder: folder, showingAmendCommitAt: $showingAmendCommitAt) {
+//                Task {
+//                    await refreshModels()
+//                }
+//            }
+//        })
         .navigationTitle(branch?.name ?? "")
         .toolbar {
             navigationToolbar()

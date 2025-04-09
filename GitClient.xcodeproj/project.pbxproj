@@ -403,9 +403,8 @@
 				61702D142C9E8FBC00FE7E35 /* Tags */,
 				616C6FC72C96E3F000A419DE /* StashChanged */,
 				61F5B7AB2CBA1978005C736E /* Commit */,
+				6199ED3B2DA7403300D916EE /* Folder */,
 				61347EEF28D5D16C00625FC4 /* ContentView.swift */,
-				61E290C228DFE29500BCEB04 /* FolderView.swift */,
-				6199ED382DA73E8800D916EE /* CommitRowView.swift */,
 				6180C0A728E916B900B3AEAD /* BranchesView.swift */,
 				619D876028F154AB00DD1D4E /* CreateNewBranchSheet.swift */,
 				6185846C2DA562B10038EBBE /* RenameBranchSheet.swift */,
@@ -414,6 +413,15 @@
 				619DA6922CA62A1000E58DF9 /* SettingsView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		6199ED3B2DA7403300D916EE /* Folder */ = {
+			isa = PBXGroup;
+			children = (
+				6199ED382DA73E8800D916EE /* CommitRowView.swift */,
+				61E290C228DFE29500BCEB04 /* FolderView.swift */,
+			);
+			path = Folder;
 			sourceTree = "<group>";
 		};
 		61A2D35828DE9D79009A3EEC /* Extensions */ = {

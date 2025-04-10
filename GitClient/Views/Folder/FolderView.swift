@@ -71,15 +71,13 @@ struct FolderView: View {
             }
         })
         .onChange(of: searchTokens, { oldValue, newValue in
-            if oldValue != newValue {
-                searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
-                logStore.searchTokens = searchTokens
-                searchTask?.cancel()
-                searchTask = Task {
-                    isLoading = true
-                    await refreshModels()
-                    isLoading = false
-                }
+            searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
+            logStore.searchTokens = searchTokens
+            searchTask?.cancel()
+            searchTask = Task {
+                isLoading = true
+                await refreshModels()
+                isLoading = false
             }
         })
         .task {

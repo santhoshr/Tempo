@@ -19,7 +19,7 @@ struct RenameBranchSheet: View {
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {
-                    Text("Old:  \(showingRenameBranch?.name ?? "")")
+                    Text("  Old:  \(showingRenameBranch?.name ?? "")")
                         .textSelection(.enabled)
                 }
                 HStack {

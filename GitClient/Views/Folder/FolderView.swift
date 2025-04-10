@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Showing {
+private struct FolderViewShowing {
     var branches = false
     var createNewBranchFrom: Branch?
     var renameBranch: Branch?
@@ -25,7 +25,7 @@ struct FolderView: View {
     @State private var logStore = LogStore()
     @State private var isLoading = false
     @State private var error: Error?
-    @State private var showing = Showing()
+    @State private var showing = FolderViewShowing()
     @State private var branch: Branch?
     @State private var selectionLogID: String?
     @State private var searchTokens: [SearchToken] = []

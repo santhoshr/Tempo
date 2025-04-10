@@ -39,6 +39,7 @@ struct SyncStateTests {
     @Test func shouldPush() async throws {
         let branch = "_test-fixture-should-push"
         try await Process.output(GitSwitch(directory: .testFixture!, branchName: branch))
+        try await Process.output(GitRevert(directory: .testFixture!, commit: "head"))
         let state = SyncState()
         state.folderURL = .testFixture!
         state.branchName = branch

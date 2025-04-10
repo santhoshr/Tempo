@@ -319,9 +319,9 @@ struct FolderView: View {
                             Task {
                                 do {
                                     if commit.parentHashes.count == 2 {
-                                        try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash, parentNumber: 1))
+                                        try await Process.output(GitRevert(directory: folder.url,  parentNumber: 1, commit: commit.hash))
                                     } else {
-                                        try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
+                                        try await Process.output(GitRevert(directory: folder.url, commit: commit.hash))
                                     }
                                     await refreshModels()
                                 } catch {

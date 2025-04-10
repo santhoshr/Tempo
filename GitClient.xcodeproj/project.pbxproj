@@ -343,6 +343,15 @@
 			path = GitClientUITests;
 			sourceTree = "<group>";
 		};
+		613D140D2DA7B7B6008D561E /* Observables */ = {
+			isa = PBXGroup;
+			children = (
+				61D34C8E2CAEBDB90032A22A /* LogStore.swift */,
+				613D14072DA782E9008D561E /* SyncState.swift */,
+			);
+			path = Observables;
+			sourceTree = "<group>";
+		};
 		616C6FC72C96E3F000A419DE /* StashChanged */ = {
 			isa = PBXGroup;
 			children = (
@@ -398,8 +407,7 @@
 				61D34C7C2CA7A3FC0032A22A /* KeychainStorage.swift */,
 				616156262D637E630034B1F1 /* Language.swift */,
 				61CAE5692D899E7E003541ED /* ExpandableModel.swift */,
-				61D34C8E2CAEBDB90032A22A /* LogStore.swift */,
-				613D14072DA782E9008D561E /* SyncState.swift */,
+				613D140D2DA7B7B6008D561E /* Observables */,
 			);
 			path = Models;
 			sourceTree = "<group>";

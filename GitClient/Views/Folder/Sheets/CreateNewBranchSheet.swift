@@ -20,12 +20,17 @@ struct CreateNewBranchSheet: View {
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {
-                    Text("from:  \(showingCreateNewBranchFrom?.name ?? "")")
-                        .textSelection(.enabled)
-                }
-                HStack {
-                    Text("    to:")
-                    TextField("New branch name", text: $newBranchName)
+                    VStack(alignment: .trailing) {
+                        Text("from:")
+                        Text("to:")
+                            .padding(.vertical, 2)
+                    }
+                    VStack(alignment: .leading) {
+                        Text(showingCreateNewBranchFrom?.name ?? "")
+                            .textSelection(.enabled)
+                            .padding(.horizontal, 4)
+                        TextField("New branch name", text: $newBranchName)
+                    }
                 }
                 HStack {
                     Button("Cancel") {

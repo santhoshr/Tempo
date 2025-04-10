@@ -72,7 +72,7 @@ struct FolderView: View {
         })
         .onChange(of: searchTokens, { oldValue, newValue in
             if oldValue != newValue {
-                searchTokens = SerachTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
+                searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
                 logStore.searchTokens = searchTokens
                 searchTask?.cancel()
                 searchTask = Task {

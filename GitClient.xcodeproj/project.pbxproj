@@ -336,6 +336,17 @@
 			path = GitClientUITests;
 			sourceTree = "<group>";
 		};
+		613D14062DA756C0008D561E /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				619D876028F154AB00DD1D4E /* CreateNewBranchSheet.swift */,
+				6185846C2DA562B10038EBBE /* RenameBranchSheet.swift */,
+				61702D152C9EE94600FE7E35 /* CreateNewTagSheet.swift */,
+				6186EBF82DA5ED4800DCC20E /* AmendCommitSheet.swift */,
+			);
+			path = Sheets;
+			sourceTree = "<group>";
+		};
 		616C6FC72C96E3F000A419DE /* StashChanged */ = {
 			isa = PBXGroup;
 			children = (
@@ -406,10 +417,6 @@
 				6199ED3B2DA7403300D916EE /* Folder */,
 				61347EEF28D5D16C00625FC4 /* ContentView.swift */,
 				6180C0A728E916B900B3AEAD /* BranchesView.swift */,
-				619D876028F154AB00DD1D4E /* CreateNewBranchSheet.swift */,
-				6185846C2DA562B10038EBBE /* RenameBranchSheet.swift */,
-				61702D152C9EE94600FE7E35 /* CreateNewTagSheet.swift */,
-				6186EBF82DA5ED4800DCC20E /* AmendCommitSheet.swift */,
 				619DA6922CA62A1000E58DF9 /* SettingsView.swift */,
 			);
 			path = Views;
@@ -418,6 +425,7 @@
 		6199ED3B2DA7403300D916EE /* Folder */ = {
 			isa = PBXGroup;
 			children = (
+				613D14062DA756C0008D561E /* Sheets */,
 				6199ED382DA73E8800D916EE /* CommitRowView.swift */,
 				61E290C228DFE29500BCEB04 /* FolderView.swift */,
 			);

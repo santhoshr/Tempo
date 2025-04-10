@@ -385,7 +385,7 @@ struct FolderView: View {
         return Circle()
             .fill(Color.accentColor)
             .foregroundColor(.white)
-            .padding(4)
+            .padding(3)
             .offset(x: 8, y: -8)
     }
     

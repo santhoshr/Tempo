@@ -343,15 +343,6 @@
 			path = GitClientUITests;
 			sourceTree = "<group>";
 		};
-		613D140D2DA7B7B6008D561E /* Observables */ = {
-			isa = PBXGroup;
-			children = (
-				61D34C8E2CAEBDB90032A22A /* LogStore.swift */,
-				613D14072DA782E9008D561E /* SyncState.swift */,
-			);
-			path = Observables;
-			sourceTree = "<group>";
-		};
 		613D14062DA756C0008D561E /* Sheets */ = {
 			isa = PBXGroup;
 			children = (
@@ -361,6 +352,15 @@
 				6186EBF82DA5ED4800DCC20E /* AmendCommitSheet.swift */,
 			);
 			path = Sheets;
+			sourceTree = "<group>";
+		};
+		613D140D2DA7B7B6008D561E /* Observables */ = {
+			isa = PBXGroup;
+			children = (
+				61D34C8E2CAEBDB90032A22A /* LogStore.swift */,
+				613D14072DA782E9008D561E /* SyncState.swift */,
+			);
+			path = Observables;
 			sourceTree = "<group>";
 		};
 		616C6FC72C96E3F000A419DE /* StashChanged */ = {
@@ -931,7 +931,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.aoyama.tempo;
 				PRODUCT_NAME = Tempo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -964,7 +964,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.aoyama.tempo;
 				PRODUCT_NAME = Tempo;
 				PROVISIONING_PROFILE_SPECIFIER = "";

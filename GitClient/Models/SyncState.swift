@@ -22,6 +22,12 @@ import Observation
             return
         }
         try await Process.output(GitFetch(directory: folder.url))
-        shouldPull = !(try await Process.output(GitLog(directory: folder.url, revisionRange: "\(branch.name)..origin/\(branch.name)" )).isEmpty)
+        shouldPull = !(try await Process.output(GitLog(directory: folder.url, revisionRange: "\(branch.name)..origin/\(branch.name)")).isEmpty)
+        let localOnlyBranch = try await Process.output(GitShowref(directory: folder.url, pattern: "refs/remotes/origin/\(branch.name)")).isEmpty
+        if localOnlyBranch {
+            shouldPush = true
+        } else {
+            shouldPush = !(try await Process.output(GitLog(directory: folder.url, revisionRange: "origin/\(branch.name)..\(branch.name)")).isEmpty)
+        }
     }
 }

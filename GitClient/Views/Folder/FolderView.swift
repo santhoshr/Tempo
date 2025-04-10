@@ -394,6 +394,14 @@ struct FolderView: View {
             }
         } label: {
             Image(systemName: "arrow.down")
+                .overlay(alignment: .topTrailing, content: {
+                    if syncState.shouldPull {
+                        Circle().fill(Color.accentColor)
+                            .foregroundColor(.white)
+                            .padding(4)
+                            .offset(x: 8, y: -8)
+                    }
+                })
         }
         .help("Pull")
     }
@@ -412,6 +420,14 @@ struct FolderView: View {
             }
         } label: {
             Image(systemName: "arrow.up")
+                .overlay(alignment: .topTrailing, content: {
+                    if syncState.shouldPush {
+                        Circle().fill(Color.accentColor)
+                            .foregroundColor(.white)
+                            .padding(4)
+                            .offset(x: 8, y: -8)
+                    }
+                })
         }
         .help("Push origin HEAD")
     }

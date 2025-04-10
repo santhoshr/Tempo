@@ -70,6 +70,9 @@ struct FolderView: View {
                     .help("Search commits by author matching the given pattern (regular expression).")
             }
         })
+        .task {
+            await refreshModels()
+        }
         .onChange(of: searchTokens, { oldValue, newValue in
             searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
             logStore.searchTokens = searchTokens
@@ -80,9 +83,6 @@ struct FolderView: View {
                 isLoading = false
             }
         })
-        .task {
-            await refreshModels()
-        }
         .onChange(of: selectionLogID, {
             selectionLog = logStore.logs().first { $0.id == selectionLogID }
         })

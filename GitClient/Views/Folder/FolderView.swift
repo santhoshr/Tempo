@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Showing {
+private struct FolderViewShowing {
     var branches = false
     var createNewBranchFrom: Branch?
     var renameBranch: Branch?
@@ -26,7 +26,7 @@ struct FolderView: View {
     @State private var syncState = SyncState()
     @State private var isLoading = false
     @State private var error: Error?
-    @State private var showing = Showing()
+    @State private var showing = FolderViewShowing()
     @State private var branch: Branch?
     @State private var selectionLogID: String?
     @State private var searchTokens: [SearchToken] = []
@@ -71,21 +71,19 @@ struct FolderView: View {
                     .help("Search commits by author matching the given pattern (regular expression).")
             }
         })
-        .onChange(of: searchTokens, { oldValue, newValue in
-            if oldValue != newValue {
-                searchTokens = SerachTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
-                logStore.searchTokens = searchTokens
-                searchTask?.cancel()
-                searchTask = Task {
-                    isLoading = true
-                    await refreshModels()
-                    isLoading = false
-                }
-            }
-        })
         .task {
             await refreshModels()
         }
+        .onChange(of: searchTokens, { oldValue, newValue in
+            searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
+            logStore.searchTokens = searchTokens
+            searchTask?.cancel()
+            searchTask = Task {
+                isLoading = true
+                await refreshModels()
+                isLoading = false
+            }
+        })
         .onChange(of: selectionLogID, {
             selectionLog = logStore.logs().first { $0.id == selectionLogID }
         })

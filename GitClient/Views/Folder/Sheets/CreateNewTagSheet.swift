@@ -16,7 +16,7 @@ struct CreateNewTagSheet: View {
 
     var body: some View {
         VStack {
-            Text("Create new tag")
+            Text("Create New Tag")
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {
@@ -24,8 +24,8 @@ struct CreateNewTagSheet: View {
                         .textSelection(.enabled)
                 }
                 HStack {
-                    Text("tagname:")
-                    TextField("New Tagname", text: $newTagname)
+                    Text("tag name:")
+                    TextField("New tag name", text: $newTagname)
                 }
                 HStack {
                     Button("Cancel") {

@@ -16,7 +16,7 @@ struct AmendCommitSheet: View {
 
     var body: some View {
         VStack {
-            Text("Amend commit with a new message")
+            Text("Amend Commit with a New Message")
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {

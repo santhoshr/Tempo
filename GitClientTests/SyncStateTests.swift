@@ -24,7 +24,8 @@ struct SyncStateTests {
     }
 
     @Test func newBranch() async throws {
-        let branch = "_test-fixture-should-push-because-new-branch"
+        let branch = "_test-fixture-should-push-because-new-branch2"
+        let _ = try? await Process.output(GitCheckoutB(directory: .testFixture!, newBranchName: branch, startPoint: "_test-fixture"))
         try await Process.output(GitSwitch(directory: .testFixture!, branchName: branch))
         let state = SyncState()
         state.folderURL = .testFixture!

@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+struct Showing {
+    var branches = false
+    var createNewBranchFrom: Branch?
+    var renameBranch: Branch?
+    var stashChanged = false
+    var tags = false
+    var createNewTagAt: Commit?
+    var amendCommitAt: Commit?
+}
+
 struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
@@ -15,12 +25,7 @@ struct FolderView: View {
     @State private var logStore = LogStore()
     @State private var isLoading = false
     @State private var error: Error?
-    @State private var showingBranches = false
-    @State private var showingCreateNewBranchFrom: Branch?
-    @State private var showingRenameBranch: Branch?
-    @State private var showingStashChanged = false
-    @State private var showingTags = false
-    @State private var showingCreateNewTagAt: Commit?
+    @State private var showing = Showing()
     @State private var branch: Branch?
     @State private var selectionLogID: String?
     @State private var searchTokens: [SearchToken] = []
@@ -98,29 +103,36 @@ struct FolderView: View {
         })
         .errorAlert($error)
         .errorAlert($logStore.error)
-        .sheet(item: $showingCreateNewBranchFrom, content: { _ in
-            CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showingCreateNewBranchFrom) {
+        .sheet(item: $showing.createNewBranchFrom, content: { _ in
+            CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showing.createNewBranchFrom) {
                 Task {
                     await refreshModels()
                 }
             }
         })
-        .sheet(item: $showingRenameBranch, onDismiss: {
+        .sheet(item: $showing.renameBranch, onDismiss: {
             Task {
                 await updateModels()
             }
         }, content: { _ in
-            RenameBranchSheet(folder: folder, showingRenameBranch: $showingRenameBranch)
+            RenameBranchSheet(folder: folder, showingRenameBranch: $showing.renameBranch)
         })
-        .sheet(item: $showingCreateNewTagAt, content: { _ in
-            CreateNewTagSheet(folder: folder, showingCreateNewTagAt: $showingCreateNewTagAt) {
+        .sheet(item: $showing.createNewTagAt, content: { _ in
+            CreateNewTagSheet(folder: folder, showingCreateNewTagAt: $showing.createNewTagAt) {
                 Task {
                     await refreshModels()
                 }
             }
         })
-        .sheet(isPresented: $showingStashChanged, content: {
-            StashChangedView(folder: folder, showingStashChanged: $showingStashChanged)
+        .sheet(item: $showing.amendCommitAt, content: { _ in
+            AmendCommitSheet(folder: folder, showingAmendCommitAt: $showing.amendCommitAt) {
+                Task {
+                    await refreshModels()
+                }
+            }
+        })
+        .sheet(isPresented: $showing.stashChanged, content: {
+            StashChangedView(folder: folder, showingStashChanged: $showing.stashChanged)
         })
         .navigationTitle(branch?.name ?? "")
         .toolbar {
@@ -138,7 +150,7 @@ struct FolderView: View {
                 pushButton()
             }
         }
-        .onChange(of: showingStashChanged) { _, new in
+        .onChange(of: showing.stashChanged) { _, new in
             if !new {
                 Task {
                     await updateModels()
@@ -196,12 +208,12 @@ struct FolderView: View {
     fileprivate func navigationToolbar() -> ToolbarItem<(), some View> {
         return ToolbarItem(placement: .navigation) {
             Button {
-                showingBranches.toggle()
+                showing.branches.toggle()
             } label: {
                 Image(systemName: "chevron.down")
             }
             .help("Select Branch")
-            .popover(isPresented: $showingBranches) {
+            .popover(isPresented: $showing.branches) {
                 TabView {
                     BranchesView(
                         folder: folder,
@@ -216,7 +228,7 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showingBranches = false
+                                showing.branches = false
                             }
                         }, onSelectMergeInto: { mergeIntoBranch in
                             Task {
@@ -226,14 +238,14 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showingBranches = false
+                                showing.branches = false
                             }
                         },
                         onSelectNewBranchFrom: { from in
-                            showingCreateNewBranchFrom = from
+                            showing.createNewBranchFrom = from
                         },
                         onSelectRenameBranch: { old in
-                            showingRenameBranch = old
+                            showing.renameBranch = old
                         }
                     )
                         .tabItem {
@@ -253,7 +265,7 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showingBranches = false
+                                showing.branches = false
                             }
                         }, onSelectMergeInto: { mergeIntoBranch in
                             Task {
@@ -263,11 +275,11 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showingBranches = false
+                                showing.branches = false
                             }
                         },
                         onSelectNewBranchFrom: { from in
-                            showingCreateNewBranchFrom = from
+                            showing.createNewBranchFrom = from
                         }
                     )
                         .tabItem {
@@ -280,69 +292,56 @@ struct FolderView: View {
         }
     }
 
-    fileprivate func logsRow(_ log: Log) -> VStack<_ConditionalContent<Text, some View>> {
+    fileprivate func logsRow(_ log: Log) -> some View {
         return VStack {
             switch log {
             case .notCommitted:
                 Text("Not Committed")
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
-                VStack (alignment: .leading) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(commit.title)
-                        Spacer()
-                        Text(commit.hash.prefix(5))
-                            .foregroundStyle(.tertiary)
-                        if commit.parentHashes.count == 2 {
-                            Image(systemName: "arrow.triangle.merge")
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
-                    HStack {
-                        AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 14*3)) { image in
-                            image.resizable()
-                        } placeholder: {
-                            RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular)
-                                .foregroundStyle(.quinary)
-                        }
-                            .frame(width: 14, height: 14)
-                            .clipShape(RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular))
-                        Text(commit.author)
-                        Spacer()
-                        Text(commit.authorDateRelative)
-                    }
-                    .lineLimit(1)
-                    .foregroundStyle(.tertiary)
-                }
-                .contextMenu {
-                    Button("Checkout") {
-                        Task {
-                            do {
-                                try await Process.output(GitCheckout(directory: folder.url, commitHash: commit.hash))
-                                await refreshModels()
-                            } catch {
-                                self.error = error
-                            }
-                        }
-                    }
-                    Button("Revert" + (commit.parentHashes.count == 2 ? " -m 1 (\(commit.parentHashes[0].prefix(7)))" : "")) {
-                        Task {
-                            do {
-                                if commit.parentHashes.count == 2 {
-                                    try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash, parentNumber: 1))
-                                } else {
-                                    try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
+                CommitRowView(commit: commit)
+                    .contextMenu {
+                        Button("Checkout") {
+                            Task {
+                                do {
+                                    try await Process.output(GitCheckout(directory: folder.url, commitHash: commit.hash))
+                                    await refreshModels()
+                                } catch {
+                                    self.error = error
                                 }
-                                await refreshModels()
-                            } catch {
-                                self.error = error
+                            }
+                        }
+                        Button("Revert" + (commit.parentHashes.count == 2 ? " -m 1 (\(commit.parentHashes[0].prefix(7)))" : "")) {
+                            Task {
+                                do {
+                                    if commit.parentHashes.count == 2 {
+                                        try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash, parentNumber: 1))
+                                    } else {
+                                        try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
+                                    }
+                                    await refreshModels()
+                                } catch {
+                                    self.error = error
+                                }
+                            }
+                        }
+                        Button("Tag") {
+                            showing.createNewTagAt = commit
+                        }
+                        if commit == logStore.commits.first {
+                            if let notCommitted = logStore.notCommitted {
+                                if notCommitted.diffCached.isEmpty {
+                                    Button("Amend") {
+                                        showing.amendCommitAt = commit
+                                    }
+                                }
+                            } else {
+                                Button("Amend") {
+                                    showing.amendCommitAt = commit
+                                }
                             }
                         }
                     }
-                    Button("Tag") {
-                        showingCreateNewTagAt = commit
-                    }
-                }
             }
 
         }
@@ -350,15 +349,15 @@ struct FolderView: View {
 
     fileprivate func tagButton() -> some View {
         Button {
-            showingTags.toggle()
+            showing.tags.toggle()
         } label: {
             Image(systemName: "tag")
         }
         .help("Tags")
-        .popover(isPresented: $showingTags, content: {
-            TagsView(folder: folder, showingTags: $showingTags)
+        .popover(isPresented: $showing.tags, content: {
+            TagsView(folder: folder, showingTags: $showing.tags)
         })
-        .onChange(of: showingTags) { oldValue, newValue in
+        .onChange(of: showing.tags) { oldValue, newValue in
             if oldValue && !newValue {
                 Task {
                     await refreshModels()
@@ -369,7 +368,7 @@ struct FolderView: View {
 
     fileprivate func stashButton() -> some View {
         Button {
-            showingStashChanged.toggle()
+            showing.stashChanged.toggle()
         } label: {
             Image(systemName: "tray")
         }

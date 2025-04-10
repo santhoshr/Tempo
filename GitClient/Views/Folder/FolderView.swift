@@ -84,8 +84,6 @@ struct FolderView: View {
             }
         })
         .task {
-            syncState.folderURL = folder.url
-            syncState.branchName = branch?.name ?? ""
             await refreshModels()
         }
         .onChange(of: selectionLogID, {
@@ -173,6 +171,9 @@ struct FolderView: View {
         do {
             branch = try await Process.output(GitBranch(directory: folder.url)).current
             logStore.directory = folder.url
+            syncState.folderURL = folder.url
+            syncState.branchName = branch?.name ?? ""
+
             await logStore.refresh()
             if Task.isCancelled {
                 throw CancellationError()

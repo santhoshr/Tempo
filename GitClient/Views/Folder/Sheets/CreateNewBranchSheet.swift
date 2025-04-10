@@ -16,7 +16,7 @@ struct CreateNewBranchSheet: View {
 
     var body: some View {
         VStack {
-            Text("Create new branch")
+            Text("Create New Branch")
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {
@@ -25,7 +25,7 @@ struct CreateNewBranchSheet: View {
                 }
                 HStack {
                     Text("    to:")
-                    TextField("New Branch Name", text: $newBranchName)
+                    TextField("New branch name", text: $newBranchName)
                 }
                 HStack {
                     Button("Cancel") {

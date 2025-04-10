@@ -19,12 +19,12 @@ struct RenameBranchSheet: View {
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {
-                    Text("Old:  \(showingRenameBranch?.name ?? "")")
+                    Text("  Old:  \(showingRenameBranch?.name ?? "")")
                         .textSelection(.enabled)
                 }
                 HStack {
                     Text("New:")
-                    TextField("New Branch Name", text: $newBranchName)
+                    TextField("New branch name", text: $newBranchName)
                 }
                 HStack {
                     Button("Cancel") {

@@ -10,24 +10,26 @@ import Observation
 
 @MainActor
 @Observable class SyncState {
-    var folder: Folder?
-    var branch: Branch?
+    var folderURL: URL?
+    var branchName: String?
     var shouldPull = false
     var shouldPush = false
 
     func sync() async throws {
-        guard let folder, let branch else {
+        guard let folderURL, let branchName else {
             shouldPull = false
             shouldPush = false
             return
         }
-        try await Process.output(GitFetch(directory: folder.url))
-        shouldPull = !(try await Process.output(GitLog(directory: folder.url, revisionRange: "\(branch.name)..origin/\(branch.name)")).isEmpty)
-        let localOnlyBranch = try await Process.output(GitShowref(directory: folder.url, pattern: "refs/remotes/origin/\(branch.name)")).isEmpty
-        if localOnlyBranch {
+        try await Process.output(GitFetch(directory: folderURL))
+
+        let existRemoteBranch = try? await Process.output(GitShowref(directory: folderURL, pattern: "refs/remotes/origin/\(branchName)"))
+        guard existRemoteBranch != nil else {
+            shouldPull = false
             shouldPush = true
-        } else {
-            shouldPush = !(try await Process.output(GitLog(directory: folder.url, revisionRange: "origin/\(branch.name)..\(branch.name)")).isEmpty)
+            return
         }
+        shouldPull = !(try await Process.output(GitLog(directory: folderURL, revisionRange: "\(branchName)..origin/\(branchName)")).isEmpty)
+        shouldPush = !(try await Process.output(GitLog(directory: folderURL, revisionRange: "origin/\(branchName)..\(branchName)")).isEmpty)
     }
 }

@@ -11,6 +11,7 @@ import Foundation
 
 struct GitLogTests {
     @Test func parse() async throws {
+        try await Process.output(GitSwitch(directory: .testFixture!, branchName: "_test-fixture"))
         let gitlog = GitLog(directory: .testFixture!)
         let commits = try await Process.output(gitlog)
         #expect(commits.last!.hash == "f9635d9f3b39534e84f183555274867199af76a3")

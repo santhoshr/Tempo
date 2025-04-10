@@ -23,6 +23,7 @@ struct FolderView: View {
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
     @State private var logStore = LogStore()
+    @State private var syncState = SyncState()
     @State private var isLoading = false
     @State private var error: Error?
     @State private var showing = FolderViewShowing()
@@ -168,6 +169,9 @@ struct FolderView: View {
         do {
             branch = try await Process.output(GitBranch(directory: folder.url)).current
             logStore.directory = folder.url
+            syncState.folderURL = folder.url
+            syncState.branchName = branch?.name ?? ""
+
             await logStore.refresh()
             if Task.isCancelled {
                 throw CancellationError()
@@ -176,6 +180,7 @@ struct FolderView: View {
                 let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
+            try await syncState.sync()
         } catch {
             if !Task.isCancelled {
                 self.error = error
@@ -197,6 +202,7 @@ struct FolderView: View {
                 let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
+            try await syncState.sync()
         } catch {
             self.error = error
         }
@@ -313,9 +319,9 @@ struct FolderView: View {
                             Task {
                                 do {
                                     if commit.parentHashes.count == 2 {
-                                        try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash, parentNumber: 1))
+                                        try await Process.output(GitRevert(directory: folder.url,  parentNumber: 1, commit: commit.hash))
                                     } else {
-                                        try await Process.output(GitRevert(directory: folder.url, commitHash: commit.hash))
+                                        try await Process.output(GitRevert(directory: folder.url, commit: commit.hash))
                                     }
                                     await refreshModels()
                                 } catch {
@@ -373,6 +379,14 @@ struct FolderView: View {
         .help("Stashed Changes")
     }
 
+    fileprivate func badge() -> some View {
+        return Circle()
+            .fill(Color.accentColor)
+            .foregroundColor(.white)
+            .frame(width: 6)
+            .offset(x: 2, y: -2)
+    }
+    
     fileprivate func pullButton() -> some View {
         return Button {
             isLoading = true
@@ -387,6 +401,11 @@ struct FolderView: View {
             }
         } label: {
             Image(systemName: "arrow.down")
+                .overlay(alignment: .topTrailing, content: {
+                    if syncState.shouldPull {
+                        badge()
+                    }
+                })
         }
         .help("Pull")
     }
@@ -405,6 +424,11 @@ struct FolderView: View {
             }
         } label: {
             Image(systemName: "arrow.up")
+                .overlay(alignment: .topTrailing, content: {
+                    if syncState.shouldPush {
+                        badge()
+                    }
+                })
         }
         .help("Push origin HEAD")
     }

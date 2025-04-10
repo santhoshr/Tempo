@@ -51,7 +51,8 @@ struct SyncStateTests {
 
     @Test func shouldPull() async throws {
         let branch = "_test-fixture-should-pull"
-        try await Process.output(GitSwitch(directory: .testFixture!, branchName: branch))
+        try await Process.output(GitBranchDelete(directory: .testFixture!, branchName: branch))
+        try await Process.output(GitCheckoutB(directory: .testFixture!, newBranchName: branch, startPoint: "_test-fixture"))
         let state = SyncState()
         state.folderURL = .testFixture!
         state.branchName = branch

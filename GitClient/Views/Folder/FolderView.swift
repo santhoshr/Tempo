@@ -124,16 +124,16 @@ struct FolderView: View {
                 }
             }
         })
+        .sheet(item: $showing.amendCommitAt, content: { _ in
+            AmendCommitSheet(folder: folder, showingAmendCommitAt: $showing.amendCommitAt) {
+                Task {
+                    await refreshModels()
+                }
+            }
+        })
         .sheet(isPresented: $showing.stashChanged, content: {
             StashChangedView(folder: folder, showingStashChanged: $showing.stashChanged)
         })
-//        .sheet(isPresented: $showingAmendCommitAt, content: {
-//            AmendCommitSheet(folder: folder, showingAmendCommitAt: $showingAmendCommitAt) {
-//                Task {
-//                    await refreshModels()
-//                }
-//            }
-//        })
         .navigationTitle(branch?.name ?? "")
         .toolbar {
             navigationToolbar()

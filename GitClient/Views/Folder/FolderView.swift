@@ -385,8 +385,8 @@ struct FolderView: View {
         return Circle()
             .fill(Color.accentColor)
             .foregroundColor(.white)
-            .padding(3)
-            .offset(x: 8, y: -8)
+            .frame(width: 6)
+            .offset(x: 2, y: -2)
     }
     
     fileprivate func pullButton() -> some View {

@@ -380,6 +380,14 @@ struct FolderView: View {
         .help("Stashed Changes")
     }
 
+    fileprivate func badge() -> some View {
+        return Circle()
+            .fill(Color.accentColor)
+            .foregroundColor(.white)
+            .padding(4)
+            .offset(x: 8, y: -8)
+    }
+    
     fileprivate func pullButton() -> some View {
         return Button {
             isLoading = true
@@ -396,10 +404,7 @@ struct FolderView: View {
             Image(systemName: "arrow.down")
                 .overlay(alignment: .topTrailing, content: {
                     if syncState.shouldPull {
-                        Circle().fill(Color.accentColor)
-                            .foregroundColor(.white)
-                            .padding(4)
-                            .offset(x: 8, y: -8)
+                        badge()
                     }
                 })
         }
@@ -422,10 +427,7 @@ struct FolderView: View {
             Image(systemName: "arrow.up")
                 .overlay(alignment: .topTrailing, content: {
                     if syncState.shouldPush {
-                        Circle().fill(Color.accentColor)
-                            .foregroundColor(.white)
-                            .padding(4)
-                            .offset(x: 8, y: -8)
+                        badge()
                     }
                 })
         }

@@ -20,13 +20,19 @@ struct CreateNewTagSheet: View {
                 .font(.headline)
             VStack(alignment: .leading) {
                 HStack {
-                    Text("commit: \(showingCreateNewTagAt?.hash ?? "")")
-                        .textSelection(.enabled)
+                    VStack(alignment: .trailing) {
+                        Text("Commit:")
+                        Text("Tag Name:")
+                            .padding(.vertical, 2)
+                    }
+                    VStack(alignment: .leading) {
+                        Text(showingCreateNewTagAt?.hash ?? "")
+                            .textSelection(.enabled)
+                            .padding(.horizontal, 4)
+                        TextField("New tag name", text: $newTagname)
+                    }
                 }
-                HStack {
-                    Text("tag name:")
-                    TextField("New tag name", text: $newTagname)
-                }
+
                 HStack {
                     Button("Cancel") {
                         showingCreateNewTagAt = nil

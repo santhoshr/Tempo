@@ -23,6 +23,7 @@ struct FolderView: View {
     @Binding var selectionLog: Log?
     @Binding var isRefresh: Bool
     @State private var logStore = LogStore()
+    @State private var syncState = SyncState()
     @State private var isLoading = false
     @State private var error: Error?
     @State private var showing = Showing()
@@ -83,6 +84,8 @@ struct FolderView: View {
             }
         })
         .task {
+            syncState.folderURL = folder.url
+            syncState.branchName = branch?.name ?? ""
             await refreshModels()
         }
         .onChange(of: selectionLogID, {
@@ -178,6 +181,7 @@ struct FolderView: View {
                 let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
+            try await syncState.sync()
         } catch {
             if !Task.isCancelled {
                 self.error = error
@@ -199,6 +203,7 @@ struct FolderView: View {
                 let newSelection = logStore.logs().first { $0.id == selectionLog.id }
                 self.selectionLog = newSelection
             }
+            try await syncState.sync()
         } catch {
             self.error = error
         }

@@ -5,7 +5,7 @@
 //  Created by Makoto Aoyama on 2025/04/03.
 //
 
-struct SerachTokensHandler {
+struct SearchTokensHandler {
     static func newToken(old: [SearchToken], new: [SearchToken]) -> SearchToken? {
         new.first { !old.contains($0) }
     }

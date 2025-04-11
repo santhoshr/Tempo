@@ -223,6 +223,7 @@ struct FolderView: View {
                         folder: folder,
                         branch: branch,
                         onSelect: { branch in
+                            showing.branches = false
                             Task {
                                 do {
                                     try await Process.output(
@@ -232,9 +233,9 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showing.branches = false
                             }
                         }, onSelectMergeInto: { mergeIntoBranch in
+                            showing.branches = false
                             Task {
                                 do {
                                     try await Process.output(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
@@ -242,7 +243,6 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showing.branches = false
                             }
                         },
                         onSelectNewBranchFrom: { from in
@@ -260,6 +260,7 @@ struct FolderView: View {
                         branch: branch,
                         isRemote: true,
                         onSelect: { branch in
+                            showing.branches = false
                             Task {
                                 do {
                                     try await Process.output(
@@ -269,9 +270,9 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showing.branches = false
                             }
                         }, onSelectMergeInto: { mergeIntoBranch in
+                            showing.branches = false
                             Task {
                                 do {
                                     try await Process.output(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
@@ -279,7 +280,6 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showing.branches = false
                             }
                         },
                         onSelectNewBranchFrom: { from in

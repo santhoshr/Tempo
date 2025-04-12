@@ -11,7 +11,7 @@ import Foundation
 
 @MainActor
 struct SyncStateTests {
-    @Test func synced() async throws {
+    @Test func sync() async throws {
         let branch = "_test-fixture"
         try await Process.output(GitSwitch(directory: .testFixture!, branchName: branch))
         let state = SyncState()

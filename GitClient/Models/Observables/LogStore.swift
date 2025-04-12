@@ -34,6 +34,9 @@ import Observation
     private var author: String {
         searchTokens.filter { $0.kind == .author }.map { $0.text }.first ?? ""
     }
+    private var searchTokenRevisionRange: String {
+        searchTokens.filter { $0.kind == .revisionRange }.map { $0.text }.first ?? ""
+    }
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
     var notCommitted: NotCommitted?
@@ -47,7 +50,7 @@ import Observation
         return logs
     }
 
-    /// 最新500件取得しlogsを差し替え
+    /// 最新500件取得しlogsを差し替え(SearchTokennoRevisionRangeがない場合)
     func refresh() async {
         guard let directory else {
             notCommitted = nil
@@ -56,6 +59,10 @@ import Observation
         }
         do {
             notCommitted = try await notCommited(directory: directory)
+            guard searchTokenRevisionRange.isEmpty else {
+                commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
+                return
+            }
             commits = try await Process.output(GitLog(
                 directory: directory,
                 number: number,
@@ -70,7 +77,19 @@ import Observation
         }
     }
 
-    /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加
+    private func loadCommitsWithSearchTokenRevisionRange(directory: URL, revisionRange: String) async throws -> [Commit] {
+        try await Process.output(GitLog(
+            directory: directory,
+            revisionRange: revisionRange,
+            grep: grep,
+            grepAllMatch: grepAllMatch,
+            s: s,
+            g: g,
+            author: author
+        ))
+    }
+
+    /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加(SearchTokennoRevisionRangeがない場合)
     func update() async {
         guard let directory else {
             notCommitted = nil
@@ -80,6 +99,10 @@ import Observation
 
         do {
             notCommitted = try await notCommited(directory: directory)
+            guard searchTokenRevisionRange.isEmpty else {
+                commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
+                return
+            }
             let current = try await Process.output(GitLog(
                 directory: directory,
                 number: commits.count,
@@ -116,7 +139,7 @@ import Observation
         case .notCommitted:
             return
         case .committed(let commit):
-            if commit == commits.last, let directory {
+            if commit == commits.last, let directory, searchTokenRevisionRange.isEmpty {
                 await loadMore(directory: directory)
             }
         }

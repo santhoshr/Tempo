@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     name: Test
+    permissions:
+      contents: read
     runs-on: macos-15
     steps:
       - name: Select Xcode

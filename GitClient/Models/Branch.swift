@@ -8,17 +8,21 @@
 import Foundation
 
 struct Branch: Hashable, Identifiable {
+    let detachedPrefix = "(HEAD detached at "
+
     var id: String {
         name
     }
     var name: String
     var isCurrent: Bool
     var point: String {
-        let detachedPrefix = "(HEAD detached at "
-        if name.hasPrefix(detachedPrefix) {
+        if isDetached {
             return String(name.dropFirst(detachedPrefix.count).dropLast(1))
         }
         return name
+    }
+    var isDetached: Bool {
+        return name.hasPrefix(detachedPrefix)
     }
 }
 

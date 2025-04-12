@@ -175,7 +175,7 @@ struct FolderView: View {
             branch = try await Process.output(GitBranch(directory: folder.url)).current
             logStore.directory = folder.url
             syncState.folderURL = folder.url
-            syncState.branchName = branch?.name ?? ""
+            syncState.branch = branch
 
             await logStore.refresh()
             if Task.isCancelled {

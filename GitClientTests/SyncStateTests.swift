@@ -60,4 +60,16 @@ struct SyncStateTests {
         #expect(state.shouldPull == true)
         #expect(state.shouldPush == false)
     }
+
+    @Test func syncDetached() async throws {
+        let tag = "v0.2.0"
+        try await Process.output(GitCheckout(directory: .testFixture!, commitHash: tag))
+        let state = SyncState()
+        state.folderURL = .testFixture!
+        state.branchName = try await Process.output(GitBranch(directory: .testFixture!)).current?.name
+        try await state.sync()
+
+        #expect(state.shouldPull == false)
+        #expect(state.shouldPush == false)
+    }
 }

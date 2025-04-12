@@ -8,5 +8,5 @@
 import Foundation
 
 enum SearchKind {
-    case grep, grepAllMatch, s, g, author
+    case grep, grepAllMatch, s, g, author, revisionRange
 }

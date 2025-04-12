@@ -71,7 +71,7 @@ struct FolderView: View {
                 Text("Author: " + searchText).searchCompletion(SearchToken(kind: .author, text: searchText))
                     .help("Search commits by author matching the given pattern (regular expression).")
                 Text("Revision Range: " + searchText).searchCompletion(SearchToken(kind: .revisionRange, text: searchText))
-                    .help("Search commits within the revision range specified by Git syntax. e.g., main.., abc123..def456")
+                    .help("Search commits within the revision range specified by Git syntax. e.g., main.., v1.0.0...v2.0.0")
             }
         })
         .task {
@@ -175,7 +175,7 @@ struct FolderView: View {
             branch = try await Process.output(GitBranch(directory: folder.url)).current
             logStore.directory = folder.url
             syncState.folderURL = folder.url
-            syncState.branchName = branch?.name ?? ""
+            syncState.branch = branch
 
             await logStore.refresh()
             if Task.isCancelled {

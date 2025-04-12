@@ -6,7 +6,7 @@
 //
 
 struct SearchTokensHandler {
-    static func newToken(old: [SearchToken], new: [SearchToken]) -> SearchToken? {
+    static private func newToken(old: [SearchToken], new: [SearchToken]) -> SearchToken? {
         new.first { !old.contains($0) }
     }
 
@@ -20,14 +20,14 @@ struct SearchTokensHandler {
                         var updateToken = token
                         updateToken.kind = newToken.kind
                         return updateToken
-                    default:
+                    case .s, .g, .author, .revisionRange:
                         return token
                     }
                 }
             case .s:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .author:
+                    case .grep, .grepAllMatch, .author, .revisionRange:
                         return true
                     case .s:
                         return token == newToken
@@ -38,7 +38,7 @@ struct SearchTokensHandler {
             case .g:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .author:
+                    case .grep, .grepAllMatch, .author, .revisionRange:
                         return true
                     case .g:
                         return token == newToken
@@ -49,9 +49,18 @@ struct SearchTokensHandler {
             case .author:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .g, .s:
+                    case .grep, .grepAllMatch, .g, .s, .revisionRange:
                         return true
                     case .author:
+                        return token == newToken
+                    }
+                }
+            case .revisionRange:
+                return newTokens.filter { token in
+                    switch token.kind {
+                    case .grep, .grepAllMatch, .g, .s, .author:
+                        return true
+                    case .revisionRange:
                         return token == newToken
                     }
                 }

@@ -53,6 +53,7 @@ struct FolderView: View {
                 Text("Changed").tag(SearchKind.g)
                 Text("Changed(O)").tag(SearchKind.s)
                 Text("Author").tag(SearchKind.author)
+                Text("Revision Range").tag(SearchKind.revisionRange)
             } label: {
                 Text(token.text)
             }
@@ -69,6 +70,8 @@ struct FolderView: View {
                     .help("Search commits where the number of occurrences of the specified regex has changed (added/removed).")
                 Text("Author: " + searchText).searchCompletion(SearchToken(kind: .author, text: searchText))
                     .help("Search commits by author matching the given pattern (regular expression).")
+                Text("Revision Range: " + searchText).searchCompletion(SearchToken(kind: .revisionRange, text: searchText))
+                    .help("Search commits within the revision range specified by Git syntax. e.g., main.., abc123..def456")
             }
         })
         .task {
@@ -142,6 +145,8 @@ struct FolderView: View {
                 ProgressView()
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
+                addBranchButton()
+                    .padding(.trailing)
                 tagButton()
                 stashButton()
                     .padding(.trailing)
@@ -223,6 +228,7 @@ struct FolderView: View {
                         folder: folder,
                         branch: branch,
                         onSelect: { branch in
+                            showing.branches = false
                             Task {
                                 do {
                                     try await Process.output(
@@ -232,9 +238,9 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showing.branches = false
                             }
                         }, onSelectMergeInto: { mergeIntoBranch in
+                            showing.branches = false
                             Task {
                                 do {
                                     try await Process.output(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
@@ -242,7 +248,6 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showing.branches = false
                             }
                         },
                         onSelectNewBranchFrom: { from in
@@ -260,6 +265,7 @@ struct FolderView: View {
                         branch: branch,
                         isRemote: true,
                         onSelect: { branch in
+                            showing.branches = false
                             Task {
                                 do {
                                     try await Process.output(
@@ -269,9 +275,9 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showing.branches = false
                             }
                         }, onSelectMergeInto: { mergeIntoBranch in
+                            showing.branches = false
                             Task {
                                 do {
                                     try await Process.output(GitMerge(directory: folder.url, branchName: mergeIntoBranch.name))
@@ -279,7 +285,6 @@ struct FolderView: View {
                                     self.error = error
                                 }
                                 await refreshModels()
-                                showing.branches = false
                             }
                         },
                         onSelectNewBranchFrom: { from in
@@ -349,6 +354,15 @@ struct FolderView: View {
             }
 
         }
+    }
+
+    fileprivate func addBranchButton() -> some View {
+        Button {
+            showing.createNewBranchFrom = branch
+        } label: {
+            Image(systemName: "plus")
+        }
+        .help("Create New Branch")
     }
 
     fileprivate func tagButton() -> some View {

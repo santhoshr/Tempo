@@ -12,11 +12,11 @@ import Foundation
 @MainActor
 struct SyncStateTests {
     @Test func sync() async throws {
-        let branch = "_test-fixture"
-        try await Process.output(GitSwitch(directory: .testFixture!, branchName: branch))
+        let branchName = "_test-fixture"
+        try await Process.output(GitSwitch(directory: .testFixture!, branchName: branchName))
         let state = SyncState()
         state.folderURL = .testFixture!
-        state.branchName = branch
+        state.branch = .init(name: branchName, isCurrent: true)
         try await state.sync()
 
         #expect(state.shouldPull == false)
@@ -28,7 +28,7 @@ struct SyncStateTests {
         let _ = try? await Process.output(GitCheckoutB(directory: .testFixture!, newBranchName: branch, startPoint: "_test-fixture"))
         let state = SyncState()
         state.folderURL = .testFixture!
-        state.branchName = branch
+        state.branch = .init(name: branch, isCurrent: true)
         try await state.sync()
 
         #expect(state.shouldPull == false)
@@ -41,7 +41,7 @@ struct SyncStateTests {
         try await Process.output(GitRevert(directory: .testFixture!, commit: "head"))
         let state = SyncState()
         state.folderURL = .testFixture!
-        state.branchName = branch
+        state.branch = .init(name: branch, isCurrent: true)
         try await state.sync()
 
         #expect(state.shouldPull == false)
@@ -54,7 +54,7 @@ struct SyncStateTests {
         try await Process.output(GitCheckoutB(directory: .testFixture!, newBranchName: branch, startPoint: "_test-fixture"))
         let state = SyncState()
         state.folderURL = .testFixture!
-        state.branchName = branch
+        state.branch = .init(name: branch, isCurrent: true)
         try await state.sync()
 
         #expect(state.shouldPull == true)
@@ -66,7 +66,7 @@ struct SyncStateTests {
         try await Process.output(GitCheckout(directory: .testFixture!, commitHash: tag))
         let state = SyncState()
         state.folderURL = .testFixture!
-        state.branchName = try await Process.output(GitBranch(directory: .testFixture!)).current?.name
+        state.branch = try await Process.output(GitBranch(directory: .testFixture!)).current
         try await state.sync()
 
         #expect(state.shouldPull == false)

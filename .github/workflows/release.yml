@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     name: Release
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: macos-15
     steps:
       - name: Select Xcode

@@ -53,6 +53,7 @@ struct FolderView: View {
                 Text("Changed").tag(SearchKind.g)
                 Text("Changed(O)").tag(SearchKind.s)
                 Text("Author").tag(SearchKind.author)
+                Text("Revision Range").tag(SearchKind.revisionRange)
             } label: {
                 Text(token.text)
             }
@@ -69,6 +70,8 @@ struct FolderView: View {
                     .help("Search commits where the number of occurrences of the specified regex has changed (added/removed).")
                 Text("Author: " + searchText).searchCompletion(SearchToken(kind: .author, text: searchText))
                     .help("Search commits by author matching the given pattern (regular expression).")
+                Text("Revision Range: " + searchText).searchCompletion(SearchToken(kind: .revisionRange, text: searchText))
+                    .help("Search commits within the revision range specified by Git syntax. e.g., main.., abc123..def456")
             }
         })
         .task {

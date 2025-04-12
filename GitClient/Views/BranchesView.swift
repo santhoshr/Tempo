@@ -67,6 +67,10 @@ struct BranchesView: View {
                 HStack {
                     Label(branch.name, systemImage: "arrow.triangle.branch")
                     Spacer()
+                    if branch.isCurrent {
+                        Text("Current")
+                            .foregroundStyle(.tertiary)
+                    }
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {

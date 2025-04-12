@@ -142,6 +142,8 @@ struct FolderView: View {
                 ProgressView()
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
+                addBranchButton()
+                    .padding(.trailing)
                 tagButton()
                 stashButton()
                     .padding(.trailing)
@@ -349,6 +351,15 @@ struct FolderView: View {
             }
 
         }
+    }
+
+    fileprivate func addBranchButton() -> some View {
+        Button {
+            showing.createNewBranchFrom = branch
+        } label: {
+            Image(systemName: "plus")
+        }
+        .help("Create New Branch")
     }
 
     fileprivate func tagButton() -> some View {

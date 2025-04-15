@@ -416,9 +416,11 @@ struct FolderView: View {
         } label: {
             Image(systemName: "arrow.down")
                 .overlay(alignment: .topTrailing, content: {
-                    if syncState.shouldPull {
-                        badge()
-                    }
+                    badge()
+                        .animation(.default, body: { content in
+                            content
+                                .opacity(syncState.shouldPull ? 1 : 0)
+                        })
                 })
         }
         .help("Pull")
@@ -439,9 +441,11 @@ struct FolderView: View {
         } label: {
             Image(systemName: "arrow.up")
                 .overlay(alignment: .topTrailing, content: {
-                    if syncState.shouldPush {
                         badge()
-                    }
+                            .animation(.default, body: { content in
+                                content
+                                    .opacity(syncState.shouldPush ? 1 : 0)
+                            })
                 })
         }
         .help("Push origin HEAD")

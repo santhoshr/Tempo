@@ -27,24 +27,17 @@ let sampleCommits2 = [
 struct CommitsGraph {
     func positionedCommits(_ commits: [Commit]) -> [PositionedCommit] {
         var result: [PositionedCommit] = []
-        var columnByHash: [String: Int] = [:]
 
         for (row, commit) in commits.enumerated() {
-            var column = 0
 
             if row == 0 {
-                // 最初のコミットはカラム 0
-                column = 0
+                // 最初のカラムは0
+                result.append(PositionedCommit(commit: commit, column: 0, row: row))
             } else {
-                // 親のカラムを受け継ぐ
-                let parentColumns = commit.parentHashes.compactMap { columnByHash[$0] }
-                if let firstParentColumn = parentColumns.first {
-                    column = firstParentColumn
-                }
+                let child = result[row - 1]
+                // 子のカラムを受け継ぐ
+                result.append(PositionedCommit(commit: commit, column: child.column, row: row))
             }
-
-            columnByHash[commit.hash] = column
-            result.append(PositionedCommit(commit: commit, column: column, row: row))
         }
 
         return result

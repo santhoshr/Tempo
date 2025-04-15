@@ -25,48 +25,12 @@ let sampleCommits2 = [
 
 
 struct CommitsGraph {
-    func topologicallySortedCommits(_ commits: [Commit]) -> [Commit] {
-        var graph: [String: [String]] = [:] // parent → [children]
-        var inDegree: [String: Int] = [:]   // hash → number of parents
-        var commitMap: [String: Commit] = [:]
 
-        // 初期化
-        for commit in commits {
-            commitMap[commit.hash] = commit
-            inDegree[commit.hash] = commit.parentHashes.count
-            for parent in commit.parentHashes {
-                graph[parent, default: []].append(commit.hash)
-            }
-        }
-
-        // 親のない（in-degree 0）ノードからスタート
-        var queue = commits.filter { $0.parentHashes.isEmpty }.map { $0.hash }
-        var result: [Commit] = []
-
-        while !queue.isEmpty {
-            let hash = queue.removeFirst()
-            if let commit = commitMap[hash] {
-                result.append(commit)
-            }
-
-            for child in graph[hash] ?? [] {
-                inDegree[child, default: 0] -= 1
-                if inDegree[child] == 0 {
-                    queue.append(child)
-                }
-            }
-        }
-
-        return result
-    }
-
-    func layoutCommits(_ commits: [Commit]) -> [PositionedCommit] {
-        let sorted = topologicallySortedCommits(commits)
-
+    func positionedCommits(_ commits: [Commit]) -> [PositionedCommit] {
         var result: [PositionedCommit] = []
         var columnByHash: [String: Int] = [:]
 
-        for (row, commit) in sorted.enumerated() {
+        for (row, commit) in commits.enumerated() {
             var column = 0
 
             if commit.parentHashes.isEmpty {
@@ -97,7 +61,7 @@ struct CommitGraphView: View {
     @State private var selectedCommitHash: String?
 
     var body: some View {
-        ZStack {
+        ZStack(alignment:.leading) {
             // 線（親子関係）を描く
             ForEach(commits) { commit in
                 if let from = position(of: commit) {
@@ -123,14 +87,15 @@ struct CommitGraphView: View {
                         .position(point)
                         .onTapGesture {
                             selectedCommitHash = commit.commit.hash
+                            print("onTap", commit)
                         }
-                        .overlay(
-                            Text(commit.commit.title)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                                .offset(x: nodeSize, y: 0),
-                            alignment: .center
-                        )
+                    Text(commit.commit.title)
+                        .frame(width: 200, height: 20, alignment: .leading)
+                        .background(Color.cyan)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .position(point)
+                        .offset(.init(width: 120, height: 0))
                 }
             }
         }
@@ -155,9 +120,9 @@ struct PositionedCommit: Identifiable {
 }
 
 #Preview {
-    CommitGraphView(commits: CommitsGraph().layoutCommits(sampleCommits))
+    CommitGraphView(commits: CommitsGraph().positionedCommits(sampleCommits))
 }
 
 #Preview {
-    CommitGraphView(commits: CommitsGraph().layoutCommits(sampleCommits2))
+    CommitGraphView(commits: CommitsGraph().positionedCommits(sampleCommits2))
 }

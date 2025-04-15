@@ -25,7 +25,6 @@ let sampleCommits2 = [
 
 
 struct CommitsGraph {
-
     func positionedCommits(_ commits: [Commit]) -> [PositionedCommit] {
         var result: [PositionedCommit] = []
         var columnByHash: [String: Int] = [:]
@@ -33,7 +32,7 @@ struct CommitsGraph {
         for (row, commit) in commits.enumerated() {
             var column = 0
 
-            if commit.parentHashes.isEmpty {
+            if row == 0 {
                 // 最初のコミットはカラム 0
                 column = 0
             } else {

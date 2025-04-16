@@ -25,18 +25,22 @@ let sampleCommits2 = [
 
 
 struct CommitsGraph {
-    func positionedCommits(_ commits: [Commit]) -> [PositionedCommit] {
+    func positionedCommits(topoOrderedCommits: [Commit]) -> [PositionedCommit] {
         var result: [PositionedCommit] = []
 
-        for (row, commit) in commits.enumerated() {
+        for (row, commit) in topoOrderedCommits.enumerated() {
 
             if row == 0 {
                 // 最初のカラムは0
                 result.append(PositionedCommit(commit: commit, column: 0, row: row))
             } else {
-                let child = result[row - 1]
-                // 子のカラムを受け継ぐ
-                result.append(PositionedCommit(commit: commit, column: child.column, row: row))
+                let child = result.filter { $0.commit.parentHashes.contains { $0 == commit.hash } }.first!
+                if child.commit.parentHashes.count == 2, child.commit.parentHashes[1] == commit.hash {
+                    result.append(PositionedCommit(commit: commit, column: child.column + 1, row: row))
+                } else {
+                    // 子のカラムを受け継ぐ
+                    result.append(PositionedCommit(commit: commit, column: child.column, row: row))
+                }
             }
         }
 
@@ -112,9 +116,9 @@ struct PositionedCommit: Identifiable {
 }
 
 #Preview {
-    CommitGraphView(commits: CommitsGraph().positionedCommits(sampleCommits))
+    CommitGraphView(commits: CommitsGraph().positionedCommits(topoOrderedCommits: sampleCommits))
 }
 
 #Preview {
-    CommitGraphView(commits: CommitsGraph().positionedCommits(sampleCommits2))
+    CommitGraphView(commits: CommitsGraph().positionedCommits(topoOrderedCommits: sampleCommits2))
 }

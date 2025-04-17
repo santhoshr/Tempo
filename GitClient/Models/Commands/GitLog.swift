@@ -54,6 +54,8 @@ struct GitLog: Git {
         if !author.isEmpty {
             args.append("--author=\(author)")
         }
+        args.append("--topo-order") // TODO:
+
         return args
     }
     var directory: URL

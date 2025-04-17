@@ -34,12 +34,13 @@ struct CommitsGraph {
                 // 最初のカラムは0
                 result.append(PositionedCommit(commit: commit, column: 0, row: row))
             } else {
-                let child = result.filter { $0.commit.parentHashes.contains { $0 == commit.hash } }.first!
+                let children = result.filter { $0.commit.parentHashes.contains { $0 == commit.hash } }
+                let child = children.first!
                 if child.commit.parentHashes.count == 2, child.commit.parentHashes[1] == commit.hash {
                     result.append(PositionedCommit(commit: commit, column: child.column + 1, row: row))
                 } else {
                     // 子のカラムを受け継ぐ
-                    result.append(PositionedCommit(commit: commit, column: child.column, row: row))
+                    result.append(PositionedCommit(commit: commit, column: children.first!.column, row: row))
                 }
             }
         }
@@ -50,7 +51,7 @@ struct CommitsGraph {
 
 
 struct CommitGraphView: View {
-    let commits: [PositionedCommit]
+    @State var commits: [PositionedCommit] = []
     let nodeSize: CGFloat = 14
     let spacing: CGFloat = 40
 
@@ -97,6 +98,14 @@ struct CommitGraphView: View {
         }
         .frame(height: CGFloat(commits.count + 1) * spacing)
         .padding()
+        .task {
+            let store = LogStore()
+//            store.directory = .init(string: "file:////Users/makoto.aoyama/Projects/SMBClient")
+            store.directory = .init(string: "file:////Users/makoto.aoyama/Projects/Tempo")
+
+            await store.refresh()
+            commits = CommitsGraph().positionedCommits(topoOrderedCommits: store.commits)
+        }
     }
 
     private func position(of commit: PositionedCommit) -> CGPoint? {
@@ -116,9 +125,12 @@ struct PositionedCommit: Identifiable {
 }
 
 #Preview {
-    CommitGraphView(commits: CommitsGraph().positionedCommits(topoOrderedCommits: sampleCommits))
+    ScrollView {
+        CommitGraphView()
+    }
+        .frame(width: 600, height: 600)
 }
 
 #Preview {
-    CommitGraphView(commits: CommitsGraph().positionedCommits(topoOrderedCommits: sampleCommits2))
+    CommitGraphView()
 }

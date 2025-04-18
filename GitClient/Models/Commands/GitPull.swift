@@ -9,11 +9,16 @@ import Foundation
 
 struct GitPull: Git {
     typealias OutputModel = Void
-    var arguments = [
-        "git",
-        "pull",
-    ]
+    var arguments: [String] {
+        [
+            "git",
+            "pull",
+            "origin",
+            refspec,
+        ]
+    }
     var directory: URL
+    var refspec: String
 
     func parse(for stdOut: String) -> Void {}
 }

@@ -221,7 +221,7 @@ struct FolderView: View {
             } label: {
                 Image(systemName: "chevron.down")
             }
-            .help("Select Branch")
+            .help("Select branch.")
             .popover(isPresented: $showing.branches) {
                 TabView {
                     BranchesView(
@@ -362,7 +362,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "plus")
         }
-        .help("Create New Branch")
+        .help("Create new branch.")
     }
 
     fileprivate func tagButton() -> some View {
@@ -371,7 +371,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "tag")
         }
-        .help("Tags")
+        .help("Show tags.")
         .popover(isPresented: $showing.tags, content: {
             TagsView(folder: folder, showingTags: $showing.tags)
         })
@@ -390,7 +390,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "tray")
         }
-        .help("Stashed Changes")
+        .help("Show stashed changes.")
     }
 
     fileprivate func badge() -> some View {
@@ -406,7 +406,7 @@ struct FolderView: View {
             isLoading = true
             Task {
                 do {
-                    try await Process.output(GitPull(directory: folder.url))
+                    try await Process.output(GitPull(directory: folder.url, refspec: branch!.name))
                     await refreshModels()
                 } catch {
                     self.error = error
@@ -423,7 +423,7 @@ struct FolderView: View {
                         })
                 })
         }
-        .help("Pull")
+        .help("Pull origin \(branch?.name ?? "")." )
     }
 
     fileprivate func pushButton() -> some View {
@@ -448,7 +448,7 @@ struct FolderView: View {
                             })
                 })
         }
-        .help("Push origin HEAD")
+        .help("Push origin HEAD.")
     }
 }
 

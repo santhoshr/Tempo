@@ -5,8 +5,12 @@ struct SearchToken: Codable {
     let kind: SearchKind
 }
 
+extension AppStorageKey {
+    static let searchHistory = "searchHistory"
+}
+
 extension SearchTokensHandler {
-    private var searchHistoryKey: String { "searchHistoryKey" }
+    @AppStorage(AppStorageKey.searchHistory.rawValue) private var searchHistoryData: Data = Data()
 
     /// 検索履歴を保存
     /// - Parameter token: 保存する検索トークン
@@ -20,15 +24,14 @@ extension SearchTokensHandler {
             history = Array(history.prefix(5)) // 最大5件に制限
         }
         if let encoded = try? JSONEncoder().encode(history) {
-            UserDefaults.standard.set(encoded, forKey: searchHistoryKey)
+            searchHistoryData = encoded
         }
     }
 
     /// 検索履歴を取得
     /// - Returns: 保存された検索トークンの履歴
     func getSearchHistory() -> [SearchToken] {
-        guard let data = UserDefaults.standard.data(forKey: searchHistoryKey),
-              let history = try? JSONDecoder().decode([SearchToken].self, from: data) else {
+        guard let history = try? JSONDecoder().decode([SearchToken].self, from: searchHistoryData) else {
             return []
         }
         return history

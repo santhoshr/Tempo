@@ -106,4 +106,43 @@ struct SearchTokensHandlerTests {
         let handledTokens = SearchTokensHandler.handle(oldTokens: oldTokens, newTokens: newTokens)
         #expect(handledTokens == [.init(kind: .author, text: "c")] )
     }
+
+    @Test func testSaveAndRetrieveSearchHistory() async throws {
+        let handler = SearchTokensHandler()
+
+        // テスト用のトークンを作成
+        let token1 = SearchToken(name: "Test1", kind: .grep)
+        let token2 = SearchToken(name: "Test2", kind: .author)
+        let token3 = SearchToken(name: "Test3", kind: .g)
+
+        // トークンを保存
+        handler.saveSearchToken(token1)
+        handler.saveSearchToken(token2)
+        handler.saveSearchToken(token3)
+
+        // 保存された履歴を取得
+        let history = handler.getSearchHistory()
+
+        // 検証
+        #expect(history.count == 3)
+        #expect(history[0].name == "Test3")
+        #expect(history[1].name == "Test2")
+        #expect(history[2].name == "Test1")
+
+        // 最大件数を超える場合のテスト
+        let token4 = SearchToken(name: "Test4", kind: .s)
+        let token5 = SearchToken(name: "Test5", kind: .grepAllMatch)
+        let token6 = SearchToken(name: "Test6", kind: .revisionRange)
+
+        handler.saveSearchToken(token4)
+        handler.saveSearchToken(token5)
+        handler.saveSearchToken(token6)
+
+        let updatedHistory = handler.getSearchHistory()
+
+        // 最大5件に制限されていることを確認
+        #expect(updatedHistory.count == 5)
+        #expect(updatedHistory[0].name == "Test6")
+        #expect(updatedHistory[4].name == "Test2")
+    }
 }

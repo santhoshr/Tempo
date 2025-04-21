@@ -38,13 +38,22 @@ struct CommitsGraph {
             } else {
                 let children = result.filter { $0.commit.parentHashes.contains { $0 == commit.hash } }
                 let child = children.first!
+                let positioned: PositionedCommit
                 if child.commit.parentHashes.count == 2, child.commit.parentHashes[1] == commit.hash {
                     let newColumn = child.column + 1
-                    result.append(PositionedCommit(commit: commit, column: newColumn, row: row))
+                    positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
                     usingColumns.append(newColumn)
                 } else {
                     // 子のカラムを受け継ぐ
-                    result.append(PositionedCommit(commit: commit, column: children.first!.column, row: row))
+                    positioned = PositionedCommit(commit: commit, column: children.first!.column, row: row)
+                }
+                result.append(positioned)
+                children.forEach { child in
+                    if child.commit.parentHashes.count == 1 && child.column > positioned.column {
+                        if let index = usingColumns.firstIndex(where: { $0 == child.column }) {
+                            usingColumns.remove(at: index)
+                        }
+                    }
                 }
             }
         }

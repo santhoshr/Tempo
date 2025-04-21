@@ -77,6 +77,7 @@ struct CommitGraphView: View {
     let nodeSize: CGFloat = 14
     let selectedNodeSize: CGFloat = 18
     let spacing: CGFloat = 40
+    let textWidth: CGFloat = 240
     @State private var selectedCommitHash: String?
 
     var body: some View {
@@ -114,7 +115,7 @@ struct CommitGraphView: View {
                             print("onTap", commit)
                         }
                     Text(commit.commit.title)
-                        .frame(width: 240, height: 20, alignment: .leading)
+                        .frame(width: textWidth, height: 20, alignment: .leading)
                         .font(.callout)
                         .foregroundStyle(commit.commit.hash == selectedCommitHash ? .primary : .secondary)
                         .position(point)
@@ -129,10 +130,9 @@ struct CommitGraphView: View {
             }
         }
         .frame(
-            width: CGFloat((commits.map { $0.column }.max() ?? 0) + 2) * spacing + 200,
+            width: CGFloat((commits.map { $0.column }.max() ?? 0) + 2) * spacing + textWidth,
             height: CGFloat(commits.count + 1) * spacing
         )
-        .padding()
         .task {
             let store = LogStore()
             store.directory = .init(string: "file:///Users/aoyama/Projects/GitClient")

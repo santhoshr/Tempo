@@ -100,8 +100,7 @@ struct CommitGraphView: View {
         .padding()
         .task {
             let store = LogStore()
-//            store.directory = .init(string: "file:////Users/makoto.aoyama/Projects/SMBClient")
-            store.directory = .init(string: "file:////Users/makoto.aoyama/Projects/Tempo")
+            store.directory = .init(string: "file://///Users/aoyama/Projects/GitClient")
 
             await store.refresh()
             commits = CommitsGraph().positionedCommits(topoOrderedCommits: store.commits)

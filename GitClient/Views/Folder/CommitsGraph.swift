@@ -75,8 +75,8 @@ struct CommitsGraph {
 struct CommitGraphView: View {
     @State var commits: [PositionedCommit] = []
     let nodeSize: CGFloat = 14
+    let selectedNodeSize: CGFloat = 18
     let spacing: CGFloat = 40
-
     @State private var selectedCommitHash: String?
 
     var body: some View {
@@ -91,7 +91,7 @@ struct CommitGraphView: View {
                                 path.move(to: from)
                                 path.addLine(to: to)
                             }
-                            .stroke(Color.gray, lineWidth: 2)
+                            .stroke(Color.secondary.opacity(0.5), lineWidth: 6)
                         }
                     }
                 }
@@ -102,19 +102,29 @@ struct CommitGraphView: View {
                 if let point = position(of: commit) {
                     Circle()
                         .fill(commit.commit.hash == selectedCommitHash ? Color.blue : Color.primary)
-                        .frame(width: nodeSize, height: nodeSize)
+                        .frame(
+                            width: commit.commit.hash == selectedCommitHash ? selectedNodeSize: nodeSize,
+                            height: commit.commit.hash == selectedCommitHash ? selectedNodeSize: nodeSize
+                        )
                         .position(point)
                         .onTapGesture {
-                            selectedCommitHash = commit.commit.hash
+                            withAnimation {
+                                selectedCommitHash = commit.commit.hash
+                            }
                             print("onTap", commit)
                         }
                     Text(commit.commit.title)
-                        .frame(width: 200, height: 20, alignment: .leading)
-                        .background(Color.cyan)
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .frame(width: 240, height: 20, alignment: .leading)
+                        .font(.callout)
+                        .foregroundStyle(commit.commit.hash == selectedCommitHash ? .primary : .secondary)
                         .position(point)
-                        .offset(.init(width: 120, height: 0))
+                        .offset(.init(width: 140, height: 0))
+                        .onTapGesture {
+                            withAnimation {
+                                selectedCommitHash = commit.commit.hash
+                            }
+                            print("onTap", commit)
+                        }
                 }
             }
         }
@@ -152,5 +162,6 @@ struct PositionedCommit: Identifiable {
     ScrollView([.horizontal, .vertical]) {
         CommitGraphView()
     }
+        .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
 }

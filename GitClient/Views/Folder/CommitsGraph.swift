@@ -118,7 +118,10 @@ struct CommitGraphView: View {
                 }
             }
         }
-        .frame(height: CGFloat(commits.count + 1) * spacing)
+        .frame(
+            width: CGFloat((commits.map { $0.column }.max() ?? 0) + 2) * spacing + 200,
+            height: CGFloat(commits.count + 1) * spacing
+        )
         .padding()
         .task {
             let store = LogStore()
@@ -146,12 +149,8 @@ struct PositionedCommit: Identifiable {
 }
 
 #Preview {
-    ScrollView {
+    ScrollView([.horizontal, .vertical]) {
         CommitGraphView()
     }
-        .frame(width: 600, height: 600)
-}
-
-#Preview {
-    CommitGraphView()
+        .frame(width: 400, height: 600)
 }

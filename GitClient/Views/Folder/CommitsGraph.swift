@@ -25,6 +25,14 @@ let sampleCommits2 = [
 
 
 struct CommitsGraph {
+    private func makeColumn(childColumn: Int, usingColumn: [Int]) -> Int {
+        var col = childColumn + 1
+        while usingColumn.contains(col) {
+            col += 1
+        }
+        return col
+    }
+
     func positionedCommits(topoOrderedCommits: [Commit]) -> [PositionedCommit] {
         var result: [PositionedCommit] = []
         var usingColumns: [Int] = []
@@ -37,10 +45,11 @@ struct CommitsGraph {
                 usingColumns.append(0)
             } else {
                 let children = result.filter { $0.commit.parentHashes.contains { $0 == commit.hash } }
+                // TODO: 子がない場合もグラフにできるようにする
                 let child = children.first!
                 let positioned: PositionedCommit
                 if child.commit.parentHashes.count == 2, child.commit.parentHashes[1] == commit.hash {
-                    let newColumn = child.column + 1
+                    let newColumn = makeColumn(childColumn: child.column, usingColumn: usingColumns)
                     positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
                     usingColumns.append(newColumn)
                 } else {
@@ -113,7 +122,7 @@ struct CommitGraphView: View {
         .padding()
         .task {
             let store = LogStore()
-            store.directory = .init(string: "file://///Users/aoyama/Projects/GitClient")
+            store.directory = .init(string: "file:///Users/aoyama/Projects/GitClient")
 
             await store.refresh()
             commits = CommitsGraph().positionedCommits(topoOrderedCommits: store.commits)

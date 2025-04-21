@@ -27,17 +27,21 @@ let sampleCommits2 = [
 struct CommitsGraph {
     func positionedCommits(topoOrderedCommits: [Commit]) -> [PositionedCommit] {
         var result: [PositionedCommit] = []
+        var usingColumns: [Int] = []
 
         for (row, commit) in topoOrderedCommits.enumerated() {
 
             if row == 0 {
                 // 最初のカラムは0
                 result.append(PositionedCommit(commit: commit, column: 0, row: row))
+                usingColumns.append(0)
             } else {
                 let children = result.filter { $0.commit.parentHashes.contains { $0 == commit.hash } }
                 let child = children.first!
                 if child.commit.parentHashes.count == 2, child.commit.parentHashes[1] == commit.hash {
-                    result.append(PositionedCommit(commit: commit, column: child.column + 1, row: row))
+                    let newColumn = child.column + 1
+                    result.append(PositionedCommit(commit: commit, column: newColumn, row: row))
+                    usingColumns.append(newColumn)
                 } else {
                     // 子のカラムを受け継ぐ
                     result.append(PositionedCommit(commit: commit, column: children.first!.column, row: row))

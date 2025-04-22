@@ -1,5 +1,5 @@
 //
-//  CommitsGraph.swift
+//  CommitGraph.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2025/04/11.
@@ -24,7 +24,7 @@ let sampleCommits2 = [
 ]
 
 
-struct CommitsGraph {
+struct CommitGraph {
     private func makeColumn(childColumn: Int, usingColumn: [Int]) -> Int {
         var col = childColumn + 1
         while usingColumn.contains(col) {
@@ -83,7 +83,7 @@ struct CommitGraphView: View {
             store.directory = .init(string: "file:///Users/aoyama/Projects/GitClient")
 
             await store.refresh()
-            commits = CommitsGraph().positionedCommits(topoOrderedCommits: store.commits)
+            commits = CommitGraph().positionedCommits(topoOrderedCommits: store.commits)
         }
     }
 }
@@ -181,7 +181,7 @@ struct PositionedCommit: Identifiable {
 #Preview {
     @Previewable @State var selected: String?
     CommitGraphContentView(
-        commits: CommitsGraph().positionedCommits(topoOrderedCommits: sampleCommits),
+        commits: CommitGraph().positionedCommits(topoOrderedCommits: sampleCommits),
         selectedCommitHash: $selected
     )
         .background(Color(NSColor.textBackgroundColor))
@@ -191,7 +191,7 @@ struct PositionedCommit: Identifiable {
 #Preview {
     @Previewable @State var selected: String?
     CommitGraphContentView(
-        commits: CommitsGraph().positionedCommits(topoOrderedCommits: sampleCommits2),
+        commits: CommitGraph().positionedCommits(topoOrderedCommits: sampleCommits2),
         selectedCommitHash: $selected
     )
         .background(Color(NSColor.textBackgroundColor))

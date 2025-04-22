@@ -90,8 +90,8 @@ struct CommitGraphView: View {
 
 struct CommitGraphContentView: View {
     var commits: [PositionedCommit]
-    let nodeSize: CGFloat = 14
-    let selectedNodeSize: CGFloat = 18
+    let nodeSize: CGFloat = 16
+    let selectedNodeSize: CGFloat = 20
     let spacing: CGFloat = 40
     let textWidth: CGFloat = 240
     @Binding var selectedCommitHash: String?
@@ -119,6 +119,10 @@ struct CommitGraphContentView: View {
                 if let point = position(of: commit) {
                     Circle()
                         .fill(commit.commit.hash == selectedCommitHash ? Color.blue : Color.primary)
+                        .overlay(
+                            Circle()
+                                .stroke(Color(NSColor.textBackgroundColor), lineWidth: 2)
+                        )
                         .frame(
                             width: commit.commit.hash == selectedCommitHash ? selectedNodeSize: nodeSize,
                             height: commit.commit.hash == selectedCommitHash ? selectedNodeSize: nodeSize

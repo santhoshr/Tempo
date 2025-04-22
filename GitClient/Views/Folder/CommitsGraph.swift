@@ -74,11 +74,27 @@ struct CommitsGraph {
 
 struct CommitGraphView: View {
     @State var commits: [PositionedCommit] = []
+    @State private var selectedCommitHash: String?
+
+    var body: some View {
+        CommitGraphContentView(commits: commits, selectedCommitHash: $selectedCommitHash)
+        .task {
+            let store = LogStore()
+            store.directory = .init(string: "file:///Users/aoyama/Projects/GitClient")
+
+            await store.refresh()
+            commits = CommitsGraph().positionedCommits(topoOrderedCommits: store.commits)
+        }
+    }
+}
+
+struct CommitGraphContentView: View {
+    var commits: [PositionedCommit]
     let nodeSize: CGFloat = 14
     let selectedNodeSize: CGFloat = 18
     let spacing: CGFloat = 40
     let textWidth: CGFloat = 240
-    @State private var selectedCommitHash: String?
+    @Binding var selectedCommitHash: String?
 
     var body: some View {
         ZStack(alignment:.leading) {
@@ -133,13 +149,6 @@ struct CommitGraphView: View {
             width: CGFloat((commits.map { $0.column }.max() ?? 0) + 2) * spacing + textWidth,
             height: CGFloat(commits.count + 1) * spacing
         )
-        .task {
-            let store = LogStore()
-            store.directory = .init(string: "file:///Users/aoyama/Projects/GitClient")
-
-            await store.refresh()
-            commits = CommitsGraph().positionedCommits(topoOrderedCommits: store.commits)
-        }
     }
 
     private func position(of commit: PositionedCommit) -> CGPoint? {
@@ -148,6 +157,7 @@ struct CommitGraphView: View {
             y: CGFloat(commit.row) * spacing + spacing
         )
     }
+
 }
 
 struct PositionedCommit: Identifiable {
@@ -162,6 +172,26 @@ struct PositionedCommit: Identifiable {
     ScrollView([.horizontal, .vertical]) {
         CommitGraphView()
     }
+        .background(Color(NSColor.textBackgroundColor))
+        .frame(width: 400, height: 600)
+}
+
+#Preview {
+    @Previewable @State var selected: String?
+    CommitGraphContentView(
+        commits: CommitsGraph().positionedCommits(topoOrderedCommits: sampleCommits),
+        selectedCommitHash: $selected
+    )
+        .background(Color(NSColor.textBackgroundColor))
+        .frame(width: 400, height: 600)
+}
+
+#Preview {
+    @Previewable @State var selected: String?
+    CommitGraphContentView(
+        commits: CommitsGraph().positionedCommits(topoOrderedCommits: sampleCommits2),
+        selectedCommitHash: $selected
+    )
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
 }

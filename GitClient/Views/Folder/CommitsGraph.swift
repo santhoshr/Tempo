@@ -108,7 +108,7 @@ struct CommitGraphContentView: View {
                                 path.move(to: from)
                                 path.addLine(to: to)
                             }
-                            .stroke(Color.secondary.opacity(0.5), lineWidth: 6)
+                            .stroke(Color.secondary.opacity(0.2), lineWidth: 6)
                         }
                     }
                 }
@@ -129,9 +129,7 @@ struct CommitGraphContentView: View {
                         )
                         .position(point)
                         .onTapGesture {
-                            withAnimation {
-                                selectedCommitHash = commit.commit.hash
-                            }
+                            selectedCommitHash = commit.commit.hash
                             print("onTap", commit)
                         }
                     Text(commit.commit.title)
@@ -141,9 +139,9 @@ struct CommitGraphContentView: View {
                         .position(point)
                         .offset(.init(width: 140, height: 0))
                         .onTapGesture {
-                            withAnimation {
-                                selectedCommitHash = commit.commit.hash
-                            }
+
+                            selectedCommitHash = commit.commit.hash
+
                             print("onTap", commit)
                         }
                 }

@@ -102,11 +102,23 @@ struct CommitGraphContentView: View {
             ForEach(commits) { commit in
                 if let from = position(of: commit) {
                     ForEach(commit.commit.parentHashes, id: \.self) { parentHash in
-                        if let parent = commits.first(where: { $0.commit.hash == parentHash }),
-                           let to = position(of: parent) {
+                        if let parent = commits.first(where: { $0.commit.hash == parentHash }), let to = position(of: parent) {
                             Path { path in
                                 path.move(to: from)
-                                path.addLine(to: to)
+                                let control: CGPoint
+                                if from.x > to.x {
+                                    control = CGPoint(
+                                        x: from.x,
+                                        y: to.y
+                                    )
+                                } else {
+                                    control = CGPoint(
+                                        x: to.x,
+                                        y: from.y
+                                    )
+                                }
+
+                                path.addQuadCurve(to: to, control: control)
                             }
                             .stroke(Color.secondary.opacity(0.2), lineWidth: 6)
                         }

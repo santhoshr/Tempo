@@ -54,7 +54,7 @@ struct FolderView: View {
             error: $error
         )
         .overlay(content: {
-            if logStore.commits.isEmpty && !searchTokens.isEmpty  {
+            if logStore.commits.isEmpty && !searchTokens.isEmpty {
                 Text("No Commits History")
                     .foregroundColor(.secondary)
             }

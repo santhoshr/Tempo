@@ -214,7 +214,7 @@ struct PositionedCommit: Identifiable {
         .frame(width: 400, height: 600)
 }
 
-#Preview {
+#Preview("In Search") {
     @Previewable @State var selected: String?
     CommitGraphContentView(
         commits: CommitGraph().positionedCommits(topoOrderedCommits: sampleCommitsInSearch),

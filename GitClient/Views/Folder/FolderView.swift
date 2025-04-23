@@ -41,6 +41,9 @@ struct FolderView: View {
             return []
         }
     }
+    private var suggestSearchToken: [SearchToken] {
+        decodedSearchTokenHistory.filter { !searchTokens.contains($0)}
+    }
 
     var body: some View {
         CommitLogView(
@@ -67,9 +70,11 @@ struct FolderView: View {
         })
         .searchSuggestions({
             if searchText.isEmpty {
-                ForEach(decodedSearchTokenHistory) { token in
-                    Text(token.kind.label + token.text)
-                        .searchCompletion(token)
+                Section("History") {
+                    ForEach(suggestSearchToken) { token in
+                        Text(token.kind.label + token.text)
+                            .searchCompletion(token)
+                    }
                 }
             } else {
                 ForEach(SearchKind.allCases, id: \.self) { kind in

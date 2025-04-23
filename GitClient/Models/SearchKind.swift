@@ -7,6 +7,6 @@
 
 import Foundation
 
-enum SearchKind {
+enum SearchKind: Codable {
     case grep, grepAllMatch, s, g, author, revisionRange
 }

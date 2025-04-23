@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private struct FolderViewShowing {
+struct FolderViewShowing {
     var branches = false
     var createNewBranchFrom: Branch?
     var renameBranch: Branch?
@@ -32,6 +32,15 @@ struct FolderView: View {
     @State private var searchTokens: [SearchToken] = []
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
+    @AppStorage(AppStorageKey.searchTokenHisrtory.rawValue) var searchTokenHistory: Data?
+    private var decodedSearchTokenHistory: [SearchToken] {
+        guard let searchTokenHistory else { return [] }
+        do {
+            return try JSONDecoder().decode([SearchToken].self, from: searchTokenHistory)
+        } catch {
+            return []
+        }
+    }
 
     var body: some View {
         List(logStore.logs(), selection: $selectionLogID) { log in
@@ -59,7 +68,12 @@ struct FolderView: View {
             }
         })
         .searchSuggestions({
-            if !searchText.isEmpty {
+            if searchText.isEmpty {
+                ForEach(searchTokens) { token in
+                    Text(token.text)
+                        .searchCompletion(token)
+                }
+            } else {
                 Text("Message: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
                     .help("Search log messages matching the given pattern (regular expression).")
                 Text("Message(All Match): " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
@@ -86,6 +100,8 @@ struct FolderView: View {
                 await refreshModels()
                 isLoading = false
             }
+
+//            saveSearchTokenHistory(newValue)
         })
         .onChange(of: selectionLogID, {
             selectionLog = logStore.logs().first { $0.id == selectionLogID }
@@ -354,6 +370,17 @@ struct FolderView: View {
             }
 
         }
+    }
+
+    fileprivate func saveSearchTokenHistory(_ newValue: SearchToken) {
+//        var tokens = decodedSearchTokenHistory
+//        tokens.removeAll { $0 == newValue }
+//        tokens.insert(newValue, at: 0)
+//        do {
+//            try self.searchTokenHistory = JSONEncoder().encode(tokens)
+//        } catch {
+//            self.error = error
+//        }
     }
 
     fileprivate func addBranchButton() -> some View {

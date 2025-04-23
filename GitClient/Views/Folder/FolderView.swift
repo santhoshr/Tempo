@@ -79,7 +79,7 @@ struct FolderView: View {
         })
         .searchSuggestions({
             if searchText.isEmpty {
-                ForEach(searchTokens) { token in
+                ForEach(decodedSearchTokenHistory) { token in
                     Text(token.text)
                         .searchCompletion(token)
                 }

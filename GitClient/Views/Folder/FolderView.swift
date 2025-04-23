@@ -70,21 +70,23 @@ struct FolderView: View {
         })
         .searchSuggestions({
             if searchText.isEmpty {
-                Section("History") {
-                    ForEach(suggestSearchToken) { token in
-                        Text(token.kind.label + token.text)
-                            .searchCompletion(token)
-                            .contextMenu {
-                                Button("Delete") {
-                                    var tokens = decodedSearchTokenHistory
-                                    tokens.removeAll { $0 == token }
-                                    do {
-                                        try self.searchTokenHistory = JSONEncoder().encode(tokens)
-                                    } catch {
-                                        self.error = error
+                if !suggestSearchToken.isEmpty {
+                    Section("History") {
+                        ForEach(suggestSearchToken) { token in
+                            Text(token.kind.label + token.text)
+                                .searchCompletion(token)
+                                .contextMenu {
+                                    Button("Delete") {
+                                        var tokens = decodedSearchTokenHistory
+                                        tokens.removeAll { $0 == token }
+                                        do {
+                                            try self.searchTokenHistory = JSONEncoder().encode(tokens)
+                                        } catch {
+                                            self.error = error
+                                        }
                                     }
                                 }
-                            }
+                        }
                     }
                 }
             } else {

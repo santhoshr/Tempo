@@ -77,6 +77,7 @@ import Observation
         }
     }
 
+    /// revisionRangeをSearchTokenで利用するための別メソッド
     private func loadCommitsWithSearchTokenRevisionRange(directory: URL, revisionRange: String) async throws -> [Commit] {
         try await Process.output(GitLog(
             directory: directory,
@@ -89,7 +90,7 @@ import Observation
         ))
     }
 
-    /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加(SearchTokennoRevisionRangeがない場合)
+    /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加(SearchTokenのRevisionRangeがない場合)
     func update() async {
         guard let directory else {
             notCommitted = nil

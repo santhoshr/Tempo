@@ -80,22 +80,14 @@ struct FolderView: View {
         .searchSuggestions({
             if searchText.isEmpty {
                 ForEach(decodedSearchTokenHistory) { token in
-                    Text(token.text)
+                    Text(token.kind.label + token.text)
                         .searchCompletion(token)
                 }
             } else {
-                Text("Message: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
-                    .help("Search log messages matching the given pattern (regular expression).")
-                Text("Message(All Match): " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
-                    .help("Search log messages matching all given patterns instead of at least one.")
-                Text("Changed: " + searchText).searchCompletion(SearchToken(kind: .g, text: searchText))
-                    .help("Search commits with added/removed lines that match the specified regex. ")
-                Text("Changed(Occurrences): " + searchText).searchCompletion(SearchToken(kind: .s, text: searchText))
-                    .help("Search commits where the number of occurrences of the specified regex has changed (added/removed).")
-                Text("Author: " + searchText).searchCompletion(SearchToken(kind: .author, text: searchText))
-                    .help("Search commits by author matching the given pattern (regular expression).")
-                Text("Revision Range: " + searchText).searchCompletion(SearchToken(kind: .revisionRange, text: searchText))
-                    .help("Search commits within the revision range specified by Git syntax. e.g., main.., v1.0.0...v2.0.0")
+                ForEach(SearchKind.allCases, id: \.self) { kind in
+                    Text(kind.label + searchText).searchCompletion(SearchToken(kind: kind, text: searchText))
+                        .help(kind.help)
+                }
             }
         })
         .task {

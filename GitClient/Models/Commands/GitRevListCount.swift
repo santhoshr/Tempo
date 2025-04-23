@@ -1,5 +1,5 @@
 //
-//  GitRevList.swift
+//  GitRevListCount.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2025/04/24.

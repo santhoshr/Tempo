@@ -183,6 +183,7 @@ import Observation
         guard let directory else { return }
         totalCommitsCount = try await Process.output(GitLog(
             directory: directory,
+            revisionRange: searchTokenRevisionRange,
             grep: grep,
             grepAllMatch: grepAllMatch,
             s: s,

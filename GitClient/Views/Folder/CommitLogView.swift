@@ -25,11 +25,25 @@ struct CommitLogView: View {
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 0) {
                 Divider()
-                Text("1,000 Commits")
+                countText()
                     .font(.callout)
                     .padding(12)
             }
             .background(Color(nsColor: .textBackgroundColor))
+        }
+    }
+
+    fileprivate func countText() -> some View {
+        if let count = logStore.totalCommitsCount {
+            let subText: String
+            if count == 1 {
+                subText = "Commit"
+            } else {
+                subText = "Commits"
+            }
+            return Text("\(count) \(subText)")
+        } else {
+            return Text("")
         }
     }
 

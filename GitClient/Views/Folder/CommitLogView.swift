@@ -22,6 +22,15 @@ struct CommitLogView: View {
                     await logStore.logViewTask(log)
                 }
         }
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 0) {
+                Divider()
+                Text("1,000 Commits")
+                    .font(.callout)
+                    .padding(12)
+            }
+            .background(Color(nsColor: .textBackgroundColor))
+        }
     }
 
     fileprivate func logsRow(_ log: Log) -> some View {

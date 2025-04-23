@@ -63,7 +63,11 @@ struct FolderView: View {
                 if !suggestSearchToken.isEmpty {
                     Section("History") {
                         ForEach(suggestSearchToken) { token in
-                            Text(token.kind.label + token.text)
+                            HStack {
+                                Text(token.kind.label)
+                                    .foregroundStyle(.secondary)
+                                Text(token.text)
+                            }
                                 .searchCompletion(token)
                                 .contextMenu {
                                     Button("Delete") {
@@ -81,7 +85,12 @@ struct FolderView: View {
                 }
             } else {
                 ForEach(SearchKind.allCases, id: \.self) { kind in
-                    Text(kind.label + searchText).searchCompletion(SearchToken(kind: kind, text: searchText))
+                    HStack {
+                        Text(kind.label)
+                            .foregroundStyle(.secondary)
+                        Text(searchText)
+                    }
+                        .searchCompletion(SearchToken(kind: kind, text: searchText))
                         .help(kind.help)
                 }
             }

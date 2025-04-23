@@ -13,17 +13,17 @@ enum SearchKind: Codable, CaseIterable {
     var label: String {
         switch self {
         case .grep:
-            return "Message: "
+            return "Message"
         case .grepAllMatch:
-            return "Message(All Match): "
+            return "Message(All Match)"
         case .g:
-            return "Changed: "
+            return "Changed"
         case .s:
-            return "Changed(Occurrences): "
+            return "Changed(Occurrences)"
         case .author:
-            return "Author: "
+            return "Author"
         case .revisionRange:
-            return "Revision Range: "
+            return "Revision Range"
         }
     }
 

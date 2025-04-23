@@ -6,7 +6,7 @@
 //
 
 struct SearchTokensHandler {
-    static func newToken(old: [SearchToken], new: [SearchToken]) -> SearchToken? {
+    static private func newToken(old: [SearchToken], new: [SearchToken]) -> SearchToken? {
         new.first { !old.contains($0) }
     }
 

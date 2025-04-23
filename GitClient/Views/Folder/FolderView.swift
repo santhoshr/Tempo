@@ -111,7 +111,7 @@ struct FolderView: View {
                 isLoading = false
             }
 
-            saveSearchTokenHistory(oldValue: oldValue, newValue: newValue)
+//            saveSearchTokenHistory(newValue)
         })
         .onChange(of: selectionLogID, {
             selectionLog = logStore.logs().first { $0.id == selectionLogID }
@@ -327,17 +327,15 @@ struct FolderView: View {
         }
     }
 
-    fileprivate func saveSearchTokenHistory(oldValue: [SearchToken], newValue: [SearchToken]) {
-        guard let newToken = SearchTokensHandler.newToken(old: oldValue, new: newValue) else { return }
-
-        var tokens = decodedSearchTokenHistory
-        tokens.removeAll { $0 == newToken }
-        tokens.insert(newToken, at: 0)
-        do {
-            try self.searchTokenHistory = JSONEncoder().encode(tokens)
-        } catch {
-            self.error = error
-        }
+    fileprivate func saveSearchTokenHistory(_ newValue: SearchToken) {
+//        var tokens = decodedSearchTokenHistory
+//        tokens.removeAll { $0 == newValue }
+//        tokens.insert(newValue, at: 0)
+//        do {
+//            try self.searchTokenHistory = JSONEncoder().encode(tokens)
+//        } catch {
+//            self.error = error
+//        }
     }
 
     fileprivate func addBranchButton() -> some View {

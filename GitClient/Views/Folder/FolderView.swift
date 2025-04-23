@@ -43,12 +43,22 @@ struct FolderView: View {
     }
 
     var body: some View {
-        List(logStore.logs(), selection: $selectionLogID) { log in
-            logsRow(log)
-                .task {
-                    await logStore.logViewTask(log)
+        CommitLogView(
+            logStore: $logStore,
+            selectionLogID: $selectionLogID,
+            showing: $showing,
+            error: $error,
+            onCheckout: {
+                Task {
+                    await refreshModels()
                 }
-        }
+            },
+            onRevert: {
+                Task {
+                    await refreshModels()
+                }
+            }
+        )
         .overlay(content: {
             if logStore.commits.isEmpty && !searchTokens.isEmpty  {
                 Text("No Commits History")
@@ -314,61 +324,6 @@ struct FolderView: View {
                 .frame(width: 300, height: 660)
                 .padding()
             }
-        }
-    }
-
-    fileprivate func logsRow(_ log: Log) -> some View {
-        return VStack {
-            switch log {
-            case .notCommitted:
-                Text("Not Committed")
-                    .foregroundStyle(Color.secondary)
-            case .committed(let commit):
-                CommitRowView(commit: commit)
-                    .contextMenu {
-                        Button("Checkout") {
-                            Task {
-                                do {
-                                    try await Process.output(GitCheckout(directory: folder.url, commitHash: commit.hash))
-                                    await refreshModels()
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        }
-                        Button("Revert" + (commit.parentHashes.count == 2 ? " -m 1 (\(commit.parentHashes[0].prefix(7)))" : "")) {
-                            Task {
-                                do {
-                                    if commit.parentHashes.count == 2 {
-                                        try await Process.output(GitRevert(directory: folder.url,  parentNumber: 1, commit: commit.hash))
-                                    } else {
-                                        try await Process.output(GitRevert(directory: folder.url, commit: commit.hash))
-                                    }
-                                    await refreshModels()
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        }
-                        Button("Tag") {
-                            showing.createNewTagAt = commit
-                        }
-                        if commit == logStore.commits.first {
-                            if let notCommitted = logStore.notCommitted {
-                                if notCommitted.diffCached.isEmpty {
-                                    Button("Amend") {
-                                        showing.amendCommitAt = commit
-                                    }
-                                }
-                            } else {
-                                Button("Amend") {
-                                    showing.amendCommitAt = commit
-                                }
-                            }
-                        }
-                    }
-            }
-
         }
     }
 

@@ -38,29 +38,32 @@ struct CommitGraph {
         var usingColumns: [Int] = []
 
         for (row, commit) in topoOrderedCommits.enumerated() {
-
             if row == 0 {
                 // 最初のカラムは0
                 result.append(PositionedCommit(commit: commit, column: 0, row: row))
                 usingColumns.append(0)
             } else {
                 let children = result.filter { $0.commit.parentHashes.contains { $0 == commit.hash } }
-                // TODO: 子がない場合もグラフにできるようにする
-                let child = children.first!
-                let positioned: PositionedCommit
-                if child.commit.parentHashes.count == 2, child.commit.parentHashes[1] == commit.hash {
-                    let newColumn = makeColumn(childColumn: child.column, usingColumn: usingColumns)
-                    positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
-                    usingColumns.append(newColumn)
+                if children.isEmpty { // 検索条件で子のコミットがない時
+                    let positioned = PositionedCommit(commit: commit, column: result[row - 1].column, row: row, childrenIsHidden: true)
+                    result.append(positioned)
                 } else {
-                    // 子のカラムを受け継ぐ
-                    positioned = PositionedCommit(commit: commit, column: children.first!.column, row: row)
-                }
-                result.append(positioned)
-                children.forEach { child in
-                    if child.commit.parentHashes.count == 1 && child.column != positioned.column {
-                        if let index = usingColumns.firstIndex(where: { $0 == child.column }) {
-                            usingColumns.remove(at: index)
+                    let child = children.first!
+                    let positioned: PositionedCommit
+                    if child.commit.parentHashes.count == 2, child.commit.parentHashes[1] == commit.hash {
+                        let newColumn = makeColumn(childColumn: child.column, usingColumn: usingColumns)
+                        positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
+                        usingColumns.append(newColumn)
+                    } else {
+                        // 子のカラムを受け継ぐ
+                        positioned = PositionedCommit(commit: commit, column: children.first!.column, row: row)
+                    }
+                    result.append(positioned)
+                    children.forEach { child in
+                        if child.commit.parentHashes.count == 1 && child.column != positioned.column {
+                            if let index = usingColumns.firstIndex(where: { $0 == child.column }) {
+                                usingColumns.remove(at: index)
+                            }
                         }
                     }
                 }
@@ -102,8 +105,7 @@ struct CommitGraphContentView: View {
             ForEach(commits) { commit in
                 if let from = position(of: commit) {
                     ForEach(commit.commit.parentHashes, id: \.self) { parentHash in
-                        if let parent = commits.first(where: { $0.commit.hash == parentHash }),
-                           let to = position(of: parent) {
+                        if let parent = commits.first(where: { $0.commit.hash == parentHash }), !parent.childrenIsHidden , let to = position(of: parent) {
                             Path { path in
                                 path.move(to: from)
                                 path.addLine(to: to)
@@ -166,6 +168,7 @@ struct PositionedCommit: Identifiable {
     let commit: Commit
     let column: Int
     let row: Int
+    var childrenIsHidden: Bool = false
 
     var id: String { commit.hash }
 }

@@ -331,8 +331,9 @@ struct FolderView: View {
         var tokens = decodedSearchTokenHistory
         tokens.removeAll { $0 == newToken }
         tokens.insert(newToken, at: 0)
+        let history = Array(tokens.prefix(10))
         do {
-            try self.searchTokenHistory = JSONEncoder().encode(tokens)
+            try self.searchTokenHistory = JSONEncoder().encode(history)
         } catch {
             self.error = error
         }

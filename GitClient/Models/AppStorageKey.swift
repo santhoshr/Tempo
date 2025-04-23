@@ -10,5 +10,6 @@ import Foundation
 enum AppStorageKey: String {
     case folder
     case commitMessageSnippet
+    case searchTokenHisrtory
 }
 

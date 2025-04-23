@@ -60,6 +60,7 @@
 		6185846B2DA49D5F0038EBBE /* GitBranchRename.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185846A2DA49D590038EBBE /* GitBranchRename.swift */; };
 		6185846D2DA562C00038EBBE /* RenameBranchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185846C2DA562B10038EBBE /* RenameBranchSheet.swift */; };
 		6186EBF92DA5ED4800DCC20E /* AmendCommitSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6186EBF82DA5ED4800DCC20E /* AmendCommitSheet.swift */; };
+		6193DDCD2DB8CA1400B156C4 /* CommitLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6193DDCC2DB8CA1400B156C4 /* CommitLogView.swift */; };
 		619759462C89F1EC00E9CA4F /* GitRestorePatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619759452C89F1EC00E9CA4F /* GitRestorePatch.swift */; };
 		619759482C8A756F00E9CA4F /* GitStatusShort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619759472C8A756F00E9CA4F /* GitStatusShort.swift */; };
 		6197594A2C8A76DA00E9CA4F /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619759492C8A76DA00E9CA4F /* Status.swift */; };
@@ -196,6 +197,7 @@
 		6185846A2DA49D590038EBBE /* GitBranchRename.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitBranchRename.swift; sourceTree = "<group>"; };
 		6185846C2DA562B10038EBBE /* RenameBranchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameBranchSheet.swift; sourceTree = "<group>"; };
 		6186EBF82DA5ED4800DCC20E /* AmendCommitSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmendCommitSheet.swift; sourceTree = "<group>"; };
+		6193DDCC2DB8CA1400B156C4 /* CommitLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitLogView.swift; sourceTree = "<group>"; };
 		619759452C89F1EC00E9CA4F /* GitRestorePatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitRestorePatch.swift; sourceTree = "<group>"; };
 		619759472C8A756F00E9CA4F /* GitStatusShort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitStatusShort.swift; sourceTree = "<group>"; };
 		619759492C8A76DA00E9CA4F /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
@@ -445,8 +447,9 @@
 			isa = PBXGroup;
 			children = (
 				613D14062DA756C0008D561E /* Sheets */,
-				6199ED382DA73E8800D916EE /* CommitRowView.swift */,
 				61E290C228DFE29500BCEB04 /* FolderView.swift */,
+				6193DDCC2DB8CA1400B156C4 /* CommitLogView.swift */,
+				6199ED382DA73E8800D916EE /* CommitRowView.swift */,
 			);
 			path = Folder;
 			sourceTree = "<group>";
@@ -697,6 +700,7 @@
 				619759502C8C721200E9CA4F /* GitDiffShortStat.swift in Sources */,
 				61702D0B2C9E8A1B00FE7E35 /* GitTag.swift in Sources */,
 				616C4C2028E896FA000E7154 /* Log.swift in Sources */,
+				6193DDCD2DB8CA1400B156C4 /* CommitLogView.swift in Sources */,
 				614DE81C2DA345E700FC582E /* GitBranchDelete.swift in Sources */,
 				61C03CE42D86F3C7008186F8 /* ExpandingButton.swift in Sources */,
 				613D14082DA782FC008D561E /* SyncState.swift in Sources */,

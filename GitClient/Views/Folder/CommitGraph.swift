@@ -23,6 +23,15 @@ let sampleCommits2 = [
     Commit(hash: "a", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
 ]
 
+let sampleCommitsInSearch = [
+    Commit(hash: "f", parentHashes: ["d", "e"], author: "Frank", authorEmail: "", authorDate: "2023-10-06T12:00:00Z", title: "Merge bugfix", body: "", branches: [], tags: []),
+    Commit(hash: "e", parentHashes: ["c"], author: "Eve", authorEmail: "", authorDate: "2023-10-05T12:00:00Z", title: "Bugfix", body: "", branches: [], tags: []),
+    Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
+    Commit(hash: "x", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug", body: "", branches: [], tags: []),
+    Commit(hash: "b", parentHashes: ["a"], author: "Bob", authorEmail: "", authorDate: "2023-10-02T12:00:00Z", title: "Add feature", body: "", branches: [], tags: []),
+    Commit(hash: "a'", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
+]
+
 
 struct CommitGraph {
     private func makeColumn(childColumn: Int, usingColumn: [Int]) -> Int {
@@ -156,10 +165,14 @@ struct CommitGraphContentView: View {
     }
 
     private func position(of commit: PositionedCommit) -> CGPoint? {
-        CGPoint(
+        var p = CGPoint(
             x: CGFloat(commit.column) * spacing + spacing,
             y: CGFloat(commit.row) * spacing + spacing
         )
+        if commit.childrenIsHidden {
+            p.x += 0.5 * spacing
+        }
+        return p
     }
 
 }
@@ -195,6 +208,16 @@ struct PositionedCommit: Identifiable {
     @Previewable @State var selected: String?
     CommitGraphContentView(
         commits: CommitGraph().positionedCommits(topoOrderedCommits: sampleCommits2),
+        selectedCommitHash: $selected
+    )
+        .background(Color(NSColor.textBackgroundColor))
+        .frame(width: 400, height: 600)
+}
+
+#Preview {
+    @Previewable @State var selected: String?
+    CommitGraphContentView(
+        commits: CommitGraph().positionedCommits(topoOrderedCommits: sampleCommitsInSearch),
         selectedCommitHash: $selected
     )
         .background(Color(NSColor.textBackgroundColor))

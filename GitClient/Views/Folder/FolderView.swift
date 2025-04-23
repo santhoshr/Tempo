@@ -316,14 +316,10 @@ struct FolderView: View {
     }
 
     fileprivate func saveSearchTokenHistory(oldValue: [SearchToken], newValue: [SearchToken]) {
-        guard let newToken = SearchTokensHandler.newToken(old: oldValue, new: newValue) else { return }
-
-        var tokens = decodedSearchTokenHistory
-        tokens.removeAll { $0 == newToken }
-        tokens.insert(newToken, at: 0)
-        let history = Array(tokens.prefix(10))
+        let newHistory = SearchTokensHandler.searchTokenHistory(currentHistory: decodedSearchTokenHistory, old: oldValue, new: newValue)
+        guard newHistory != decodedSearchTokenHistory else { return }
         do {
-            try self.searchTokenHistory = JSONEncoder().encode(history)
+            try self.searchTokenHistory = JSONEncoder().encode(newHistory)
         } catch {
             self.error = error
         }

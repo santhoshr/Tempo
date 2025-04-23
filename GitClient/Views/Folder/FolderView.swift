@@ -47,17 +47,8 @@ struct FolderView: View {
             logStore: $logStore,
             selectionLogID: $selectionLogID,
             showing: $showing,
-            error: $error,
-            onCheckout: {
-                Task {
-                    await refreshModels()
-                }
-            },
-            onRevert: {
-                Task {
-                    await refreshModels()
-                }
-            }
+            isRefresh: $isRefresh,
+            error: $error
         )
         .overlay(content: {
             if logStore.commits.isEmpty && !searchTokens.isEmpty  {

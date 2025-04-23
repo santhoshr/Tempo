@@ -12,9 +12,8 @@ struct CommitLogView: View {
     @Binding var logStore: LogStore
     @Binding var selectionLogID: String?
     @Binding var showing: FolderViewShowing
+    @Binding var isRefresh: Bool
     @Binding var error: Error?
-    var onCheckout: () -> Void
-    var onRevert: () -> Void
 
     var body: some View {
         List(logStore.logs(), selection: $selectionLogID) { log in
@@ -38,7 +37,7 @@ struct CommitLogView: View {
                             Task {
                                 do {
                                     try await Process.output(GitCheckout(directory: folder!, commitHash: commit.hash))
-                                    onCheckout()
+                                    isRefresh = true
                                 } catch {
                                     self.error = error
                                 }
@@ -52,7 +51,7 @@ struct CommitLogView: View {
                                     } else {
                                         try await Process.output(GitRevert(directory: folder!, commit: commit.hash))
                                     }
-                                    onRevert()
+                                    isRefresh = true
                                 } catch {
                                     self.error = error
                                 }

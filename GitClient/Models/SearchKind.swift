@@ -27,7 +27,7 @@ enum SearchKind: Codable, CaseIterable {
         }
     }
 
-    var pickerText: String {
+    var shortLabel: String {
         switch self {
         case .grep:
             return "Message"

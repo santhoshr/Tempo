@@ -52,7 +52,7 @@ struct FolderView: View {
         .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
             Picker(selection: $token.kind) {
                 ForEach(SearchKind.allCases, id: \.self) { kind in
-                    Text(kind.pickerText).tag(kind)
+                    Text(kind.shortLabel).tag(kind)
                 }
             } label: {
                 Text(token.text)

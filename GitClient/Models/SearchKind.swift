@@ -27,6 +27,23 @@ enum SearchKind: Codable, CaseIterable {
         }
     }
 
+    var pickerText: String {
+        switch self {
+        case .grep:
+            return "Message"
+        case .grepAllMatch:
+            return "Message(A)"
+        case .g:
+            return "Changed"
+        case .s:
+            return "Changed(O)"
+        case .author:
+            return "Author"
+        case .revisionRange:
+            return "Revision Range"
+        }
+    }
+
     var help: String {
         switch self {
         case .grep:

@@ -67,12 +67,9 @@ struct FolderView: View {
         })
         .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
             Picker(selection: $token.kind) {
-                Text("Message").tag(SearchKind.grep)
-                Text("Message(A)").tag(SearchKind.grepAllMatch)
-                Text("Changed").tag(SearchKind.g)
-                Text("Changed(O)").tag(SearchKind.s)
-                Text("Author").tag(SearchKind.author)
-                Text("Revision Range").tag(SearchKind.revisionRange)
+                ForEach(SearchKind.allCases, id: \.self) { kind in
+                    Text(kind.pickerText).tag(kind)
+                }
             } label: {
                 Text(token.text)
             }

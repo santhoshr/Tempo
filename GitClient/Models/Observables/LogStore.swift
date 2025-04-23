@@ -40,6 +40,7 @@ import Observation
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
     var notCommitted: NotCommitted?
+    var totalCommitsCount: Int? = nil
     var error: Error?
 
     func logs() -> [Log] {
@@ -61,6 +62,7 @@ import Observation
             notCommitted = try await notCommited(directory: directory)
             guard searchTokenRevisionRange.isEmpty else {
                 commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
+                try await loadTotalCommitsCount()
                 return
             }
             commits = try await Process.output(GitLog(
@@ -72,6 +74,7 @@ import Observation
                 g: g,
                 author: author
             ))
+            try await loadTotalCommitsCount()
         } catch {
             self.error = error
         }
@@ -124,6 +127,7 @@ import Observation
                 author: author
             ))
             commits = adding + current
+            try await loadTotalCommitsCount()
         } catch {
             self.error = error
         }
@@ -132,6 +136,7 @@ import Observation
     func removeAll() {
         commits = []
         notCommitted = nil
+        totalCommitsCount = nil
     }
 
     /// logビューの表示時に呼び出しし必要に応じてlogsを追加読み込み
@@ -172,5 +177,17 @@ import Observation
         } catch {
             self.error = error
         }
+    }
+
+    private func loadTotalCommitsCount() async throws {
+        guard let directory else { return }
+        totalCommitsCount = try await Process.output(GitLog(
+            directory: directory,
+            grep: grep,
+            grepAllMatch: grepAllMatch,
+            s: s,
+            g: g,
+            author: author
+        )).count
     }
 }

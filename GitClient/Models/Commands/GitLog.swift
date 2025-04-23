@@ -70,7 +70,8 @@ struct GitLog: Git {
 
     func parse(for stdOut: String) throws -> [Commit] {
         guard !stdOut.isEmpty else { return [] }
-        let logs = stdOut.components(separatedBy: String.componentSeparator + "\n")
+        let dropped = stdOut.dropLast(String.componentSeparator.count)
+        let logs = dropped.components(separatedBy: String.componentSeparator + "\n")
         return logs.map { log in
             let separated = log.components(separatedBy: String.formatSeparator)
             let refs: [String]

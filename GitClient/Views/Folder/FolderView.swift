@@ -34,11 +34,24 @@ struct FolderView: View {
     @State private var searchTask: Task<(), Never>?
 
     var body: some View {
-        List(logStore.logs(), selection: $selectionLogID) { log in
-            logsRow(log)
-                .task {
-                    await logStore.logViewTask(log)
-                }
+        TabView {
+            List(logStore.logs(), selection: $selectionLogID) { log in
+                logsRow(log)
+                    .task {
+                        await logStore.logViewTask(log)
+                    }
+            }
+            .tabItem {
+                Text("List")
+            }
+
+            ScrollView([.horizontal, .vertical]) {
+                CommitGraphView()
+            }
+            .background(Color(NSColor.textBackgroundColor))
+            .tabItem {
+                Text("Graph")
+            }
         }
         .overlay(content: {
             if logStore.commits.isEmpty && !searchTokens.isEmpty  {

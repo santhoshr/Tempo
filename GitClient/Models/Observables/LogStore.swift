@@ -181,14 +181,18 @@ import Observation
 
     private func loadTotalCommitsCount() async throws {
         guard let directory else { return }
-        totalCommitsCount = try await Process.output(GitLog(
-            directory: directory,
-            revisionRange: searchTokenRevisionRange,
-            grep: grep,
-            grepAllMatch: grepAllMatch,
-            s: s,
-            g: g,
-            author: author
-        )).count
+        if searchTokens.isEmpty {
+            totalCommitsCount = try await Process.output(GitRevListCount(directory: directory))
+        } else {
+            totalCommitsCount = try await Process.output(GitLog(
+                directory: directory,
+                revisionRange: searchTokenRevisionRange,
+                grep: grep,
+                grepAllMatch: grepAllMatch,
+                s: s,
+                g: g,
+                author: author
+            )).count
+        }
     }
 }

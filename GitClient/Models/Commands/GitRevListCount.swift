@@ -22,6 +22,6 @@ struct GitRevListCount: Git {
     var commit = "HEAD"
 
     func parse(for stdOut: String) -> Int? {
-        Int(stdOut)
+        Int(stdOut.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 }

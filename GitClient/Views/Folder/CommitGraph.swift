@@ -16,11 +16,11 @@ struct CommitGraph {
         return col
     }
 
-    func positionedCommits(topoOrderedCommits: [Commit]) -> [PositionedCommit] {
+    func positionedCommits(_ commits: [Commit]) -> [PositionedCommit] {
         var result: [PositionedCommit] = []
         var usingColumns: [Int] = []
 
-        for (row, commit) in topoOrderedCommits.enumerated() {
+        for (row, commit) in commits.enumerated() {
             if row == 0 {
                 // 最初のカラムは0
                 result.append(PositionedCommit(commit: commit, column: 0, row: row))
@@ -77,7 +77,7 @@ struct CommitGraphView: View {
             store.directory = .init(string: "file:///Users/aoyama/Projects/GitClient")
 
             await store.refresh()
-            commits = CommitGraph().positionedCommits(topoOrderedCommits: store.commits)
+            commits = CommitGraph().positionedCommits(store.commits)
         }
     }
 }
@@ -177,7 +177,7 @@ struct CommitGraphContentView: View {
     ]
 
     CommitGraphContentView(
-        commits: CommitGraph().positionedCommits(topoOrderedCommits: sampleCommits),
+        commits: CommitGraph().positionedCommits(sampleCommits),
         selectedCommitHash: $selected
     )
         .background(Color(NSColor.textBackgroundColor))
@@ -196,7 +196,7 @@ struct CommitGraphContentView: View {
     ]
 
     CommitGraphContentView(
-        commits: CommitGraph().positionedCommits(topoOrderedCommits: sampleCommits2),
+        commits: CommitGraph().positionedCommits(sampleCommits2),
         selectedCommitHash: $selected
     )
         .background(Color(NSColor.textBackgroundColor))
@@ -215,7 +215,7 @@ struct CommitGraphContentView: View {
     ]
 
     CommitGraphContentView(
-        commits: CommitGraph().positionedCommits(topoOrderedCommits: sampleCommitsInSearch),
+        commits: CommitGraph().positionedCommits( sampleCommitsInSearch),
         selectedCommitHash: $selected
     )
         .background(Color(NSColor.textBackgroundColor))

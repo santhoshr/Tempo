@@ -7,16 +7,6 @@
 
 import SwiftUI
 
-private struct FolderViewShowing {
-    var branches = false
-    var createNewBranchFrom: Branch?
-    var renameBranch: Branch?
-    var stashChanged = false
-    var tags = false
-    var createNewTagAt: Commit?
-    var amendCommitAt: Commit?
-}
-
 struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
@@ -32,15 +22,28 @@ struct FolderView: View {
     @State private var searchTokens: [SearchToken] = []
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
+    @AppStorage(AppStorageKey.searchTokenHisrtory.rawValue) var searchTokenHistory: Data?
+    private var decodedSearchTokenHistory: [SearchToken] {
+        guard let searchTokenHistory else { return [] }
+        do {
+            return try JSONDecoder().decode([SearchToken].self, from: searchTokenHistory)
+        } catch {
+            return []
+        }
+    }
+    private var suggestSearchToken: [SearchToken] {
+        decodedSearchTokenHistory.filter { !searchTokens.contains($0)}
+    }
 
     var body: some View {
         TabView {
-            List(logStore.logs(), selection: $selectionLogID) { log in
-                logsRow(log)
-                    .task {
-                        await logStore.logViewTask(log)
-                    }
-            }
+            CommitLogView(
+                logStore: $logStore,
+                selectionLogID: $selectionLogID,
+                showing: $showing,
+                isRefresh: $isRefresh,
+                error: $error
+            )
             .tabItem {
                 Text("List")
             }
@@ -54,37 +57,55 @@ struct FolderView: View {
             }
         }
         .overlay(content: {
-            if logStore.commits.isEmpty && !searchTokens.isEmpty  {
+            if logStore.commits.isEmpty && !searchTokens.isEmpty {
                 Text("No Commits History")
                     .foregroundColor(.secondary)
             }
         })
         .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
             Picker(selection: $token.kind) {
-                Text("Message").tag(SearchKind.grep)
-                Text("Message(A)").tag(SearchKind.grepAllMatch)
-                Text("Changed").tag(SearchKind.g)
-                Text("Changed(O)").tag(SearchKind.s)
-                Text("Author").tag(SearchKind.author)
-                Text("Revision Range").tag(SearchKind.revisionRange)
+                ForEach(SearchKind.allCases, id: \.self) { kind in
+                    Text(kind.shortLabel).tag(kind)
+                }
             } label: {
                 Text(token.text)
             }
         })
         .searchSuggestions({
-            if !searchText.isEmpty {
-                Text("Message: " + searchText).searchCompletion(SearchToken(kind: .grep, text: searchText))
-                    .help("Search log messages matching the given pattern (regular expression).")
-                Text("Message(All Match): " + searchText).searchCompletion(SearchToken(kind: .grepAllMatch, text: searchText))
-                    .help("Search log messages matching all given patterns instead of at least one.")
-                Text("Changed: " + searchText).searchCompletion(SearchToken(kind: .g, text: searchText))
-                    .help("Search commits with added/removed lines that match the specified regex. ")
-                Text("Changed(Occurrences): " + searchText).searchCompletion(SearchToken(kind: .s, text: searchText))
-                    .help("Search commits where the number of occurrences of the specified regex has changed (added/removed).")
-                Text("Author: " + searchText).searchCompletion(SearchToken(kind: .author, text: searchText))
-                    .help("Search commits by author matching the given pattern (regular expression).")
-                Text("Revision Range: " + searchText).searchCompletion(SearchToken(kind: .revisionRange, text: searchText))
-                    .help("Search commits within the revision range specified by Git syntax. e.g., main.., v1.0.0...v2.0.0")
+            if searchText.isEmpty {
+                if !suggestSearchToken.isEmpty {
+                    Section("History") {
+                        ForEach(suggestSearchToken) { token in
+                            HStack {
+                                Text(token.kind.label)
+                                    .foregroundStyle(.secondary)
+                                Text(token.text)
+                            }
+                                .searchCompletion(token)
+                                .contextMenu {
+                                    Button("Delete") {
+                                        var tokens = decodedSearchTokenHistory
+                                        tokens.removeAll { $0 == token }
+                                        do {
+                                            try self.searchTokenHistory = JSONEncoder().encode(tokens)
+                                        } catch {
+                                            self.error = error
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                }
+            } else {
+                ForEach(SearchKind.allCases, id: \.self) { kind in
+                    HStack {
+                        Text(kind.label)
+                            .foregroundStyle(.secondary)
+                        Text(searchText)
+                    }
+                        .searchCompletion(SearchToken(kind: kind, text: searchText))
+                        .help(kind.help)
+                }
             }
         })
         .task {
@@ -99,6 +120,8 @@ struct FolderView: View {
                 await refreshModels()
                 isLoading = false
             }
+
+            saveSearchTokenHistory(oldValue: oldValue, newValue: newValue)
         })
         .onChange(of: selectionLogID, {
             selectionLog = logStore.logs().first { $0.id == selectionLogID }
@@ -234,7 +257,7 @@ struct FolderView: View {
             } label: {
                 Image(systemName: "chevron.down")
             }
-            .help("Select Branch")
+            .help("Select branch.")
             .popover(isPresented: $showing.branches) {
                 TabView {
                     BranchesView(
@@ -314,58 +337,13 @@ struct FolderView: View {
         }
     }
 
-    fileprivate func logsRow(_ log: Log) -> some View {
-        return VStack {
-            switch log {
-            case .notCommitted:
-                Text("Not Committed")
-                    .foregroundStyle(Color.secondary)
-            case .committed(let commit):
-                CommitRowView(commit: commit)
-                    .contextMenu {
-                        Button("Checkout") {
-                            Task {
-                                do {
-                                    try await Process.output(GitCheckout(directory: folder.url, commitHash: commit.hash))
-                                    await refreshModels()
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        }
-                        Button("Revert" + (commit.parentHashes.count == 2 ? " -m 1 (\(commit.parentHashes[0].prefix(7)))" : "")) {
-                            Task {
-                                do {
-                                    if commit.parentHashes.count == 2 {
-                                        try await Process.output(GitRevert(directory: folder.url,  parentNumber: 1, commit: commit.hash))
-                                    } else {
-                                        try await Process.output(GitRevert(directory: folder.url, commit: commit.hash))
-                                    }
-                                    await refreshModels()
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        }
-                        Button("Tag") {
-                            showing.createNewTagAt = commit
-                        }
-                        if commit == logStore.commits.first {
-                            if let notCommitted = logStore.notCommitted {
-                                if notCommitted.diffCached.isEmpty {
-                                    Button("Amend") {
-                                        showing.amendCommitAt = commit
-                                    }
-                                }
-                            } else {
-                                Button("Amend") {
-                                    showing.amendCommitAt = commit
-                                }
-                            }
-                        }
-                    }
-            }
-
+    fileprivate func saveSearchTokenHistory(oldValue: [SearchToken], newValue: [SearchToken]) {
+        let newHistory = SearchTokensHandler.searchTokenHistory(currentHistory: decodedSearchTokenHistory, old: oldValue, new: newValue)
+        guard newHistory != decodedSearchTokenHistory else { return }
+        do {
+            try self.searchTokenHistory = JSONEncoder().encode(newHistory)
+        } catch {
+            self.error = error
         }
     }
 
@@ -375,7 +353,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "plus")
         }
-        .help("Create New Branch")
+        .help("Create new branch.")
     }
 
     fileprivate func tagButton() -> some View {
@@ -384,7 +362,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "tag")
         }
-        .help("Tags")
+        .help("Show tags.")
         .popover(isPresented: $showing.tags, content: {
             TagsView(folder: folder, showingTags: $showing.tags)
         })
@@ -403,7 +381,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "tray")
         }
-        .help("Stashed Changes")
+        .help("Show stashed changes.")
     }
 
     fileprivate func badge() -> some View {
@@ -419,7 +397,7 @@ struct FolderView: View {
             isLoading = true
             Task {
                 do {
-                    try await Process.output(GitPull(directory: folder.url))
+                    try await Process.output(GitPull(directory: folder.url, refspec: branch!.name))
                     await refreshModels()
                 } catch {
                     self.error = error
@@ -436,7 +414,7 @@ struct FolderView: View {
                         })
                 })
         }
-        .help("Pull")
+        .help("Pull origin \(branch?.name ?? "")." )
     }
 
     fileprivate func pushButton() -> some View {
@@ -461,7 +439,7 @@ struct FolderView: View {
                             })
                 })
         }
-        .help("Push origin HEAD")
+        .help("Push origin HEAD.")
     }
 }
 

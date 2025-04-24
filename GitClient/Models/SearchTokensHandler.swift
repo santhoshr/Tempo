@@ -10,6 +10,14 @@ struct SearchTokensHandler {
         new.first { !old.contains($0) }
     }
 
+    static func searchTokenHistory(currentHistory: [SearchToken], old: [SearchToken], new: [SearchToken]) -> [SearchToken] {
+        guard let newToken = SearchTokensHandler.newToken(old: old, new: new) else { return currentHistory }
+        var history = currentHistory
+        history.removeAll { $0 == newToken }
+        history.insert(newToken, at: 0)
+        return Array(history.prefix(10))
+    }
+
     static func handle(oldTokens: [SearchToken], newTokens: [SearchToken]) -> [SearchToken] {
         if let newToken = newToken(old: oldTokens, new: newTokens) {
             switch newToken.kind {

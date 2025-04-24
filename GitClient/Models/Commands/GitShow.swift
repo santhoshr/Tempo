@@ -50,7 +50,7 @@ struct GitShow: Git {
             branches: refs.filter { !$0.hasPrefix("tag: ") },
             tags: refs.filter { $0.hasPrefix("tag: ") }.map { String($0.dropFirst(5)) }
         )
-        print(commit)
+        
         return CommitDetail(
             commit: commit,
             diff: try Diff(raw: String(splits[safe: 1] ?? ""))

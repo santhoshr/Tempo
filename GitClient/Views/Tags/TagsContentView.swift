@@ -10,7 +10,7 @@ import SwiftUI
 struct TagsContentView: View {
     var folder: Folder
     @Binding var showingTags: Bool
-    var tags: [String]?
+    @Binding var tags: [String]?
     private var filteredTags: [String]? {
         guard !filterText.isEmpty else { return tags }
         return tags?.filter { $0.lowercased().contains(filterText.lowercased()) }
@@ -46,7 +46,7 @@ struct TagsContentView: View {
                                     Task {
                                         do {
                                             try await Process.output(GitTagDelete(directory: folder.url, tagname: tag))
-                                            showingTags = false
+                                            tags = tags?.filter{ $0 != tag}
                                         } catch {
                                             self.error = error
                                         }
@@ -74,12 +74,16 @@ struct TagsContentView: View {
 
 #Preview {
     @Previewable @State var showingTags = false
-    TagsContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingTags: $showingTags, tags: ["v1.0.0", "v1.1.0", "v2.0.0"])
+    @Previewable @State var tags: [String]? = ["v1.0.0", "v1.1.0", "v2.0.0"]
+
+    TagsContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingTags: $showingTags, tags: $tags)
         .frame(width: 300, height: 660)
 }
 
 #Preview("No Content") {
     @Previewable @State var showingTags = false
-    TagsContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingTags: $showingTags, tags: [])
+    @Previewable @State var tags: [String]? = []
+
+    TagsContentView(folder: .init(url: URL(string: "file:///maoyama/Projects/")!), showingTags: $showingTags, tags: $tags)
         .frame(width: 300, height: 660)
 }

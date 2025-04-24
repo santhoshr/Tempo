@@ -40,6 +40,7 @@ import Observation
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
     var notCommitted: NotCommitted?
+    var totalCommitsCount: Int? = nil
     var error: Error?
 
     func logs() -> [Log] {
@@ -61,6 +62,7 @@ import Observation
             notCommitted = try await notCommited(directory: directory)
             guard searchTokenRevisionRange.isEmpty else {
                 commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
+                try await loadTotalCommitsCount()
                 return
             }
             commits = try await Process.output(GitLog(
@@ -72,11 +74,13 @@ import Observation
                 g: g,
                 author: author
             ))
+            try await loadTotalCommitsCount()
         } catch {
             self.error = error
         }
     }
 
+    /// revisionRangeをSearchTokenで利用するための別メソッド
     private func loadCommitsWithSearchTokenRevisionRange(directory: URL, revisionRange: String) async throws -> [Commit] {
         try await Process.output(GitLog(
             directory: directory,
@@ -89,7 +93,7 @@ import Observation
         ))
     }
 
-    /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加(SearchTokennoRevisionRangeがない場合)
+    /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加(SearchTokenのRevisionRangeがない場合)
     func update() async {
         guard let directory else {
             notCommitted = nil
@@ -123,6 +127,7 @@ import Observation
                 author: author
             ))
             commits = adding + current
+            try await loadTotalCommitsCount()
         } catch {
             self.error = error
         }
@@ -131,6 +136,7 @@ import Observation
     func removeAll() {
         commits = []
         notCommitted = nil
+        totalCommitsCount = nil
     }
 
     /// logビューの表示時に呼び出しし必要に応じてlogsを追加読み込み
@@ -170,6 +176,23 @@ import Observation
             )).dropFirst()
         } catch {
             self.error = error
+        }
+    }
+
+    private func loadTotalCommitsCount() async throws {
+        guard let directory else { return }
+        if searchTokens.isEmpty {
+            totalCommitsCount = try await Process.output(GitRevListCount(directory: directory))
+        } else {
+            totalCommitsCount = try await Process.output(GitLog(
+                directory: directory,
+                revisionRange: searchTokenRevisionRange,
+                grep: grep,
+                grepAllMatch: grepAllMatch,
+                s: s,
+                g: g,
+                author: author
+            )).count
         }
     }
 }

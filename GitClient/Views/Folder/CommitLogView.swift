@@ -22,6 +22,29 @@ struct CommitLogView: View {
                     await logStore.logViewTask(log)
                 }
         }
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 0) {
+                Divider()
+                countText()
+                    .font(.callout)
+                    .padding(12)
+            }
+            .background(Color(nsColor: .textBackgroundColor))
+        }
+    }
+
+    fileprivate func countText() -> some View {
+        if let count = logStore.totalCommitsCount {
+            let subText: String
+            if count == 1 {
+                subText = "Commit"
+            } else {
+                subText = "Commits"
+            }
+            return Text("\(count) \(subText)")
+        } else {
+            return Text("")
+        }
     }
 
     fileprivate func logsRow(_ log: Log) -> some View {

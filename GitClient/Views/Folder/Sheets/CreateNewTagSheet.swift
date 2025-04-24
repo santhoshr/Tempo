@@ -60,7 +60,7 @@ struct CreateNewTagSheet: View {
                     if isLoading {
                         ProgressView()
                             .scaleEffect(0.4)
-                            .frame(width: 29, height: 17)
+                            .frame(width: 102, height: 17)
                     } else {
                         Button("Create & Push") {
                             Task {

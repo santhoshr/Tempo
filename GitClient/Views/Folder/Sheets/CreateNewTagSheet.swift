@@ -12,6 +12,7 @@ struct CreateNewTagSheet: View {
     @Binding var showingCreateNewTagAt: Commit?
     var onCreate: (() -> Void)
     @State private var newTagname = ""
+    @State private var isLoading = false
     @State private var error: Error?
 
     var body: some View {
@@ -56,28 +57,37 @@ struct CreateNewTagSheet: View {
                         }
                     }
                     .disabled(newTagname.isEmpty)
-                    Button("Create & Push") {
-                        Task {
-                            do {
-                                try await Process.output(
-                                    GitTagCreate(
-                                        directory: folder.url,
-                                        tagname: newTagname,
-                                        object: showingCreateNewTagAt!.hash
+                    if isLoading {
+                        ProgressView()
+                            .scaleEffect(0.4)
+                            .frame(width: 29, height: 17)
+                    } else {
+                        Button("Create & Push") {
+                            Task {
+                                isLoading = true
+                                do {
+                                    try await Process.output(
+                                        GitTagCreate(
+                                            directory: folder.url,
+                                            tagname: newTagname,
+                                            object: showingCreateNewTagAt!.hash
+                                        )
                                     )
-                                )
-                                try await Process.output(
-                                    GitPush(directory: folder.url, refspec: newTagname)
-                                )
-                                onCreate()
-                                showingCreateNewTagAt = nil
-                            } catch {
-                                self.error = error
+                                    try await Process.output(
+                                        GitPush(directory: folder.url, refspec: newTagname)
+                                    )
+                                    isLoading = false
+                                    onCreate()
+                                    showingCreateNewTagAt = nil
+                                } catch {
+                                    isLoading = false
+                                    self.error = error
+                                }
                             }
                         }
+                        .keyboardShortcut(.init(.return))
+                        .disabled(newTagname.isEmpty)
                     }
-                    .keyboardShortcut(.init(.return))
-                    .disabled(newTagname.isEmpty)
                 }
                 .padding(.top)
             }

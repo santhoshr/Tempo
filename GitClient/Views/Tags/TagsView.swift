@@ -15,7 +15,7 @@ struct TagsView: View {
     @State private var error: Error?
 
     var body: some View {
-        TagsContentView(folder: folder, showingTags: $showingTags, tags: tags)
+        TagsContentView(folder: folder, showingTags: $showingTags, tags: $tags)
             .frame(width: 300, height: 660)
             .task {
                 do {

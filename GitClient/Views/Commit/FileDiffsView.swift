@@ -11,7 +11,7 @@ struct FileDiffsView: View {
     @Binding var expandableFileDiffs: [ExpandableModel<FileDiff>]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        LazyVStack(alignment: .leading, spacing: 0) {
             ForEach($expandableFileDiffs, id: \.self) { $expandedFileDiff in
                 FileDiffView(
                     expandableFileDiff: $expandedFileDiff,

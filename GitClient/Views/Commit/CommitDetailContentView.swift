@@ -97,7 +97,6 @@ struct CommitDetailContentView: View {
                         Divider()
                             .padding(.top)
                         Text(shortstat)
-//                            .font(.callout)
                             .padding(.vertical, 6)
                         Divider()
                         if commit.parentHashes.count == 2 {

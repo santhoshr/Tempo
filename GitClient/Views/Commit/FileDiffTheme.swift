@@ -17,7 +17,7 @@ public struct FileDiffTheme: SourceCodeTheme {
 
     public static var font: NSFont {
         let baseFont = NSFont.preferredFont(forTextStyle: .body)
-        return NSFont.monospacedSystemFont(ofSize: baseFont.pointSize, weight: .regular)
+        return NSFont.monospacedSystemFont(ofSize: baseFont.pointSize - 1, weight: .regular)
     }
 
     private static var lineNumbersColor: Color {

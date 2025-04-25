@@ -9,12 +9,8 @@ import SwiftUI
 
 extension View {
     func errorAlert(_ error: Binding<Error?>) -> some View {
-        alert(
-            error.wrappedValue?.localizedDescription ?? "",
-            isPresented: .constant(error.wrappedValue != nil)) {
-            Button("OK", role: .cancel) {
-                error.wrappedValue = nil
-            }
+        sheet(isPresented: .constant(error.wrappedValue != nil)) {
+            ErrorTextSheet(error: error)
         }
     }
 }

@@ -46,7 +46,7 @@ struct CommitMessageSuggestionView: View {
                 Image(systemName: "list.dash")
             })
         }
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }
 

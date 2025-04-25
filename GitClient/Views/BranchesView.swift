@@ -114,7 +114,7 @@ struct BranchesView: View {
                 self.error = error
             }
         }
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }
 

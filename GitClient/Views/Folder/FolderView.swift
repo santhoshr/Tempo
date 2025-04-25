@@ -126,8 +126,8 @@ struct FolderView: View {
                 }
             }
         })
-        .errorAlert($error)
-        .errorAlert($logStore.error)
+        .errorSheet($error)
+        .errorSheet($logStore.error)
         .sheet(item: $showing.createNewBranchFrom, content: { _ in
             CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showing.createNewBranchFrom) {
                 Task {

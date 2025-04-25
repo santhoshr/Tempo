@@ -59,6 +59,6 @@ struct RenameBranchSheet: View {
         }
         .padding()
         .cornerRadius(8)
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }

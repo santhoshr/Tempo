@@ -158,6 +158,6 @@ struct CommitDetailContentView: View {
                 shortstat = (try? await Process.output(GitShowShortstat(directory: folder.url, object: commit.hash))) ?? ""
             }
         })
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }

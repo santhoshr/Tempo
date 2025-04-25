@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension View {
-    func errorAlert(_ error: Binding<Error?>) -> some View {
+    func errorSheet(_ error: Binding<Error?>) -> some View {
         sheet(isPresented: .constant(error.wrappedValue != nil)) {
             ErrorTextSheet(error: error)
         }

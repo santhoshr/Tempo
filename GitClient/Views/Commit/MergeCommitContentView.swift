@@ -57,7 +57,7 @@ struct MergeCommitContentView: View {
                 }
             }
         }
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }
 

@@ -310,7 +310,7 @@ struct CommitCreateView: View {
                 self.error = error
             }
         }
-        .errorAlert($error)
+        .errorSheet($error)
     }
 
     private func updateChanges() async {

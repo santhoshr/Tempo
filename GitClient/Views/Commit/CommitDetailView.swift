@@ -28,6 +28,6 @@ struct CommitDetailView: View {
                 self.error = error
             }
         }
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }

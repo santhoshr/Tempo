@@ -23,39 +23,6 @@ struct CommitLogView: View {
                     await logStore.logViewTask(log)
                 }
         }
-        .safeAreaInset(edge: .bottom) {
-            VStack(spacing: 0) {
-                Divider()
-                countText()
-                    .font(.callout)
-                    .padding(12)
-            }
-            .background(Color(nsColor: .textBackgroundColor))
-            .overlay(alignment: .trailing) {
-                Image(systemName: showGraph ? "g.circle.fill" : "g.circle")
-                    .fontWeight(.bold)
-                    .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
-                    .padding(.horizontal)
-                    .onTapGesture {
-                        showGraph.toggle()
-                    }
-                    .help("Commit Graph View")
-            }
-        }
-    }
-
-    fileprivate func countText() -> some View {
-        if let count = logStore.totalCommitsCount {
-            let subText: String
-            if count == 1 {
-                subText = "Commit"
-            } else {
-                subText = "Commits"
-            }
-            return Text("\(count) \(subText)")
-        } else {
-            return Text("")
-        }
     }
 
     fileprivate func logsRow(_ log: Log) -> some View {

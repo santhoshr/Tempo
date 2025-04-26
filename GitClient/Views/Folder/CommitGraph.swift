@@ -67,18 +67,13 @@ struct PositionedCommit: Identifiable {
 }
 
 struct CommitGraphView: View {
-    @State var commits: [PositionedCommit] = []
+    @Binding var logStore: LogStore
+    @State private var commits: [PositionedCommit] = []
     @State private var selectedCommitHash: String?
 
-    var body: some View {
-        CommitGraphContentView(commits: commits, selectedCommitHash: $selectedCommitHash)
-        .task {
-            let store = LogStore()
-            store.directory = .init(string: "file:///Users/aoyama/Projects/GitClient")
 
-            await store.refresh()
-            commits = CommitGraph().positionedCommits(store.commits)
-        }
+    var body: some View {
+        CommitGraphContentView(commits: CommitGraph().positionedCommits(logStore.commits), selectedCommitHash: $selectedCommitHash)
     }
 }
 
@@ -156,15 +151,6 @@ struct CommitGraphContentView: View {
         }
         return p
     }
-}
-
-
-#Preview {
-    ScrollView([.horizontal, .vertical]) {
-        CommitGraphView()
-    }
-        .background(Color(NSColor.textBackgroundColor))
-        .frame(width: 400, height: 600)
 }
 
 #Preview {

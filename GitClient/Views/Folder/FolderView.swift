@@ -40,7 +40,7 @@ struct FolderView: View {
         VStack(spacing: 0) {
             if showGraph {
                 ScrollView([.horizontal, .vertical]) {
-                    CommitGraphView()
+                    CommitGraphView(logStore: $logStore)
                 }
                 .background(Color(NSColor.textBackgroundColor))
             } else {

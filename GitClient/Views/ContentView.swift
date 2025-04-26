@@ -109,7 +109,7 @@ struct ContentView: View {
         .onChange(of: selectionFolder, {
             selectionLog = nil
         })
-        .errorAlert($error)
+        .errorSheet($error)
         .environment(\.folder, selectionFolderURL)
     }
 }

@@ -15,7 +15,7 @@ struct GitClientApp: App {
         WindowGroup {
             ContentView()
                 .environment(\.openAIAPISecretKey, keychainStorage.openAIAPISecretKey)
-                .errorAlert($keychainStorage.error)
+                .errorSheet($keychainStorage.error)
         }
         Settings {
             SettingsView(openAIAPISecretKey: $keychainStorage.openAIAPISecretKey)

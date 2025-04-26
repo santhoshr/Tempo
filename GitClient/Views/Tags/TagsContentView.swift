@@ -68,7 +68,7 @@ struct TagsContentView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }
 

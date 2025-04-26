@@ -56,6 +56,6 @@ struct AmendCommitSheet: View {
         .task {
             message = showingAmendCommitAt?.rawBody ?? ""
         }
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }

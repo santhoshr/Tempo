@@ -83,7 +83,7 @@ struct CommitMessageSnippetView: View {
             .frame(height: 80)
             .background(Color(NSColor.textBackgroundColor))
         }
-        .errorAlert($error)
+        .errorSheet($error)
     }
 }
 

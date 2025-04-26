@@ -139,8 +139,8 @@ struct FolderView: View {
                 }
             }
         })
-        .errorAlert($error)
-        .errorAlert($logStore.error)
+        .errorSheet($error)
+        .errorSheet($logStore.error)
         .sheet(item: $showing.createNewBranchFrom, content: { _ in
             CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showing.createNewBranchFrom) {
                 Task {
@@ -257,7 +257,7 @@ struct FolderView: View {
             } label: {
                 Image(systemName: "chevron.down")
             }
-            .help("Select branch.")
+            .help("Select branch")
             .popover(isPresented: $showing.branches) {
                 TabView {
                     BranchesView(
@@ -353,7 +353,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "plus")
         }
-        .help("Create new branch.")
+        .help("Create new branch")
     }
 
     fileprivate func tagButton() -> some View {
@@ -362,7 +362,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "tag")
         }
-        .help("Show tags.")
+        .help("Show tags")
         .popover(isPresented: $showing.tags, content: {
             TagsView(folder: folder, showingTags: $showing.tags)
         })
@@ -381,7 +381,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "tray")
         }
-        .help("Show stashed changes.")
+        .help("Show stashed changes")
     }
 
     fileprivate func badge() -> some View {
@@ -414,7 +414,7 @@ struct FolderView: View {
                         })
                 })
         }
-        .help("Pull origin \(branch?.name ?? "")." )
+        .help("Pull origin \(branch?.name ?? "")" )
     }
 
     fileprivate func pushButton() -> some View {
@@ -439,7 +439,7 @@ struct FolderView: View {
                             })
                 })
         }
-        .help("Push origin HEAD.")
+        .help("Push origin HEAD")
     }
 }
 

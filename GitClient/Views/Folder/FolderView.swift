@@ -36,7 +36,7 @@ struct FolderView: View {
     }
 
     var body: some View {
-        TabView {
+        VStack {
             CommitLogView(
                 logStore: $logStore,
                 selectionLogID: $selectionLogID,
@@ -44,17 +44,14 @@ struct FolderView: View {
                 isRefresh: $isRefresh,
                 error: $error
             )
-            .tabItem {
-                Text("List")
-            }
 
-            ScrollView([.horizontal, .vertical]) {
-                CommitGraphView()
-            }
-            .background(Color(NSColor.textBackgroundColor))
-            .tabItem {
-                Text("Graph")
-            }
+//            ScrollView([.horizontal, .vertical]) {
+//                CommitGraphView()
+//            }
+//            .background(Color(NSColor.textBackgroundColor))
+//            .tabItem {
+//                Text("Graph")
+//            }
         }
         .overlay(content: {
             if logStore.commits.isEmpty && !searchTokens.isEmpty {

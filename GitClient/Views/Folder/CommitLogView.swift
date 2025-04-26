@@ -30,6 +30,12 @@ struct CommitLogView: View {
                     .padding(12)
             }
             .background(Color(nsColor: .textBackgroundColor))
+            .overlay(alignment: .trailing) {
+                Image(systemName: "g.circle")
+                    .fontWeight(.bold)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal)
+            }
         }
     }
 

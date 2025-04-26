@@ -13,6 +13,7 @@ struct CommitLogView: View {
     @Binding var selectionLogID: String?
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
+    @Binding var showGraph: Bool
     @Binding var error: Error?
 
     var body: some View {
@@ -31,10 +32,14 @@ struct CommitLogView: View {
             }
             .background(Color(nsColor: .textBackgroundColor))
             .overlay(alignment: .trailing) {
-                Image(systemName: "g.circle")
+                Image(systemName: showGraph ? "g.circle.fill" : "g.circle")
                     .fontWeight(.bold)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
                     .padding(.horizontal)
+                    .onTapGesture {
+                        showGraph.toggle()
+                    }
+                    .help("Commit Graph View")
             }
         }
     }

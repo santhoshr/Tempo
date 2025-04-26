@@ -22,6 +22,7 @@ struct FolderView: View {
     @State private var searchTokens: [SearchToken] = []
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
+    @State private var showGraph = false
     @AppStorage(AppStorageKey.searchTokenHisrtory.rawValue) var searchTokenHistory: Data?
     private var decodedSearchTokenHistory: [SearchToken] {
         guard let searchTokenHistory else { return [] }
@@ -42,6 +43,7 @@ struct FolderView: View {
                 selectionLogID: $selectionLogID,
                 showing: $showing,
                 isRefresh: $isRefresh,
+                showGraph: $showGraph,
                 error: $error
             )
 

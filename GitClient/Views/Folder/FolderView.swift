@@ -54,7 +54,7 @@ struct FolderView: View {
                 )
             }
         }
-        .safeAreaInset(edge: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: 0) {
                 Divider()
                 countText()

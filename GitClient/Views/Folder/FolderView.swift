@@ -61,7 +61,7 @@ struct FolderView: View {
             .background(Color(nsColor: .textBackgroundColor))
             .overlay(alignment: .trailing) {
                 Image(systemName: showGraph ? "g.circle.fill" : "g.circle")
-                    .fontWeight(.bold)
+                    .fontWeight(.semibold)
                     .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
                     .padding(.horizontal)
                     .onTapGesture {

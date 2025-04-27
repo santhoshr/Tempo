@@ -68,7 +68,7 @@ struct PositionedCommit: Identifiable {
 
 struct CommitGraphView: View {
     @Binding var logStore: LogStore
-    @State private var selectedCommitHash: String?
+    @Binding var selectedCommitHash: String?
 
     var body: some View {
         ScrollView([.horizontal, .vertical]) {

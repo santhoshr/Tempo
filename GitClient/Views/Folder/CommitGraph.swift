@@ -68,12 +68,13 @@ struct PositionedCommit: Identifiable {
 
 struct CommitGraphView: View {
     @Binding var logStore: LogStore
-    @State private var commits: [PositionedCommit] = []
     @State private var selectedCommitHash: String?
 
-
     var body: some View {
-        CommitGraphContentView(commits: CommitGraph().positionedCommits(logStore.commits), selectedCommitHash: $selectedCommitHash)
+        ScrollView([.horizontal, .vertical]) {
+            CommitGraphContentView(commits: CommitGraph().positionedCommits(logStore.commits), selectedCommitHash: $selectedCommitHash)
+        }
+        .background(Color(NSColor.textBackgroundColor))
     }
 }
 

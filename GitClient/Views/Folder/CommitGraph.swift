@@ -32,23 +32,16 @@ struct CommitGraph {
                     result.append(positioned)
                 } else {
                     let positioned: PositionedCommit
-                    let mergeCommitParentColumn = children
-                        .filter { $0.commit.parentHashes.count == 2 && $0.commit.parentHashes[1] == commit.hash }
-                        .map { $0.column }
-                        .min()
-                    if let mergeCommitParentColumn = mergeCommitParentColumn {
-                        if children.contains(where: { $0.column == mergeCommitParentColumn + 1 }) {
-                            // 子の中でマージコミットがあり、最も左側でマージコミット以外のコミットのカラムを利用する時
-                            positioned = PositionedCommit(commit: commit, column: mergeCommitParentColumn + 1, row: row)
-                        } else {
-                            // 子の中でマージコミットがあり、使われていないカラムを利用する時
-                            let newColumn = makeColumn(childColumn: mergeCommitParentColumn, usingColumn: usingColumns)
-                            positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
-                            usingColumns.append(newColumn)
-                        }
+                    if children.count == 1,
+                       children[0].commit.parentHashes.count == 2,
+                       children[0].commit.parentHashes[1] == commit.hash {
+                        // 子の中でマージコミットがあり、使われていないカラムを利用する時
+                        let newColumn = makeColumn(childColumn: children[0].column, usingColumn: usingColumns)
+                        positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
+                        usingColumns.append(newColumn)
                     } else {
-                        // 子のカラムを受け継ぐ
-                        positioned = PositionedCommit(commit: commit, column: children.map { $0.column }.min()!, row: row)
+                        // 子のカラムを受け継ぐ。ただし枝別れしない場合
+                        positioned = PositionedCommit(commit: commit, column: children.filter { $0.commit.parentHashes[0] == commit.hash }.map { $0.column }.min()!, row: row)
                     }
                     result.append(positioned)
                     children.forEach { child in

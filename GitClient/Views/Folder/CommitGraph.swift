@@ -102,7 +102,7 @@ struct CommitGraphContentView: View {
                 }
             }
 
-            // ノードを描く（クリック可能）
+            // ノードを描く
             ForEach(commits) { commit in
                 if let point = position(of: commit) {
                     Circle()
@@ -118,7 +118,6 @@ struct CommitGraphContentView: View {
                         .position(point)
                         .onTapGesture {
                             selectedCommitHash = commit.commit.hash
-                            print("onTap", commit)
                         }
                     Text(commit.commit.title)
                         .frame(width: textWidth, height: 20, alignment: .leading)
@@ -127,10 +126,7 @@ struct CommitGraphContentView: View {
                         .position(point)
                         .offset(.init(width: textWidth / 2 + 18, height: 0))
                         .onTapGesture {
-
                             selectedCommitHash = commit.commit.hash
-
-                            print("onTap", commit)
                         }
                 }
             }

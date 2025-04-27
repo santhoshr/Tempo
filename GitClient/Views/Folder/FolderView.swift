@@ -67,7 +67,7 @@ struct FolderView: View {
                     .onTapGesture {
                         showGraph.toggle()
                     }
-                    .help("Commit Graph View")
+                    .help("Commit Graph")
             }
         }
         .overlay(content: {

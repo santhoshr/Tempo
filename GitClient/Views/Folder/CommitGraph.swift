@@ -32,16 +32,13 @@ struct CommitGraph {
                     result.append(positioned)
                 } else {
                     let positioned: PositionedCommit
-                    if children.count == 1,
-                       children[0].commit.parentHashes.count == 2,
-                       children[0].commit.parentHashes[1] == commit.hash {
-                        // 子の中でマージコミットがあり、使われていないカラムを利用する時
+                    if let childColumn = children.filter({ $0.commit.parentHashes[0] == commit.hash }).map({ $0.column }).min() {
+                        // 子のカラムを受け継ぐ。新しいカラムを必要としない場合
+                        positioned = PositionedCommit(commit: commit, column: childColumn, row: row)
+                    } else {
                         let newColumn = makeColumn(childColumn: children[0].column, usingColumn: usingColumns)
                         positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
                         usingColumns.append(newColumn)
-                    } else {
-                        // 子のカラムを受け継ぐ。ただし枝別れしない場合
-                        positioned = PositionedCommit(commit: commit, column: children.filter { $0.commit.parentHashes[0] == commit.hash }.map { $0.column }.min()!, row: row)
                     }
                     result.append(positioned)
                     children.forEach { child in

@@ -39,7 +39,10 @@ struct FolderView: View {
     var body: some View {
         VStack(spacing: 0) {
             if showGraph {
-                CommitGraphView(logStore: $logStore, selectedCommitHash: $selectionLogID)
+                CommitGraphView(
+                    logStore: $logStore,
+                    selectedCommitHash: $selectionLogID
+                )
             } else {
                 CommitLogView(
                     logStore: $logStore,

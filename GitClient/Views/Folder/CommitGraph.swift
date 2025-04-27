@@ -45,7 +45,7 @@ struct CommitGraph {
                     }
                     result.append(positioned)
                     children.forEach { child in
-                        if child.commit.parentHashes.count == 1 && child.column != positioned.column {
+                        if child.column != positioned.column {
                             if let index = usingColumns.firstIndex(where: { $0 == child.column }) {
                                 usingColumns.remove(at: index)
                             }

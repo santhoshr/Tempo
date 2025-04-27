@@ -31,15 +31,24 @@ struct CommitGraph {
                     let positioned = PositionedCommit(commit: commit, column: result[row - 1].column, row: row, childrenIsHidden: true)
                     result.append(positioned)
                 } else {
-                    let child = children.first!
                     let positioned: PositionedCommit
-                    if child.commit.parentHashes.count == 2, child.commit.parentHashes[1] == commit.hash {
-                        let newColumn = makeColumn(childColumn: child.column, usingColumn: usingColumns)
-                        positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
-                        usingColumns.append(newColumn)
+                    let mergeCommitParentColumn = children
+                        .filter { $0.commit.parentHashes.count == 2 && $0.commit.parentHashes[1] == commit.hash }
+                        .map { $0.column }
+                        .min()
+                    if let mergeCommitParentColumn = mergeCommitParentColumn {
+                        if children.contains(where: { $0.column == mergeCommitParentColumn + 1 }) {
+                            // 子の中でマージコミットがあり、最も左側でマージコミット以外のコミットのカラムを利用する時
+                            positioned = PositionedCommit(commit: commit, column: mergeCommitParentColumn + 1, row: row)
+                        } else {
+                            // 子の中でマージコミットがあり、使われていないカラムを利用する時
+                            let newColumn = makeColumn(childColumn: mergeCommitParentColumn, usingColumn: usingColumns)
+                            positioned = PositionedCommit(commit: commit, column: newColumn, row: row)
+                            usingColumns.append(newColumn)
+                        }
                     } else {
                         // 子のカラムを受け継ぐ
-                        positioned = PositionedCommit(commit: commit, column: children.first!.column, row: row)
+                        positioned = PositionedCommit(commit: commit, column: children.map { $0.column }.min()!, row: row)
                     }
                     result.append(positioned)
                     children.forEach { child in

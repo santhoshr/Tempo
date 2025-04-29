@@ -82,7 +82,8 @@ struct CommitGraphContentView: View {
     let nodeSize: CGFloat = 14
     let selectedNodeSize: CGFloat = 18
     let spacing: CGFloat = 26
-    let textWidth: CGFloat = 140
+    let textWidth: CGFloat = 160
+    let textHeight: CGFloat = 16
     @Binding var selectedCommitHash: String?
 
     var body: some View {
@@ -120,7 +121,7 @@ struct CommitGraphContentView: View {
                             selectedCommitHash = commit.commit.hash
                         }
                     Text(commit.commit.title)
-                        .frame(width: textWidth, height: 20, alignment: .leading)
+                        .frame(width: textWidth, height: textHeight, alignment: .leading)
                         .font(.callout)
                         .foregroundStyle(commit.commit.hash == selectedCommitHash ? .primary : .secondary)
                         .position(point)
@@ -132,7 +133,7 @@ struct CommitGraphContentView: View {
             }
         }
         .frame(
-            width: CGFloat((commits.map { $0.column }.max() ?? 0) + 2) * spacing + textWidth,
+            width: CGFloat((commits.map { $0.column }.max() ?? 0) + 1) * spacing + textWidth + 18*2,
             height: CGFloat(commits.count + 1) * spacing
         )
     }

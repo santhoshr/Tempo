@@ -58,7 +58,6 @@ struct CommitGraph {
 
 struct PositionedCommit: Identifiable {
     var id: String { commit.hash }
-
     let commit: Commit
     let column: Int
     let row: Int
@@ -67,85 +66,80 @@ struct PositionedCommit: Identifiable {
 
 struct CommitGraphView: View {
     @Binding var logStore: LogStore
-    @Binding var selectedCommitHash: String?
+    @Binding var selectionLogID: String?
 
     var body: some View {
         ScrollView([.horizontal, .vertical]) {
-            CommitGraphContentView(commits: CommitGraph().positionedCommits(logStore.commits), selectedCommitHash: $selectedCommitHash)
+            CommitGraphContentView(
+                notCommitted: logStore.notCommitted,
+                commits: CommitGraph().positionedCommits(logStore.commits),
+                selectionLogID: $selectionLogID)
         }
         .background(Color(NSColor.textBackgroundColor))
     }
 }
 
 struct CommitGraphContentView: View {
+    var notCommitted: NotCommitted?
     var commits: [PositionedCommit]
-    let nodeSize: CGFloat = 14
-    let selectedNodeSize: CGFloat = 18
     let xSpacing: CGFloat = 26
     let ySpacing: CGFloat = 42
     let textWidth: CGFloat = 180
-    let textHeight: CGFloat = 36
-    @Binding var selectedCommitHash: String?
+    let textHeight: CGFloat = 38
+    @Binding var selectionLogID: String?
 
     var body: some View {
-        ZStack(alignment:.leading) {
-            // 線（親子関係）を描く
-            ForEach(commits) { commit in
-                if let from = position(of: commit) {
-                    ForEach(commit.commit.parentHashes, id: \.self) { parentHash in
-                        if let parent = commits.first(where: { $0.commit.hash == parentHash }), !parent.childrenIsHidden , let to = position(of: parent) {
-                            Path { path in
-                                path.move(to: from)
-                                path.addLine(to: to)
-                            }
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 6)
-                        }
-                    }
+        VStack(alignment: .leading, spacing: 0) {
+            if let _ = notCommitted {
+                HStack(spacing: 0) {
+                    GraphNode(
+                        logID: Log.notCommitted.id,
+                        selectionLogID: $selectionLogID
+                    )
+                    GraphNodeText(logID: Log.notCommitted.id, title: "Not Committed", selectionLogID: $selectionLogID)
                 }
             }
 
-            // ノードを描く
-            ForEach(commits) { commit in
-                if let point = position(of: commit) {
-                    Circle()
-                        .fill(commit.commit.hash == selectedCommitHash ? Color.blue : Color.primary)
-                        .overlay(
-                            Circle()
-                                .stroke(Color(NSColor.textBackgroundColor), lineWidth: 2)
-                        )
-                        .frame(
-                            width: commit.commit.hash == selectedCommitHash ? selectedNodeSize: nodeSize,
-                            height: commit.commit.hash == selectedCommitHash ? selectedNodeSize: nodeSize
-                        )
-                        .position(point)
-                        .onTapGesture {
-                            selectedCommitHash = commit.commit.hash
-                        }
-                    VStack {
-                        Text(commit.commit.title)
-                            .padding(.horizontal, 6)
-                    }
-                        .frame(width: textWidth, height: textHeight, alignment: .leading)
-                        .font(.callout)
-                        .foregroundStyle(commit.commit.hash == selectedCommitHash ? Color(nsColor: .textBackgroundColor) : .secondary)
-                        .background {
-                            if commit.commit.hash == selectedCommitHash {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.accentColor)
+            ZStack(alignment:.leading) {
+                // 線（親子関係）を描く
+                ForEach(commits) { commit in
+                    if let from = position(of: commit) {
+                        ForEach(commit.commit.parentHashes, id: \.self) { parentHash in
+                            if let parent = commits.first(where: { $0.commit.hash == parentHash }), !parent.childrenIsHidden , let to = position(of: parent) {
+                                Path { path in
+                                    path.move(to: from)
+                                    path.addLine(to: to)
+                                }
+                                .stroke(Color.secondary.opacity(0.2), lineWidth: 6)
                             }
                         }
-                        .position(point)
-                        .offset(.init(width: textWidth / 2 + 14, height: 0))
-                        .onTapGesture {
-                            selectedCommitHash = commit.commit.hash
-                        }
+                    }
+                }
+
+                // ノードを描く
+                ForEach(commits) { commit in
+                    if let point = position(of: commit) {
+                        GraphNode(
+                            logID: commit.id,
+                            selectionLogID: $selectionLogID
+                        )
+                            .position(point)
+                        GraphNodeText(
+                            logID: commit.id,
+                            title: commit.commit.title,
+                            selectionLogID: $selectionLogID
+                        )
+                            .frame(width: textWidth, height: textHeight, alignment: .leading)
+                            .offset(.init(width: textWidth / 2 + 14, height: 0))
+                            .position(point)
+                    }
                 }
             }
+            .frame(
+                width: CGFloat((commits.map { $0.column }.max() ?? 0) + 1) * xSpacing + textWidth + 18*2,
+                height: CGFloat(commits.count + 1) * ySpacing
+            )
         }
-        .frame(
-            width: CGFloat((commits.map { $0.column }.max() ?? 0) + 1) * xSpacing + textWidth + 18*2,
-            height: CGFloat(commits.count + 1) * ySpacing
-        )
     }
 
     private func position(of commit: PositionedCommit) -> CGPoint? {
@@ -160,18 +154,67 @@ struct CommitGraphContentView: View {
     }
 }
 
+struct GraphNode: View {
+    let nodeSize: CGFloat = 14
+    let selectedNodeSize: CGFloat = 18
+    var logID: String
+    @Binding var selectionLogID: String?
+
+    var body: some View {
+        Circle()
+            .fill(logID == selectionLogID ? Color.blue : Color.primary)
+            .overlay(
+                Circle()
+                    .stroke(Color(NSColor.textBackgroundColor), lineWidth: 2)
+            )
+            .frame(
+                width: logID == selectionLogID ? selectedNodeSize: nodeSize,
+                height: logID == selectionLogID ? selectedNodeSize: nodeSize
+            )
+            .onTapGesture {
+                selectionLogID = logID
+            }
+    }
+}
+
+struct GraphNodeText: View {
+    var logID: String
+    var title: String
+    @Binding var selectionLogID: String?
+
+    var body: some View {
+        VStack {
+            Text(title)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 4)
+        }
+            .font(.callout)
+            .foregroundStyle(logID == selectionLogID ? Color(nsColor: .textBackgroundColor) : .secondary)
+            .background {
+                if logID == selectionLogID {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.accentColor)
+                }
+            }
+            .onTapGesture {
+                selectionLogID = logID
+            }
+    }
+}
+
 #Preview {
     @Previewable @State var selected: String?
     let sampleCommits = [
         Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
-        Commit(hash: "c", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug", body: "", branches: [], tags: []),
+        Commit(hash: "c", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug", body: "", branches: [], tags: []),
         Commit(hash: "b", parentHashes: ["a"], author: "Bob", authorEmail: "", authorDate: "2023-10-02T12:00:00Z", title: "Add feature", body: "", branches: [], tags: []),
         Commit(hash: "a", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
     ]
 
     CommitGraphContentView(
+        notCommitted: .init(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: [])),
         commits: CommitGraph().positionedCommits(sampleCommits),
-        selectedCommitHash: $selected
+        selectionLogID: $selected
     )
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
@@ -190,7 +233,7 @@ struct CommitGraphContentView: View {
 
     CommitGraphContentView(
         commits: CommitGraph().positionedCommits(sampleCommits2),
-        selectedCommitHash: $selected
+        selectionLogID: $selected
     )
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
@@ -209,8 +252,9 @@ struct CommitGraphContentView: View {
 
     CommitGraphContentView(
         commits: CommitGraph().positionedCommits( sampleCommitsInSearch),
-        selectedCommitHash: $selected
+        selectionLogID: $selected
     )
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
 }
+

@@ -41,7 +41,7 @@ struct FolderView: View {
             if showGraph {
                 CommitGraphView(
                     logStore: $logStore,
-                    selectedCommitHash: $selectionLogID
+                    selectionLogID: $selectionLogID
                 )
             } else {
                 CommitLogView(

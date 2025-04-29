@@ -81,9 +81,10 @@ struct CommitGraphContentView: View {
     var commits: [PositionedCommit]
     let nodeSize: CGFloat = 14
     let selectedNodeSize: CGFloat = 18
-    let spacing: CGFloat = 26
+    let xSpacing: CGFloat = 26
+    let ySpacing: CGFloat = 42
     let textWidth: CGFloat = 180
-    let textHeight: CGFloat = 24
+    let textHeight: CGFloat = 36
     @Binding var selectedCommitHash: String?
 
     var body: some View {
@@ -142,18 +143,18 @@ struct CommitGraphContentView: View {
             }
         }
         .frame(
-            width: CGFloat((commits.map { $0.column }.max() ?? 0) + 1) * spacing + textWidth + 18*2,
-            height: CGFloat(commits.count + 1) * spacing
+            width: CGFloat((commits.map { $0.column }.max() ?? 0) + 1) * xSpacing + textWidth + 18*2,
+            height: CGFloat(commits.count + 1) * ySpacing
         )
     }
 
     private func position(of commit: PositionedCommit) -> CGPoint? {
         var p = CGPoint(
-            x: CGFloat(commit.column) * spacing + spacing,
-            y: CGFloat(commit.row) * spacing + spacing
+            x: CGFloat(commit.column) * xSpacing + xSpacing,
+            y: CGFloat(commit.row) * ySpacing + xSpacing
         )
         if commit.childrenIsHidden {
-            p.x += 0.5 * spacing
+            p.x += 0.5 * xSpacing
         }
         return p
     }

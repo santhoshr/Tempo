@@ -83,7 +83,7 @@ struct CommitGraphContentView: View {
     let selectedNodeSize: CGFloat = 18
     let spacing: CGFloat = 26
     let textWidth: CGFloat = 160
-    let textHeight: CGFloat = 16
+    let textHeight: CGFloat = 24
     @Binding var selectedCommitHash: String?
 
     var body: some View {
@@ -120,12 +120,21 @@ struct CommitGraphContentView: View {
                         .onTapGesture {
                             selectedCommitHash = commit.commit.hash
                         }
-                    Text(commit.commit.title)
+                    VStack {
+                        Text(commit.commit.title)
+                            .padding(.horizontal, 6)
+                    }
                         .frame(width: textWidth, height: textHeight, alignment: .leading)
                         .font(.callout)
-                        .foregroundStyle(commit.commit.hash == selectedCommitHash ? .primary : .secondary)
+                        .foregroundStyle(commit.commit.hash == selectedCommitHash ? Color(nsColor: .textBackgroundColor) : .secondary)
+                        .background {
+                            if commit.commit.hash == selectedCommitHash {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color.accentColor)
+                            }
+                        }
                         .position(point)
-                        .offset(.init(width: textWidth / 2 + 18, height: 0))
+                        .offset(.init(width: textWidth / 2 + 14, height: 0))
                         .onTapGesture {
                             selectedCommitHash = commit.commit.hash
                         }

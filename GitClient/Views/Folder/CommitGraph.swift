@@ -82,7 +82,7 @@ struct CommitGraphContentView: View {
     let nodeSize: CGFloat = 14
     let selectedNodeSize: CGFloat = 18
     let spacing: CGFloat = 26
-    let textWidth: CGFloat = 160
+    let textWidth: CGFloat = 180
     let textHeight: CGFloat = 24
     @Binding var selectedCommitHash: String?
 

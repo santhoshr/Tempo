@@ -54,7 +54,9 @@ struct GitLog: Git {
         if !author.isEmpty {
             args.append("--author=\(author)")
         }
-        args.append("--topo-order") // TODO:
+        if topoOrder {
+            args.append("--topo-order")
+        }
 
         return args
     }
@@ -69,6 +71,7 @@ struct GitLog: Git {
     var s = ""
     var g = ""
     var author = ""
+    var topoOrder = false
 
     func parse(for stdOut: String) throws -> [Commit] {
         guard !stdOut.isEmpty else { return [] }

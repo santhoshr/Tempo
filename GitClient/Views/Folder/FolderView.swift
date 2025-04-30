@@ -69,6 +69,10 @@ struct FolderView: View {
                     .padding(.horizontal)
                     .onTapGesture {
                         showGraph.toggle()
+                        logStore.removeAll()
+                        Task {
+                            await refreshModels()
+                        }
                     }
                     .help("Commit Graph")
             }
@@ -229,6 +233,7 @@ struct FolderView: View {
             logStore.directory = folder.url
             syncState.folderURL = folder.url
             syncState.branch = branch
+            logStore.showGraph = showGraph
 
             await logStore.refresh()
             if Task.isCancelled {

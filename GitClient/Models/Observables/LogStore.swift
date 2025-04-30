@@ -41,6 +41,7 @@ import Observation
     var commits: [Commit] = []
     var notCommitted: NotCommitted?
     var totalCommitsCount: Int? = nil
+    var showGraph = false
     var error: Error?
 
     func logs() -> [Log] {
@@ -72,7 +73,8 @@ import Observation
                 grepAllMatch: grepAllMatch,
                 s: s,
                 g: g,
-                author: author
+                author: author,
+                topoOrder: showGraph
             ))
             try await loadTotalCommitsCount()
         } catch {
@@ -89,7 +91,8 @@ import Observation
             grepAllMatch: grepAllMatch,
             s: s,
             g: g,
-            author: author
+            author: author,
+            topoOrder: showGraph
         ))
     }
 
@@ -115,7 +118,8 @@ import Observation
                 grepAllMatch: grepAllMatch,
                 s: s,
                 g: g,
-                author: author
+                author: author,
+                topoOrder: showGraph
             ))
             let adding = try await Process.output(GitLog(
                 directory: directory,
@@ -124,7 +128,8 @@ import Observation
                 grepAllMatch: grepAllMatch,
                 s: s,
                 g: g,
-                author: author
+                author: author,
+                topoOrder: showGraph
             ))
             commits = adding + current
             try await loadTotalCommitsCount()
@@ -172,7 +177,8 @@ import Observation
                 grepAllMatch: grepAllMatch,
                 s: s,
                 g: g,
-                author: author
+                author: author,
+                topoOrder: showGraph
             )).dropFirst()
         } catch {
             self.error = error
@@ -191,7 +197,8 @@ import Observation
                 grepAllMatch: grepAllMatch,
                 s: s,
                 g: g,
-                author: author
+                author: author,
+                topoOrder: showGraph
             )).count
         }
     }

@@ -91,13 +91,17 @@ struct CommitGraphContentView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if let _ = notCommitted {
-                HStack(spacing: 0) {
+                HStack (spacing: selectionLogID == Log.notCommitted.id ? 6 : 8) {
                     GraphNode(
                         logID: Log.notCommitted.id,
                         selectionLogID: $selectionLogID
                     )
                     GraphNodeText(logID: Log.notCommitted.id, title: "Not Committed", selectionLogID: $selectionLogID)
                 }
+                .padding(
+                    .horizontal,
+                    xSpacing - (selectionLogID == Log.notCommitted.id ? GraphNode.selectedNodeSize : GraphNode.nodeSize) / 2
+                )
             }
 
             ZStack(alignment:.leading) {
@@ -155,8 +159,8 @@ struct CommitGraphContentView: View {
 }
 
 struct GraphNode: View {
-    let nodeSize: CGFloat = 14
-    let selectedNodeSize: CGFloat = 18
+    static let nodeSize: CGFloat = 14
+    static let selectedNodeSize: CGFloat = 18
     var logID: String
     @Binding var selectionLogID: String?
 
@@ -168,8 +172,8 @@ struct GraphNode: View {
                     .stroke(Color(NSColor.textBackgroundColor), lineWidth: 2)
             )
             .frame(
-                width: logID == selectionLogID ? selectedNodeSize: nodeSize,
-                height: logID == selectionLogID ? selectedNodeSize: nodeSize
+                width: logID == selectionLogID ? Self.selectedNodeSize: Self.nodeSize,
+                height: logID == selectionLogID ? Self.selectedNodeSize: Self.nodeSize
             )
             .onTapGesture {
                 selectionLogID = logID

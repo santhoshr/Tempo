@@ -76,7 +76,7 @@ struct CommitGraphView: View {
                 selectionLogID: $selectionLogID
             )
             .padding(.horizontal)
-            .padding(.vertical, 12)
+            .padding(.vertical, 14)
         }
         .background(Color(NSColor.textBackgroundColor))
     }
@@ -105,6 +105,8 @@ struct CommitGraphContentView: View {
                     .horizontal,
                     selectionLogID == Log.notCommitted.id ? -2 : 0
                 )
+                .padding(.top, -4)
+                .padding(.bottom, 24)
             }
 
             ZStack(alignment:.leading) {
@@ -139,13 +141,12 @@ struct CommitGraphContentView: View {
                             .frame(width: textWidth, height: textHeight, alignment: .leading)
                             .offset(.init(width: textWidth / 2 + 14, height: 0))
                             .position(point)
-
                     }
                 }
             }
             .frame(
                 width: CGFloat((commits.map { $0.column }.max() ?? 0)) * xSpacing + textWidth + 14,
-                height: CGFloat(commits.count) * ySpacing
+                height: CGFloat(commits.count - 1) * ySpacing + GraphNode.nodeSize
             )
         }
     }
@@ -153,7 +154,7 @@ struct CommitGraphContentView: View {
     private func position(of commit: PositionedCommit) -> CGPoint? {
         var p = CGPoint(
             x: CGFloat(commit.column) * xSpacing + GraphNode.nodeSize / 2,
-            y: CGFloat(commit.row) * ySpacing + xSpacing
+            y: CGFloat(commit.row) * ySpacing + GraphNode.nodeSize / 2
         )
         if commit.childrenIsHidden {
             p.x += 0.5 * xSpacing
@@ -233,8 +234,6 @@ struct GraphNodeText: View {
         commits: CommitGraph().positionedCommits(sampleCommits),
         selectionLogID: $selected
     )
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
 }

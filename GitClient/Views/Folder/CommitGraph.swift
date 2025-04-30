@@ -71,7 +71,7 @@ struct CommitGraphView: View {
     var body: some View {
         ScrollView([.horizontal, .vertical]) {
             CommitGraphContentView(
-                notCommitted: logStore.notCommitted,
+                notCommitted: $logStore.notCommitted,
                 commits: CommitGraph().positionedCommits(logStore.commits),
                 selectionLogID: $selectionLogID
             )
@@ -83,7 +83,7 @@ struct CommitGraphView: View {
 }
 
 struct CommitGraphContentView: View {
-    var notCommitted: NotCommitted?
+    @Binding var notCommitted: NotCommitted?
     var commits: [PositionedCommit]
     let xSpacing: CGFloat = 26
     let ySpacing: CGFloat = 42
@@ -229,7 +229,7 @@ struct GraphNodeText: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .init(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: [])),
+        notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: []))),
         commits: CommitGraph().positionedCommits(sampleCommits),
         selectionLogID: $selected
     )
@@ -251,6 +251,7 @@ struct GraphNodeText: View {
     ]
 
     CommitGraphContentView(
+        notCommitted: .constant(nil),
         commits: CommitGraph().positionedCommits(sampleCommits2),
         selectionLogID: $selected
     )
@@ -270,6 +271,7 @@ struct GraphNodeText: View {
     ]
 
     CommitGraphContentView(
+        notCommitted: .constant(nil),
         commits: CommitGraph().positionedCommits( sampleCommitsInSearch),
         selectionLogID: $selected
     )

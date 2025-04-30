@@ -43,7 +43,7 @@ struct CommitLogView: View {
                                 }
                             }
                         }
-                        Button("Revert" + (commit.parentHashes.count == 2 ? " -m 1 (\(commit.parentHashes[0].prefix(7)))" : "")) {
+                        Button("Revert" + (commit.parentHashes.count == 2 ? " -m 1 (mainline:  \(commit.parentHashes[0].prefix(7)))" : "")) {
                             Task {
                                 do {
                                     if commit.parentHashes.count == 2 {

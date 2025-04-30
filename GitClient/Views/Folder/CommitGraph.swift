@@ -76,7 +76,7 @@ struct CommitGraphView: View {
                 selectionLogID: $selectionLogID
             )
             .padding(.horizontal)
-            .padding(.vertical, 14)
+            .padding(.vertical, logStore.notCommitted?.isEmpty == true ? 22 : 14)
         }
         .background(Color(NSColor.textBackgroundColor))
     }

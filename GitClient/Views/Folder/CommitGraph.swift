@@ -93,7 +93,7 @@ struct CommitGraphContentView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if let _ = notCommitted {
+            if let notCommitted, !notCommitted.isEmpty {
                 HStack (spacing: selectionLogID == Log.notCommitted.id ? 5 : 7) {
                     GraphNode(
                         logID: Log.notCommitted.id,

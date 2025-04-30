@@ -163,10 +163,19 @@ struct GraphNode: View {
     static let selectedNodeSize: CGFloat = 18
     var logID: String
     @Binding var selectionLogID: String?
+    private var fillColor: Color {
+        if logID == selectionLogID {
+            return Color.blue
+        }
+        if logID == Log.notCommitted.id {
+            return Color.secondary
+        }
+        return Color.primary
+    }
 
     var body: some View {
         Circle()
-            .fill(logID == selectionLogID ? Color.blue : Color.primary)
+            .fill(fillColor)
             .overlay(
                 Circle()
                     .stroke(Color(NSColor.textBackgroundColor), lineWidth: 2)

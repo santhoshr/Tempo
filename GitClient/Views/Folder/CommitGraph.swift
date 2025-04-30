@@ -73,7 +73,10 @@ struct CommitGraphView: View {
             CommitGraphContentView(
                 notCommitted: logStore.notCommitted,
                 commits: CommitGraph().positionedCommits(logStore.commits),
-                selectionLogID: $selectionLogID)
+                selectionLogID: $selectionLogID
+            )
+            .padding(.horizontal)
+            .padding(.vertical, 12)
         }
         .background(Color(NSColor.textBackgroundColor))
     }
@@ -91,7 +94,7 @@ struct CommitGraphContentView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if let _ = notCommitted {
-                HStack (spacing: selectionLogID == Log.notCommitted.id ? 6 : 8) {
+                HStack (spacing: selectionLogID == Log.notCommitted.id ? 5 : 7) {
                     GraphNode(
                         logID: Log.notCommitted.id,
                         selectionLogID: $selectionLogID
@@ -99,8 +102,8 @@ struct CommitGraphContentView: View {
                     GraphNodeText(logID: Log.notCommitted.id, title: "Not Committed", selectionLogID: $selectionLogID)
                 }
                 .padding(
-                    .trailing,
-                    xSpacing - (selectionLogID == Log.notCommitted.id ? GraphNode.selectedNodeSize : GraphNode.nodeSize) / 2
+                    .horizontal,
+                    selectionLogID == Log.notCommitted.id ? -2 : 0
                 )
             }
 
@@ -230,6 +233,8 @@ struct GraphNodeText: View {
         commits: CommitGraph().positionedCommits(sampleCommits),
         selectionLogID: $selected
     )
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
 }

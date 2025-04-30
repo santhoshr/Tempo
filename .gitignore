@@ -92,3 +92,5 @@ iOSInjectionProject/
 # Bundler
 /.bundle
 vendor/bundle
+
+.DS_Store

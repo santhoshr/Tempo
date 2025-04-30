@@ -22,6 +22,7 @@ struct FolderView: View {
     @State private var searchTokens: [SearchToken] = []
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
+    @State private var showGraph = false
     @AppStorage(AppStorageKey.searchTokenHisrtory.rawValue) var searchTokenHistory: Data?
     private var decodedSearchTokenHistory: [SearchToken] {
         guard let searchTokenHistory else { return [] }
@@ -36,13 +37,42 @@ struct FolderView: View {
     }
 
     var body: some View {
-        CommitLogView(
-            logStore: $logStore,
-            selectionLogID: $selectionLogID,
-            showing: $showing,
-            isRefresh: $isRefresh,
-            error: $error
-        )
+        VStack(spacing: 0) {
+            if showGraph {
+                CommitGraphView(
+                    logStore: $logStore,
+                    selectionLogID: $selectionLogID
+                )
+            } else {
+                CommitLogView(
+                    logStore: $logStore,
+                    selectionLogID: $selectionLogID,
+                    showing: $showing,
+                    isRefresh: $isRefresh,
+                    showGraph: $showGraph,
+                    error: $error
+                )
+            }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            VStack(spacing: 0) {
+                Divider()
+                countText()
+                    .font(.callout)
+                    .padding(12)
+            }
+            .background(Color(nsColor: .textBackgroundColor))
+            .overlay(alignment: .trailing) {
+                Image(systemName: showGraph ? "g.circle.fill" : "g.circle")
+                    .font(.title3)
+                    .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
+                    .padding(.horizontal)
+                    .onTapGesture {
+                        showGraph.toggle()
+                    }
+                    .help("Commit Graph")
+            }
+        }
         .overlay(content: {
             if logStore.commits.isEmpty && !searchTokens.isEmpty {
                 Text("No Commits History")
@@ -427,6 +457,20 @@ struct FolderView: View {
                 })
         }
         .help("Push origin HEAD")
+    }
+
+    fileprivate func countText() -> some View {
+        if let count = logStore.totalCommitsCount {
+            let subText: String
+            if count == 1 {
+                subText = "Commit"
+            } else {
+                subText = "Commits"
+            }
+            return Text("\(count) \(subText)")
+        } else {
+            return Text("")
+        }
     }
 }
 

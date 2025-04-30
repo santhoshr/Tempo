@@ -13,6 +13,7 @@ struct CommitLogView: View {
     @Binding var selectionLogID: String?
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
+    @Binding var showGraph: Bool
     @Binding var error: Error?
 
     var body: some View {
@@ -21,29 +22,6 @@ struct CommitLogView: View {
                 .task {
                     await logStore.logViewTask(log)
                 }
-        }
-        .safeAreaInset(edge: .bottom) {
-            VStack(spacing: 0) {
-                Divider()
-                countText()
-                    .font(.callout)
-                    .padding(12)
-            }
-            .background(Color(nsColor: .textBackgroundColor))
-        }
-    }
-
-    fileprivate func countText() -> some View {
-        if let count = logStore.totalCommitsCount {
-            let subText: String
-            if count == 1 {
-                subText = "Commit"
-            } else {
-                subText = "Commits"
-            }
-            return Text("\(count) \(subText)")
-        } else {
-            return Text("")
         }
     }
 

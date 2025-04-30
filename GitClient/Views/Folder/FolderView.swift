@@ -49,7 +49,6 @@ struct FolderView: View {
                     selectionLogID: $selectionLogID,
                     showing: $showing,
                     isRefresh: $isRefresh,
-                    showGraph: $showGraph,
                     error: $error
                 )
             }

@@ -13,7 +13,6 @@ struct CommitLogView: View {
     @Binding var selectionLogID: String?
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
-    @Binding var showGraph: Bool
     @Binding var error: Error?
 
     var body: some View {

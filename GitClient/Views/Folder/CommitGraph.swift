@@ -67,13 +67,18 @@ struct PositionedCommit: Identifiable {
 struct CommitGraphView: View {
     @Binding var logStore: LogStore
     @Binding var selectionLogID: String?
+    @Binding var showing: FolderViewShowing
+    @Binding var isRefresh: Bool
 
     var body: some View {
         ScrollView([.horizontal, .vertical]) {
             CommitGraphContentView(
                 notCommitted: $logStore.notCommitted,
-                commits: CommitGraph().positionedCommits(logStore.commits),
-                selectionLogID: $selectionLogID
+                selectionLogID: $selectionLogID,
+                logStore: $logStore,
+                showing: $showing,
+                isRefresh: $isRefresh,
+                commits: CommitGraph().positionedCommits(logStore.commits)
             )
             .padding(.horizontal)
             .padding(.top, logStore.notCommitted?.isEmpty == true ? 22 : 14)
@@ -84,13 +89,18 @@ struct CommitGraphView: View {
 }
 
 struct CommitGraphContentView: View {
+    @Environment(\.folder) private var folder
     @Binding var notCommitted: NotCommitted?
+    @Binding var selectionLogID: String?
+    @Binding var logStore: LogStore
+    @Binding var showing: FolderViewShowing
+    @Binding var isRefresh: Bool
+    @State private var error: Error?
     var commits: [PositionedCommit]
     let xSpacing: CGFloat = 26
     let ySpacing: CGFloat = 42
     let textWidth: CGFloat = 180
     let textHeight: CGFloat = 38
-    @Binding var selectionLogID: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -134,6 +144,14 @@ struct CommitGraphContentView: View {
                             selectionLogID: $selectionLogID
                         )
                             .position(point)
+                            .commitContextMenu(
+                                folder: folder!,
+                                commit: commit.commit,
+                                logStore: logStore,
+                                isRefresh: $isRefresh,
+                                showing: $showing,
+                                bindingError: $error
+                            )
                         GraphNodeText(
                             logID: commit.id,
                             title: commit.commit.title,
@@ -142,6 +160,14 @@ struct CommitGraphContentView: View {
                             .frame(width: textWidth, height: textHeight, alignment: .leading)
                             .offset(.init(width: textWidth / 2 + 14, height: 0))
                             .position(point)
+                            .commitContextMenu(
+                                folder: folder!,
+                                commit: commit.commit,
+                                logStore: logStore,
+                                isRefresh: $isRefresh,
+                                showing: $showing,
+                                bindingError: $error
+                            )
                     }
                 }
             }
@@ -149,6 +175,7 @@ struct CommitGraphContentView: View {
                 width: CGFloat((commits.map { $0.column }.max() ?? 0)) * xSpacing + textWidth + 14,
                 height: CGFloat(commits.count - 1) * ySpacing + GraphNode.nodeSize
             )
+            .errorSheet($error)
         }
     }
 
@@ -222,7 +249,11 @@ struct GraphNodeText: View {
 }
 
 #Preview {
-    @Previewable @State var selected: String?
+    @Previewable @State var selectionLogID: String?
+    @Previewable @State var logStore = LogStore()
+    @Previewable @State var showing = FolderViewShowing()
+    @Previewable @State var isRefresh = false
+
     let sampleCommits = [
         Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
         Commit(hash: "c", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug", body: "", branches: [], tags: []),
@@ -232,15 +263,23 @@ struct GraphNodeText: View {
 
     CommitGraphContentView(
         notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: []))),
-        commits: CommitGraph().positionedCommits(sampleCommits),
-        selectionLogID: $selected
+        selectionLogID: $selectionLogID,
+        logStore: $logStore,
+        showing: $showing,
+        isRefresh: $isRefresh,
+        commits: CommitGraph().positionedCommits(sampleCommits)
     )
+    .environment(\.folder, URL(string: "file:///Users/aoyama/Projects/GitClient/"))
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
 }
 
 #Preview {
-    @Previewable @State var selected: String?
+    @Previewable @State var selectionLogID: String?
+    @Previewable @State var logStore = LogStore()
+    @Previewable @State var showing = FolderViewShowing()
+    @Previewable @State var isRefresh = false
+
     let sampleCommits2 = [
         Commit(hash: "f", parentHashes: ["d", "e"], author: "Frank", authorEmail: "", authorDate: "2023-10-06T12:00:00Z", title: "Merge bugfix", body: "", branches: [], tags: []),
         Commit(hash: "e", parentHashes: ["c"], author: "Eve", authorEmail: "", authorDate: "2023-10-05T12:00:00Z", title: "Bugfix", body: "", branches: [], tags: []),
@@ -251,16 +290,24 @@ struct GraphNodeText: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .constant(nil),
-        commits: CommitGraph().positionedCommits(sampleCommits2),
-        selectionLogID: $selected
+        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
+        selectionLogID: $selectionLogID,
+        logStore: $logStore,
+        showing: $showing,
+        isRefresh: $isRefresh,
+        commits: CommitGraph().positionedCommits(sampleCommits2)
     )
+    .environment(\.folder, URL(string: "file:///Users/aoyama/Projects/GitClient/"))
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
 }
 
 #Preview("In Search") {
-    @Previewable @State var selected: String?
+    @Previewable @State var selectionLogID: String?
+    @Previewable @State var logStore = LogStore()
+    @Previewable @State var showing = FolderViewShowing()
+    @Previewable @State var isRefresh = false
+
     let sampleCommitsInSearch = [
         Commit(hash: "f", parentHashes: ["d", "e"], author: "Frank", authorEmail: "", authorDate: "2023-10-06T12:00:00Z", title: "Merge bugfix", body: "", branches: [], tags: []),
         Commit(hash: "e", parentHashes: ["c"], author: "Eve", authorEmail: "", authorDate: "2023-10-05T12:00:00Z", title: "Bugfix", body: "", branches: [], tags: []),
@@ -271,10 +318,14 @@ struct GraphNodeText: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .constant(nil),
-        commits: CommitGraph().positionedCommits( sampleCommitsInSearch),
-        selectionLogID: $selected
+        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
+        selectionLogID: $selectionLogID,
+        logStore: $logStore,
+        showing: $showing,
+        isRefresh: $isRefresh,
+        commits: CommitGraph().positionedCommits(sampleCommitsInSearch)
     )
+    .environment(\.folder, URL(string: "file:///Users/aoyama/Projects/GitClient/"))
         .background(Color(NSColor.textBackgroundColor))
         .frame(width: 400, height: 600)
 }

@@ -41,7 +41,9 @@ struct FolderView: View {
             if showGraph {
                 CommitGraphView(
                     logStore: $logStore,
-                    selectionLogID: $selectionLogID
+                    selectionLogID: $selectionLogID,
+                    showing: $showing,
+                    isRefresh: $isRefresh
                 )
             } else {
                 CommitLogView(
@@ -49,7 +51,6 @@ struct FolderView: View {
                     selectionLogID: $selectionLogID,
                     showing: $showing,
                     isRefresh: $isRefresh,
-                    showGraph: $showGraph,
                     error: $error
                 )
             }

@@ -13,7 +13,6 @@ struct CommitLogView: View {
     @Binding var selectionLogID: String?
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
-    @Binding var showGraph: Bool
     @Binding var error: Error?
 
     var body: some View {
@@ -33,48 +32,14 @@ struct CommitLogView: View {
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
                 CommitRowView(commit: commit)
-                    .contextMenu {
-                        Button("Checkout") {
-                            Task {
-                                do {
-                                    try await Process.output(GitCheckout(directory: folder!, commitHash: commit.hash))
-                                    isRefresh = true
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        }
-                        Button("Revert" + (commit.parentHashes.count == 2 ? " -m 1 (\(commit.parentHashes[0].prefix(7)))" : "")) {
-                            Task {
-                                do {
-                                    if commit.parentHashes.count == 2 {
-                                        try await Process.output(GitRevert(directory: folder!,  parentNumber: 1, commit: commit.hash))
-                                    } else {
-                                        try await Process.output(GitRevert(directory: folder!, commit: commit.hash))
-                                    }
-                                    isRefresh = true
-                                } catch {
-                                    self.error = error
-                                }
-                            }
-                        }
-                        Button("Tag") {
-                            showing.createNewTagAt = commit
-                        }
-                        if commit == logStore.commits.first {
-                            if let notCommitted = logStore.notCommitted {
-                                if notCommitted.diffCached.isEmpty {
-                                    Button("Amend") {
-                                        showing.amendCommitAt = commit
-                                    }
-                                }
-                            } else {
-                                Button("Amend") {
-                                    showing.amendCommitAt = commit
-                                }
-                            }
-                        }
-                    }
+                    .commitContextMenu(
+                        folder: folder!,
+                        commit: commit,
+                        logStore: logStore,
+                        isRefresh: $isRefresh,
+                        showing: $showing,
+                        bindingError: $error
+                    )
             }
         }
     }

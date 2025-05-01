@@ -144,6 +144,14 @@ struct CommitGraphContentView: View {
                             selectionLogID: $selectionLogID
                         )
                             .position(point)
+                            .commitContextMenu(
+                                folder: folder!,
+                                commit: commit.commit,
+                                logStore: logStore,
+                                isRefresh: $isRefresh,
+                                showing: $showing,
+                                bindingError: $error
+                            )
                         GraphNodeText(
                             logID: commit.id,
                             title: commit.commit.title,
@@ -160,7 +168,6 @@ struct CommitGraphContentView: View {
                                 showing: $showing,
                                 bindingError: $error
                             )
-
                     }
                 }
             }

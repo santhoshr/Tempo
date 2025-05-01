@@ -168,6 +168,7 @@ struct CommitGraphContentView: View {
                 width: CGFloat((commits.map { $0.column }.max() ?? 0)) * xSpacing + textWidth + 14,
                 height: CGFloat(commits.count - 1) * ySpacing + GraphNode.nodeSize
             )
+            .errorSheet($error)
         }
     }
 

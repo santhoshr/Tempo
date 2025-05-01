@@ -247,62 +247,86 @@ struct GraphNodeText: View {
             }
     }
 }
-//
-//#Preview {
-//    @Previewable @State var selected: String?
-//    let sampleCommits = [
-//        Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
-//        Commit(hash: "c", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug", body: "", branches: [], tags: []),
-//        Commit(hash: "b", parentHashes: ["a"], author: "Bob", authorEmail: "", authorDate: "2023-10-02T12:00:00Z", title: "Add feature", body: "", branches: [], tags: []),
-//        Commit(hash: "a", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
-//    ]
-//
-//    CommitGraphContentView(
-//        notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: []))),
-//        commits: CommitGraph().positionedCommits(sampleCommits),
-//        selectionLogID: $selected
-//    )
-//        .background(Color(NSColor.textBackgroundColor))
-//        .frame(width: 400, height: 600)
-//}
-//
-//#Preview {
-//    @Previewable @State var selected: String?
-//    let sampleCommits2 = [
-//        Commit(hash: "f", parentHashes: ["d", "e"], author: "Frank", authorEmail: "", authorDate: "2023-10-06T12:00:00Z", title: "Merge bugfix", body: "", branches: [], tags: []),
-//        Commit(hash: "e", parentHashes: ["c"], author: "Eve", authorEmail: "", authorDate: "2023-10-05T12:00:00Z", title: "Bugfix", body: "", branches: [], tags: []),
-//        Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
-//        Commit(hash: "c", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug", body: "", branches: [], tags: []),
-//        Commit(hash: "b", parentHashes: ["a"], author: "Bob", authorEmail: "", authorDate: "2023-10-02T12:00:00Z", title: "Add feature", body: "", branches: [], tags: []),
-//        Commit(hash: "a", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
-//    ]
-//
-//    CommitGraphContentView(
-//        notCommitted: .constant(nil),
-//        commits: CommitGraph().positionedCommits(sampleCommits2),
-//        selectionLogID: $selected
-//    )
-//        .background(Color(NSColor.textBackgroundColor))
-//        .frame(width: 400, height: 600)
-//}
-//
-//#Preview("In Search") {
-//    @Previewable @State var selected: String?
-//    let sampleCommitsInSearch = [
-//        Commit(hash: "f", parentHashes: ["d", "e"], author: "Frank", authorEmail: "", authorDate: "2023-10-06T12:00:00Z", title: "Merge bugfix", body: "", branches: [], tags: []),
-//        Commit(hash: "e", parentHashes: ["c"], author: "Eve", authorEmail: "", authorDate: "2023-10-05T12:00:00Z", title: "Bugfix", body: "", branches: [], tags: []),
-//        Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
-//        Commit(hash: "x", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug", body: "", branches: [], tags: []),
-//        Commit(hash: "b", parentHashes: ["a"], author: "Bob", authorEmail: "", authorDate: "2023-10-02T12:00:00Z", title: "Add feature", body: "", branches: [], tags: []),
-//        Commit(hash: "a'", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
-//    ]
-//
-//    CommitGraphContentView(
-//        notCommitted: .constant(nil),
-//        commits: CommitGraph().positionedCommits( sampleCommitsInSearch),
-//        selectionLogID: $selected
-//    )
-//        .background(Color(NSColor.textBackgroundColor))
-//        .frame(width: 400, height: 600)
-//}
-//
+
+#Preview {
+    @Previewable @State var selectionLogID: String?
+    @Previewable @State var logStore = LogStore()
+    @Previewable @State var showing = FolderViewShowing()
+    @Previewable @State var isRefresh = false
+
+    let sampleCommits = [
+        Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
+        Commit(hash: "c", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug Fix bug", body: "", branches: [], tags: []),
+        Commit(hash: "b", parentHashes: ["a"], author: "Bob", authorEmail: "", authorDate: "2023-10-02T12:00:00Z", title: "Add feature", body: "", branches: [], tags: []),
+        Commit(hash: "a", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
+    ]
+
+    CommitGraphContentView(
+        notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: []))),
+        selectionLogID: $selectionLogID,
+        logStore: $logStore,
+        showing: $showing,
+        isRefresh: $isRefresh,
+        commits: CommitGraph().positionedCommits(sampleCommits)
+    )
+    .environment(\.folder, URL(string: "file:///Users/aoyama/Projects/GitClient/"))
+        .background(Color(NSColor.textBackgroundColor))
+        .frame(width: 400, height: 600)
+}
+
+#Preview {
+    @Previewable @State var selectionLogID: String?
+    @Previewable @State var logStore = LogStore()
+    @Previewable @State var showing = FolderViewShowing()
+    @Previewable @State var isRefresh = false
+
+    let sampleCommits2 = [
+        Commit(hash: "f", parentHashes: ["d", "e"], author: "Frank", authorEmail: "", authorDate: "2023-10-06T12:00:00Z", title: "Merge bugfix", body: "", branches: [], tags: []),
+        Commit(hash: "e", parentHashes: ["c"], author: "Eve", authorEmail: "", authorDate: "2023-10-05T12:00:00Z", title: "Bugfix", body: "", branches: [], tags: []),
+        Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
+        Commit(hash: "c", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug", body: "", branches: [], tags: []),
+        Commit(hash: "b", parentHashes: ["a"], author: "Bob", authorEmail: "", authorDate: "2023-10-02T12:00:00Z", title: "Add feature", body: "", branches: [], tags: []),
+        Commit(hash: "a", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
+    ]
+
+    CommitGraphContentView(
+        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
+        selectionLogID: $selectionLogID,
+        logStore: $logStore,
+        showing: $showing,
+        isRefresh: $isRefresh,
+        commits: CommitGraph().positionedCommits(sampleCommits2)
+    )
+    .environment(\.folder, URL(string: "file:///Users/aoyama/Projects/GitClient/"))
+        .background(Color(NSColor.textBackgroundColor))
+        .frame(width: 400, height: 600)
+}
+
+#Preview("In Search") {
+    @Previewable @State var selectionLogID: String?
+    @Previewable @State var logStore = LogStore()
+    @Previewable @State var showing = FolderViewShowing()
+    @Previewable @State var isRefresh = false
+
+    let sampleCommitsInSearch = [
+        Commit(hash: "f", parentHashes: ["d", "e"], author: "Frank", authorEmail: "", authorDate: "2023-10-06T12:00:00Z", title: "Merge bugfix", body: "", branches: [], tags: []),
+        Commit(hash: "e", parentHashes: ["c"], author: "Eve", authorEmail: "", authorDate: "2023-10-05T12:00:00Z", title: "Bugfix", body: "", branches: [], tags: []),
+        Commit(hash: "d", parentHashes: ["b", "c"], author: "Dave", authorEmail: "", authorDate: "2023-10-04T12:00:00Z", title: "Merge feature", body: "", branches: [], tags: []),
+        Commit(hash: "x", parentHashes: ["b"], author: "Carol", authorEmail: "", authorDate: "2023-10-03T12:00:00Z", title: "Fix bug", body: "", branches: [], tags: []),
+        Commit(hash: "b", parentHashes: ["a"], author: "Bob", authorEmail: "", authorDate: "2023-10-02T12:00:00Z", title: "Add feature", body: "", branches: [], tags: []),
+        Commit(hash: "a'", parentHashes: [], author: "Alice", authorEmail: "", authorDate: "2023-10-01T12:00:00Z", title: "Initial commit", body: "", branches: [], tags: [])
+    ]
+
+    CommitGraphContentView(
+        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
+        selectionLogID: $selectionLogID,
+        logStore: $logStore,
+        showing: $showing,
+        isRefresh: $isRefresh,
+        commits: CommitGraph().positionedCommits(sampleCommitsInSearch)
+    )
+    .environment(\.folder, URL(string: "file:///Users/aoyama/Projects/GitClient/"))
+        .background(Color(NSColor.textBackgroundColor))
+        .frame(width: 400, height: 600)
+}
+

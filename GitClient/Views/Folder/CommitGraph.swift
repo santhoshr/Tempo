@@ -42,6 +42,7 @@ struct CommitGraph {
                     }
                     result.append(positioned)
                     children.forEach { child in
+                        // parentHashesが1でない時はマージコミットであり、別の親がカラムをまだ利用するため
                         if child.column != positioned.column && child.commit.parentHashes.count == 1 {
                             if let index = usingColumns.firstIndex(where: { $0 == child.column }) {
                                 usingColumns.remove(at: index)

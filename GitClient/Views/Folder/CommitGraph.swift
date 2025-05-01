@@ -70,6 +70,7 @@ struct CommitGraphView: View {
     @Binding var selectionLogID: String?
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
+    @State private var isLoading = false
 
     var body: some View {
         ScrollView([.horizontal, .vertical]) {
@@ -84,6 +85,27 @@ struct CommitGraphView: View {
             .padding(.horizontal)
             .padding(.top, logStore.notCommitted?.isEmpty == true ? 22 : 14)
             .padding(.bottom, 22)
+            if logStore.canLoadMore {
+                HStack {
+                    if isLoading {
+                        ProgressView()
+                            .scaleEffect(0.6)
+                    } else {
+                        Button("More") {
+                            Task {
+                                isLoading = true
+                                await logStore.loadMore()
+                                isLoading = false
+                            }
+                        }
+                        .buttonStyle(.link)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.horizontal, 8)
+                .padding(.bottom, 22)
+            }
         }
         .background(Color(NSColor.textBackgroundColor))
     }

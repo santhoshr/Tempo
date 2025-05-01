@@ -41,6 +41,10 @@ import Observation
     var commits: [Commit] = []
     var notCommitted: NotCommitted?
     var totalCommitsCount: Int? = nil
+    var canLoadMore: Bool {
+        guard let totalCommitsCount else { return false }
+        return totalCommitsCount > commits.count
+    }
     var error: Error?
 
     func logs() -> [Log] {
@@ -145,8 +149,8 @@ import Observation
         case .notCommitted:
             return
         case .committed(let commit):
-            if commit == commits.last, let directory, searchTokenRevisionRange.isEmpty {
-                await loadMore(directory: directory)
+            if commit == commits.last, searchTokenRevisionRange.isEmpty {
+                await loadMore()
             }
         }
     }
@@ -157,10 +161,9 @@ import Observation
         let status = try await Process.output(GitStatus(directory: directory))
         return NotCommitted(diff: gitDiff, diffCached: gitDiffCached, status: status)
     }
-
     /// logs.last以前のコミットを取得し追加
-    private func loadMore(directory: URL) async {
-        guard let last = commits.last else { return }
+    func loadMore() async {
+        guard let last = commits.last, let directory else { return }
         do {
             // revisionRangeをlast.hash^で指定すると最初のコミットに到達した際に存在しないのでunknown revisionとエラーになる
             // なのでlast.hashで指定し重複する最初の要素をドロップする

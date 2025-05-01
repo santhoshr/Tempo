@@ -149,7 +149,7 @@ import Observation
         case .notCommitted:
             return
         case .committed(let commit):
-            if commit == commits.last, let directory, searchTokenRevisionRange.isEmpty {
+            if commit == commits.last, searchTokenRevisionRange.isEmpty {
                 await loadMore()
             }
         }

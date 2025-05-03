@@ -250,14 +250,6 @@ struct GraphNodeText: View {
     var logID: String
     var title: String
     @Binding var selectionLogID: String?
-    var textColor: Color {
-        if logID == selectionLogID {
-            return Color.white
-        } else {
-            return Color.secondary
-        }
-    }
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack {
@@ -266,7 +258,7 @@ struct GraphNodeText: View {
                 .padding(.vertical, 4)
         }
             .font(.callout)
-            .foregroundStyle(textColor)
+            .foregroundStyle(logID == selectionLogID ? .white : .secondary)
             .background {
                 if logID == selectionLogID {
                     RoundedRectangle(cornerRadius: 4)

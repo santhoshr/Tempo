@@ -22,16 +22,31 @@ struct CommitDetailContentView: View {
             ScrollView {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        Text(commit.hash)
-                            .foregroundColor(.secondary)
+                        Text(commit.hash.prefix(10))
+                            .textSelection(.disabled)
+                            .help("Commit Hash: " + commit.hash)
+                            .contextMenu {
+                                Button("Copy " + commit.hash) {
+                                    let pasteboard = NSPasteboard.general
+                                    pasteboard.declareTypes([.string], owner: nil)
+                                    pasteboard.setString(commit.hash, forType: .string)
+                                }
+                            }
+                        Image(systemName: "arrow.left")
+                        NavigationLink(commit.parentHashes[0].prefix(5), value: commit.parentHashes[0])
+                            .foregroundColor(.accentColor)
+                        if commit.parentHashes.count == 2 {
+                            Image(systemName: "plus")
+                            NavigationLink(commit.parentHashes[1].prefix(5), value: commit.parentHashes[1])
+                                .foregroundColor(.accentColor)
+                        }
                         if let mergedIn {
                             Divider()
                                 .frame(height: 10)
                             HStack(spacing: 4) {
                                 Text("Merged in")
-                                    .foregroundStyle(.secondary)
                                 NavigationLink(mergedIn.hash.prefix(5), value: mergedIn.hash)
-                                    .buttonStyle(.link)
+                                    .foregroundColor(.accentColor)
                             }
                         }
                         if !commit.tags.isEmpty {
@@ -40,7 +55,6 @@ struct CommitDetailContentView: View {
                             HStack(spacing: 14) {
                                 ForEach(commit.tags, id: \.self) { tag in
                                     Label(tag, systemImage: "tag")
-                                        .foregroundColor(.secondary)
                                 }
                             }
                         }
@@ -55,6 +69,8 @@ struct CommitDetailContentView: View {
                             }
                         }
                     }
+                    .foregroundColor(.secondary)
+                    .buttonStyle(.link)
                 }
                 .padding(.top)
                 .padding(.top)

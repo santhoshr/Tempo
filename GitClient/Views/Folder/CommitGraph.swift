@@ -221,7 +221,7 @@ struct GraphNode: View {
     @Binding var selectionLogID: String?
     private var fillColor: Color {
         if logID == selectionLogID {
-            return Color.blue
+            return Color.accentColor
         }
         if logID == Log.notCommitted.id {
             return Color.secondary

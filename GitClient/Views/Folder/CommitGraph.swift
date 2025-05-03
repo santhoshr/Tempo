@@ -221,7 +221,7 @@ struct GraphNode: View {
     @Binding var selectionLogID: String?
     private var fillColor: Color {
         if logID == selectionLogID {
-            return Color.blue
+            return Color.accentColor
         }
         if logID == Log.notCommitted.id {
             return Color.secondary
@@ -258,7 +258,7 @@ struct GraphNodeText: View {
                 .padding(.vertical, 4)
         }
             .font(.callout)
-            .foregroundStyle(logID == selectionLogID ? Color(nsColor: .textBackgroundColor) : .secondary)
+            .foregroundStyle(logID == selectionLogID ? .white : .secondary)
             .background {
                 if logID == selectionLogID {
                     RoundedRectangle(cornerRadius: 4)

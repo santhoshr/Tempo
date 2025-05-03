@@ -38,6 +38,8 @@ struct CommitDetailStackView: View {
                 }
                 .navigationBarBackButtonHidden()
         }
-
+        .onChange(of: commit) { oldValue, newValue in
+            path = []
+        }
     }
 }

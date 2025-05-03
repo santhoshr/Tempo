@@ -252,10 +252,7 @@ struct GraphNodeText: View {
     @Binding var selectionLogID: String?
     var textColor: Color {
         if logID == selectionLogID {
-            if colorScheme == .light {
-                return Color(nsColor: .textBackgroundColor)
-            }
-            return Color.primary
+            return Color.white
         } else {
             return Color.secondary
         }

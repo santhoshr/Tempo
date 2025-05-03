@@ -31,12 +31,14 @@ struct FileNameView: View {
             Text(filePathDisplay)
                 .fontWeight(.bold)
                 .font(Font.system(.body, design: .default))
-            Image(systemName: "arrow.right.circle.fill")
-                .foregroundStyle(.tertiary)
-                .help("Open: " + (fileURL?.absoluteString ?? ""))
-                .onTapGesture {
-                    NSWorkspace.shared.open(fileURL!)
-                }
+            Button(action: {
+                NSWorkspace.shared.open(fileURL!)
+            }) {
+                Image(systemName: "arrow.right.circle.fill")
+                    .foregroundStyle(.secondary)
+                    .help("Open: " + (fileURL?.absoluteString ?? ""))
+            }
+            .buttonStyle(.accessoryBar)
             Spacer()
         }
     }

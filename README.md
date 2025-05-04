@@ -19,7 +19,7 @@ This app provides the following Git features:
     - Revert
     - Checkout
 - Add
-    - Add by Hunk
+    - Stage by Hunk
 - Branch
     - Push
     - Pull

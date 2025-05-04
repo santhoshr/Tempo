@@ -84,6 +84,7 @@ struct CommitDetailContentView: View {
                         .font(.title)
                         .padding(.leading)
                         .padding(.vertical)
+                        .layoutPriority(1)
                     if !commit.body.isEmpty {
                         Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
                             .font(.body)

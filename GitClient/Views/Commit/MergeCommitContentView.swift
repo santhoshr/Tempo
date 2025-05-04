@@ -14,6 +14,15 @@ struct MergeCommitContentView: View {
     @State private var filesChanged: [ExpandableModel<FileDiff>] = []
     @State private var error: Error?
     @State private var tab = 0
+    private var authorEmails: [String] {
+        commits.map { $0.authorEmail }
+            .reduce(into: []) { result, item in
+                if !result.contains(item) {
+                    result.append(item)
+                }
+            }
+    }
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -22,20 +31,39 @@ struct MergeCommitContentView: View {
             if tab == 0 {
                 HStack(alignment: .top, spacing: 16) {
                     CommitsView(commits: commits)
-                    Divider()
-                        .frame(height: 44)
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Image(systemName: "arrow.triangle.merge")
-                            Text("2 parents")
+                    HStack(spacing: 0) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            if commits.count > 1 {
+                                Text("\(commits.count) commits")
+                                Text(commits.first!.authorDateDisplayShort)
+                                Image(systemName: "minus")
+                                    .rotationEffect(.init(degrees: 90))
+                                    .foregroundStyle(.tertiary)
+                                Text(commits.last!.authorDateDisplayShort)
+                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]) {
+                                    ForEach(authorEmails, id: \.self) { email in
+                                        AsyncImage(url: URL.gravater(email: email, size: 26*3)) { image in
+                                            image.resizable()
+                                        } placeholder: {
+                                            RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular)
+                                                .foregroundStyle(.quinary)
+                                        }
+                                            .frame(width: 26, height: 26)
+                                            .clipShape(RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular))
+                                            .onTapGesture {
+                                                guard let url = URL.gravater(email: email, size: 400) else { return }
+                                                openURL(url)
+                                            }
+                                    }
+                                }
+                                .padding(.vertical, 8)
+                            } else {
+                                EmptyView()
+                            }
                         }
-                        HStack {
-                            NavigationLink(mergeCommit.parentHashes[0].prefix(5), value: mergeCommit.parentHashes[0])
-                            Text("+")
-                            NavigationLink(mergeCommit.parentHashes[1].prefix(5), value: mergeCommit.parentHashes[1])
-                        }
+                        Spacer(minLength: 0)
                     }
-                    .buttonStyle(.link)
+                    .frame(width: 120)
                 }
                 .padding(.top)
             }

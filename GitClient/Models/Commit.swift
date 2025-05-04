@@ -20,6 +20,12 @@ struct Commit: Hashable, Identifiable {
         }
         return DateFormatter.localizedString(from: date, dateStyle: .long, timeStyle: .long)
     }
+    var authorDateDisplayShort: String {
+        guard let date = ISO8601DateFormatter().date(from: authorDate) else {
+            return ""
+        }
+        return DateFormatter.localizedString(from: date, dateStyle: .short, timeStyle: .short)
+    }
     var authorDateRelative: String {
         guard let date = ISO8601DateFormatter().date(from: authorDate) else {
             return ""

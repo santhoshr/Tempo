@@ -24,18 +24,22 @@ struct MergeCommitContentView: View {
                     CommitsView(commits: commits)
                     Divider()
                         .frame(height: 44)
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Image(systemName: "arrow.triangle.merge")
-                            Text("2 parents")
+                    HStack(spacing: 0) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            if commits.count > 1 {
+                                Text("\(commits.count) commits")
+                                Text(commits.first!.authorDateDisplayShort)
+                                Image(systemName: "minus")
+                                    .rotationEffect(.init(degrees: 90))
+                                    .foregroundStyle(.tertiary)
+                                Text(commits.last!.authorDateDisplayShort)
+                            } else {
+                                EmptyView()
+                            }
                         }
-                        HStack {
-                            NavigationLink(mergeCommit.parentHashes[0].prefix(5), value: mergeCommit.parentHashes[0])
-                            Text("+")
-                            NavigationLink(mergeCommit.parentHashes[1].prefix(5), value: mergeCommit.parentHashes[1])
-                        }
+                        Spacer(minLength: 0)
                     }
-                    .buttonStyle(.link)
+                    .frame(width: 120)
                 }
                 .padding(.top)
             }

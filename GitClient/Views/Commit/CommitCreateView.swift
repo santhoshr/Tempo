@@ -198,11 +198,11 @@ struct CommitCreateView: View {
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))
             Divider()
-            HStack(spacing: 0) {
-                VStack(spacing: 2) {
+            HStack(alignment: .bottom,spacing: 0) {
+                VStack(spacing: 0) {
                     ZStack {
                             TextEditor(text: $commitMessage)
-                                .padding(.top, 12)
+                                .padding(.top, 16)
                                 .padding(.horizontal, 12)
                             if commitMessage.isEmpty {
                                 Label("Enter commit message here", systemImage: "plus.bubble")
@@ -210,7 +210,6 @@ struct CommitCreateView: View {
                                     .allowsHitTesting(false)
                             }
                     }
-                    .frame(height: 80)
                     HStack(spacing: 0) {
                         CommitMessageSuggestionView()
                         Button {

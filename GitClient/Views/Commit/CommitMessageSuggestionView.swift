@@ -37,9 +37,10 @@ struct CommitMessageSuggestionView: View {
                         }
                     }
                 }
-                .padding(.leading)
+                .font(.callout)
+                .padding(.leading, 12)
             }
-            .frame(height: 44)
+            .frame(height: 40)
             Button(action: {
                 openWindow(id: WindowID.commitMessageSnippets.rawValue)
             }, label: {

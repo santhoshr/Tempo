@@ -29,7 +29,7 @@ struct MergeCommitContentView: View {
             CommitTabView(tab: $tab)
                 .padding(.vertical)
             if tab == 0 {
-                HStack(alignment: .top, spacing: 16) {
+                HStack(alignment: .top, spacing: 24) {
                     CommitsView(commits: commits)
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 6) {

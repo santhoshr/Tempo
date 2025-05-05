@@ -117,7 +117,14 @@ struct CommitsView: View {
                 NavigationLink(value: commit.hash) {
                     VStack (alignment: .leading, spacing: 6) {
                         HStack(alignment: .firstTextBaseline) {
-                            Text(commit.title)
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(commit.title)
+                                if !commit.body.isEmpty {
+                                    Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
+                                        .foregroundStyle(.secondary)
+                                        .font(.callout)
+                                }
+                            }
                             Spacer()
                             Text(commit.hash.prefix(5))
                                 .foregroundStyle(.tertiary)

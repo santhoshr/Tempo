@@ -198,7 +198,7 @@ struct CommitCreateView: View {
             .layoutPriority(1)
             .background(Color(NSColor.textBackgroundColor))
             Divider()
-            HStack(alignment: .bottom,spacing: 0) {
+            HStack(alignment: .bottom, spacing: 0) {
                 VStack(spacing: 0) {
                     ZStack {
                             TextEditor(text: $commitMessage)

@@ -14,11 +14,13 @@ import Observation
     var branch: Branch?
     var shouldPull = false
     var shouldPush = false
+    var shouldPushCommits: [Commit] = []
 
     func sync() async throws {
         guard let folderURL, let branch, !branch.isDetached else {
             shouldPull = false
             shouldPush = false
+            shouldPushCommits = []
             return
         }
         try await Process.output(GitFetch(directory: folderURL))
@@ -30,6 +32,7 @@ import Observation
             return
         }
         shouldPull = !(try await Process.output(GitLog(directory: folderURL, revisionRange: "\(branch.name)..origin/\(branch.name)")).isEmpty)
-        shouldPush = !(try await Process.output(GitLog(directory: folderURL, revisionRange: "origin/\(branch.name)..\(branch.name)")).isEmpty)
+        shouldPushCommits = try await Process.output(GitLog(directory: folderURL, revisionRange: "origin/\(branch.name)..\(branch.name)"))
+        shouldPush = !shouldPushCommits.isEmpty
     }
 }

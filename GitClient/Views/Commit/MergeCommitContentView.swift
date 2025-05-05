@@ -29,7 +29,7 @@ struct MergeCommitContentView: View {
             CommitTabView(tab: $tab)
                 .padding(.vertical)
             if tab == 0 {
-                HStack(alignment: .top, spacing: 16) {
+                HStack(alignment: .top, spacing: 24) {
                     CommitsView(commits: commits)
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 6) {
@@ -117,7 +117,14 @@ struct CommitsView: View {
                 NavigationLink(value: commit.hash) {
                     VStack (alignment: .leading, spacing: 6) {
                         HStack(alignment: .firstTextBaseline) {
-                            Text(commit.title)
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(commit.title)
+                                if !commit.body.isEmpty {
+                                    Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
+                                        .foregroundStyle(.secondary)
+                                        .font(.callout)
+                                }
+                            }
                             Spacer()
                             Text(commit.hash.prefix(5))
                                 .foregroundStyle(.tertiary)

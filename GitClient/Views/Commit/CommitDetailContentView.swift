@@ -46,11 +46,12 @@ struct CommitDetailContentView: View {
                     if let mergedIn {
                         Divider()
                             .frame(height: 10)
-                        HStack(spacing: 4) {
-                            Text("Merged in")
+                        HStack {
+                            Image(systemName: "arrow.triangle.pull")
                             NavigationLink(mergedIn.hash.prefix(5), value: mergedIn.hash)
                                 .foregroundColor(.accentColor)
                         }
+                        .help("Merged in \(mergedIn.hash.prefix(5))")
                     }
                     if !commit.tags.isEmpty {
                         Divider()

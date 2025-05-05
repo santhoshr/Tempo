@@ -64,14 +64,17 @@ struct FolderView: View {
             }
             .background(Color(nsColor: .textBackgroundColor))
             .overlay(alignment: .trailing) {
-                Image(systemName: showGraph ? "g.circle.fill" : "g.circle")
-                    .font(.title3)
-                    .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
-                    .padding(.horizontal)
-                    .onTapGesture {
-                        showGraph.toggle()
-                    }
-                    .help("Commit Graph")
+                Button(action: {
+                    showGraph.toggle()
+                }) {
+                    Image(systemName: showGraph ? "point.3.filled.connected.trianglepath.dotted" : "point.3.connected.trianglepath.dotted")
+                        .font(.title3)
+                        .rotationEffect(.init(degrees: 270))
+                        .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
+                }
+                .buttonStyle(.accessoryBar)
+                .padding(.horizontal, 8)
+                .help("Commit Graph")
             }
         }
         .overlay(content: {

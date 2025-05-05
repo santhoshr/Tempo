@@ -46,7 +46,7 @@ struct FolderView: View {
                     isRefresh: $isRefresh
                 )
             } else {
-                CommitLogView(
+                CommitListView(
                     logStore: $logStore,
                     selectionLogID: $selectionLogID,
                     showing: $showing,

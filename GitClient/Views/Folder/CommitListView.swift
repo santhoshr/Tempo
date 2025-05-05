@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CommitLogView: View {
+struct CommitListView: View {
     @Environment(\.folder) private var folder
     @Binding var logStore: LogStore
     @Binding var selectionLogID: String?

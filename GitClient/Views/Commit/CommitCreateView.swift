@@ -82,7 +82,7 @@ struct CommitCreateView: View {
                             restorePatch(newDiff)
                         }
                     )
-                    .padding(.vertical)
+                    .padding(.top)
                 }
 
                 if let diff {

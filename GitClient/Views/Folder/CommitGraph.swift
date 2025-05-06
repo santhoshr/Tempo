@@ -242,6 +242,9 @@ struct GraphNode: View {
             )
             .onTapGesture {
                 selectionLogID = logID
+                if NSEvent.modifierFlags.contains(.command) {
+                    print("Command + Click")
+                }
             }
     }
 }
@@ -267,6 +270,9 @@ struct GraphNodeText: View {
             }
             .onTapGesture {
                 selectionLogID = logID
+                if NSEvent.modifierFlags.contains(.command) {
+                    print("Command + Click")
+                }
             }
     }
 }

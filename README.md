@@ -36,7 +36,7 @@ This app provides the following Git features:
     - Commit Message
     - Changed(added/removed)
     - Author
-    - Revision Range
+    - Revision Range(e.g., main.., v1.0.0...v2.0.0)
 
 ## Installation
 

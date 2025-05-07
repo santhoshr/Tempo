@@ -133,7 +133,7 @@ struct CommitGraphContentView: View {
                         logID: Log.notCommitted.id,
                         selectionLogID: $selectionLogID
                     )
-                    GraphNodeText(logID: Log.notCommitted.id, title: "Not Committed", selectionLogID: $selectionLogID)
+                    GraphNodeText(logID: Log.notCommitted.id, title: "Uncommitted Changes", selectionLogID: $selectionLogID)
                 }
                 .padding(
                     .horizontal,

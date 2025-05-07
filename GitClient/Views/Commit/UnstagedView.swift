@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NotStagedView: View {
+struct UnstagedView: View {
     @Binding var fileDiffs: [ExpandableModel<FileDiff>]
     var untrackedFiles: [String]
     var onSelectFileDiff: ((FileDiff) -> Void)?
@@ -65,7 +65,7 @@ struct NotStagedView: View {
                 }
             } header: {
                 SectionHeader(
-                    title: "Not Staged",
+                    title: "Unstaged Changes",
                     isExpanded: $isExpanded,
                     onSelectExpandedAll: { isExpandedAll in
                         fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
@@ -123,7 +123,7 @@ struct NotStagedView: View {
     fileDiffs = diff.fileDiffs.map { ExpandableModel(isExpanded: true, model: $0) }
 
     return ScrollView {
-        NotStagedView(
+        UnstagedView(
             fileDiffs: $fileDiffs,
             untrackedFiles: ["Projects/Files/Path.swift", "Projects/Files/Path1.swift"],
             onSelectFileDiff: { f in

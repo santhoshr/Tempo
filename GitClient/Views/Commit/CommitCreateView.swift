@@ -86,7 +86,7 @@ struct CommitCreateView: View {
                 }
 
                 if let diff {
-                    NotStagedView(
+                    UnstagedView(
                         fileDiffs: $expandableFileDiffs,
                         untrackedFiles: status?.untrackedFiles ?? [],
                         onSelectFileDiff: { fileDiff in
@@ -138,7 +138,7 @@ struct CommitCreateView: View {
                             HStack(spacing: 16) {
                                 Text("Staged: ").foregroundStyle(.secondary)
                                 + Text(stagedHeaderCaption)
-                                Text("Not Staged: ").foregroundStyle(.secondary)
+                                Text("Unstaged: ").foregroundStyle(.secondary)
                                 + Text(notStagedHeaderCaption)
                             }
                             .font(.callout)

@@ -28,7 +28,7 @@ struct CommitLogView: View {
         return VStack {
             switch log {
             case .notCommitted:
-                Text("Not Committed")
+                Text("Uncommitted Changes")
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
                 CommitRowView(commit: commit)

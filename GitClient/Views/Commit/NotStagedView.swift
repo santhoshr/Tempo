@@ -65,7 +65,7 @@ struct NotStagedView: View {
                 }
             } header: {
                 SectionHeader(
-                    title: "Not Staged",
+                    title: "Unstaged Changes",
                     isExpanded: $isExpanded,
                     onSelectExpandedAll: { isExpandedAll in
                         fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }

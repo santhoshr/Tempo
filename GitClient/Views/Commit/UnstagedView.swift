@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NotStagedView: View {
+struct UnstagedView: View {
     @Binding var fileDiffs: [ExpandableModel<FileDiff>]
     var untrackedFiles: [String]
     var onSelectFileDiff: ((FileDiff) -> Void)?
@@ -123,7 +123,7 @@ struct NotStagedView: View {
     fileDiffs = diff.fileDiffs.map { ExpandableModel(isExpanded: true, model: $0) }
 
     return ScrollView {
-        NotStagedView(
+        UnstagedView(
             fileDiffs: $fileDiffs,
             untrackedFiles: ["Projects/Files/Path.swift", "Projects/Files/Path1.swift"],
             onSelectFileDiff: { f in

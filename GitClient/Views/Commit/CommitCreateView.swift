@@ -86,7 +86,7 @@ struct CommitCreateView: View {
                 }
 
                 if let diff {
-                    NotStagedView(
+                    UnstagedView(
                         fileDiffs: $expandableFileDiffs,
                         untrackedFiles: status?.untrackedFiles ?? [],
                         onSelectFileDiff: { fileDiff in

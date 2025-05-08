@@ -34,9 +34,9 @@ This app provides the following Git features:
     - Apply
 - Search Commits
     - Commit Message
-    - Changed(added/removed)
+    - Changed (added/removed)
     - Author
-    - Revision Range(e.g., main.., v1.0.0...v2.0.0)
+    - Revision Range (e.g., main.., v1.0.0...v2.0.0)
 
 ## Installation
 

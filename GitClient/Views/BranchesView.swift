@@ -102,6 +102,11 @@ struct BranchesView: View {
                             }
                         }
                     }
+                    Button("Copy \"\(branch.name)\"") {
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.declareTypes([.string], owner: nil)
+                        pasteboard.setString(branch.name, forType: .string)
+                    }
                 }
             }
             .scrollContentBackground(.hidden)

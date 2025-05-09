@@ -8,7 +8,6 @@
 import Foundation
 
 struct GitAddPatch: InteractiveGit {
-    typealias OutputModel = Void
     var arguments: [String] {
         [
             "git",
@@ -19,5 +18,5 @@ struct GitAddPatch: InteractiveGit {
     var directory: URL
     var inputs: [String]
 
-    func parse(for stdOut: String) -> Void {}
+    func parse(for stdOut: String) -> String { stdOut }
 }

@@ -33,13 +33,16 @@ struct CommitDetailContentView: View {
                         }
                     Image(systemName: "arrow.left")
                     HStack(spacing: 0) {
-                        NavigationLink(commit.parentHashes[0].prefix(5), value: commit.parentHashes[0])
-                            .foregroundColor(.accentColor)
-                        if commit.parentHashes.count == 2 {
-                            Text(",")
-                                .padding(.trailing, 2)
-                            NavigationLink(commit.parentHashes[1].prefix(5), value: commit.parentHashes[1])
-                                .foregroundColor(.accentColor)
+                        ForEach(commit.parentHashes, id: \.self) { hash in
+                            if hash == commit.parentHashes.first {
+                                NavigationLink(commit.parentHashes[0].prefix(5), value: commit.parentHashes[0])
+                                    .foregroundColor(.accentColor)
+                            } else {
+                                Text(",")
+                                    .padding(.trailing, 2)
+                                NavigationLink(commit.parentHashes[1].prefix(5), value: commit.parentHashes[1])
+                                    .foregroundColor(.accentColor)
+                            }
                         }
                     }
                     .textSelection(.disabled)

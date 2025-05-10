@@ -36,7 +36,7 @@ struct FileNameView: View {
             }) {
                 Image(systemName: "arrow.right.circle.fill")
                     .foregroundStyle(.secondary)
-                    .help("Open: " + (fileURL?.absoluteString ?? ""))
+                    .help("Open " + (fileURL?.absoluteString ?? ""))
             }
             .buttonStyle(.accessoryBar)
             Spacer()

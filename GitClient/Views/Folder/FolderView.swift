@@ -285,7 +285,7 @@ struct FolderView: View {
             } label: {
                 Image(systemName: "chevron.down")
             }
-            .help("Select branch")
+            .help("Select Branch")
             .popover(isPresented: $showing.branches) {
                 TabView {
                     BranchesView(
@@ -381,7 +381,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "plus")
         }
-        .help("Create new branch")
+        .help("Create New Branch")
     }
 
     fileprivate func tagButton() -> some View {
@@ -390,7 +390,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "tag")
         }
-        .help("Show tags")
+        .help("Show Tags")
         .popover(isPresented: $showing.tags, content: {
             TagsView(folder: folder, showingTags: $showing.tags)
         })
@@ -409,7 +409,7 @@ struct FolderView: View {
         } label: {
             Image(systemName: "tray")
         }
-        .help("Show stashed changes")
+        .help("Show Stashed Changes")
     }
 
     fileprivate func badge() -> some View {

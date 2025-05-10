@@ -68,7 +68,7 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: "plus.rectangle.on.folder")
                     }
-                    .help("Add project folder")
+                    .help("Add Project Folder")
                 }
             }
         } content: {

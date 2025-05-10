@@ -77,7 +77,6 @@ struct CreateNewTagSheet: View {
                                     try await Process.output(
                                         GitPush(directory: folder.url, refspec: newTagname)
                                     )
-                                    isLoading = false
                                     onCreate()
                                     showingCreateNewTagAt = nil
                                 } catch {

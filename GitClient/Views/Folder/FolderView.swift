@@ -134,6 +134,9 @@ struct FolderView: View {
         }
         .onChange(of: searchTokens, { oldValue, newValue in
             searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
+            if let removed = oldValue.first(where: { !newValue.contains($0)}) {
+                searchText = removed.text + (searchText.isEmpty ? "" : " \(searchText)")
+            }
             logStore.searchTokens = searchTokens
             searchTask?.cancel()
             searchTask = Task {

@@ -28,14 +28,14 @@ struct SearchTokensHandler {
                         var updateToken = token
                         updateToken.kind = newToken.kind
                         return updateToken
-                    case .s, .g, .author, .revisionRange:
+                    case .s, .g, .author, .revisionRange, .untoken:
                         return token
                     }
                 }
             case .s:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .author, .revisionRange:
+                    case .grep, .grepAllMatch, .author, .revisionRange, .untoken:
                         return true
                     case .s:
                         return token == newToken
@@ -46,7 +46,7 @@ struct SearchTokensHandler {
             case .g:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .author, .revisionRange:
+                    case .grep, .grepAllMatch, .author, .revisionRange, .untoken:
                         return true
                     case .g:
                         return token == newToken
@@ -57,7 +57,7 @@ struct SearchTokensHandler {
             case .author:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .g, .s, .revisionRange:
+                    case .grep, .grepAllMatch, .g, .s, .revisionRange, .untoken:
                         return true
                     case .author:
                         return token == newToken
@@ -66,12 +66,14 @@ struct SearchTokensHandler {
             case .revisionRange:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .g, .s, .author:
+                    case .grep, .grepAllMatch, .g, .s, .author, .untoken:
                         return true
                     case .revisionRange:
                         return token == newToken
                     }
                 }
+            case .untoken:
+                return newTokens
             }
         } else {
             return newTokens

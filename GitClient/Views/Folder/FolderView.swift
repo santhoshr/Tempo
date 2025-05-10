@@ -88,6 +88,10 @@ struct FolderView: View {
                 ForEach(SearchKind.allCases, id: \.self) { kind in
                     Text(kind.shortLabel).tag(kind)
                 }
+                Divider()
+                Text(SearchKind.untoken.shortLabel)
+                    .foregroundStyle(.secondary)
+                    .tag(SearchKind.untoken)
             } label: {
                 Text(token.text)
             }
@@ -133,10 +137,10 @@ struct FolderView: View {
             await refreshModels()
         }
         .onChange(of: searchTokens, { oldValue, newValue in
-            searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
-            if let removed = oldValue.first(where: { !newValue.contains($0)}) {
-                searchText = removed.text + (searchText.isEmpty ? "" : " \(searchText)")
+            if let text = newValue.first(where: { $0.kind == .untoken })?.text {
+                searchText = text
             }
+            searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue.filter { $0.kind != .untoken })
             logStore.searchTokens = searchTokens
             searchTask?.cancel()
             searchTask = Task {

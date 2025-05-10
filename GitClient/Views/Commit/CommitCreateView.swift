@@ -70,32 +70,36 @@ struct CommitCreateView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if let cachedDiff {
+                if cachedDiff != nil {
                     StagedView(
                         fileDiffs: $cachedExpandableFileDiffs,
                         onSelectFileDiff: { fileDiff in
-                            let newDiff = cachedDiff.updateFileDiffStage(fileDiff, stage: false)
-                            restorePatch(newDiff)
+                            if let newDiff = self.cachedDiff?.updateFileDiffStage(fileDiff, stage: false) {
+                                restorePatch(newDiff)
+                            }
                         },
                         onSelectChunk: { fileDiff, chunk in
-                            let newDiff = cachedDiff.updateChunkStage(chunk, in: fileDiff, stage: false)
-                            restorePatch(newDiff)
+                            if let newDiff = self.cachedDiff?.updateChunkStage(chunk, in: fileDiff, stage: false) {
+                                restorePatch(newDiff)
+                            }
                         }
                     )
-                    .padding(.vertical)
+                    .padding(.top)
                 }
 
-                if let diff {
-                    NotStagedView(
+                if diff != nil {
+                    UnstagedView(
                         fileDiffs: $expandableFileDiffs,
                         untrackedFiles: status?.untrackedFiles ?? [],
                         onSelectFileDiff: { fileDiff in
-                            let newDiff = diff.updateFileDiffStage(fileDiff, stage: true)
-                            addPatch(newDiff)
+                            if let newDiff = self.diff?.updateFileDiffStage(fileDiff, stage: true) {
+                                addPatch(newDiff)
+                            }
                         },
                         onSelectChunk: { fileDiff, chunk in
-                            let newDiff = diff.updateChunkStage(chunk, in: fileDiff, stage: true)
-                            addPatch(newDiff)
+                            if let newDiff = self.diff?.updateChunkStage(chunk, in: fileDiff, stage: true) {
+                                addPatch(newDiff)
+                            }
                         },
                         onSelectUntrackedFile: { file in
                             Task {
@@ -138,7 +142,7 @@ struct CommitCreateView: View {
                             HStack(spacing: 16) {
                                 Text("Staged: ").foregroundStyle(.secondary)
                                 + Text(stagedHeaderCaption)
-                                Text("Not Staged: ").foregroundStyle(.secondary)
+                                Text("Unstaged: ").foregroundStyle(.secondary)
                                 + Text(notStagedHeaderCaption)
                             }
                             .font(.callout)
@@ -367,7 +371,7 @@ struct CommitCreateView: View {
                     notStagedDiff: diffRaw,
                     untrackedFiles: status?.untrackedFiles ?? []
                 )
-                try await Process.output(GitAddPatch(directory: folder.url, inputs: res.hunksToStage.map { $0 ? "y" : "n" }))
+                let _ = try await Process.output(GitAddPatch(directory: folder.url, inputs: res.hunksToStage.map { $0 ? "y" : "n" }))
                 let files = status?.untrackedFiles.enumerated().map({ e in
                     if let needsStage = res.filesToStage[safe: e.offset], needsStage {
                         return e.element

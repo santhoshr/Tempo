@@ -34,7 +34,7 @@ struct StagedView: View {
                 )
             } header: {
                 SectionHeader(
-                    title: "Staged",
+                    title: "Staged Changes",
                     isExpanded: $isExpanded) { isExpandedAll in
                         fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
                     }

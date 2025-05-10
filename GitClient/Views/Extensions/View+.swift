@@ -47,9 +47,6 @@ extension View {
                     }
                 }
             }
-            Button("Tag") {
-                showing.wrappedValue.createNewTagAt = commit
-            }
             if commit == logStore.commits.first {
                 if let notCommitted = logStore.notCommitted {
                     if notCommitted.diffCached.isEmpty {
@@ -62,6 +59,9 @@ extension View {
                         showing.wrappedValue.amendCommitAt = commit
                     }
                 }
+            }
+            Button("Tag") {
+                showing.wrappedValue.createNewTagAt = commit
             }
         }
     }

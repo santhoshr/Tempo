@@ -31,6 +31,7 @@ struct CreateNewTagSheet: View {
                             .textSelection(.enabled)
                             .padding(.horizontal, 4)
                         TextField("New tag name", text: $newTagname)
+                            .disabled(isLoading)
                     }
                 }
 

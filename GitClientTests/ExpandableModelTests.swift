@@ -18,7 +18,7 @@ struct ExpandableModelTests {
     @Test
     func testPreservesExpansionState() {
         let old: [ExpandableModel<Dummy>] = [
-            ExpandableModel(isExpanded: true, model: Dummy(id: 1, name: "one")),
+            ExpandableModel(isExpanded: false, model: Dummy(id: 1, name: "one")),
             ExpandableModel(isExpanded: false, model: Dummy(id: 2, name: "two"))
         ]
         let new: [Dummy] = [
@@ -30,7 +30,7 @@ struct ExpandableModelTests {
 
         #expect(result.count == 2)
         #expect(result[0].model == Dummy(id: 1, name: "one"))
-        #expect(result[0].isExpanded == true)
+        #expect(result[0].isExpanded == false)
         #expect(result[1].model == Dummy(id: 3, name: "three"))
         #expect(result[1].isExpanded == true) // default
     }

@@ -349,12 +349,8 @@ struct CommitCreateView: View {
     private func addPatch(_ newDiff: Diff) {
         Task {
             do {
-                let old = cachedDiffRaw
-                let output = try await Process.output(GitAddPatch(directory: folder.url, inputs: newDiff.stageStrings()))
+                try await Process.output(GitAddPatch(directory: folder.url, inputs: newDiff.stageStrings()))
                 await updateChanges()
-                if old == cachedDiffRaw {
-                    throw ProcessError(description: output)
-                }
             } catch {
                 self.error = error
             }

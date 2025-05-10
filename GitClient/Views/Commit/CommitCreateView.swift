@@ -137,7 +137,7 @@ struct CommitCreateView: View {
                         } label: {
                             Image(systemName: "tray.and.arrow.down")
                         }
-                        .help("Stash include untracked")
+                        .help("Stash Include Untracked")
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
                                 Text("Staged: ").foregroundStyle(.secondary)
@@ -241,7 +241,7 @@ struct CommitCreateView: View {
                                     .frame(width: 15, height: 10)
                             }
                         }
-                        .help("Generate commit message with AI")
+                        .help("Generate Commit Message with AI")
                         .padding(.horizontal)
                         .disabled(cachedDiffRaw.isEmpty)
                     }

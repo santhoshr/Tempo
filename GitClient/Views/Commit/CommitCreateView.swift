@@ -70,7 +70,7 @@ struct CommitCreateView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if let cachedDiff {
+                if cachedDiff != nil {
                     StagedView(
                         fileDiffs: $cachedExpandableFileDiffs,
                         onSelectFileDiff: { fileDiff in
@@ -87,7 +87,7 @@ struct CommitCreateView: View {
                     .padding(.top)
                 }
 
-                if let diff {
+                if diff != nil {
                     UnstagedView(
                         fileDiffs: $expandableFileDiffs,
                         untrackedFiles: status?.untrackedFiles ?? [],

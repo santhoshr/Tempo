@@ -9,7 +9,7 @@ By setting the OpenAI API secret key in the app, you can generate commit message
 ![Screenshot](Screenshots/Screenshot5.png)
 ![Screenshot](Screenshots/Screenshot6.png)
 ![Screenshot](Screenshots/Screenshot7.png)
-![Screenshot](Screenshots/Screenshot8.png)
+![Screenshot](Screenshots/Screenshot9.png)
 
 ## Features
 

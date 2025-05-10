@@ -104,6 +104,13 @@ struct FolderView: View {
                             }
                                 .searchCompletion(token)
                                 .contextMenu {
+                                    Button("Use as Text") {
+                                        if searchText.isEmpty {
+                                            searchText = token.text
+                                        } else {
+                                            searchText += " " + token.text
+                                        }
+                                    }
                                     Button("Delete") {
                                         var tokens = decodedSearchTokenHistory
                                         tokens.removeAll { $0 == token }

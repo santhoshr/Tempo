@@ -325,10 +325,10 @@ struct CommitCreateView: View {
             diffRaw = try await Process.output(GitDiff(directory: folder.url))
             let newCachedDiff = try Diff(raw: cachedDiffRaw)
             cachedDiff = newCachedDiff
-            cachedExpandableFileDiffs = newCachedDiff.fileDiffs.map { .init(isExpanded: true, model: $0) }
+            cachedExpandableFileDiffs = newCachedDiff.fileDiffs.withExpansionState(from: cachedExpandableFileDiffs)
             let newDiff = try Diff(raw: diffRaw)
             diff = newDiff
-            expandableFileDiffs = newDiff.fileDiffs.map { .init(isExpanded: true, model: $0) }
+            expandableFileDiffs = newDiff.fileDiffs.withExpansionState(from: expandableFileDiffs)
             cachedDiffStat = try await Process.output(GitDiffNumStat(directory: folder.url, cached: true))
         } catch {
             updateChangesError = error

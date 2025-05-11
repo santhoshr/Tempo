@@ -24,6 +24,18 @@ struct CommitLogView: View {
                     await logStore.logViewTask(log)
                 }
         }
+        .onChange(of: selectionLogIDs) { oldValue, newValue in
+            if newValue.count <= 1 {
+                selectionLogID = newValue.first
+                subSelectionLogID = nil
+            }
+            if newValue.count > 1 {
+                if let added = newValue.first(where: { !oldValue.contains($0) }) {
+                    subSelectionLogID = added
+                    selectionLogIDs = [selectionLogID!, subSelectionLogID!]
+                }
+            }
+        }
     }
 
     fileprivate func logsRow(_ log: Log) -> some View {

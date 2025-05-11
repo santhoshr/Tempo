@@ -19,6 +19,7 @@ struct FolderView: View {
     @State private var showing = FolderViewShowing()
     @State private var branch: Branch?
     @State private var selectionLogID: String?
+    @State private var subSelectionLogID: String?
     @State private var searchTokens: [SearchToken] = []
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
@@ -39,16 +40,18 @@ struct FolderView: View {
     var body: some View {
         VStack(spacing: 0) {
             if showGraph {
-                CommitGraphView(
-                    logStore: $logStore,
-                    selectionLogID: $selectionLogID,
-                    showing: $showing,
-                    isRefresh: $isRefresh
-                )
+// TODO:
+//                CommitGraphView(
+//                    logStore: $logStore,
+//                    selectionLogID: $selectionLogID,
+//                    showing: $showing,
+//                    isRefresh: $isRefresh
+//                )
             } else {
                 CommitLogView(
                     logStore: $logStore,
                     selectionLogID: $selectionLogID,
+                    subSelectionLogID: $subSelectionLogID,
                     showing: $showing,
                     isRefresh: $isRefresh,
                     error: $error

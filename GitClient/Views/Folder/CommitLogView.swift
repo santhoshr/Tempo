@@ -11,12 +11,14 @@ struct CommitLogView: View {
     @Environment(\.folder) private var folder
     @Binding var logStore: LogStore
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
     @Binding var error: Error?
+    @State private var selectionLogIDs = Set<String>()
 
     var body: some View {
-        List(logStore.logs(), selection: $selectionLogID) { log in
+        List(logStore.logs(), selection: $selectionLogIDs) { log in
             logsRow(log)
                 .task {
                     await logStore.logViewTask(log)

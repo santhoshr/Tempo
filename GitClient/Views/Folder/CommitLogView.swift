@@ -32,8 +32,12 @@ struct CommitLogView: View {
                 }
             }
             if newValue.count > 1 {
-                if let added = newValue.first(where: { !oldValue.contains($0) }) {
-                    Task {
+                Task {
+                    if selectionLogID == nil {
+                        selectionLogID = newValue.first
+                        subSelectionLogID = newValue.filter { $0 != selectionLogID }.first
+                        selectionLogIDs = [selectionLogID!, subSelectionLogID!]
+                    } else if let added = newValue.first(where: { !oldValue.contains($0) }) {
                         subSelectionLogID = added
                         selectionLogIDs = [selectionLogID!, subSelectionLogID!]
                     }

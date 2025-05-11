@@ -23,7 +23,7 @@ struct CommitDetailContentView: View {
                 HStack {
                     Text(commit.hash.prefix(10))
                         .textSelection(.disabled)
-                        .help("Commit Hash: " + commit.hash)
+                        .help(commit.hash)
                         .contextMenu {
                             Button("Copy " + commit.hash) {
                                 let pasteboard = NSPasteboard.general

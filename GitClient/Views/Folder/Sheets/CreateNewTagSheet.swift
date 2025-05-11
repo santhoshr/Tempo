@@ -31,6 +31,7 @@ struct CreateNewTagSheet: View {
                             .textSelection(.enabled)
                             .padding(.horizontal, 4)
                         TextField("New tag name", text: $newTagname)
+                            .disabled(isLoading)
                     }
                 }
 
@@ -76,7 +77,6 @@ struct CreateNewTagSheet: View {
                                     try await Process.output(
                                         GitPush(directory: folder.url, refspec: newTagname)
                                     )
-                                    isLoading = false
                                     onCreate()
                                     showingCreateNewTagAt = nil
                                 } catch {

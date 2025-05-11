@@ -85,6 +85,11 @@ struct BranchesView: View {
                     Button("New Branch from \"\(branch.name)\"") {
                         onSelectNewBranchFrom(branch)
                     }
+                    Button("Copy \"\(branch.name)\"") {
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.declareTypes([.string], owner: nil)
+                        pasteboard.setString(branch.name, forType: .string)
+                    }
                     if !isRemote {
                         Button("Rename") {
                             onSelectRenameBranch?(branch)
@@ -101,11 +106,6 @@ struct BranchesView: View {
                                 }
                             }
                         }
-                    }
-                    Button("Copy \"\(branch.name)\"") {
-                        let pasteboard = NSPasteboard.general
-                        pasteboard.declareTypes([.string], owner: nil)
-                        pasteboard.setString(branch.name, forType: .string)
                     }
                 }
             }

@@ -28,7 +28,7 @@ struct StagedView: View {
                 StagedFileDiffView(
                     expandableFileDiffs: $fileDiffs,
                     selectButtonImageSystemName: "minus.circle",
-                    selectButtonHelp: "Unstage this hunk",
+                    selectButtonHelp: "Unstage This Hunk",
                     onSelectFileDiff: onSelectFileDiff,
                     onSelectChunk: onSelectChunk
                 )

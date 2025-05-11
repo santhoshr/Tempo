@@ -26,13 +26,17 @@ struct CommitLogView: View {
         }
         .onChange(of: selectionLogIDs) { oldValue, newValue in
             if newValue.count <= 1 {
-                selectionLogID = newValue.first
-                subSelectionLogID = nil
+                Task {
+                    selectionLogID = newValue.first
+                    subSelectionLogID = nil
+                }
             }
             if newValue.count > 1 {
                 if let added = newValue.first(where: { !oldValue.contains($0) }) {
-                    subSelectionLogID = added
-                    selectionLogIDs = [selectionLogID!, subSelectionLogID!]
+                    Task {
+                        subSelectionLogID = added
+                        selectionLogIDs = [selectionLogID!, subSelectionLogID!]
+                    }
                 }
             }
         }

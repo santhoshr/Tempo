@@ -36,6 +36,19 @@ struct CommitLogView: View {
                 }
             }
         }
+        .onChange(of: selectionLogID ?? "") { oldValue, newValue in
+            syncSelection(oldValue: oldValue, newValue: newValue)
+        }
+        .onChange(of: subSelectionLogID ?? "") { oldValue, newValue in
+            syncSelection(oldValue: oldValue, newValue: newValue)
+        }
+    }
+
+    fileprivate func syncSelection(oldValue: String, newValue: String) {
+        selectionLogIDs.remove(oldValue)
+        if !newValue.isEmpty {
+            selectionLogIDs.insert(newValue)
+        }
     }
 
     fileprivate func logsRow(_ log: Log) -> some View {

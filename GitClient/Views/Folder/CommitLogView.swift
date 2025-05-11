@@ -25,42 +25,44 @@ struct CommitLogView: View {
                 }
         }
         .onChange(of: selectionLogIDs) { oldValue, newValue in
-            DispatchQueue.main.async {
-                if newValue.count <= 1 {
-                    selectionLogID = newValue.first
-                    subSelectionLogID = nil
-                    return
+            if newValue.count <= 1 {
+                selectionLogID = newValue.first
+                subSelectionLogID = nil
+                syncSelection()
+                return
+            }
+            if selectionLogID == nil {
+                subSelectionLogID = nil
+                syncSelection()
+                return
+            }
+            if newValue.count < 4 {
+                if let added = newValue.first(where: { !oldValue.contains($0) }) {
+                    subSelectionLogID = added
+                    syncSelection()
                 }
-                guard let selectionLogID else {
-                    subSelectionLogID = nil
-                    selectionLogIDs = []
-                    return
-                }
-                if newValue.count < 4 {
-                    if let added = newValue.first(where: { !oldValue.contains($0) }) {
-                        subSelectionLogID = added
-                        selectionLogIDs = [selectionLogID, subSelectionLogID!]
-                    }
-                } else {
-                    selectionLogIDs = [selectionLogID]
-                    if let subSelectionLogID {
-                        selectionLogIDs.insert(subSelectionLogID)
-                    }
-                }
+            } else {
+                syncSelection()
             }
         }
-        .onChange(of: selectionLogID ?? "") { oldValue, newValue in
-            syncSelection(oldValue: oldValue, newValue: newValue)
+        .onChange(of: selectionLogID ?? "") {
+            syncSelection()
         }
-        .onChange(of: subSelectionLogID ?? "") { oldValue, newValue in
-            syncSelection(oldValue: oldValue, newValue: newValue)
+        .onChange(of: subSelectionLogID ?? "") {
+            syncSelection()
         }
     }
 
-    fileprivate func syncSelection(oldValue: String, newValue: String) {
-        selectionLogIDs.remove(oldValue)
-        if !newValue.isEmpty {
-            selectionLogIDs.insert(newValue)
+    fileprivate func syncSelection() {
+        var newValues =  Set<String>()
+        if let selectionLogID {
+            newValues.insert(selectionLogID)
+        }
+        if let subSelectionLogID {
+            newValues.insert(subSelectionLogID)
+        }
+        DispatchQueue.main.async {
+            selectionLogIDs = newValues
         }
     }
 

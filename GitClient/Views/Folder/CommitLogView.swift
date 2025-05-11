@@ -25,21 +25,26 @@ struct CommitLogView: View {
                 }
         }
         .onChange(of: selectionLogIDs) { oldValue, newValue in
-            if newValue.count <= 1 {
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                if newValue.count <= 1 {
                     selectionLogID = newValue.first
                     subSelectionLogID = nil
+                    return
                 }
-            }
-            if newValue.count > 1 {
-                DispatchQueue.main.async {
-                    if selectionLogID == nil {
-                        selectionLogID = newValue.first
-                        subSelectionLogID = newValue.filter { $0 != selectionLogID }.first
-                        selectionLogIDs = [selectionLogID!, subSelectionLogID!]
-                    } else if let added = newValue.first(where: { !oldValue.contains($0) }) {
+                guard let selectionLogID else {
+                    subSelectionLogID = nil
+                    selectionLogIDs = []
+                    return
+                }
+                if newValue.count < 4 {
+                    if let added = newValue.first(where: { !oldValue.contains($0) }) {
                         subSelectionLogID = added
-                        selectionLogIDs = [selectionLogID!, subSelectionLogID!]
+                        selectionLogIDs = [selectionLogID, subSelectionLogID!]
+                    }
+                } else {
+                    selectionLogIDs = [selectionLogID]
+                    if let subSelectionLogID {
+                        selectionLogIDs.insert(subSelectionLogID)
                     }
                 }
             }

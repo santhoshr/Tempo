@@ -26,13 +26,13 @@ struct CommitLogView: View {
         }
         .onChange(of: selectionLogIDs) { oldValue, newValue in
             if newValue.count <= 1 {
-                Task {
+                DispatchQueue.main.async {
                     selectionLogID = newValue.first
                     subSelectionLogID = nil
                 }
             }
             if newValue.count > 1 {
-                Task {
+                DispatchQueue.main.async {
                     if selectionLogID == nil {
                         selectionLogID = newValue.first
                         subSelectionLogID = newValue.filter { $0 != selectionLogID }.first

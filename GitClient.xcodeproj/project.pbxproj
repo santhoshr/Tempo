@@ -1078,7 +1078,7 @@
 			repositoryURL = "https://github.com/maoyama/Sourceful";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.1.0;
 			};
 		};
 		61D34C7E2CA8548F0032A22A /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {

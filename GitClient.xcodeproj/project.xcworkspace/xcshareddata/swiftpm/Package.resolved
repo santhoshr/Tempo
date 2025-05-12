@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/maoyama/Sourceful",
       "state" : {
-        "revision" : "d3c59eee624e55969648b0e88dc4bd60c0e83363",
-        "version" : "1.0.0"
+        "revision" : "78e6a1ba197cf1c409d739633e3bec8084c87723",
+        "version" : "1.1.0"
       }
     }
   ],

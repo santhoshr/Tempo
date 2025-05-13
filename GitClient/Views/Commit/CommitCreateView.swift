@@ -17,7 +17,7 @@ struct CommitCreateView: View {
     @State private var diffShortStat = ""
     private var stagedHeaderCaption: String {
         if cachedDiffShortStat.isEmpty {
-            return " No changed"
+            return " No Changes"
         } else {
             return cachedDiffShortStat
         }
@@ -31,7 +31,7 @@ struct CommitCreateView: View {
             }
         }
         if diffShortStat.isEmpty {
-            return " No changed"
+            return " No Changes"
         } else {
             return diffShortStat
         }

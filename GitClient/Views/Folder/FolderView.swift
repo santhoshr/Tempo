@@ -11,6 +11,7 @@ struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
     @Binding var selectionLog: Log?
+    @Binding var subSelectionLogID: String?
     @Binding var isRefresh: Bool
     @State private var logStore = LogStore()
     @State private var syncState = SyncState()
@@ -19,7 +20,6 @@ struct FolderView: View {
     @State private var showing = FolderViewShowing()
     @State private var branch: Branch?
     @State private var selectionLogID: String?
-    @State private var subSelectionLogID: String?
     @State private var searchTokens: [SearchToken] = []
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
@@ -160,6 +160,7 @@ struct FolderView: View {
         .onChange(of: selectionLog, {
             if selectionLog == nil {
                 selectionLogID = nil
+                subSelectionLogID = nil
             }
         })
         .onChange(of: isRefresh, { oldValue, newValue in
@@ -490,12 +491,14 @@ struct FolderView: View {
 
 struct CommitsView_Previews: PreviewProvider {
     @State static var selection: Log?
+    @State static var subSelection: String?
     @State static var refresh = false
 
     static var previews: some View {
         FolderView(
             folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
             selectionLog: $selection,
+            subSelectionLogID: $subSelection,
             isRefresh: $refresh
         )
     }

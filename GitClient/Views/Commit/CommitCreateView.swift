@@ -17,7 +17,7 @@ struct CommitCreateView: View {
     @State private var diffShortStat = ""
     private var stagedHeaderCaption: String {
         if cachedDiffShortStat.isEmpty {
-            return " No changed"
+            return " No Changes"
         } else {
             return cachedDiffShortStat
         }
@@ -31,7 +31,7 @@ struct CommitCreateView: View {
             }
         }
         if diffShortStat.isEmpty {
-            return " No changed"
+            return " No Changes"
         } else {
             return diffShortStat
         }
@@ -140,9 +140,9 @@ struct CommitCreateView: View {
                         .help("Stash Include Untracked")
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
-                                Text("Staged: ").foregroundStyle(.secondary)
+                                Text("Staged ").foregroundStyle(.secondary)
                                 + Text(stagedHeaderCaption)
-                                Text("Unstaged: ").foregroundStyle(.secondary)
+                                Text("Unstaged ").foregroundStyle(.secondary)
                                 + Text(notStagedHeaderCaption)
                             }
                             .font(.callout)

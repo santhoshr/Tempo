@@ -43,5 +43,4 @@ struct CommitLogView: View {
             }
         }
     }
-
 }

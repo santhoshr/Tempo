@@ -86,25 +86,29 @@ struct ContentView: View {
                     .foregroundColor(.secondary)
             }
         } detail: {
-            switch selectionLog {
-            case .notCommitted:
-                CommitCreateView(
-                    folder: selectionFolder!,
-                    isRefresh: $folderIsRefresh,
-                    onCommit: {
-                        self.selectionLog = nil
-                        folderIsRefresh = true
-                    },
-                    onStash: {
-                        self.selectionLog = nil
-                        folderIsRefresh = true
-                    }
-                )
-            case .committed(let commit):
-                CommitDetailStackView(commit: commit, folder: selectionFolder!)
-            case nil:
-                Text("No Selection")
-                    .foregroundColor(.secondary)
+            if let selectionLog, let subSelectionLogID {
+                RevisionRangeDiffView(selectionLogID: selectionLog.id, subSelectionLogID: subSelectionLogID)
+            } else {
+                switch selectionLog {
+                case .notCommitted:
+                    CommitCreateView(
+                        folder: selectionFolder!,
+                        isRefresh: $folderIsRefresh,
+                        onCommit: {
+                            self.selectionLog = nil
+                            folderIsRefresh = true
+                        },
+                        onStash: {
+                            self.selectionLog = nil
+                            folderIsRefresh = true
+                        }
+                    )
+                case .committed(let commit):
+                    CommitDetailStackView(commit: commit, folder: selectionFolder!)
+                case nil:
+                    Text("No Selection")
+                        .foregroundColor(.secondary)
+                }
             }
         }
         .frame(minWidth: 700, minHeight: 300)

@@ -17,14 +17,14 @@ struct GitDiff: Git {
         if noRenames {
             args.append("--no-renames")
         }
-        if !commitsRange.isEmpty {
-            args.append(commitsRange)
+        if !revisionRange.isEmpty {
+            args.append(revisionRange)
         }
         return args
     }
     var directory: URL
     var noRenames = true
-    var commitsRange = ""
+    var revisionRange = ""
 
     func parse(for stdOut: String) -> String {
         stdOut

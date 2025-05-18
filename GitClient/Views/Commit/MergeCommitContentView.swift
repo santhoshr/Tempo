@@ -26,7 +26,7 @@ struct MergeCommitContentView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            CommitTabView(tab: $tab)
+            DiffTabView(tab: $tab)
                 .padding(.vertical)
             if tab == 0 {
                 HStack(alignment: .top, spacing: 24) {
@@ -153,23 +153,5 @@ struct CommitsView: View {
             }
             .accentColor(.primary)
         }
-    }
-}
-
-struct CommitTabView: View {
-    @Binding var tab: Int
-
-    var body: some View {
-        HStack {
-            Spacer()
-            Picker("", selection: $tab) {
-                Text("Commits").tag(0)
-                Text("Files Changed").tag(1)
-            }
-            .frame(maxWidth:400)
-            .pickerStyle(.segmented)
-            Spacer()
-        }
-
     }
 }

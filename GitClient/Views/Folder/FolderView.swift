@@ -40,13 +40,12 @@ struct FolderView: View {
     var body: some View {
         VStack(spacing: 0) {
             if showGraph {
-// TODO:
-//                CommitGraphView(
-//                    logStore: $logStore,
-//                    selectionLogID: $selectionLogID,
-//                    showing: $showing,
-//                    isRefresh: $isRefresh
-//                )
+                CommitGraphView(
+                    logStore: $logStore,
+                    selectionLogID: $selectionLogID,
+                    showing: $showing,
+                    isRefresh: $isRefresh
+                )
             } else {
                 CommitLogView(
                     logStore: $logStore,

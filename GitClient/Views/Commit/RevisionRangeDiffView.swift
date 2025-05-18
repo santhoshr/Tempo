@@ -44,8 +44,8 @@ struct RevisionRangeDiffView: View {
             .onChange(of: selectionLogID + subSelectionLogID, initial: true) { oldValue, newValue in
                 Task {
                     guard let folder else { return }
-                    revisionRangeText = subSelectionLogID.prefix(8) + "..." + selectionLogID.prefix(8)
-                    let revisionRange = "\(subSelectionLogID)...\(selectionLogID)"
+                    revisionRangeText = rangeText(logID: subSelectionLogID).prefix(8) + "..." + rangeText(logID: selectionLogID).prefix(8)
+                    let revisionRange = "\(rangeText(logID: subSelectionLogID))...\(rangeText(logID: selectionLogID))"
                     commits = try await Array(Process.output(GitLog(directory: folder, revisionRange: revisionRange)))
                     let raw = try await Process.output(
                         GitDiff(directory: folder, noRenames: false, revisionRange: revisionRange)
@@ -53,5 +53,12 @@ struct RevisionRangeDiffView: View {
                     filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
                 }
             }
+    }
+
+    private func rangeText(logID: String) -> String {
+        if logID == Log.notCommitted.id {
+            return "HEAD"
+        }
+        return logID
     }
 }

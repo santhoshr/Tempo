@@ -61,10 +61,12 @@ struct FolderView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: 0) {
                 Divider()
+                Spacer()
                 countText()
                     .font(.callout)
-                    .padding(12)
+                Spacer()
             }
+            .frame(height: 40)
             .background(Color(nsColor: .textBackgroundColor))
             .overlay(alignment: .trailing) {
                 Button(action: {

@@ -34,18 +34,7 @@ struct RevisionRangeDiffView: View {
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 160)
                             .onSubmit {
-                                guard let folder else { return }
-                                Task {
-                                    do {
-                                        commits = try await Array(Process.output(GitLog(directory: folder, revisionRange: revisionRangeText)))
-                                        let raw = try await Process.output(
-                                            GitDiff(directory: folder, noRenames: false, revisionRange: revisionRangeText)
-                                        )
-                                        filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
-                                    } catch {
-                                        self.error = error
-                                    }
-                                }
+                                updateDiff(forRevisionRange: revisionRangeText)
                             }
                     }
                     Spacer()
@@ -54,20 +43,9 @@ struct RevisionRangeDiffView: View {
                 .frame(height: 40)
             })
             .onChange(of: selectionLogID + subSelectionLogID, initial: true) { oldValue, newValue in
-                Task {
-                    guard let folder else { return }
-                    do {
-                        revisionRangeText = rangeText(logID: subSelectionLogID).prefix(8) + "..." + rangeText(logID: selectionLogID).prefix(8)
-                        let revisionRange = "\(rangeText(logID: subSelectionLogID))...\(rangeText(logID: selectionLogID))"
-                        commits = try await Array(Process.output(GitLog(directory: folder, revisionRange: revisionRange)))
-                        let raw = try await Process.output(
-                            GitDiff(directory: folder, noRenames: false, revisionRange: revisionRange)
-                        )
-                        filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
-                    } catch {
-                        self.error = error
-                    }
-                }
+                revisionRangeText = rangeText(logID: subSelectionLogID).prefix(8) + "..." + rangeText(logID: selectionLogID).prefix(8)
+                let revisionRange = "\(rangeText(logID: subSelectionLogID))...\(rangeText(logID: selectionLogID))"
+                updateDiff(forRevisionRange: revisionRange)
             }
             .errorSheet($error)
     }
@@ -77,5 +55,20 @@ struct RevisionRangeDiffView: View {
             return "HEAD"
         }
         return logID
+    }
+
+    private func updateDiff(forRevisionRange revisionRange: String) {
+        guard let folder else { return }
+        Task {
+            do {
+                commits = try await Array(Process.output(GitLog(directory: folder, revisionRange: revisionRange)))
+                let raw = try await Process.output(
+                    GitDiff(directory: folder, noRenames: false, revisionRange: revisionRange)
+                )
+                filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
+            } catch {
+                self.error = error
+            }
+        }
     }
 }

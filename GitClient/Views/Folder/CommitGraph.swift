@@ -68,6 +68,7 @@ struct PositionedCommit: Identifiable {
 struct CommitGraphView: View {
     @Binding var logStore: LogStore
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
     @State private var isLoading = false
@@ -77,6 +78,7 @@ struct CommitGraphView: View {
             CommitGraphContentView(
                 notCommitted: $logStore.notCommitted,
                 selectionLogID: $selectionLogID,
+                subSelectionLogID: $subSelectionLogID,
                 logStore: $logStore,
                 showing: $showing,
                 isRefresh: $isRefresh,
@@ -115,6 +117,7 @@ struct CommitGraphContentView: View {
     @Environment(\.folder) private var folder
     @Binding var notCommitted: NotCommitted?
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
     @Binding var logStore: LogStore
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
@@ -279,6 +282,7 @@ struct GraphNodeText: View {
 
 #Preview {
     @Previewable @State var selectionLogID: String?
+    @Previewable @State var subSelectionLogID: String?
     @Previewable @State var logStore = LogStore()
     @Previewable @State var showing = FolderViewShowing()
     @Previewable @State var isRefresh = false
@@ -293,6 +297,7 @@ struct GraphNodeText: View {
     CommitGraphContentView(
         notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: []))),
         selectionLogID: $selectionLogID,
+        subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,
         showing: $showing,
         isRefresh: $isRefresh,
@@ -305,6 +310,7 @@ struct GraphNodeText: View {
 
 #Preview {
     @Previewable @State var selectionLogID: String?
+    @Previewable @State var subSelectionLogID: String?
     @Previewable @State var logStore = LogStore()
     @Previewable @State var showing = FolderViewShowing()
     @Previewable @State var isRefresh = false
@@ -321,6 +327,7 @@ struct GraphNodeText: View {
     CommitGraphContentView(
         notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
         selectionLogID: $selectionLogID,
+        subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,
         showing: $showing,
         isRefresh: $isRefresh,
@@ -333,6 +340,7 @@ struct GraphNodeText: View {
 
 #Preview("In Search") {
     @Previewable @State var selectionLogID: String?
+    @Previewable @State var subSelectionLogID: String?
     @Previewable @State var logStore = LogStore()
     @Previewable @State var showing = FolderViewShowing()
     @Previewable @State var isRefresh = false
@@ -349,6 +357,7 @@ struct GraphNodeText: View {
     CommitGraphContentView(
         notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
         selectionLogID: $selectionLogID,
+        subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,
         showing: $showing,
         isRefresh: $isRefresh,

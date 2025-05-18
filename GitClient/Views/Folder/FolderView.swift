@@ -43,6 +43,7 @@ struct FolderView: View {
                 CommitGraphView(
                     logStore: $logStore,
                     selectionLogID: $selectionLogID,
+                    subSelectionLogID: $subSelectionLogID,
                     showing: $showing,
                     isRefresh: $isRefresh
                 )

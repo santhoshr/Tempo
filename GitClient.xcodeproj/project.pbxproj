@@ -29,6 +29,7 @@
 		613EB4972DD995DB00545729 /* DiffTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613EB4962DD995DB00545729 /* DiffTabView.swift */; };
 		613EB4992DD9973700545729 /* DiffCommitListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613EB4982DD9973700545729 /* DiffCommitListView.swift */; };
 		613EB49B2DD9994100545729 /* DiffCommitListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613EB49A2DD9994100545729 /* DiffCommitListContentView.swift */; };
+		613EB49D2DD999C100545729 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613EB49C2DD999C100545729 /* DiffView.swift */; };
 		614DE8142DA0BFC100FC582E /* GitShowShortstat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614DE8132DA0BF9200FC582E /* GitShowShortstat.swift */; };
 		614DE8162DA0C2E700FC582E /* GitShowShortstatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614DE8152DA0C2E700FC582E /* GitShowShortstatTests.swift */; };
 		614DE8182DA21CFF00FC582E /* FileDiffHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614DE8172DA21CFF00FC582E /* FileDiffHeader.swift */; };
@@ -174,6 +175,7 @@
 		613EB4962DD995DB00545729 /* DiffTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffTabView.swift; sourceTree = "<group>"; };
 		613EB4982DD9973700545729 /* DiffCommitListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffCommitListView.swift; sourceTree = "<group>"; };
 		613EB49A2DD9994100545729 /* DiffCommitListContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffCommitListContentView.swift; sourceTree = "<group>"; };
+		613EB49C2DD999C100545729 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
 		614DE8132DA0BF9200FC582E /* GitShowShortstat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitShowShortstat.swift; sourceTree = "<group>"; };
 		614DE8152DA0C2E700FC582E /* GitShowShortstatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitShowShortstatTests.swift; sourceTree = "<group>"; };
 		614DE8172DA21CFF00FC582E /* FileDiffHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDiffHeader.swift; sourceTree = "<group>"; };
@@ -566,6 +568,7 @@
 				61B3C5612CB557CA00021B36 /* CommitDetailView.swift */,
 				61760DA92D9378B60038EE57 /* CommitDetailContentView.swift */,
 				61F5B7AE2CBBB066005C736E /* MergeCommitContentView.swift */,
+				613EB49C2DD999C100545729 /* DiffView.swift */,
 				613EB49A2DD9994100545729 /* DiffCommitListContentView.swift */,
 				613EB4982DD9973700545729 /* DiffCommitListView.swift */,
 				613EB4962DD995DB00545729 /* DiffTabView.swift */,
@@ -710,6 +713,7 @@
 				61D34C842CA8D0E30032A22A /* AIService.swift in Sources */,
 				61F5B7AF2CBBB066005C736E /* MergeCommitContentView.swift in Sources */,
 				6197594E2C8C25EA00E9CA4F /* GitAddPathspec.swift in Sources */,
+				613EB49D2DD999C100545729 /* DiffView.swift in Sources */,
 				616C6FC02C96BF9F00A419DE /* GitStash.swift in Sources */,
 				61CA2AC92D69B7D0007B8E56 /* StageFileDiffHeaderView.swift in Sources */,
 				619DA6932CA62A1000E58DF9 /* SettingsView.swift in Sources */,

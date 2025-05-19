@@ -17,21 +17,6 @@ struct RevisionRangeDiffView: View {
     @State private var error: Error?
     @State private var path: [String] = []
 
-    fileprivate func backButtonBar() -> some View {
-        return HStack {
-            Button {
-                path = path.dropLast()
-            } label: {
-                Image(systemName: "chevron.backward")
-            }
-            .background(Color(NSColor.textBackgroundColor).opacity(1))
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-            Spacer()
-        }
-        .background(Color(NSColor.textBackgroundColor).opacity(0.98))
-    }
-
     var body: some View {
         ScrollView {
             NavigationStack(path: $path) {
@@ -41,7 +26,7 @@ struct RevisionRangeDiffView: View {
                     .navigationDestination(for: String.self) { commitHash in
                         CommitDetailView(commitHash: commitHash, folder: Folder(url: folder!))
                             .safeAreaInset(edge: .top, spacing: 0, content: {
-                                backButtonBar()
+                                BarBackButton(path: $path)
                             })
                     }
             }

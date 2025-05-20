@@ -12,7 +12,6 @@ struct RevisionRangeDiffView: View {
     var selectionLogID: String
     var subSelectionLogID: String
     @State private var filesChanges: [ExpandableModel<FileDiff>] = []
-    @State private var revisionRangeText = ""
     @State private var error: Error?
     @FocusState private var isFocused: Bool
 
@@ -28,28 +27,20 @@ struct RevisionRangeDiffView: View {
                     Spacer()
                     HStack {
                         Text("Diff")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                        TextField("Revision Range", text: $revisionRangeText)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 160)
-                            .focused($isFocused)
-                            .onSubmit {
-                                updateDiff(forRevisionRange: revisionRangeText)
-                            }
-                            .onExitCommand {
-                                isFocused = false
-                            }
+                        Text(selectionLogID.prefix(5))
+                        Text(subSelectionLogID.prefix(5))
                     }
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+
                     Spacer()
                 }
                 .background(Color(nsColor: .textBackgroundColor))
                 .frame(height: 40)
             })
             .onChange(of: selectionLogID + subSelectionLogID, initial: true) { oldValue, newValue in
-                revisionRangeText = rangeText(logID: subSelectionLogID).prefix(8) + "..." + rangeText(logID: selectionLogID).prefix(8)
-                let revisionRange = "\(rangeText(logID: subSelectionLogID))...\(rangeText(logID: selectionLogID))"
-                updateDiff(forRevisionRange: revisionRange)
+                let commitRange = "\(rangeText(logID: selectionLogID))..\(rangeText(logID: subSelectionLogID))"
+                updateDiff(forCommitRange: commitRange)
             }
             .errorSheet($error)
     }
@@ -61,12 +52,12 @@ struct RevisionRangeDiffView: View {
         return logID
     }
 
-    private func updateDiff(forRevisionRange revisionRange: String) {
+    private func updateDiff(forCommitRange commitRange: String) {
         guard let folder else { return }
         Task {
             do {
                 let raw = try await Process.output(
-                    GitDiff(directory: folder, noRenames: false, commitRange: revisionRange)
+                    GitDiff(directory: folder, noRenames: false, commitRange: commitRange)
                 )
                 filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
             } catch {

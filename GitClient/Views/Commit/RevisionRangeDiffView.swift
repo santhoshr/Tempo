@@ -11,26 +11,15 @@ struct RevisionRangeDiffView: View {
     @Environment(\.folder) private var folder
     var selectionLogID: String
     var subSelectionLogID: String
-    @State private var commits: [Commit] = []
     @State private var filesChanges: [ExpandableModel<FileDiff>] = []
     @State private var revisionRangeText = ""
     @State private var error: Error?
-    @State private var path: [String] = []
     @FocusState private var isFocused: Bool
 
     var body: some View {
         ScrollView {
-            NavigationStack(path: $path) {
-                DiffView(commits: $commits, filesChanged: $filesChanges)
-                    .padding(.horizontal)
-                    .navigationBarBackButtonHidden()
-                    .navigationDestination(for: String.self) { commitHash in
-                        CommitDetailView(commitHash: commitHash, folder: Folder(url: folder!))
-                            .safeAreaInset(edge: .top, spacing: 0, content: {
-                                BarBackButton(path: $path)
-                            })
-                    }
-            }
+            FileDiffsView(expandableFileDiffs: $filesChanges)
+                .padding(.horizontal)
         }
         .background(Color(NSColor.textBackgroundColor))
             .safeAreaInset(edge: .bottom, spacing: 0, content: {
@@ -76,7 +65,6 @@ struct RevisionRangeDiffView: View {
         guard let folder else { return }
         Task {
             do {
-                commits = try await Array(Process.output(GitLog(directory: folder, revisionRange: revisionRange)))
                 let raw = try await Process.output(
                     GitDiff(directory: folder, noRenames: false, commitRange: revisionRange)
                 )

@@ -87,7 +87,7 @@ struct ContentView: View {
             }
         } detail: {
             if let selectionLog, let subSelectionLogID {
-                RevisionRangeDiffView(selectionLogID: selectionLog.id, subSelectionLogID: subSelectionLogID)
+                CommitDiffView(selectionLogID: selectionLog.id, subSelectionLogID: subSelectionLogID)
             } else {
                 switch selectionLog {
                 case .notCommitted:

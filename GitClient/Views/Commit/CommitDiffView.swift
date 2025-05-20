@@ -1,5 +1,5 @@
 //
-//  RevisionRangeDiffView.swift
+//  CommitDiffView.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2025/05/15.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RevisionRangeDiffView: View {
+struct CommitDiffView: View {
     @Environment(\.folder) private var folder
     var selectionLogID: String
     var subSelectionLogID: String

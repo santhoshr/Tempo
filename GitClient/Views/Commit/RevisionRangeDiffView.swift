@@ -16,6 +16,7 @@ struct RevisionRangeDiffView: View {
     @State private var revisionRangeText = ""
     @State private var error: Error?
     @State private var path: [String] = []
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         ScrollView {
@@ -43,8 +44,12 @@ struct RevisionRangeDiffView: View {
                         TextField("Revision Range", text: $revisionRangeText)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 160)
+                            .focused($isFocused)
                             .onSubmit {
                                 updateDiff(forRevisionRange: revisionRangeText)
+                            }
+                            .onExitCommand {
+                                isFocused = false
                             }
                     }
                     Spacer()

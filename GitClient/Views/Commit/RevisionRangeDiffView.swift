@@ -78,7 +78,7 @@ struct RevisionRangeDiffView: View {
             do {
                 commits = try await Array(Process.output(GitLog(directory: folder, revisionRange: revisionRange)))
                 let raw = try await Process.output(
-                    GitDiff(directory: folder, noRenames: false, revisionRange: revisionRange)
+                    GitDiff(directory: folder, noRenames: false, commitRange: revisionRange)
                 )
                 filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
             } catch {

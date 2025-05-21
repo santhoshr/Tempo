@@ -11,6 +11,7 @@ struct CommitDiffView: View {
     @Environment(\.folder) private var folder
     var selectionLogID: String
     var subSelectionLogID: String
+
     @State private var filesChanges: [ExpandableModel<FileDiff>] = []
     @State private var shortstat = ""
     @State private var error: Error?
@@ -26,13 +27,18 @@ struct CommitDiffView: View {
                 VStack(spacing: 0) {
                     Divider()
                     Spacer()
-                    HStack {
+                    HStack(spacing: 0) {
                         HStack {
                             Text("Diff")
+                                .foregroundStyle(.secondary)
                             Text(selectionLogID == Log.notCommitted.id ? "Staged Changes" : selectionLogID.prefix(5))
                             Text(subSelectionLogID == Log.notCommitted.id ? "Staged Changes" : subSelectionLogID.prefix(5))
+                            Button {
+                            } label: {
+                                Image(systemName: "arrow.left.arrow.right")
+                            }
+                                .buttonStyle(.accessoryBar)
                         }
-                        .foregroundStyle(.secondary)
                         .padding(.horizontal)
                         Divider()
                         Spacer()

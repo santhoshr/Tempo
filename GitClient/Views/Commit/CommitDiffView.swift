@@ -27,14 +27,21 @@ struct CommitDiffView: View {
                     Divider()
                     Spacer()
                     HStack {
-                        Text("Diff")
-                        Text(selectionLogID == Log.notCommitted.id ? "Staged Changes" : selectionLogID.prefix(5))
-                        Text(subSelectionLogID == Log.notCommitted.id ? "Staged Changes" : subSelectionLogID.prefix(5))
+                        HStack {
+                            Text("Diff")
+                            Text(selectionLogID == Log.notCommitted.id ? "Staged Changes" : selectionLogID.prefix(5))
+                            Text(subSelectionLogID == Log.notCommitted.id ? "Staged Changes" : subSelectionLogID.prefix(5))
+                        }
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
+                        Divider()
+                        Spacer()
                         Text(shortstat)
+                            .minimumScaleFactor(0.3)
                             .foregroundStyle(.primary)
+                        Spacer()
                     }
                     .font(.callout)
-                    .foregroundStyle(.secondary)
 
                     Spacer()
                 }

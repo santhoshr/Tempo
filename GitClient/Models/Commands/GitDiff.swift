@@ -29,8 +29,8 @@ struct GitDiff: Git {
         return args
     }
     var directory: URL
-    var shortstat = false
     var noRenames = true
+    var shortstat = false
     var cached = false
     var commitRange = ""
 

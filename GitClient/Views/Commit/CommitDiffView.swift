@@ -12,6 +12,7 @@ struct CommitDiffView: View {
     var selectionLogID: String
     var subSelectionLogID: String
     @State private var filesChanges: [ExpandableModel<FileDiff>] = []
+    @State private var shortstat = ""
     @State private var error: Error?
     @FocusState private var isFocused: Bool
 
@@ -29,6 +30,8 @@ struct CommitDiffView: View {
                         Text("Diff")
                         Text(selectionLogID == Log.notCommitted.id ? "Staged Changes" : selectionLogID.prefix(5))
                         Text(subSelectionLogID == Log.notCommitted.id ? "Staged Changes" : subSelectionLogID.prefix(5))
+                        Text(shortstat)
+                            .foregroundStyle(.primary)
                     }
                     .font(.callout)
                     .foregroundStyle(.secondary)
@@ -58,6 +61,10 @@ struct CommitDiffView: View {
                     GitDiff(directory: folder, noRenames: false, cached: cached, commitRange: commitRange)
                 )
                 filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
+                shortstat = try await Process.output(
+                    GitDiff(directory: folder, noRenames: false, shortstat: true, cached: cached, commitRange: commitRange)
+                ).trimmingCharacters(in: .whitespacesAndNewlines)
+
             } catch {
                 self.error = error
             }

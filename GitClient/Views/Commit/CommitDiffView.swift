@@ -27,8 +27,8 @@ struct CommitDiffView: View {
                     Spacer()
                     HStack {
                         Text("Diff")
-                        Text(selectionLogID.prefix(5))
-                        Text(subSelectionLogID.prefix(5))
+                        Text(selectionLogID == Log.notCommitted.id ? "Staged Changes" : selectionLogID.prefix(5))
+                        Text(subSelectionLogID == Log.notCommitted.id ? "Staged Changes" : subSelectionLogID.prefix(5))
                     }
                     .font(.callout)
                     .foregroundStyle(.secondary)
@@ -39,25 +39,23 @@ struct CommitDiffView: View {
                 .frame(height: 40)
             })
             .onChange(of: selectionLogID + subSelectionLogID, initial: true) { oldValue, newValue in
-                let commitRange = "\(rangeText(logID: selectionLogID))..\(rangeText(logID: subSelectionLogID))"
-                updateDiff(forCommitRange: commitRange)
+                if selectionLogID == Log.notCommitted.id {
+                    updateDiff(cached: true, commitRange: subSelectionLogID)
+                } else if subSelectionLogID == Log.notCommitted.id {
+                    updateDiff(cached: true, commitRange: selectionLogID)
+                } else {
+                    updateDiff(cached: false, commitRange: selectionLogID + ".." + subSelectionLogID)
+                }
             }
             .errorSheet($error)
     }
 
-    private func rangeText(logID: String) -> String {
-        if logID == Log.notCommitted.id {
-            return "HEAD"
-        }
-        return logID
-    }
-
-    private func updateDiff(forCommitRange commitRange: String) {
+    private func updateDiff(cached: Bool, commitRange: String) {
         guard let folder else { return }
         Task {
             do {
                 let raw = try await Process.output(
-                    GitDiff(directory: folder, noRenames: false, commitRange: commitRange)
+                    GitDiff(directory: folder, noRenames: false, cached: cached, commitRange: commitRange)
                 )
                 filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
             } catch {

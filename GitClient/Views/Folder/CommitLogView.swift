@@ -36,6 +36,9 @@ struct CommitLogView: View {
                 syncSelection()
                 return
             }
+            if newValue.count == 2, let selectionLogID, newValue.contains(selectionLogID), let subSelectionLogID, newValue.contains(subSelectionLogID) {
+                return
+            }
             if newValue.count < 4 {
                 if let added = newValue.first(where: { !oldValue.contains($0) }) {
                     subSelectionLogID = added
@@ -49,6 +52,9 @@ struct CommitLogView: View {
             syncSelection()
         }
         .onChange(of: subSelectionLogID ?? "") {
+            syncSelection()
+        }
+        .task {
             syncSelection()
         }
     }

@@ -134,9 +134,10 @@ struct CommitGraphContentView: View {
                 HStack (spacing: selectionLogID == Log.notCommitted.id ? 5 : 7) {
                     GraphNode(
                         logID: Log.notCommitted.id,
-                        selectionLogID: $selectionLogID
+                        selectionLogID: $selectionLogID,
+                        subSelectionLogID: $subSelectionLogID
                     )
-                    GraphNodeText(logID: Log.notCommitted.id, title: "Uncommitted Changes", selectionLogID: $selectionLogID)
+                    GraphNodeText(logID: Log.notCommitted.id, title: "Uncommitted Changes", selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
                 }
                 .padding(
                     .horizontal,
@@ -167,7 +168,8 @@ struct CommitGraphContentView: View {
                     if let point = position(of: commit) {
                         GraphNode(
                             logID: commit.id,
-                            selectionLogID: $selectionLogID
+                            selectionLogID: $selectionLogID,
+                            subSelectionLogID: $subSelectionLogID
                         )
                             .position(point)
                             .commitContextMenu(
@@ -181,7 +183,8 @@ struct CommitGraphContentView: View {
                         GraphNodeText(
                             logID: commit.id,
                             title: commit.commit.title,
-                            selectionLogID: $selectionLogID
+                            selectionLogID: $selectionLogID,
+                            subSelectionLogID: $subSelectionLogID
                         )
                             .frame(width: textWidth, height: textHeight, alignment: .leading)
                             .offset(.init(width: textWidth / 2 + 14, height: 0))
@@ -222,8 +225,10 @@ struct GraphNode: View {
     static let selectedNodeSize: CGFloat = 18
     var logID: String
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
+
     private var fillColor: Color {
-        if logID == selectionLogID {
+        if logID == selectionLogID || logID == subSelectionLogID {
             return Color.accentColor
         }
         if logID == Log.notCommitted.id {
@@ -240,13 +245,19 @@ struct GraphNode: View {
                     .stroke(Color(NSColor.textBackgroundColor), lineWidth: 2)
             )
             .frame(
-                width: logID == selectionLogID ? Self.selectedNodeSize: Self.nodeSize,
-                height: logID == selectionLogID ? Self.selectedNodeSize: Self.nodeSize
+                width: logID == selectionLogID || logID == subSelectionLogID ? Self.selectedNodeSize: Self.nodeSize,
+                height: logID == selectionLogID || logID == subSelectionLogID ? Self.selectedNodeSize: Self.nodeSize
             )
             .onTapGesture {
-                selectionLogID = logID
                 if NSEvent.modifierFlags.contains(.command) {
-                    print("Command + Click")
+                    if selectionLogID != nil {
+                        subSelectionLogID = logID
+                    } else {
+                        selectionLogID = logID
+                    }
+                } else {
+                    selectionLogID = logID
+                    subSelectionLogID = nil
                 }
             }
     }
@@ -256,6 +267,7 @@ struct GraphNodeText: View {
     var logID: String
     var title: String
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
 
     var body: some View {
         VStack {
@@ -264,17 +276,23 @@ struct GraphNodeText: View {
                 .padding(.vertical, 4)
         }
             .font(.callout)
-            .foregroundStyle(logID == selectionLogID ? .white : .secondary)
+            .foregroundStyle(logID == selectionLogID || logID == subSelectionLogID ? .white : .secondary)
             .background {
-                if logID == selectionLogID {
+                if logID == selectionLogID || logID == subSelectionLogID {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.accentColor)
                 }
             }
             .onTapGesture {
-                selectionLogID = logID
                 if NSEvent.modifierFlags.contains(.command) {
-                    print("Command + Click")
+                    if selectionLogID != nil {
+                        subSelectionLogID = logID
+                    } else {
+                        selectionLogID = logID
+                    }
+                } else {
+                    selectionLogID = logID
+                    subSelectionLogID = nil
                 }
             }
     }

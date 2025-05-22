@@ -12,6 +12,8 @@ struct CommitDiffView: View {
     var selectionLogID: String
     var subSelectionLogID: String
 
+    @State private var commitFirst = ""
+    @State private var commitSecond = ""
     @State private var filesChanges: [ExpandableModel<FileDiff>] = []
     @State private var shortstat = ""
     @State private var error: Error?
@@ -31,13 +33,18 @@ struct CommitDiffView: View {
                         HStack {
                             Text("Diff")
                                 .foregroundStyle(.secondary)
-                            Text(selectionLogID == Log.notCommitted.id ? "Staged Changes" : selectionLogID.prefix(5))
-                            Text(subSelectionLogID == Log.notCommitted.id ? "Staged Changes" : subSelectionLogID.prefix(5))
+                            Text(commitFirst == Log.notCommitted.id ? "Staged Changes" : commitFirst.prefix(5))
+                            Text(commitSecond == Log.notCommitted.id ? "Staged Changes" : commitSecond.prefix(5))
                             Button {
+                                let first = commitFirst
+                                let second = commitSecond
+                                commitFirst = second
+                                commitSecond = first
                             } label: {
                                 Image(systemName: "arrow.left.arrow.right")
                             }
                                 .buttonStyle(.accessoryBar)
+                                .help("Swap the Commits")
                         }
                         .padding(.horizontal)
                         Divider()
@@ -55,12 +62,16 @@ struct CommitDiffView: View {
                 .frame(height: 40)
             })
             .onChange(of: selectionLogID + subSelectionLogID, initial: true) { oldValue, newValue in
-                if selectionLogID == Log.notCommitted.id {
-                    updateDiff(cached: true, commitRange: subSelectionLogID)
-                } else if subSelectionLogID == Log.notCommitted.id {
-                    updateDiff(cached: true, commitRange: selectionLogID)
+                commitFirst = selectionLogID
+                commitSecond = subSelectionLogID
+            }
+            .onChange(of: commitFirst + commitSecond, initial: true) { _, _ in
+                if commitFirst == Log.notCommitted.id {
+                    updateDiff(cached: true, commitRange: commitSecond)
+                } else if commitSecond == Log.notCommitted.id {
+                    updateDiff(cached: true, commitRange: commitFirst)
                 } else {
-                    updateDiff(cached: false, commitRange: selectionLogID + ".." + subSelectionLogID)
+                    updateDiff(cached: false, commitRange: commitFirst + ".." + commitSecond)
                 }
             }
             .errorSheet($error)

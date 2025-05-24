@@ -69,21 +69,28 @@ extension View {
     func tapGesture(logID: String, selectionLogID: Binding<String?>, subSelectionLogID: Binding<String?>) -> some View {
         onTapGesture {
             if NSEvent.modifierFlags.contains(.command) {
+                // Commandキーが押されている場合（複数選択や選択解除）
                 if selectionLogID.wrappedValue != nil {
                     if selectionLogID.wrappedValue == logID && subSelectionLogID.wrappedValue == nil {
+                        // 主選択が同じログIDで、副選択がない場合 → 選択解除
                         selectionLogID.wrappedValue = nil
-                    } else if selectionLogID.wrappedValue == logID  {
+                    } else if selectionLogID.wrappedValue == logID {
+                        // 主選択が同じログIDで、副選択がある場合 → 副選択を主選択に昇格
                         selectionLogID.wrappedValue = subSelectionLogID.wrappedValue
                         subSelectionLogID.wrappedValue = nil
-                    } else if subSelectionLogID.wrappedValue == logID  {
+                    } else if subSelectionLogID.wrappedValue == logID {
+                        // 副選択が同じログIDの場合 → 副選択を解除
                         subSelectionLogID.wrappedValue = nil
                     } else {
+                        // 主選択・副選択どちらにも該当しない → 副選択に設定
                         subSelectionLogID.wrappedValue = logID
                     }
                 } else {
+                    // 主選択がまだない → 主選択として設定
                     selectionLogID.wrappedValue = logID
                 }
             } else {
+                // 通常クリック（Commandキーなし） → 主選択を設定し、副選択を解除
                 selectionLogID.wrappedValue = logID
                 subSelectionLogID.wrappedValue = nil
             }

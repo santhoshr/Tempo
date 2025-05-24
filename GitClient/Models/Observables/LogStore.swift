@@ -10,7 +10,7 @@ import Observation
 
 @MainActor
 @Observable class LogStore {
-    var number = 500
+    var number = 100
     var directory: URL?
     private var grep: [String] {
         searchTokens.filter { token in

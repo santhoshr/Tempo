@@ -70,7 +70,16 @@ extension View {
         onTapGesture {
             if NSEvent.modifierFlags.contains(.command) {
                 if selectionLogID.wrappedValue != nil {
-                    subSelectionLogID.wrappedValue = logID
+                    if selectionLogID.wrappedValue == logID && subSelectionLogID.wrappedValue == nil {
+                        selectionLogID.wrappedValue = nil
+                    } else if selectionLogID.wrappedValue == logID  {
+                        selectionLogID.wrappedValue = subSelectionLogID.wrappedValue
+                        subSelectionLogID.wrappedValue = nil
+                    } else if subSelectionLogID.wrappedValue == logID  {
+                        subSelectionLogID.wrappedValue = nil
+                    } else {
+                        subSelectionLogID.wrappedValue = logID
+                    }
                 } else {
                     selectionLogID.wrappedValue = logID
                 }

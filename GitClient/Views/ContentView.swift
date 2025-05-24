@@ -23,6 +23,7 @@ struct ContentView: View {
         return decodedFolders.first(where: { $0.url == selectionFolderURL })
     }
     @State private var selectionLog: Log?
+    @State private var subSelectionLogID: String?
     @State private var folderIsRefresh = false
     @State private var error: Error?
 
@@ -76,6 +77,7 @@ struct ContentView: View {
                 FolderView(
                     folder: folder,
                     selectionLog: $selectionLog,
+                    subSelectionLogID: $subSelectionLogID,
                     isRefresh: $folderIsRefresh
                 )
                 .id(folder)
@@ -84,25 +86,29 @@ struct ContentView: View {
                     .foregroundColor(.secondary)
             }
         } detail: {
-            switch selectionLog {
-            case .notCommitted:
-                CommitCreateView(
-                    folder: selectionFolder!,
-                    isRefresh: $folderIsRefresh,
-                    onCommit: {
-                        self.selectionLog = nil
-                        folderIsRefresh = true
-                    },
-                    onStash: {
-                        self.selectionLog = nil
-                        folderIsRefresh = true
-                    }
-                )
-            case .committed(let commit):
-                CommitDetailStackView(commit: commit, folder: selectionFolder!)
-            case nil:
-                Text("No Selection")
-                    .foregroundColor(.secondary)
+            if let selectionLog, let subSelectionLogID {
+                CommitDiffView(selectionLogID: selectionLog.id, subSelectionLogID: subSelectionLogID)
+            } else {
+                switch selectionLog {
+                case .notCommitted:
+                    CommitCreateView(
+                        folder: selectionFolder!,
+                        isRefresh: $folderIsRefresh,
+                        onCommit: {
+                            self.selectionLog = nil
+                            folderIsRefresh = true
+                        },
+                        onStash: {
+                            self.selectionLog = nil
+                            folderIsRefresh = true
+                        }
+                    )
+                case .committed(let commit):
+                    CommitDetailStackView(commit: commit, folder: selectionFolder!)
+                case nil:
+                    Text("No Selection")
+                        .foregroundColor(.secondary)
+                }
             }
         }
         .frame(minWidth: 700, minHeight: 300)

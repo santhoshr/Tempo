@@ -1,5 +1,5 @@
 //
-//  CommitGraph.swift
+//  CommitGraphView.swift
 //  GitClient
 //
 //  Created by Makoto Aoyama on 2025/04/11.
@@ -68,6 +68,7 @@ struct PositionedCommit: Identifiable {
 struct CommitGraphView: View {
     @Binding var logStore: LogStore
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
     @State private var isLoading = false
@@ -77,6 +78,7 @@ struct CommitGraphView: View {
             CommitGraphContentView(
                 notCommitted: $logStore.notCommitted,
                 selectionLogID: $selectionLogID,
+                subSelectionLogID: $subSelectionLogID,
                 logStore: $logStore,
                 showing: $showing,
                 isRefresh: $isRefresh,
@@ -115,6 +117,7 @@ struct CommitGraphContentView: View {
     @Environment(\.folder) private var folder
     @Binding var notCommitted: NotCommitted?
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
     @Binding var logStore: LogStore
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
@@ -131,9 +134,14 @@ struct CommitGraphContentView: View {
                 HStack (spacing: selectionLogID == Log.notCommitted.id ? 5 : 7) {
                     GraphNode(
                         logID: Log.notCommitted.id,
-                        selectionLogID: $selectionLogID
+                        selectionLogID: $selectionLogID,
+                        subSelectionLogID: $subSelectionLogID
                     )
-                    GraphNodeText(logID: Log.notCommitted.id, title: "Uncommitted Changes", selectionLogID: $selectionLogID)
+                    .tapGesture(logID: Log.notCommitted.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
+
+                    GraphNodeText(logID: Log.notCommitted.id, title: "Uncommitted Changes", selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
+                        .tapGesture(logID: Log.notCommitted.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
+
                 }
                 .padding(
                     .horizontal,
@@ -164,7 +172,8 @@ struct CommitGraphContentView: View {
                     if let point = position(of: commit) {
                         GraphNode(
                             logID: commit.id,
-                            selectionLogID: $selectionLogID
+                            selectionLogID: $selectionLogID,
+                            subSelectionLogID: $subSelectionLogID
                         )
                             .position(point)
                             .commitContextMenu(
@@ -175,10 +184,12 @@ struct CommitGraphContentView: View {
                                 showing: $showing,
                                 bindingError: $error
                             )
+                            .tapGesture(logID: commit.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
                         GraphNodeText(
                             logID: commit.id,
                             title: commit.commit.title,
-                            selectionLogID: $selectionLogID
+                            selectionLogID: $selectionLogID,
+                            subSelectionLogID: $subSelectionLogID
                         )
                             .frame(width: textWidth, height: textHeight, alignment: .leading)
                             .offset(.init(width: textWidth / 2 + 14, height: 0))
@@ -191,6 +202,7 @@ struct CommitGraphContentView: View {
                                 showing: $showing,
                                 bindingError: $error
                             )
+                            .tapGesture(logID: commit.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
                     }
                 }
             }
@@ -219,8 +231,10 @@ struct GraphNode: View {
     static let selectedNodeSize: CGFloat = 18
     var logID: String
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
+
     private var fillColor: Color {
-        if logID == selectionLogID {
+        if logID == selectionLogID || logID == subSelectionLogID {
             return Color.accentColor
         }
         if logID == Log.notCommitted.id {
@@ -237,12 +251,9 @@ struct GraphNode: View {
                     .stroke(Color(NSColor.textBackgroundColor), lineWidth: 2)
             )
             .frame(
-                width: logID == selectionLogID ? Self.selectedNodeSize: Self.nodeSize,
-                height: logID == selectionLogID ? Self.selectedNodeSize: Self.nodeSize
+                width: logID == selectionLogID || logID == subSelectionLogID ? Self.selectedNodeSize: Self.nodeSize,
+                height: logID == selectionLogID || logID == subSelectionLogID ? Self.selectedNodeSize: Self.nodeSize
             )
-            .onTapGesture {
-                selectionLogID = logID
-            }
     }
 }
 
@@ -250,6 +261,7 @@ struct GraphNodeText: View {
     var logID: String
     var title: String
     @Binding var selectionLogID: String?
+    @Binding var subSelectionLogID: String?
 
     var body: some View {
         VStack {
@@ -258,21 +270,19 @@ struct GraphNodeText: View {
                 .padding(.vertical, 4)
         }
             .font(.callout)
-            .foregroundStyle(logID == selectionLogID ? .white : .secondary)
+            .foregroundStyle(logID == selectionLogID || logID == subSelectionLogID ? .white : .secondary)
             .background {
-                if logID == selectionLogID {
+                if logID == selectionLogID || logID == subSelectionLogID {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.accentColor)
                 }
-            }
-            .onTapGesture {
-                selectionLogID = logID
             }
     }
 }
 
 #Preview {
     @Previewable @State var selectionLogID: String?
+    @Previewable @State var subSelectionLogID: String?
     @Previewable @State var logStore = LogStore()
     @Previewable @State var showing = FolderViewShowing()
     @Previewable @State var isRefresh = false
@@ -287,6 +297,7 @@ struct GraphNodeText: View {
     CommitGraphContentView(
         notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: []))),
         selectionLogID: $selectionLogID,
+        subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,
         showing: $showing,
         isRefresh: $isRefresh,
@@ -299,6 +310,7 @@ struct GraphNodeText: View {
 
 #Preview {
     @Previewable @State var selectionLogID: String?
+    @Previewable @State var subSelectionLogID: String?
     @Previewable @State var logStore = LogStore()
     @Previewable @State var showing = FolderViewShowing()
     @Previewable @State var isRefresh = false
@@ -315,6 +327,7 @@ struct GraphNodeText: View {
     CommitGraphContentView(
         notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
         selectionLogID: $selectionLogID,
+        subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,
         showing: $showing,
         isRefresh: $isRefresh,
@@ -327,6 +340,7 @@ struct GraphNodeText: View {
 
 #Preview("In Search") {
     @Previewable @State var selectionLogID: String?
+    @Previewable @State var subSelectionLogID: String?
     @Previewable @State var logStore = LogStore()
     @Previewable @State var showing = FolderViewShowing()
     @Previewable @State var isRefresh = false
@@ -343,6 +357,7 @@ struct GraphNodeText: View {
     CommitGraphContentView(
         notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
         selectionLogID: $selectionLogID,
+        subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,
         showing: $showing,
         isRefresh: $isRefresh,

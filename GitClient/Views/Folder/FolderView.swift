@@ -11,6 +11,7 @@ struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
     @Binding var selectionLog: Log?
+    @Binding var subSelectionLogID: String?
     @Binding var isRefresh: Bool
     @State private var logStore = LogStore()
     @State private var syncState = SyncState()
@@ -42,6 +43,7 @@ struct FolderView: View {
                 CommitGraphView(
                     logStore: $logStore,
                     selectionLogID: $selectionLogID,
+                    subSelectionLogID: $subSelectionLogID,
                     showing: $showing,
                     isRefresh: $isRefresh
                 )
@@ -49,6 +51,7 @@ struct FolderView: View {
                 CommitLogView(
                     logStore: $logStore,
                     selectionLogID: $selectionLogID,
+                    subSelectionLogID: $subSelectionLogID,
                     showing: $showing,
                     isRefresh: $isRefresh,
                     error: $error
@@ -58,10 +61,12 @@ struct FolderView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(spacing: 0) {
                 Divider()
+                Spacer()
                 countText()
                     .font(.callout)
-                    .padding(12)
+                Spacer()
             }
+            .frame(height: 40)
             .background(Color(nsColor: .textBackgroundColor))
             .overlay(alignment: .trailing) {
                 Button(action: {
@@ -157,6 +162,7 @@ struct FolderView: View {
         .onChange(of: selectionLog, {
             if selectionLog == nil {
                 selectionLogID = nil
+                subSelectionLogID = nil
             }
         })
         .onChange(of: isRefresh, { oldValue, newValue in
@@ -487,12 +493,14 @@ struct FolderView: View {
 
 struct CommitsView_Previews: PreviewProvider {
     @State static var selection: Log?
+    @State static var subSelection: String?
     @State static var refresh = false
 
     static var previews: some View {
         FolderView(
             folder: .init(url: URL(string: "file:///maoyama/Projects/")!),
             selectionLog: $selection,
+            subSelectionLogID: $subSelection,
             isRefresh: $refresh
         )
     }

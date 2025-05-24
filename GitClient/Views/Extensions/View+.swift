@@ -65,4 +65,19 @@ extension View {
             }
         }
     }
+
+    func tapGesture(logID: String, selectionLogID: Binding<String?>, subSelectionLogID: Binding<String?>) -> some View {
+        onTapGesture {
+            if NSEvent.modifierFlags.contains(.command) {
+                if selectionLogID.wrappedValue != nil {
+                    subSelectionLogID.wrappedValue = logID
+                } else {
+                    selectionLogID.wrappedValue = logID
+                }
+            } else {
+                selectionLogID.wrappedValue = logID
+                subSelectionLogID.wrappedValue = nil
+            }
+        }
+    }
 }

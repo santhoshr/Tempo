@@ -137,7 +137,11 @@ struct CommitGraphContentView: View {
                         selectionLogID: $selectionLogID,
                         subSelectionLogID: $subSelectionLogID
                     )
+                    .tapGesture(logID: Log.notCommitted.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
+
                     GraphNodeText(logID: Log.notCommitted.id, title: "Uncommitted Changes", selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
+                        .tapGesture(logID: Log.notCommitted.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
+
                 }
                 .padding(
                     .horizontal,
@@ -180,6 +184,7 @@ struct CommitGraphContentView: View {
                                 showing: $showing,
                                 bindingError: $error
                             )
+                            .tapGesture(logID: commit.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
                         GraphNodeText(
                             logID: commit.id,
                             title: commit.commit.title,
@@ -197,6 +202,7 @@ struct CommitGraphContentView: View {
                                 showing: $showing,
                                 bindingError: $error
                             )
+                            .tapGesture(logID: commit.id, selectionLogID: $selectionLogID, subSelectionLogID: $subSelectionLogID)
                     }
                 }
             }
@@ -248,18 +254,6 @@ struct GraphNode: View {
                 width: logID == selectionLogID || logID == subSelectionLogID ? Self.selectedNodeSize: Self.nodeSize,
                 height: logID == selectionLogID || logID == subSelectionLogID ? Self.selectedNodeSize: Self.nodeSize
             )
-            .onTapGesture {
-                if NSEvent.modifierFlags.contains(.command) {
-                    if selectionLogID != nil {
-                        subSelectionLogID = logID
-                    } else {
-                        selectionLogID = logID
-                    }
-                } else {
-                    selectionLogID = logID
-                    subSelectionLogID = nil
-                }
-            }
     }
 }
 
@@ -281,18 +275,6 @@ struct GraphNodeText: View {
                 if logID == selectionLogID || logID == subSelectionLogID {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.accentColor)
-                }
-            }
-            .onTapGesture {
-                if NSEvent.modifierFlags.contains(.command) {
-                    if selectionLogID != nil {
-                        subSelectionLogID = logID
-                    } else {
-                        selectionLogID = logID
-                    }
-                } else {
-                    selectionLogID = logID
-                    subSelectionLogID = nil
                 }
             }
     }

@@ -23,19 +23,7 @@ struct CommitRowView: View {
                 }
             }
             HStack {
-                AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 14*3)) { phase in
-                    if let image = phase.image {
-                        image.resizable()
-                    } else if phase.error != nil {
-                        AuthorInitialIcon(initial: commit.authorInitial)
-                            .font(.system(size: 8, weight: .medium))
-                    } else {
-                        RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular)
-                            .foregroundStyle(.quinary)
-                    }
-                }
-                    .frame(width: 14, height: 14)
-                    .clipShape(RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular))
+                Icon(size: .small, authorEmail: commit.authorEmail, authorInitial: commit.authorInitial)
                 Text(commit.author)
                 Spacer()
                 Text(commit.authorDateRelative)

@@ -14,7 +14,7 @@ struct AuthorInitialIcon: View {
             RoundedRectangle(cornerRadius: 0, style: .circular)
                 .fill(
                     LinearGradient(
-                        gradient: Gradient(colors: [Color(white: 0.65), Color(white: 0.50)]),
+                        gradient: Gradient(colors: [Color(white: 0.70), Color(white: 0.50)]),
                         startPoint: .top,
                         endPoint: .bottom
                     )

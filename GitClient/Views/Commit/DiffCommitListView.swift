@@ -46,3 +46,11 @@ struct DiffCommitListView: View {
         }
     }
 }
+
+#Preview {
+    DiffCommitListView(commits: [
+        Commit(hash: "a", parentHashes: ["b"], author: "m a", authorEmail: "dummy@aoyama.dev", authorDate: "", title: "Hi", body: "", branches: [], tags: []),
+        Commit(hash: "b", parentHashes: ["c"], author: "m b", authorEmail: "dummy2@aoyama.dev", authorDate: "", title: "Hi", body: "", branches: [], tags: []),
+        Commit(hash: "d", parentHashes: ["e"], author: "m a", authorEmail: "dummy@aoyama.dev", authorDate: "", title: "Hi", body: "", branches: [], tags: [])
+    ])
+}

@@ -15,12 +15,22 @@ struct CommitDiffView: View {
     @State private var commitFirst = ""
     @State private var commitSecond = ""
     @State private var filesChanges: [ExpandableModel<FileDiff>] = []
+    @State private var filesChangesIsEmpty = false
     @State private var shortstat = ""
     @State private var error: Error?
     @FocusState private var isFocused: Bool
 
     var body: some View {
         ScrollView {
+            if filesChangesIsEmpty {
+                LazyVStack(alignment: .center) {
+                    Label("No Changes", systemImage: "plusminus")
+                        .foregroundStyle(.secondary)
+                        .padding()
+                        .padding()
+                        .padding(.vertical, 40)
+                }
+            }
             FileDiffsView(expandableFileDiffs: $filesChanges)
                 .padding(.horizontal)
         }
@@ -67,28 +77,31 @@ struct CommitDiffView: View {
             }
             .onChange(of: commitFirst + commitSecond, initial: true) { _, _ in
                 if commitFirst == Log.notCommitted.id {
-                    updateDiff(cached: true, commitRange: commitSecond)
+                    updateDiff(commitRange: commitSecond)
                 } else if commitSecond == Log.notCommitted.id {
-                    updateDiff(cached: true, commitRange: commitFirst)
+                    updateDiff(commitRange: commitFirst)
                 } else {
-                    updateDiff(cached: false, commitRange: commitFirst + ".." + commitSecond)
+                    updateDiff(commitRange: commitFirst + ".." + commitSecond)
                 }
             }
             .errorSheet($error)
     }
 
-    private func updateDiff(cached: Bool, commitRange: String) {
+    private func updateDiff(commitRange: String) {
         guard let folder else { return }
         Task {
             do {
                 let raw = try await Process.output(
-                    GitDiff(directory: folder, noRenames: false, cached: cached, commitRange: commitRange)
+                    GitDiff(directory: folder, noRenames: false, commitRange: commitRange)
                 )
                 filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
+                filesChangesIsEmpty = filesChanges.isEmpty
                 shortstat = try await Process.output(
-                    GitDiff(directory: folder, noRenames: false, shortstat: true, cached: cached, commitRange: commitRange)
+                    GitDiff(directory: folder, noRenames: false, shortstat: true, commitRange: commitRange)
                 ).trimmingCharacters(in: .whitespacesAndNewlines)
-
+                if shortstat.isEmpty {
+                    shortstat = "No Changes"
+                }
             } catch {
                 self.error = error
             }

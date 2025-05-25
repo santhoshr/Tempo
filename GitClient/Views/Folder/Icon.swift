@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct IconView: View {
+struct Icon: View {
     enum Size {
         case s, m
         var image: CGFloat {
@@ -63,5 +63,5 @@ struct IconView: View {
 }
 
 #Preview {
-    IconView(size: .s, authorEmail: "", authorInitial: "AA")
+    Icon(size: .s, authorEmail: "", authorInitial: "AA")
 }

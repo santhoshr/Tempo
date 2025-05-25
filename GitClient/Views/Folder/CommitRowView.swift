@@ -27,19 +27,8 @@ struct CommitRowView: View {
                     if let image = phase.image {
                         image.resizable()
                     } else if phase.error != nil {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 0, style: .continuous)
-                                .fill(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color(white: 0.65), Color(white: 0.50)]),
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
-                            Text(commit.authorInitial)
-                                .font(.system(size: 8, weight: .medium))
-                                .foregroundColor(.white)
-                        }
+                        AuthorInitialIcon(initial: commit.authorInitial)
+                            .font(.system(size: 8, weight: .medium))
                     } else {
                         RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular)
                             .foregroundStyle(.quinary)

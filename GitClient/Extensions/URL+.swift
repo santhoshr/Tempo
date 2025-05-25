@@ -14,7 +14,7 @@ extension URL {
         return URL(fileURLWithPath: srcroot).appending(path: "TestFixtures").appending(path: "SyntaxHighlight")
     }
 
-    static func gravater(email: String, size: Int=80) -> URL? {
+    static func gravater(email: String, size: CGFloat=80) -> URL? {
         guard let data = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased().data(using: .utf8) else {
             return nil
         }

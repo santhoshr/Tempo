@@ -11,7 +11,7 @@ struct AuthorInitialIcon: View {
     var initial: String
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 0, style: .continuous)
+            RoundedRectangle(cornerRadius: 0, style: .circular)
                 .fill(
                     LinearGradient(
                         gradient: Gradient(colors: [Color(white: 0.65), Color(white: 0.50)]),

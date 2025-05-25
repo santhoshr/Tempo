@@ -20,6 +20,6 @@ extension URL {
         }
         let hashedData = SHA256.hash(data: data)
         let hashString = hashedData.compactMap { String(format: "%02x", $0) }.joined()
-        return URL(string: "https://gravatar.com/avatar/" + hashString + "?d=retro&size=\(size)") // https://docs.gravatar.com/api/avatars/images/
+        return URL(string: "https://gravatar.com/avatar/" + hashString + "?d=404&size=\(size)") // https://docs.gravatar.com/api/avatars/images/
     }
 }

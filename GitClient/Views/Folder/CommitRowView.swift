@@ -23,11 +23,27 @@ struct CommitRowView: View {
                 }
             }
             HStack {
-                AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 14*3)) { image in
-                    image.resizable()
-                } placeholder: {
-                    RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular)
-                        .foregroundStyle(.quinary)
+                AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 14*3)) { phase in
+                    if let image = phase.image {
+                        image.resizable()
+                    } else if phase.error != nil {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 0, style: .continuous)
+                                .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [Color(white: 0.65), Color(white: 0.50)]),
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                )
+                            Text(commit.authorInitial)
+                                .font(.system(size: 8, weight: .medium))
+                                .foregroundColor(.white)
+                        }
+                    } else {
+                        RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular)
+                            .foregroundStyle(.quinary)
+                    }
                 }
                     .frame(width: 14, height: 14)
                     .clipShape(RoundedRectangle(cornerSize: .init(width: 3, height: 3), style: .circular))

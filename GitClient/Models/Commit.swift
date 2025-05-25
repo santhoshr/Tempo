@@ -12,6 +12,9 @@ struct Commit: Hashable, Identifiable {
     var hash: String
     var parentHashes: [String]
     var author: String
+    var authorInitial: String {
+        String(author.prefix(1))
+    }
     var authorEmail: String
     var authorDate: String
     var authorDateDisplay: String {

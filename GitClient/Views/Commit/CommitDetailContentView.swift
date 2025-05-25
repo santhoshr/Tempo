@@ -15,7 +15,6 @@ struct CommitDetailContentView: View {
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var mergedIn: Commit?
     @State private var error: Error?
-    @Environment(\.openURL) private var openURL
 
     var body: some View {
         ScrollView {
@@ -96,18 +95,7 @@ struct CommitDetailContentView: View {
                             .padding(.bottom, 8)
                     }
                     HStack {
-                        AsyncImage(url: URL.gravater(email: commit.authorEmail, size: 26*3)) { image in
-                            image.resizable()
-                        } placeholder: {
-                            RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular)
-                                .foregroundStyle(.quinary)
-                        }
-                            .frame(width: 26, height: 26)
-                            .clipShape(RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular))
-                            .onTapGesture {
-                                guard let url = URL.gravater(email: commit.authorEmail, size: 400) else { return }
-                                openURL(url)
-                            }
+                        Icon(size: .medium, authorEmail: commit.authorEmail, authorInitial: String(commit.author.initial.prefix(2)))
                         Text(commit.author)
                         Divider()
                             .frame(height: 10)

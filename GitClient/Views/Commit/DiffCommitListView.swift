@@ -8,12 +8,11 @@
 import SwiftUI
 
 struct DiffCommitListView: View {
-    @Environment(\.openURL) private var openURL
     var commits: [Commit]
-    private var authorEmails: [String] {
-        commits.map { $0.authorEmail }
+    private var authorEmailAndNames: [(String, String)] {
+        commits.map { ($0.authorEmail, $0.author) }
             .reduce(into: []) { result, item in
-                if !result.contains(item) {
+                if !result.contains(where: { $0.0 == item.0 }) {
                     result.append(item)
                 }
             }
@@ -32,19 +31,9 @@ struct DiffCommitListView: View {
                             .foregroundStyle(.tertiary)
                         Text(commits.last!.authorDateDisplayShort)
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]) {
-                            ForEach(authorEmails, id: \.self) { email in
-                                AsyncImage(url: URL.gravater(email: email, size: 26*3)) { image in
-                                    image.resizable()
-                                } placeholder: {
-                                    RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular)
-                                        .foregroundStyle(.quinary)
-                                }
-                                    .frame(width: 26, height: 26)
-                                    .clipShape(RoundedRectangle(cornerSize: .init(width: 6, height: 6), style: .circular))
-                                    .onTapGesture {
-                                        guard let url = URL.gravater(email: email, size: 400) else { return }
-                                        openURL(url)
-                                    }
+                            ForEach(authorEmailAndNames, id: \.0) { element in
+                                Icon(size: .medium, authorEmail: element.0, authorInitial: String(element.1.initial.prefix(2)))
+                                    .help(element.1)
                             }
                         }
                         .padding(.vertical, 8)
@@ -57,4 +46,12 @@ struct DiffCommitListView: View {
             .frame(width: 120)
         }
     }
+}
+
+#Preview {
+    DiffCommitListView(commits: [
+        Commit(hash: "a", parentHashes: ["b"], author: "m a", authorEmail: "dummy@aoyama.dev", authorDate: "", title: "Hi", body: "", branches: [], tags: []),
+        Commit(hash: "b", parentHashes: ["c"], author: "m b", authorEmail: "dummy2@aoyama.dev", authorDate: "", title: "Hi", body: "", branches: [], tags: []),
+        Commit(hash: "d", parentHashes: ["e"], author: "m a", authorEmail: "dummy@aoyama.dev", authorDate: "", title: "Hi", body: "", branches: [], tags: [])
+    ])
 }

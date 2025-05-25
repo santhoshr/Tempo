@@ -22,6 +22,7 @@ struct AuthorInitialIcon: View {
             Text(initial)
                 .fontDesign(.rounded)
                 .foregroundColor(.white)
+                .textSelection(.disabled)
         }
     }
 }

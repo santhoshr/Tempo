@@ -82,11 +82,11 @@ struct CommitDiffView: View {
         Task {
             do {
                 let raw = try await Process.output(
-                    GitDiff(directory: folder, noRenames: false, cached: cached, commitRange: commitRange)
+                    GitDiff(directory: folder, noRenames: false, commitRange: commitRange)
                 )
                 filesChanges = try Diff(raw: raw).fileDiffs.map { .init(isExpanded: true, model: $0) }
                 shortstat = try await Process.output(
-                    GitDiff(directory: folder, noRenames: false, shortstat: true, cached: cached, commitRange: commitRange)
+                    GitDiff(directory: folder, noRenames: false, shortstat: true, commitRange: commitRange)
                 ).trimmingCharacters(in: .whitespacesAndNewlines)
 
             } catch {

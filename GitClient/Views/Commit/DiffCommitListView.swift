@@ -33,6 +33,7 @@ struct DiffCommitListView: View {
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]) {
                             ForEach(authorEmailAndNames, id: \.0) { element in
                                 Icon(size: .medium, authorEmail: element.0, authorInitial: String(element.1.initial.prefix(2)))
+                                    .help(element.1)
                             }
                         }
                         .padding(.vertical, 8)

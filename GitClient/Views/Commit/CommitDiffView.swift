@@ -67,17 +67,17 @@ struct CommitDiffView: View {
             }
             .onChange(of: commitFirst + commitSecond, initial: true) { _, _ in
                 if commitFirst == Log.notCommitted.id {
-                    updateDiff(commitRange: commitSecond)
+                    updateDiff(cached: true, commitRange: commitSecond)
                 } else if commitSecond == Log.notCommitted.id {
-                    updateDiff(commitRange: commitFirst)
+                    updateDiff(cached: true, commitRange: commitFirst)
                 } else {
-                    updateDiff(commitRange: commitFirst + ".." + commitSecond)
+                    updateDiff(cached: false, commitRange: commitFirst + ".." + commitSecond)
                 }
             }
             .errorSheet($error)
     }
 
-    private func updateDiff(commitRange: String) {
+    private func updateDiff(cached: Bool, commitRange: String) {
         guard let folder else { return }
         Task {
             do {

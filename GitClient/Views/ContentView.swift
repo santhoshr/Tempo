@@ -88,11 +88,11 @@ struct ContentView: View {
         } detail: {
             if let selectionLog, let subSelectionLogID {
                 CommitDiffView(selectionLogID: selectionLog.id, subSelectionLogID: subSelectionLogID)
-            } else {
+            } else if let selectionFolder {
                 switch selectionLog {
                 case .notCommitted:
                     CommitCreateView(
-                        folder: selectionFolder!,
+                        folder: selectionFolder,
                         isRefresh: $folderIsRefresh,
                         onCommit: {
                             self.selectionLog = nil
@@ -104,7 +104,7 @@ struct ContentView: View {
                         }
                     )
                 case .committed(let commit):
-                    CommitDetailStackView(commit: commit, folder: selectionFolder!)
+                    CommitDetailStackView(commit: commit, folder: selectionFolder)
                 case nil:
                     Text("No Selection")
                         .foregroundColor(.secondary)

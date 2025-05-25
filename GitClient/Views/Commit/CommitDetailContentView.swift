@@ -144,7 +144,6 @@ struct CommitDetailContentView: View {
                         .foregroundStyle(.primary)
                 }
                 .font(.callout)
-
                 Spacer()
             }
             .background(Color(nsColor: .textBackgroundColor))

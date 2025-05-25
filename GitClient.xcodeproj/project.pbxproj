@@ -991,7 +991,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 1.13;
+				MARKETING_VERSION = 1.14;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.aoyama.tempo;
 				PRODUCT_NAME = Tempo;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1024,7 +1024,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 1.13;
+				MARKETING_VERSION = 1.14;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.aoyama.tempo;
 				PRODUCT_NAME = Tempo;
 				PROVISIONING_PROFILE_SPECIFIER = "";

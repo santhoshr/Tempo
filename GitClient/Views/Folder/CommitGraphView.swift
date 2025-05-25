@@ -169,7 +169,7 @@ struct CommitGraphContentView: View {
 
                 // ノードを描く
                 ForEach(commits) { commit in
-                    if let point = position(of: commit) {
+                    if let point = position(of: commit), let folder {
                         GraphNode(
                             logID: commit.id,
                             selectionLogID: $selectionLogID,
@@ -177,7 +177,7 @@ struct CommitGraphContentView: View {
                         )
                             .position(point)
                             .commitContextMenu(
-                                folder: folder!,
+                                folder: folder,
                                 commit: commit.commit,
                                 logStore: logStore,
                                 isRefresh: $isRefresh,
@@ -195,7 +195,7 @@ struct CommitGraphContentView: View {
                             .offset(.init(width: textWidth / 2 + 14, height: 0))
                             .position(point)
                             .commitContextMenu(
-                                folder: folder!,
+                                folder: folder,
                                 commit: commit.commit,
                                 logStore: logStore,
                                 isRefresh: $isRefresh,

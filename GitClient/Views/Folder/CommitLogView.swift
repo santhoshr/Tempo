@@ -79,15 +79,17 @@ struct CommitLogView: View {
                 Text("Uncommitted Changes")
                     .foregroundStyle(Color.secondary)
             case .committed(let commit):
-                CommitRowView(commit: commit)
-                    .commitContextMenu(
-                        folder: folder!,
-                        commit: commit,
-                        logStore: logStore,
-                        isRefresh: $isRefresh,
-                        showing: $showing,
-                        bindingError: $error
-                    )
+                if let folder {
+                    CommitRowView(commit: commit)
+                        .commitContextMenu(
+                            folder: folder,
+                            commit: commit,
+                            logStore: logStore,
+                            isRefresh: $isRefresh,
+                            showing: $showing,
+                            bindingError: $error
+                        )
+                }
             }
         }
     }

@@ -15,7 +15,6 @@ struct CommitDetailContentView: View {
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var mergedIn: Commit?
     @State private var error: Error?
-    @Environment(\.openURL) private var openURL
 
     var body: some View {
         ScrollView {

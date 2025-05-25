@@ -13,7 +13,6 @@ struct MergeCommitContentView: View {
     @State private var commits: [Commit] = []
     @State private var filesChanged: [ExpandableModel<FileDiff>] = []
     @State private var error: Error?
-    @Environment(\.openURL) private var openURL
 
     var body: some View {
         DiffView(commits: $commits, filesChanged: $filesChanged)

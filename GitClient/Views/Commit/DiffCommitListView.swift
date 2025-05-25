@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct DiffCommitListView: View {
-    @Environment(\.openURL) private var openURL
     var commits: [Commit]
     private var authorEmailAndNames: [(String, String)] {
         commits.map { ($0.authorEmail, $0.author) }

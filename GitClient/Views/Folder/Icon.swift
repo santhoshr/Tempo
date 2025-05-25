@@ -63,5 +63,5 @@ struct Icon: View {
 }
 
 #Preview {
-    Icon(size: .small, authorEmail: "", authorInitial: "AA")
+    Icon(size: .small, authorEmail: "", authorInitial: "makoto aoyama".initial)
 }

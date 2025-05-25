@@ -23,7 +23,7 @@ struct CommitRowView: View {
                 }
             }
             HStack {
-                Icon(size: .small, authorEmail: commit.authorEmail, authorInitial: commit.authorInitial)
+                Icon(size: .small, authorEmail: commit.authorEmail, authorInitial: String(commit.author.initial.prefix(1)))
                 Text(commit.author)
                 Spacer()
                 Text(commit.authorDateRelative)

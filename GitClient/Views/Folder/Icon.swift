@@ -9,28 +9,28 @@ import SwiftUI
 
 struct Icon: View {
     enum Size {
-        case s, m
+        case small, medium
         var image: CGFloat {
             switch self {
-            case .s:
+            case .small:
                 return 14
-            case .m:
+            case .medium:
                 return 26
             }
         }
         var corner: CGSize {
             switch self {
-            case .s:
+            case .small:
                 return .init(width: 3, height: 3)
-            case .m:
+            case .medium:
                 return .init(width: 6, height: 6)
             }
         }
         var font: CGFloat {
             switch self {
-            case .s:
+            case .small:
                 return 8
-            case .m:
+            case .medium:
                 return 12
             }
         }
@@ -63,5 +63,5 @@ struct Icon: View {
 }
 
 #Preview {
-    Icon(size: .s, authorEmail: "", authorInitial: "AA")
+    Icon(size: .small, authorEmail: "", authorInitial: "AA")
 }

@@ -120,9 +120,6 @@ struct CommitDetailContentView: View {
                     .foregroundStyle(.secondary)
                     Divider()
                         .padding(.top)
-                    Text(shortstat)
-                        .padding(.vertical, 6)
-                    Divider()
                     if commit.parentHashes.count == 2 {
                         MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
                     } else {

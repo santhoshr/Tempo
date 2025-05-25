@@ -15,7 +15,7 @@ struct DiffView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             DiffTabView(tab: $tab)
-                .padding(.vertical)
+                .padding(.top)
             if tab == 0 {
                 DiffCommitListView(commits: commits)
                     .padding(.vertical)

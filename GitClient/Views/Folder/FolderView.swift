@@ -431,7 +431,7 @@ struct FolderView: View {
             isLoading = true
             Task {
                 do {
-                    try await Process.output(GitPull(directory: folder.url, refspec: branch!.name))
+                    try await GitFetchExecutor.shared.execute(GitPull(directory: folder.url, refspec: branch!.name))
                     await refreshModels()
                 } catch {
                     self.error = error

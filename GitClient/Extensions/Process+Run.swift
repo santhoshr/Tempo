@@ -34,6 +34,10 @@ extension Process {
     }
 
     static private func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
+        try outputSync(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
+    }
+
+    static private func outputSync(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) throws -> Output {
         let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "process")
         logger.debug("Process run: arguments: \(arguments), currentDirectoryURL: \(currentDirectoryURL?.description ?? ""), inputs: \(inputs, privacy: .public)")
         let output = try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
@@ -75,7 +79,11 @@ extension Process {
     }
 
     static func output<G: Git>(_ git: G) async throws -> G.OutputModel {
-        let output = try await Self.output(arguments: git.arguments, currentDirectoryURL: git.directory)
+        try outputSync(git)
+    }
+
+    static func outputSync<G: Git>(_ git: G) throws -> G.OutputModel {
+        let output = try Self.outputSync(arguments: git.arguments, currentDirectoryURL: git.directory)
         return try git.parse(for: output.standardOutput)
     }
 
@@ -83,5 +91,4 @@ extension Process {
         let output = try await Self.output(arguments: git.arguments, currentDirectoryURL: git.directory, inputs: git.inputs)
         return try git.parse(for: output.standardOutput)
     }
-
 }

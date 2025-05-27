@@ -44,7 +44,7 @@ struct BranchesView: View {
                                 do {
                                     isFetching = true
                                     defer { isFetching = false }
-                                    try await Process.output(GitFetch(directory: folder.url))
+                                    try await GitFetchExecutor.shared.execute(GitFetch(directory: folder.url))
                                     branches = try await Process.output(GitBranch(directory: folder.url, isRemote: isRemote))
                                 } catch {
                                     self.error = error

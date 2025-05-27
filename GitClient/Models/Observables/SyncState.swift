@@ -21,7 +21,7 @@ import Observation
             shouldPush = false
             return
         }
-        try await Process.output(GitFetch(directory: folderURL))
+        try await GitFetchExecutor.shared.execute(GitFetch(directory: folderURL))
 
         let existRemoteBranch = try? await Process.output(GitShowref(directory: folderURL, pattern: "refs/remotes/origin/\(branch.name)"))
         guard existRemoteBranch != nil else {

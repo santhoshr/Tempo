@@ -432,6 +432,7 @@ struct FolderView: View {
             Task {
                 do {
                     try await GitFetchExecutor.shared.execute(GitPull(directory: folder.url, refspec: branch!.name))
+                    syncState.shouldPull = false
                     isLoading = false
                     await refreshModels()
                 } catch {
@@ -458,6 +459,7 @@ struct FolderView: View {
             Task {
                 do {
                     try await Process.output(GitPush(directory: folder.url))
+                    syncState.shouldPush = false
                     isLoading = false
                     await updateModels()
                 } catch {

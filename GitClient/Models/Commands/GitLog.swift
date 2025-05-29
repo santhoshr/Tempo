@@ -23,6 +23,8 @@ struct GitLog: Git {
             + .formatSeparator + "%D"
             + .componentSeparator,
         ]
+        args.append("--topo-order")
+
         if merges {
             args.append("--merges")
         }
@@ -54,7 +56,6 @@ struct GitLog: Git {
         if !author.isEmpty {
             args.append("--author=\(author)")
         }
-        args.append("--topo-order")
 
         return args
     }

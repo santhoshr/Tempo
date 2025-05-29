@@ -56,7 +56,10 @@ struct GitLog: Git {
         if !author.isEmpty {
             args.append("--author=\(author)")
         }
-
+        if !paths.isEmpty {
+            args.append("--")
+            args = args + paths
+        }
         return args
     }
     var directory: URL
@@ -70,6 +73,7 @@ struct GitLog: Git {
     var s = ""
     var g = ""
     var author = ""
+    var paths: [String] = []
 
     func parse(for stdOut: String) throws -> [Commit] {
         guard !stdOut.isEmpty else { return [] }

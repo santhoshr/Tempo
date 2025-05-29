@@ -28,50 +28,52 @@ struct SearchTokensHandler {
                         var updateToken = token
                         updateToken.kind = newToken.kind
                         return updateToken
-                    case .s, .g, .author, .revisionRange:
+                    default:
                         return token
                     }
                 }
             case .s:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .author, .revisionRange:
-                        return true
                     case .s:
                         return token == newToken
                     case .g:
                         return false
+                    default:
+                        return true
                     }
                 }
             case .g:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .author, .revisionRange:
-                        return true
                     case .g:
                         return token == newToken
                     case .s:
                         return false
+                    default:
+                        return true
                     }
                 }
             case .author:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .g, .s, .revisionRange:
-                        return true
                     case .author:
                         return token == newToken
+                    default:
+                        return true
                     }
                 }
             case .revisionRange:
                 return newTokens.filter { token in
                     switch token.kind {
-                    case .grep, .grepAllMatch, .g, .s, .author:
-                        return true
                     case .revisionRange:
                         return token == newToken
+                    default:
+                        return true
                     }
                 }
+            case .path:
+                return newTokens
             }
         } else {
             return newTokens

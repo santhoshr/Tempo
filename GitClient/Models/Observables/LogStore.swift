@@ -17,7 +17,7 @@ import Observation
             switch token.kind {
             case .grep, .grepAllMatch:
                 return true
-            case .g, .s, .author, .revisionRange:
+            default:
                 return false
             }
         }.map { $0.text }

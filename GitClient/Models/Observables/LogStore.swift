@@ -47,6 +47,19 @@ import Observation
     }
     var error: Error?
 
+    private func gitLog(directory: URL, number: Int=0, revisionRange: String="") -> GitLog {
+        GitLog(
+            directory: directory,
+            number: number,
+            revisionRange: revisionRange,
+            grep: grep,
+            grepAllMatch: grepAllMatch,
+            s: s,
+            g: g,
+            author: author
+        )
+    }
+
     func logs() -> [Log] {
         var logs = commits.map { Log.committed($0) }
         if let notCommitted, !notCommitted.isEmpty {
@@ -69,15 +82,7 @@ import Observation
                 try await loadTotalCommitsCount()
                 return
             }
-            commits = try await Process.output(GitLog(
-                directory: directory,
-                number: number,
-                grep: grep,
-                grepAllMatch: grepAllMatch,
-                s: s,
-                g: g,
-                author: author
-            ))
+            commits = try await Process.output(gitLog(directory: directory, number: number))
             try await loadTotalCommitsCount()
         } catch {
             self.error = error
@@ -86,15 +91,7 @@ import Observation
 
     /// revisionRangeをSearchTokenで利用するための別メソッド
     private func loadCommitsWithSearchTokenRevisionRange(directory: URL, revisionRange: String) async throws -> [Commit] {
-        try await Process.output(GitLog(
-            directory: directory,
-            revisionRange: revisionRange,
-            grep: grep,
-            grepAllMatch: grepAllMatch,
-            s: s,
-            g: g,
-            author: author
-        ))
+        try await Process.output(gitLog(directory: directory, revisionRange: revisionRange))
     }
 
     /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加(SearchTokenのRevisionRangeがない場合)
@@ -111,24 +108,14 @@ import Observation
                 commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
                 return
             }
-            let current = try await Process.output(GitLog(
+            let current = try await Process.output(gitLog(
                 directory: directory,
                 number: commits.count,
-                revisionRange: commits.first?.hash ?? "",
-                grep: grep,
-                grepAllMatch: grepAllMatch,
-                s: s,
-                g: g,
-                author: author
+                revisionRange: commits.first?.hash ?? ""
             ))
-            let adding = try await Process.output(GitLog(
+            let adding = try await Process.output(gitLog(
                 directory: directory,
-                revisionRange: commits.first.map { $0.hash + ".."} ?? "",
-                grep: grep,
-                grepAllMatch: grepAllMatch,
-                s: s,
-                g: g,
-                author: author
+                revisionRange: commits.first.map { $0.hash + ".."} ?? ""
             ))
             commits = adding + current
             try await loadTotalCommitsCount()
@@ -167,15 +154,10 @@ import Observation
         do {
             // revisionRangeをlast.hash^で指定すると最初のコミットに到達した際に存在しないのでunknown revisionとエラーになる
             // なのでlast.hashで指定し重複する最初の要素をドロップする
-            commits += try await Process.output(GitLog(
+            commits += try await Process.output(gitLog(
                 directory: directory,
                 number: number + 1,
-                revisionRange: last.hash,
-                grep: grep,
-                grepAllMatch: grepAllMatch,
-                s: s,
-                g: g,
-                author: author
+                revisionRange: last.hash
             )).dropFirst()
         } catch {
             self.error = error
@@ -187,14 +169,9 @@ import Observation
         if searchTokens.isEmpty {
             totalCommitsCount = try await Process.output(GitRevListCount(directory: directory))
         } else {
-            totalCommitsCount = try await Process.output(GitLog(
+            totalCommitsCount = try await Process.output(gitLog(
                 directory: directory,
-                revisionRange: searchTokenRevisionRange,
-                grep: grep,
-                grepAllMatch: grepAllMatch,
-                s: s,
-                g: g,
-                author: author
+                revisionRange: searchTokenRevisionRange
             )).count
         }
     }

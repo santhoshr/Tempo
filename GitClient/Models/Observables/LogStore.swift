@@ -37,6 +37,10 @@ import Observation
     private var searchTokenRevisionRange: String {
         searchTokens.filter { $0.kind == .revisionRange }.map { $0.text }.first ?? ""
     }
+    private var paths: [String] {
+        searchTokens.filter { $0.kind == .path }.map { $0.text }
+    }
+
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
     var notCommitted: NotCommitted?
@@ -56,7 +60,8 @@ import Observation
             grepAllMatch: grepAllMatch,
             s: s,
             g: g,
-            author: author
+            author: author,
+            paths: paths
         )
     }
 

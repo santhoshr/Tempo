@@ -53,9 +53,7 @@ struct GitLog: Git {
             args.append("-G")
             args.append(g)
         }
-        if !author.isEmpty {
-            args.append("--author=\(author)")
-        }
+        args = args + authors.map { "--author=\($0)" }
         if !paths.isEmpty {
             args.append("--")
             args = args + paths
@@ -72,7 +70,7 @@ struct GitLog: Git {
     var grepAllMatch = false
     var s = ""
     var g = ""
-    var author = ""
+    var authors:[String] = []
     var paths: [String] = []
 
     func parse(for stdOut: String) throws -> [Commit] {

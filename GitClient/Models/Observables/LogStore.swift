@@ -31,8 +31,8 @@ import Observation
     private var g: String {
         searchTokens.filter { $0.kind == .g }.map { $0.text }.first ?? ""
     }
-    private var author: String {
-        searchTokens.filter { $0.kind == .author }.map { $0.text }.first ?? ""
+    private var authors: [String] {
+        searchTokens.filter { $0.kind == .author }.map { $0.text }
     }
     private var searchTokenRevisionRange: String {
         searchTokens.filter { $0.kind == .revisionRange }.map { $0.text }.first ?? ""
@@ -60,7 +60,7 @@ import Observation
             grepAllMatch: grepAllMatch,
             s: s,
             g: g,
-            author: author,
+            authors: authors,
             paths: paths
         )
     }

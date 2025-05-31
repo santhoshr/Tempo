@@ -147,7 +147,7 @@ struct FolderView: View {
             await refreshModels()
         }
         .onChange(of: searchTokens, { oldValue, newValue in
-            searchTokens = SearchTokensHandler.handle(oldTokens: oldValue, newTokens: newValue)
+            searchTokens = SearchTokensHandler.normalize(oldTokens: oldValue, newTokens: newValue)
             logStore.searchTokens = searchTokens
             searchTask?.cancel()
             searchTask = Task {

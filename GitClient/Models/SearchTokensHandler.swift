@@ -18,7 +18,7 @@ struct SearchTokensHandler {
         return Array(history.prefix(10))
     }
 
-    static func handle(oldTokens: [SearchToken], newTokens: [SearchToken]) -> [SearchToken] {
+    static func normalize(oldTokens: [SearchToken], newTokens: [SearchToken]) -> [SearchToken] {
         if let newToken = newToken(old: oldTokens, new: newTokens) {
             switch newToken.kind {
             case .grep, .grepAllMatch:

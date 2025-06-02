@@ -231,6 +231,37 @@ struct DiffView_Previews: PreviewProvider {
         XCTAssertEqual(chunk.lines[8].toFileLineNumber, 30)
     }
 
+    func testUnmergedDiffInit() throws{
+        let raw = """
+* Unmerged path Examples/Examples/ContentView.swift
+* Unmerged path README.md
+diff --git a/Sources/SyntaxHighlight/Text+Init.swift b/Sources/SyntaxHighlight/Text+Init.swift
+index de1d204..181038c 100644
+--- a/Sources/SyntaxHighlight/Text+Init.swift
++++ b/Sources/SyntaxHighlight/Text+Init.swift
+@@ -1,3 +1,5 @@
++// 2
++
+ //
+ //  Text+Init.swift
+ //  SyntaxHighlight
+"""
+        let diff = try Diff(raw: raw)
+        XCTAssertEqual(diff.fileDiffs.count, 1)
+        XCTAssertEqual(diff.fileDiffs.first!.raw, """
+diff --git a/Sources/SyntaxHighlight/Text+Init.swift b/Sources/SyntaxHighlight/Text+Init.swift
+index de1d204..181038c 100644
+--- a/Sources/SyntaxHighlight/Text+Init.swift
++++ b/Sources/SyntaxHighlight/Text+Init.swift
+@@ -1,3 +1,5 @@
++// 2
++
+ //
+ //  Text+Init.swift
+ //  SyntaxHighlight
+""")
+    }
+
     func testStage() throws {
         var diff = try Diff(raw: raw)
         diff.fileDiffs.forEach { fileDiff in

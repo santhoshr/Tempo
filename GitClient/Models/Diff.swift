@@ -17,7 +17,7 @@ struct Diff: Hashable {
             fileDiffs = []
             return
         }
-        fileDiffs = try ("\n" + raw).split(separator: "\ndiff").map { fileDiffRaw in
+        fileDiffs = try ("\n" + raw).split(separator: "\ndiff").filter { !$0.hasPrefix("\n* Unmerged path") }.map { fileDiffRaw in
             let fileDiff = try FileDiff(raw: String("diff" + fileDiffRaw))
             return fileDiff
         }

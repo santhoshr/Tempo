@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import Foundation
+import AppKit
 
 struct FolderView: View {
     @Environment(\.appearsActive) private var appearsActive
@@ -233,11 +235,9 @@ struct FolderView: View {
                 }
             }
         }
-        .onChange(of: appearsActive) { _, new in
-            if new {
-                Task {
-                    await updateModels()
-                }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.willBecomeActiveNotification)) { _ in
+            Task {
+                await updateModels()
             }
         }
     }

@@ -295,7 +295,7 @@ struct GraphNodeText: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: []))),
+        notCommitted: .constant(NotCommitted(diff: "hi", diffCached: "hello", status: .init(untrackedFiles: [], unmergedFiles: []))),
         selectionLogID: $selectionLogID,
         subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,
@@ -325,7 +325,7 @@ struct GraphNodeText: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
+        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: [], unmergedFiles: []))),
         selectionLogID: $selectionLogID,
         subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,
@@ -355,7 +355,7 @@ struct GraphNodeText: View {
     ]
 
     CommitGraphContentView(
-        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: []))),
+        notCommitted: .constant(NotCommitted(diff: "", diffCached: "", status: .init(untrackedFiles: [], unmergedFiles: []))),
         selectionLogID: $selectionLogID,
         subSelectionLogID: $subSelectionLogID,
         logStore: $logStore,

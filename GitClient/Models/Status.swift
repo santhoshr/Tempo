@@ -18,4 +18,5 @@ struct Status: Hashable {
             return "\(untrackedFiles.count) untracked files"
         }
     }
+    var unmergedFiles: [String]
 }

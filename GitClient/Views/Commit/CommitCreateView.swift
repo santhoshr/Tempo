@@ -174,7 +174,7 @@ struct CommitCreateView: View {
                             }
                         }
                         .help("Stage with AI")
-                        .disabled(!canStage)
+                        .disabled(!canStage || status?.unmergedFiles.isEmpty == false)
 
                         Button("Unstage All") {
                             Task {

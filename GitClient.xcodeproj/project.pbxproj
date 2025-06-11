@@ -436,6 +436,7 @@
 			children = (
 				61D34C852CA91F400032A22A /* AIService */,
 				61E290DC28E884C200BCEB04 /* Commands */,
+				613D140D2DA7B7B6008D561E /* Observables */,
 				6172E4C328D70B3C0015C958 /* Folder.swift */,
 				6172E4C528D70EE30015C958 /* Commit.swift */,
 				61B3C55F2CB4A9C500021B36 /* CommitDetail.swift */,
@@ -456,7 +457,7 @@
 				616156262D637E630034B1F1 /* Language.swift */,
 				61CAE5692D899E7E003541ED /* ExpandableModel.swift */,
 				6193DDCE2DB8E18300B156C4 /* FolderViewShowing.swift */,
-				613D140D2DA7B7B6008D561E /* Observables */,
+				6154EEFD2DE5E9AC00103692 /* GitFetchExecutor.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -525,7 +526,6 @@
 		61E290DC28E884C200BCEB04 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
-				6154EEFD2DE5E9AC00103692 /* GitFetchExecutor.swift */,
 				616C6FCA2C97C2E800A419DE /* GitStash */,
 				61E290CC28E09FDD00BCEB04 /* Git.swift */,
 				61E290C828E098DB00BCEB04 /* GitLog.swift */,

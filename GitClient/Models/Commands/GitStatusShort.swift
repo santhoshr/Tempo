@@ -20,7 +20,9 @@ struct GitStatus: Git {
 
     func parse(for stdOut: String) -> Status {
         let lines = stdOut.components(separatedBy: .newlines)
+        // https://git-scm.com/docs/git-status#_short_format
         let untrackedLines = lines.filter { $0.hasPrefix("?? ") }
-        return .init(untrackedFiles: untrackedLines.map { String($0.dropFirst(3)) })
+        let unmergedLines = lines.filter { $0.hasPrefix("U") }
+        return .init(untrackedFiles: untrackedLines.map { String($0.dropFirst(3)) }, unmergedFiles: unmergedLines.map {  $0.components(separatedBy: .whitespaces).last ?? "" })
     }
 }

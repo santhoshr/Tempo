@@ -17,6 +17,7 @@
 		6130BDE62C957A450050E70F /* StashChangedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6130BDE52C957A450050E70F /* StashChangedView.swift */; };
 		6130BDE82C95821C0050E70F /* Stash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6130BDE72C95821C0050E70F /* Stash.swift */; };
 		6130BDEA2C958B710050E70F /* GitStashList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6130BDE92C958B710050E70F /* GitStashList.swift */; };
+		6131AC872DF268BF00DFBCB5 /* GitStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6131AC862DF268BF00DFBCB5 /* GitStatusTests.swift */; };
 		61326BBC2BC27A3300472D64 /* Diff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61326BBB2BC27A3300472D64 /* Diff.swift */; };
 		61347EEE28D5D16C00625FC4 /* GitClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EED28D5D16C00625FC4 /* GitClientApp.swift */; };
 		61347EF028D5D16C00625FC4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61347EEF28D5D16C00625FC4 /* ContentView.swift */; };
@@ -162,6 +163,7 @@
 		6130BDE52C957A450050E70F /* StashChangedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashChangedView.swift; sourceTree = "<group>"; };
 		6130BDE72C95821C0050E70F /* Stash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stash.swift; sourceTree = "<group>"; };
 		6130BDE92C958B710050E70F /* GitStashList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitStashList.swift; sourceTree = "<group>"; };
+		6131AC862DF268BF00DFBCB5 /* GitStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitStatusTests.swift; sourceTree = "<group>"; };
 		61326BBB2BC27A3300472D64 /* Diff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diff.swift; sourceTree = "<group>"; };
 		61347EEA28D5D16C00625FC4 /* Tempo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tempo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61347EED28D5D16C00625FC4 /* GitClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitClientApp.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 				61B5BBB62C9B97310087A9F6 /* BranchTests.swift */,
 				61D34C8C2CAC394A0032A22A /* GitLogTests.swift */,
 				614DE8152DA0C2E700FC582E /* GitShowShortstatTests.swift */,
+				6131AC862DF268BF00DFBCB5 /* GitStatusTests.swift */,
 				61A5DF532D9DFD1B00FAF078 /* SearchTokensHandlerTests.swift */,
 				613D140B2DA7AB3F008D561E /* SyncStateTests.swift */,
 				61AC65802DA9F82E00D80470 /* LogStoreTests.swift */,
@@ -832,6 +835,7 @@
 			files = (
 				61AC65812DA9F83700D80470 /* LogStoreTests.swift in Sources */,
 				61347F0028D5D16D00625FC4 /* DiffTests.swift in Sources */,
+				6131AC872DF268BF00DFBCB5 /* GitStatusTests.swift in Sources */,
 				61B5BBB72C9B97310087A9F6 /* BranchTests.swift in Sources */,
 				61CAEDEC2DCEE266009AADD9 /* ExpandableModelTests.swift in Sources */,
 				619759562C8C9A9300E9CA4F /* GitDiffNumStatTests.swift in Sources */,

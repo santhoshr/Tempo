@@ -78,7 +78,7 @@ struct CommitCreateView: View {
                                 restorePatch(newDiff)
                             }
                         },
-                        onSelectChunk: { fileDiff, chunk in
+                        onSelectChunk: status?.unmergedFiles.isEmpty == false ? nil : { fileDiff, chunk in
                             if let newDiff = self.cachedDiff?.updateChunkStage(chunk, in: fileDiff, stage: false) {
                                 restorePatch(newDiff)
                             }
@@ -96,7 +96,7 @@ struct CommitCreateView: View {
                                 addPatch(newDiff)
                             }
                         },
-                        onSelectChunk: { fileDiff, chunk in
+                        onSelectChunk: status?.unmergedFiles.isEmpty == false ? nil : { fileDiff, chunk in
                             if let newDiff = self.diff?.updateChunkStage(chunk, in: fileDiff, stage: true) {
                                 addPatch(newDiff)
                             }
@@ -174,7 +174,7 @@ struct CommitCreateView: View {
                             }
                         }
                         .help("Stage with AI")
-                        .disabled(!canStage)
+                        .disabled(!canStage || status?.unmergedFiles.isEmpty == false)
 
                         Button("Unstage All") {
                             Task {

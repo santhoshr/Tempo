@@ -17,7 +17,7 @@ struct Diff: Hashable {
             fileDiffs = []
             return
         }
-        fileDiffs = try ("\n" + raw).split(separator: "\ndiff").map { fileDiffRaw in
+        fileDiffs = try ("\n" + raw).split(separator: "\ndiff").filter { !$0.hasPrefix("\n* Unmerged path") }.map { fileDiffRaw in
             let fileDiff = try FileDiff(raw: String("diff" + fileDiffRaw))
             return fileDiff
         }
@@ -67,19 +67,25 @@ struct FileDiff: Identifiable, Hashable {
 
     var fromFilePath: String {
         let components = header.components(separatedBy: " ")
-        guard components.count > 2 else {
+        if components.count <= 2 {
             return ""
         }
-        let filePath = components[2].dropFirst(2)
+        if components.count == 3 {
+            return String(components[2])
+        }
+        let filePath = components[2].dropFirst(2) // Drop "a/" or "b/"
         return String(filePath)
     }
 
     var toFilePath: String {
         let components = header.components(separatedBy: " ")
-        guard components.count > 3 else {
+        if components.count <= 2 {
             return ""
         }
-        let filePath = components[3].dropFirst(2)
+        if components.count == 3 {
+            return String(components[2])
+        }
+        let filePath = components[3].dropFirst(2) // Drop "a/" or "b/"
         return String(filePath)
     }
 

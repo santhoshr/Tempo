@@ -34,6 +34,7 @@ struct StageFileDiffView: View {
                     .help(selectButtonHelp)
                     .padding(.vertical)
                     .padding(.trailing)
+                    .disabled(onSelectChunk == nil)
                 }
                 .padding(.leading)
             }

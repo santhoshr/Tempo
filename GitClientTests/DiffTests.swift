@@ -231,6 +231,73 @@ struct DiffView_Previews: PreviewProvider {
         XCTAssertEqual(chunk.lines[8].toFileLineNumber, 30)
     }
 
+    func testUnmergedDiffInit() throws{
+        let raw = """
+* Unmerged path Examples/Examples/ContentView.swift
+* Unmerged path README.md
+diff --git a/Sources/SyntaxHighlight/Text+Init.swift b/Sources/SyntaxHighlight/Text+Init.swift
+index de1d204..181038c 100644
+--- a/Sources/SyntaxHighlight/Text+Init.swift
++++ b/Sources/SyntaxHighlight/Text+Init.swift
+@@ -1,3 +1,5 @@
++// 2
++
+ //
+ //  Text+Init.swift
+ //  SyntaxHighlight
+"""
+        let diff = try Diff(raw: raw)
+        XCTAssertEqual(diff.fileDiffs.count, 1)
+        XCTAssertEqual(diff.fileDiffs.first!.raw, """
+diff --git a/Sources/SyntaxHighlight/Text+Init.swift b/Sources/SyntaxHighlight/Text+Init.swift
+index de1d204..181038c 100644
+--- a/Sources/SyntaxHighlight/Text+Init.swift
++++ b/Sources/SyntaxHighlight/Text+Init.swift
+@@ -1,3 +1,5 @@
++// 2
++
+ //
+ //  Text+Init.swift
+ //  SyntaxHighlight
+""")
+    }
+
+    func testUnmergedAndUnstagedDiffInit() throws {
+        let raw = """
+diff --cc Examples/Examples/ContentView.swift
+index 5bd44b5,3288025..0000000
+--- a/Examples/Examples/ContentView.swift
++++ b/Examples/Examples/ContentView.swift
+@@@ -1,4 -1,4 +1,8 @@@
+++<<<<<<< HEAD
+ +// Fuga
+++=======
++ // Hoge
+++>>>>>>> _test-fixture-conflict
+  
+  //
+  //  ContentView.swift
+diff --cc README.md
+index b438047,41f6d93..0000000
+--- a/README.md
++++ b/README.md
+@@@ -1,6 -1,6 +1,10 @@@
+  # SyntaxHighlight
+  
+++<<<<<<< HEAD
+ +hey
+++=======
++ hi
+++>>>>>>> _test-fixture-conflict
+  SyntaxHighlight makes TextMate-style syntax highlighting easy for SwiftUI.
+  
+  <img src="./ScreenShots/js.png" width="380"><img src="./ScreenShots/swift.png" width="380">
+"""
+        let diff = try Diff(raw: raw)
+        XCTAssertEqual(diff.fileDiffs.first!.filePathDisplay, "Examples/Examples/ContentView.swift")
+        XCTAssertEqual(diff.fileDiffs.last!.filePathDisplay, "README.md")
+    }
+
     func testStage() throws {
         var diff = try Diff(raw: raw)
         diff.fileDiffs.forEach { fileDiff in

@@ -33,7 +33,7 @@ extension Process {
         }
     }
 
-    static private func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
+    static func output(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) async throws -> Output {
         try outputSync(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
     }
 

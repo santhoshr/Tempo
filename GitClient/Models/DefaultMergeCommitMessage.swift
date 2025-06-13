@@ -12,7 +12,7 @@ struct DefaultMergeCommitMessage {
 
     func get() async throws -> String {
         let path = try await Process.output(GitRevParse(directory: directory, gitPath: "MERGE_MSG"))
-        let output = try await Process.output(arguments: ["cat"], currentDirectoryURL: directory)
+        let output = try await Process.output(arguments: ["cat"], currentDirectoryURL: URL(fileURLWithPath: path))
         return output.standardOutput.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }

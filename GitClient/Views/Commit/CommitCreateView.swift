@@ -330,6 +330,11 @@ struct CommitCreateView: View {
             diff = newDiff
             expandableFileDiffs = newDiff.fileDiffs.withExpansionState(from: expandableFileDiffs)
             cachedDiffStat = try await Process.output(GitDiffNumStat(directory: folder.url, cached: true))
+            Task {
+                if commitMessage.isEmpty {
+                    commitMessage = try await DefaultMergeCommitMessage(directory: folder.url).get()
+                }
+            }
         } catch {
             updateChangesError = error
         }

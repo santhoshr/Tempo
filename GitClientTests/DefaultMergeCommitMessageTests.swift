@@ -12,6 +12,7 @@ import Foundation
 struct DefaultMergeCommitMessageTests {
 
     @Test func get() async throws {
+        try await Process.output(GitSwitch(directory: .testFixture!, branchName: "_test-fixture-conflict"))
         try await Process.output(GitSwitch(directory: .testFixture!, branchName: "_test-fixture-conflict2"))
         do {
             try await Process.output(GitMerge(directory: .testFixture!, branchName: "_test-fixture-conflict"))

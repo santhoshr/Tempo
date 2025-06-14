@@ -110,6 +110,8 @@ struct CommitGraphView: View {
             }
         }
         .background(Color(NSColor.textBackgroundColor))
+        .focusable()
+        .focusEffectDisabled()
     }
 }
 
@@ -232,10 +234,13 @@ struct GraphNode: View {
     var logID: String
     @Binding var selectionLogID: String?
     @Binding var subSelectionLogID: String?
+    @Environment(\.isFocused) private var isFocused
+    @Environment(\.appearsActive) private var appearsActive
+    private var active:Bool { isFocused && appearsActive }
 
     private var fillColor: Color {
         if logID == selectionLogID || logID == subSelectionLogID {
-            return Color.accentColor
+            return active ? Color(NSColor.selectedContentBackgroundColor) : Color(NSColor.unemphasizedSelectedContentBackgroundColor)
         }
         if logID == Log.notCommitted.id {
             return Color.secondary
@@ -260,8 +265,18 @@ struct GraphNode: View {
 struct GraphNodeText: View {
     var logID: String
     var title: String
+    var foregroundStyle: Color {
+        guard active else {
+            return logID == selectionLogID || logID == subSelectionLogID ? Color(NSColor.unemphasizedSelectedTextColor) : .secondary
+        }
+        return logID == selectionLogID || logID == subSelectionLogID ? .white : .secondary
+    }
+
     @Binding var selectionLogID: String?
     @Binding var subSelectionLogID: String?
+    @Environment(\.isFocused) private var isFocused
+    @Environment(\.appearsActive) private var appearsActive
+    private var active:Bool { isFocused && appearsActive }
 
     var body: some View {
         VStack {
@@ -270,11 +285,11 @@ struct GraphNodeText: View {
                 .padding(.vertical, 4)
         }
             .font(.callout)
-            .foregroundStyle(logID == selectionLogID || logID == subSelectionLogID ? .white : .secondary)
+            .foregroundStyle(foregroundStyle)
             .background {
                 if logID == selectionLogID || logID == subSelectionLogID {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.accentColor)
+                        .fill( active ? Color(NSColor.selectedContentBackgroundColor) : Color(NSColor.unemphasizedSelectedContentBackgroundColor))
                 }
             }
     }

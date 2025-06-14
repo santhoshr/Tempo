@@ -10,7 +10,6 @@ import Foundation
 import AppKit
 
 struct FolderView: View {
-    @Environment(\.appearsActive) private var appearsActive
     var folder: Folder
     @Binding var selectionLog: Log?
     @Binding var subSelectionLogID: String?

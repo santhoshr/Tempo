@@ -37,6 +37,7 @@ struct ContentView: View {
                             .font(.caption)
                             .padding(.top, 2)
                     }
+                    .multilineTextAlignment(.center)
                     .foregroundColor(.secondary)
                     .padding(.horizontal)
                 } else {

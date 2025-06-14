@@ -54,6 +54,23 @@ struct CommitGraphView: View {
         .background(Color(NSColor.textBackgroundColor))
         .focusable()
         .focusEffectDisabled()
+        .onMoveCommand { direction in
+            guard let selectionLogID else { return }
+            switch direction {
+            case .down:
+                if let next = logStore.nextLogID(logID: selectionLogID) {
+                    self.selectionLogID = next
+                }
+            case .up:
+                if let previous = logStore.previousLogID(logID: selectionLogID) {
+                    self.selectionLogID = previous
+                }
+            case .left, .right:
+                break
+            @unknown default:
+                break
+            }
+        }
     }
 }
 

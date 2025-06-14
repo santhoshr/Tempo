@@ -17,6 +17,7 @@ struct DefaultMergeCommitMessageTests {
             try await Process.output(GitMerge(directory: .testFixture!, branchName: "_test-fixture-conflict"))
         } catch {
             // A conflict error occurred
+            print(error)
         }
         let string = try await DefaultMergeCommitMessage(directory: .testFixture!).get()
         let expectedString = """

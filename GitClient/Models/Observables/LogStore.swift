@@ -81,7 +81,7 @@ import Observation
             return
         }
         do {
-            notCommitted = try await notCommited(directory: directory)
+            notCommitted = try await notCommitted(directory: directory)
             guard searchTokenRevisionRange.isEmpty else {
                 commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
                 try await loadTotalCommitsCount()
@@ -108,7 +108,7 @@ import Observation
         }
 
         do {
-            notCommitted = try await notCommited(directory: directory)
+            notCommitted = try await notCommitted(directory: directory)
             guard searchTokenRevisionRange.isEmpty else {
                 commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
                 return
@@ -147,7 +147,31 @@ import Observation
         }
     }
 
-    private func notCommited(directory: URL) async throws -> NotCommitted {
+    func nextLogID(logID: String) -> String? {
+        if logID == Log.notCommitted.id {
+            return commits.first?.id
+        }
+        let index = commits.firstIndex { $0.id == logID }
+        guard let index, index + 1 < commits.count else { return nil }
+        return commits[index + 1].id
+    }
+
+    func previousLogID(logID: String) -> String? {
+        if logID == Log.notCommitted.id {
+            return nil
+        }
+        let index = commits.firstIndex { $0.id == logID }
+        guard let index else { return nil }
+        if index == 0 {
+            if let notCommitted, !notCommitted.isEmpty {
+                return Log.notCommitted.id
+            }
+            return nil
+        }
+        return commits[index - 1].id
+    }
+
+    private func notCommitted(directory: URL) async throws -> NotCommitted {
         let gitDiff = try await Process.output(GitDiff(directory: directory))
         let gitDiffCached = try await Process.output(GitDiffCached(directory: directory))
         let status = try await Process.output(GitStatus(directory: directory))

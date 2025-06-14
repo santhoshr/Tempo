@@ -106,4 +106,27 @@ struct LogStoreTests {
         #expect(store.error == nil)
     }
 
+    @Test func nextLogID() async throws {
+        try await Process.output(GitSwitch(directory: .testFixture!, branchName: "_test-fixture"))
+        let store = LogStore()
+        store.directory = .testFixture!
+        await store.refresh()
+
+        #expect(store.nextLogID(logID: "d5b9d382e9177ff186d8a1c9f103d0790aeadbac")! == "9c121bd15bfc318d2180038a9e3c38147d954a1f")
+        #expect(store.nextLogID(logID: store.commits.last!.id) == nil)
+
+    }
+
+    @Test func previousLogID() async throws {
+        try await Process.output(GitSwitch(directory: .testFixture!, branchName: "_test-fixture"))
+        let store = LogStore()
+        store.directory = .testFixture!
+        await store.refresh()
+
+        #expect(store.previousLogID(logID: "d5b9d382e9177ff186d8a1c9f103d0790aeadbac")! == "6afc3011d0209673b7b876597a40e12c5fc446e2")
+        #expect(store.previousLogID(logID: store.commits.first!.id) == nil)
+
+        store.notCommitted = .init(diff: "hoge", diffCached: "", status: .init(untrackedFiles: [], unmergedFiles: []))
+        #expect(store.previousLogID(logID: store.commits.first!.id)! == Log.notCommitted.id)
+    }
 }

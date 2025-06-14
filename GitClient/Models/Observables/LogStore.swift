@@ -163,7 +163,7 @@ import Observation
         let index = commits.firstIndex { $0.id == logID }
         guard let index else { return nil }
         if index == 0 {
-            if notCommitted != nil {
+            if let notCommitted, !notCommitted.isEmpty {
                 return Log.notCommitted.id
             }
             return nil

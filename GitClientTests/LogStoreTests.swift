@@ -122,5 +122,9 @@ struct LogStoreTests {
         await store.refresh()
 
         #expect(store.previousLogID(logID: "d5b9d382e9177ff186d8a1c9f103d0790aeadbac")! == "6afc3011d0209673b7b876597a40e12c5fc446e2")
+        #expect(store.previousLogID(logID: store.commits.first!.id) == nil)
+
+        store.notCommitted = .init(diff: "hoge", diffCached: "", status: .init(untrackedFiles: [], unmergedFiles: []))
+        #expect(store.previousLogID(logID: store.commits.first!.id)! == Log.notCommitted.id)
     }
 }

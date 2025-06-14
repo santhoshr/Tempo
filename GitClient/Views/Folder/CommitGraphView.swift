@@ -259,7 +259,6 @@ struct GraphNode: View {
 }
 
 struct GraphNodeText: View {
-    @Environment(\.appearsActive) private var appearsActive
     var logID: String
     var title: String
     var foregroundStyle: Color {
@@ -271,6 +270,7 @@ struct GraphNodeText: View {
 
     @Binding var selectionLogID: String?
     @Binding var subSelectionLogID: String?
+    @Environment(\.appearsActive) private var appearsActive
 
     var body: some View {
         VStack {

@@ -98,7 +98,7 @@ struct AIService {
     func commitMessage(stagedDiff: String) async throws -> String {
         let body = RequestBody(
             messages: [
-                .init(role: "system", content: "You are good software engineer. Tell me commit message of this changes for git."),
+                .init(role: "system", content: "You are a good software engineer. Tell me commit message of these changes for git."),
                 .init(role: "user", content: stagedDiff)
             ],
             responseFormat: .init(

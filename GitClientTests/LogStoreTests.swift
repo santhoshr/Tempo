@@ -113,6 +113,8 @@ struct LogStoreTests {
         await store.refresh()
 
         #expect(store.nextLogID(logID: "d5b9d382e9177ff186d8a1c9f103d0790aeadbac")! == "9c121bd15bfc318d2180038a9e3c38147d954a1f")
+        #expect(store.nextLogID(logID: store.commits.last!.id) == nil)
+
     }
 
     @Test func previousLogID() async throws {

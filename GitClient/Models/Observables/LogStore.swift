@@ -151,9 +151,9 @@ import Observation
         if logID == Log.notCommitted.id {
             return commits.first?.id
         }
-        let commit = commits.first { $0.id == logID }
-        guard let commit else { return nil }
-        return commit.parentHashes.last
+        let index = commits.firstIndex { $0.id == logID }
+        guard let index, index + 1 < commits.count else { return nil }
+        return commits[index + 1].id
     }
 
     func previousLogID(logID: String) -> String? {

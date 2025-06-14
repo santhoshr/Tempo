@@ -147,6 +147,24 @@ import Observation
         }
     }
 
+    func nextLogID(logID: String) -> String? {
+        if logID == Log.notCommitted.id {
+            return commits.first?.id
+        }
+        let commit = commits.first { $0.id == logID }
+        guard let commit else { return nil }
+        return commit.parentHashes.last
+    }
+
+    func previousLogID(logID: String) -> String? {
+        if logID == Log.notCommitted.id {
+            return nil
+        }
+        let index = commits.firstIndex { $0.id == logID }
+        guard let index, index != 0 else { return nil }
+        return commits[index - 1].id
+    }
+
     private func notCommited(directory: URL) async throws -> NotCommitted {
         let gitDiff = try await Process.output(GitDiff(directory: directory))
         let gitDiffCached = try await Process.output(GitDiffCached(directory: directory))

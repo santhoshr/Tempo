@@ -29,20 +29,33 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            List(decodedFolders, id: \.url, selection: $selectionFolderURL) { folder in
-                Label(folder.displayName, systemImage: "folder")
-                    .help(folder.url.path)
-                    .contextMenu {
-                        Button("Delete") {
-                            var folders = decodedFolders
-                            folders.removeAll { $0 == folder }
-                            do {
-                                try self.folders = JSONEncoder().encode(folders)
-                            } catch {
-                                self.error = error
-                            }
-                        }
+            VStack {
+                if decodedFolders.isEmpty {
+                    VStack {
+                        Text("No Project Folder Added")
+                        Text("Please add a folder that contains a Git repository")
+                            .font(.caption)
+                            .padding(.top, 2)
                     }
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+                } else {
+                    List(decodedFolders, id: \.url, selection: $selectionFolderURL) { folder in
+                        Label(folder.displayName, systemImage: "folder")
+                            .help(folder.url.path)
+                            .contextMenu {
+                                Button("Delete") {
+                                    var folders = decodedFolders
+                                    folders.removeAll { $0 == folder }
+                                    do {
+                                        try self.folders = JSONEncoder().encode(folders)
+                                    } catch {
+                                        self.error = error
+                                    }
+                                }
+                            }
+                    }
+                }
             }
             .toolbar {
                 ToolbarItemGroup {
@@ -72,6 +85,7 @@ struct ContentView: View {
                     .help("Add Project Folder")
                 }
             }
+
         } content: {
             if let folder = selectionFolder {
                 FolderView(

@@ -232,10 +232,11 @@ struct GraphNode: View {
     var logID: String
     @Binding var selectionLogID: String?
     @Binding var subSelectionLogID: String?
+    @Environment(\.appearsActive) private var appearsActive
 
     private var fillColor: Color {
         if logID == selectionLogID || logID == subSelectionLogID {
-            return Color.accentColor
+            return appearsActive ? Color(NSColor.selectedContentBackgroundColor) : Color(NSColor.unemphasizedSelectedContentBackgroundColor)
         }
         if logID == Log.notCommitted.id {
             return Color.secondary

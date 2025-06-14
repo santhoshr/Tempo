@@ -258,8 +258,16 @@ struct GraphNode: View {
 }
 
 struct GraphNodeText: View {
+    @Environment(\.appearsActive) private var appearsActive
     var logID: String
     var title: String
+    var foregroundStyle: Color {
+        guard appearsActive else {
+            return logID == selectionLogID || logID == subSelectionLogID ? Color(NSColor.unemphasizedSelectedTextColor) : .secondary
+        }
+        return logID == selectionLogID || logID == subSelectionLogID ? .white : .secondary
+    }
+
     @Binding var selectionLogID: String?
     @Binding var subSelectionLogID: String?
 
@@ -270,11 +278,11 @@ struct GraphNodeText: View {
                 .padding(.vertical, 4)
         }
             .font(.callout)
-            .foregroundStyle(logID == selectionLogID || logID == subSelectionLogID ? .white : .secondary)
+            .foregroundStyle(foregroundStyle)
             .background {
                 if logID == selectionLogID || logID == subSelectionLogID {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.accentColor)
+                        .fill( appearsActive ? Color(NSColor.selectedContentBackgroundColor) : Color(NSColor.unemphasizedSelectedContentBackgroundColor))
                 }
             }
     }

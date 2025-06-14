@@ -81,7 +81,7 @@ import Observation
             return
         }
         do {
-            notCommitted = try await notCommited(directory: directory)
+            notCommitted = try await notCommitted(directory: directory)
             guard searchTokenRevisionRange.isEmpty else {
                 commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
                 try await loadTotalCommitsCount()
@@ -108,7 +108,7 @@ import Observation
         }
 
         do {
-            notCommitted = try await notCommited(directory: directory)
+            notCommitted = try await notCommitted(directory: directory)
             guard searchTokenRevisionRange.isEmpty else {
                 commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
                 return
@@ -171,7 +171,7 @@ import Observation
         return commits[index - 1].id
     }
 
-    private func notCommited(directory: URL) async throws -> NotCommitted {
+    private func notCommitted(directory: URL) async throws -> NotCommitted {
         let gitDiff = try await Process.output(GitDiff(directory: directory))
         let gitDiffCached = try await Process.output(GitDiffCached(directory: directory))
         let status = try await Process.output(GitStatus(directory: directory))

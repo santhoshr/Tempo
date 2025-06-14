@@ -33,7 +33,7 @@ struct ContentView: View {
                 if decodedFolders.isEmpty {
                     VStack {
                         Text("No Project Folder Added")
-                        Text("Please add a folder that contains a Git repository")
+                        Text("Please add a folder that contains a Git repository.")
                             .font(.caption)
                             .padding(.top, 2)
                     }

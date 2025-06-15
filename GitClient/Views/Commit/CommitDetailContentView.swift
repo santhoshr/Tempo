@@ -123,19 +123,22 @@ struct CommitDetailContentView: View {
         .background(Color(NSColor.textBackgroundColor))
         .textSelection(.enabled)
         .safeAreaInset(edge: .bottom, spacing: 0, content: {
-            VStack(spacing: 0) {
-                Divider()
-                Spacer()
-                HStack {
-                    Text(shortstat)
-                        .minimumScaleFactor(0.3)
-                        .foregroundStyle(.primary)
-                }
-                .font(.callout)
+            HStack(spacing: 0) {
+                Text(shortstat)
+                    .minimumScaleFactor(0.3)
+                    .foregroundStyle(.primary)
+                    .font(.callout)
+                    .padding(.horizontal)
                 Spacer()
             }
-            .background(Color(nsColor: .textBackgroundColor))
             .frame(height: 40)
+            .background {
+                LinearGradient(
+                    gradient: Gradient(colors: [.clear, Color(nsColor: .textBackgroundColor)]),
+                    startPoint: .init(x: 0, y: 0),
+                    endPoint: .init(x: 0, y: 0.4)
+                )
+            }
         })
         .onChange(of: commit, initial: true, { _, commit in
             Task {

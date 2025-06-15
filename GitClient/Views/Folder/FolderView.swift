@@ -211,13 +211,11 @@ struct FolderView: View {
         })
         .navigationTitle(branch?.name ?? "")
         .toolbar {
-            navigationToolbar()
-        }
-        .toolbar {
             if isLoading {
                 ProgressView()
                     .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
             } else {
+                branchesButton()
                 addBranchButton()
                     .padding(.trailing)
                 tagButton()
@@ -285,12 +283,11 @@ struct FolderView: View {
     }
 
 
-    fileprivate func navigationToolbar() -> ToolbarItem<(), some View> {
-        return ToolbarItem(placement: .navigation) {
-            Button {
+    fileprivate func branchesButton() -> some View {
+        Button {
                 showing.branches.toggle()
             } label: {
-                Image(systemName: "chevron.down")
+                Image(systemName: "arrow.trianglehead.branch")
             }
             .help("Select Branch")
             .popover(isPresented: $showing.branches) {
@@ -369,7 +366,7 @@ struct FolderView: View {
                 .frame(width: 300, height: 660)
                 .padding()
             }
-        }
+
     }
 
     fileprivate func saveSearchTokenHistory(oldValue: [SearchToken], newValue: [SearchToken]) {

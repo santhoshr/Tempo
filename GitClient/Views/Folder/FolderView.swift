@@ -212,9 +212,17 @@ struct FolderView: View {
         .navigationTitle(branch?.name ?? "")
         .toolbar {
             if isLoading {
-                ToolbarItem(placement: .principal) {
-                    ProgressView()
-                        .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
+                if #available(macOS 26.0, *) {
+                    ToolbarItem(placement: .principal) {
+                        ProgressView()
+                            .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
+                    }
+                    .sharedBackgroundVisibility(.hidden)
+                } else {
+                    ToolbarItem(placement: .principal) {
+                        ProgressView()
+                            .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
+                    }
                 }
             } else {
                 ToolbarItem(placement: .principal) {

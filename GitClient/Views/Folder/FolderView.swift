@@ -67,6 +67,7 @@ struct FolderView: View {
                 Spacer()
                 if #available(macOS 26.0, *) {
                     graphButton()
+                        .clipShape(Capsule())
                         .buttonStyle(.glass)
                 } else {
                     graphButton()
@@ -79,7 +80,7 @@ struct FolderView: View {
                 LinearGradient(
                     gradient: Gradient(colors: [.clear, Color(nsColor: .textBackgroundColor)]),
                     startPoint: .init(x: 0, y: 0),
-                    endPoint: .init(x: 0, y: 0.5)
+                    endPoint: .init(x: 0, y: 0.4)
                 )
             }
         }

@@ -38,6 +38,7 @@ struct FolderView: View {
         decodedSearchTokenHistory.filter { !searchTokens.contains($0)}
     }
 
+    
     var body: some View {
         VStack(spacing: 0) {
             if showGraph {
@@ -60,27 +61,26 @@ struct FolderView: View {
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
-                Divider()
-                Spacer()
+            HStack(alignment: .center, spacing: 0) {
                 countText()
                     .font(.callout)
                 Spacer()
-            }
-            .frame(height: 40)
-            .background(Color(nsColor: .textBackgroundColor))
-            .overlay(alignment: .trailing) {
-                Button(action: {
-                    showGraph.toggle()
-                }) {
-                    Image(systemName: showGraph ? "point.3.filled.connected.trianglepath.dotted" : "point.3.connected.trianglepath.dotted")
-                        .font(.title3)
-                        .rotationEffect(.init(degrees: 270))
-                        .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
+                if #available(macOS 26.0, *) {
+                    graphButton()
+                        .buttonStyle(.glass)
+                } else {
+                    graphButton()
+                        .buttonStyle(.accessoryBar)
                 }
-                .buttonStyle(.accessoryBar)
-                .padding(.horizontal, 8)
-                .help("Commit Graph")
+            }
+            .padding(.horizontal)
+            .frame(height: 40)
+            .background {
+                LinearGradient(
+                    gradient: Gradient(colors: [.clear, Color(nsColor: .textBackgroundColor)]),
+                    startPoint: .init(x: 0, y: 0),
+                    endPoint: .init(x: 0, y: 0.5)
+                )
             }
         }
         .overlay(content: {
@@ -308,6 +308,17 @@ struct FolderView: View {
         }
     }
 
+    fileprivate func graphButton() -> some View {
+        Button(action: {
+            showGraph.toggle()
+        }) {
+            Image(systemName: showGraph ? "point.3.filled.connected.trianglepath.dotted" : "point.3.connected.trianglepath.dotted")
+                .font(.title3)
+                .rotationEffect(.init(degrees: 270))
+                .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
+        }
+        .help("Commit Graph")
+    }
 
     fileprivate func branchesButton() -> some View {
         Button {

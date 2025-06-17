@@ -18,7 +18,7 @@ struct GeneratedCommitMessage {
 @available(macOS 26.0, *)
 struct SystemLanguageModelService {
     func commitMessage(stagedDiff: String) async throws -> String {
-        let instructions = "You are a good software engineer. I'll provide the result of git diff as a prompt, so please return only the commit message."
+        let instructions = "You are a good software engineer. Please provide a concise  commit message based on the given git diff output."
         let session = LanguageModelSession(instructions: instructions)
         return try await session.respond(to: stagedDiff, generating: GeneratedCommitMessage.self).content.commitMessage
     }

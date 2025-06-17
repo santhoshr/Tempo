@@ -28,6 +28,25 @@ struct SystemLanguageModelServiceTests {
             """)
         print(message)
         #expect(!message.isEmpty)
+
+        let message2 = try await SystemLanguageModelService().commitMessage(stagedDiff: """
+            diff --git a/GitClient/Views/ContentView.swift b/GitClient/Views/ContentView.swift
+            index 3ea91cd..2c5dd6f 100644
+            --- a/GitClient/Views/ContentView.swift
+            +++ b/GitClient/Views/ContentView.swift
+            @@ -33,7 +33,7 @@ struct ContentView: View {
+                             if decodedFolders.isEmpty {
+                                 VStack {
+                                     Text("No Project Folder Added")
+            -                        Text("Please add a folder that contains a Git repository")
+            +                        Text("Please add a folder that contains a Git repository.")
+                                         .font(.caption)
+                                         .padding(.top, 2)
+                                 }
+            """)
+        print(message2)
+        #expect(!message2.isEmpty)
+
     }
 
 }

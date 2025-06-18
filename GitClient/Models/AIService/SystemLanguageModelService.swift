@@ -18,8 +18,8 @@ struct GeneratedCommitMessage {
 @available(macOS 26.0, *)
 struct SystemLanguageModelService {
     func commitMessage(stagedDiff: String) async throws -> String {
-        let instructions = "You are a good software engineer."
-        let prompt = "Please provide an appropriate commit message for the following git diff output:\(stagedDiff)"
+        let instructions = "You are a good software engineer. When creating a commit message, it is not the initial commit."
+        let prompt = "Please provide an appropriate commit message for the following changes: \(stagedDiff)"
         let session = LanguageModelSession(instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedCommitMessage.self).content.commitMessage
     }

@@ -46,7 +46,6 @@ You are a good software engineer. When creating a commit message, it is not the 
         let session = LanguageModelSession(tools: tools, instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedCommitMessage.self).content.commitMessage
     }
-
 }
 
 @available(macOS 26.0, *)

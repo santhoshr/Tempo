@@ -41,6 +41,18 @@ index abc1234..def5678 100644
     func commitMessage(tools: [any Tool]) async throws -> String {
         let instructions = """
 You are a good software engineer. When creating a commit message, it is not the initial commit.
+
+The output format of git diff is as follows:
+```
+diff --git a/filename b/filename
+index abc1234..def5678 100644
+--- a/filename
++++ b/filename
+@@ -start,count +start,count @@ optional context or function name
+- line that was removed
++ line that was added
+  unchanged line (context)
+```
 """
         let prompt = "Please provide an appropriate commit message for staged changes of uncommitted changes"
         let session = LanguageModelSession(tools: tools, instructions: instructions)

@@ -37,6 +37,7 @@ index abc1234..def5678 100644
         return try await session.respond(to: prompt, generating: GeneratedCommitMessage.self).content.commitMessage
     }
     
+    /// Toolを使っても特に精度は良くない。Toolを利用することでインプットする情報としては整理されていると思ったのだけど。。。
     func commitMessage(tools: [any Tool]) async throws -> String {
         let instructions = """
 You are a good software engineer. When creating a commit message, it is not the initial commit.

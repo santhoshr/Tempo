@@ -67,13 +67,14 @@ index abc1234..def5678 100644
         return try await session.respond(to: prompt, generating: GeneratedCommitMessage.self).content.commitMessage
     }
     
+    /// beta
     func stagingChanges(unstagedDiff: String) async throws -> [Bool] {
         let instructions = """
-You are a good software engineer.
+You are a good software engineer. A hunk starts from @@ -start,count +start,count @@.
 """
         let prompt = "Please indicate which hunks should be committed by answering with booleans so that the response can be used as input for git add -p.: \(unstagedDiff)"
         let session = LanguageModelSession(instructions: instructions)
-        return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self).content.hunksToStage
+        return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self, options: .init(temperature: 0.1)).content.hunksToStage
     }
 }
 

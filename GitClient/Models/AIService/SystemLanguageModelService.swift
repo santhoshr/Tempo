@@ -62,7 +62,7 @@ index abc1234..def5678 100644
   unchanged line (context)
 ```
 """
-        let prompt = "Please provide an appropriate commit message for staged changes of uncommitted changes"
+        let prompt = "Please provide an appropriate commit message for staged changes"
         let session = LanguageModelSession(tools: tools, instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedCommitMessage.self).content.commitMessage
     }
@@ -86,7 +86,6 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
         let session = LanguageModelSession(tools: tools, instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self, options: .init(temperature: 1.0)).content.hunksToStage
     }
-
 }
 
 @available(macOS 26.0, *)
@@ -107,6 +106,21 @@ struct UncommitedChangesTool: Tool {
     }
 }
 
+@available(macOS 26.0, *)
+struct StagedChangesTool: Tool {
+    @Generable
+    struct Arguments {}
+    
+    let name = "stagedChanges"
+    let description: String = "Get staged changes"
+    let directory: URL
+    
+    func call(arguments: Arguments) async throws -> ToolOutput {
+        let gitDiffCached = try await Process.output(GitDiffCached(directory: directory))
+        let cachedDiff = try Diff(raw: gitDiffCached).fileDiffs.map { $0.raw }
+        return ToolOutput(GeneratedContent(properties: ["stagedChanges": cachedDiff]))
+    }
+}
 
 @available(macOS 26.0, *)
 struct UnstagedChangesTool: Tool {

@@ -74,8 +74,19 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
 """
         let prompt = "Please indicate which hunks should be committed by answering with booleans so that the response can be used as input for git add -p.: \(unstagedDiff)"
         let session = LanguageModelSession(instructions: instructions)
-        return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self, options: .init(temperature: 0.1)).content.hunksToStage
+        return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self, options: .init(temperature: 1.0)).content.hunksToStage
     }
+    
+    /// beta
+    func stagingChanges(tools: [any Tool]) async throws -> [Bool] {
+        let instructions = """
+You are a good software engineer. A hunk starts from @@ -start,count +start,count @@.
+"""
+        let prompt = "Please indicate which unstaged changes should be committed by answering with booleans"
+        let session = LanguageModelSession(tools: tools, instructions: instructions)
+        return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self, options: .init(temperature: 1.0)).content.hunksToStage
+    }
+
 }
 
 @available(macOS 26.0, *)
@@ -93,5 +104,22 @@ struct UncommitedChangesTool: Tool {
         let diff = try Diff(raw: gitDiff).fileDiffs.map { $0.raw }
         let cachedDiff = try Diff(raw: gitDiffCached).fileDiffs.map { $0.raw }
         return ToolOutput(GeneratedContent(properties: ["stagedChanges": cachedDiff, "unstagedChanges": diff]))
+    }
+}
+
+
+@available(macOS 26.0, *)
+struct UnstagedChangesTool: Tool {
+    @Generable
+    struct Arguments {}
+    
+    let name = "unstagedChanges"
+    let description: String = "Get unstaged changes"
+    let directory: URL
+    
+    func call(arguments: Arguments) async throws -> ToolOutput {
+        let gitDiff = try await Process.output(GitDiff(directory: directory))
+        let diff = try Diff(raw: gitDiff).fileDiffs.map { $0.raw }
+        return ToolOutput(GeneratedContent(properties: ["unstagedChanges": diff]))
     }
 }

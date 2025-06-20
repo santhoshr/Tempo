@@ -121,6 +121,26 @@ struct SystemLanguageModelServiceTests {
         print(message2)
         #expect(!message2.isEmpty)
     }
+    
+    @available(macOS 26.0, *)
+    @Test func stagingChanges() async throws {
+        let hunksToStages = try await SystemLanguageModelService().stagingChanges(unstagedDiff: """
+            diff --git a/GitClient/Views/Folder/CommitGraphView.swift b/GitClient/Views/Folder/CommitGraphView.swift
+            index 5f79207..4660cf4 100644
+            --- a/GitClient/Views/Folder/CommitGraphView.swift
+            +++ b/GitClient/Views/Folder/CommitGraphView.swift
+            @@ -51,7 +51,6 @@ struct CommitGraphView: View {
+                             .padding(.bottom, 22)
+                         }
+                     }
+            -        .background(Color(NSColor.textBackgroundColor))
+                     .focusable()
+                     .focusEffectDisabled()
+                     .onMoveCommand { direction in
+            """)
+        print(hunksToStages)
+        #expect(!hunksToStages.isEmpty)
+    }
 }
 
 

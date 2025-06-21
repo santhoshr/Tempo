@@ -51,6 +51,7 @@ struct CommitGraphView: View {
                 .padding(.bottom, 22)
             }
         }
+        .background(Color(NSColor.textBackgroundColor))
         .focusable()
         .focusEffectDisabled()
         .onMoveCommand { direction in

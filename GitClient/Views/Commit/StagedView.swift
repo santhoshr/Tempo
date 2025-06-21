@@ -14,17 +14,32 @@ struct StagedView: View {
     @State private var isExpanded = true
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Section (isExpanded: $isExpanded) {
-                if fileDiffs.isEmpty {
-                    LazyVStack(alignment: .center) {
-                        Label("No Changes", systemImage: "plusminus")
-                            .foregroundStyle(.secondary)
-                            .padding()
-                            .padding()
-                            .padding(.trailing)
-                    }
+        DisclosureGroup(isExpanded: $isExpanded) {
+            if fileDiffs.isEmpty {
+                LazyVStack(alignment: .center) {
+                    Label("No Changes", systemImage: "plusminus")
+                        .foregroundStyle(.secondary)
+                        .padding()
+                        .padding()
+                        .padding(.trailing)
                 }
+            } else {
+                HStack {
+                    Spacer()
+                    Button {
+                        fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model)}
+                    } label: {
+                        Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
+                    }
+                    .help("Expand All Files")
+                    Button {
+                        fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model)}
+                    } label: {
+                        Image(systemName: "arrow.down.and.line.horizontal.and.arrow.up")
+                    }
+                    .help("Collapse All Files")
+                }
+                .buttonStyle(.accessoryBar)
                 StagedFileDiffView(
                     expandableFileDiffs: $fileDiffs,
                     selectButtonImageSystemName: "minus.circle",
@@ -32,13 +47,13 @@ struct StagedView: View {
                     onSelectFileDiff: onSelectFileDiff,
                     onSelectChunk: onSelectChunk
                 )
-            } header: {
-                SectionHeader(
-                    title: "Staged Changes",
-                    isExpanded: $isExpanded) { isExpandedAll in
-                        fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
-                    }
+                .padding(.leading, 4)
             }
+        } label: {
+            SectionHeader(title: "Staged Changes")
+                .padding(.leading, 3)
         }
+        .padding(.horizontal)
+        .padding(.top)
     }
 }

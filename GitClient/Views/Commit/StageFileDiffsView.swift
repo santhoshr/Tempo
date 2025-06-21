@@ -20,9 +20,6 @@ struct StagedFileDiffView: View {
                     expandableFileDiff: $fileDiff,
                     selectButtonImageSystemName: selectButtonImageSystemName,
                     selectButtonHelp: selectButtonHelp,
-                    onSelectExpandedAll: { isExpandedAll in
-                        expandableFileDiffs = expandableFileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
-                    },
                     onSelectFileDiff: onSelectFileDiff,
                     onSelectChunk: onSelectChunk
                 )

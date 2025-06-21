@@ -16,63 +16,73 @@ struct UnstagedView: View {
     @State private var isExpanded = true
 
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: 0) {
-            Section (isExpanded: $isExpanded) {
-                if fileDiffs.isEmpty && untrackedFiles.isEmpty {
-                    LazyVStack(alignment: .center) {
-                        Label("No Changes", systemImage: "plusminus")
-                            .foregroundStyle(.secondary)
-                            .padding()
-                            .padding()
-                            .padding(.bottom)
-                            .padding(.trailing)
-                    }
+        DisclosureGroup(isExpanded: $isExpanded) {
+            if fileDiffs.isEmpty && untrackedFiles.isEmpty {
+                LazyVStack(alignment: .center) {
+                    Label("No Changes", systemImage: "plusminus")
+                        .foregroundStyle(.secondary)
+                        .padding()
+                        .padding()
+                        .padding(.bottom)
+                        .padding(.trailing)
                 }
-                StagedFileDiffView(
-                    expandableFileDiffs: $fileDiffs,
-                    selectButtonImageSystemName: "plus.circle",
-                    selectButtonHelp: "Stage This Hunk",
-                    onSelectFileDiff: onSelectFileDiff,
-                    onSelectChunk: onSelectChunk
-                )
+            } else {
+                HStack {
+                Spacer()
+                Button {
+                    fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model)}
+                } label: {
+                    Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
+                }
+                    .help("Expand All Files")
+                Button {
+                fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model)}
+                } label: {
+                    Image(systemName: "arrow.down.and.line.horizontal.and.arrow.up")
+                }
+                    .help("Collapse All Files")
+}
+                .buttonStyle(.accessoryBar)
+            }
+            StagedFileDiffView(
+                expandableFileDiffs: $fileDiffs,
+                selectButtonImageSystemName: "plus.circle",
+                selectButtonHelp: "Stage This Hunk",
+                onSelectFileDiff: onSelectFileDiff,
+                onSelectChunk: onSelectChunk
+            )
+            .padding(.leading, 4)
 
-                if !untrackedFiles.isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Untracked Files")
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
-                            .padding(.top)
-                        Divider()
-                            .padding(.bottom)
-                        ForEach(untrackedFiles, id: \.self) { file in
-                            HStack {
-                                Text(file)
-                                    .fontWeight(.bold)
-                                Spacer()
-                                Button {
-                                    onSelectUntrackedFile?(file)
-                                } label: {
-                                    Image(systemName: "plus.circle")
-                                }
-                                .buttonStyle(.accessoryBar)
-                                .help("Stage This File")
-                                .padding(.horizontal)
+            if !untrackedFiles.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Untracked Files")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                        .padding(.top)
+                    ForEach(untrackedFiles, id: \.self) { file in
+                        HStack {
+                            Text(file)
+                                .fontWeight(.bold)
+                            Spacer()
+                            Button {
+                                onSelectUntrackedFile?(file)
+                            } label: {
+                                Image(systemName: "plus.circle")
                             }
+                            .buttonStyle(.accessoryBar)
+                            .help("Stage This File")
+                            .padding(.horizontal)
                         }
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom)
                 }
-            } header: {
-                SectionHeader(
-                    title: "Unstaged Changes",
-                    isExpanded: $isExpanded,
-                    onSelectExpandedAll: { isExpandedAll in
-                        fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
-                    }
-                )
+                .padding(.horizontal)
+                .padding(.bottom)
             }
+        } label: {
+            SectionHeader(title: "Unstaged Changes")
+                .padding(.leading, 3)
         }
+        .padding(.horizontal)
     }
 }
 

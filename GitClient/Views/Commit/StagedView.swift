@@ -54,5 +54,7 @@ struct StagedView: View {
                 .padding(.leading, 3)
         }
         .padding(.horizontal)
+        .padding(.top)
+
     }
 }

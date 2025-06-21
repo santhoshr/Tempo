@@ -14,31 +14,26 @@ struct StagedView: View {
     @State private var isExpanded = true
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Section (isExpanded: $isExpanded) {
-                if fileDiffs.isEmpty {
-                    LazyVStack(alignment: .center) {
-                        Label("No Changes", systemImage: "plusminus")
-                            .foregroundStyle(.secondary)
-                            .padding()
-                            .padding()
-                            .padding(.trailing)
-                    }
+        DisclosureGroup(isExpanded: $isExpanded) {
+            if fileDiffs.isEmpty {
+                LazyVStack(alignment: .center) {
+                    Label("No Changes", systemImage: "plusminus")
+                        .foregroundStyle(.secondary)
+                        .padding()
+                        .padding()
+                        .padding(.trailing)
                 }
-                StagedFileDiffView(
-                    expandableFileDiffs: $fileDiffs,
-                    selectButtonImageSystemName: "minus.circle",
-                    selectButtonHelp: "Unstage This Hunk",
-                    onSelectFileDiff: onSelectFileDiff,
-                    onSelectChunk: onSelectChunk
-                )
-            } header: {
-                SectionHeader(
-                    title: "Staged Changes",
-                    isExpanded: $isExpanded) { isExpandedAll in
-                        fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
-                    }
             }
+            StagedFileDiffView(
+                expandableFileDiffs: $fileDiffs,
+                selectButtonImageSystemName: "minus.circle",
+                selectButtonHelp: "Unstage This Hunk",
+                onSelectFileDiff: onSelectFileDiff,
+                onSelectChunk: onSelectChunk
+            )
+        } label: {
+            SectionHeader(title: "Staged Changes")
         }
+        .padding(.horizontal)
     }
 }

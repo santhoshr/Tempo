@@ -112,7 +112,7 @@ struct CommitCreateView: View {
                             }
                         }
                     )
-                    .padding(.vertical)
+                    .padding(.bottom)
                 }
 
                 if let updateChangesError {

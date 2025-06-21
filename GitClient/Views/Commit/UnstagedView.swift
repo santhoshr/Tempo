@@ -16,7 +16,7 @@ struct UnstagedView: View {
     @State private var isExpanded = true
 
     var body: some View {
-        LazyVStack(alignment: .leading) {
+        LazyVStack(alignment: .leading, spacing: 0) {
             Section (isExpanded: $isExpanded) {
                 if fileDiffs.isEmpty && untrackedFiles.isEmpty {
                     LazyVStack(alignment: .center) {

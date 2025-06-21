@@ -24,12 +24,7 @@ struct SectionHeader: View {
                     onSelectExpandedAll: onSelectExpandedAll
                 )
             }
-            .padding(.vertical)
             .padding(.horizontal)
-            if isExpanded {
-                Divider()
-                    .padding(.horizontal)
-            }
         }
         .textSelection(.disabled)
         .background(Color(NSColor.textBackgroundColor))

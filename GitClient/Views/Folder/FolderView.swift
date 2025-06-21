@@ -211,20 +211,33 @@ struct FolderView: View {
         })
         .navigationTitle(branch?.name ?? "")
         .toolbar {
-            navigationToolbar()
-        }
-        .toolbar {
             if isLoading {
-                ProgressView()
-                    .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
+                ToolbarItem(placement: .primaryAction) {
+                    ProgressView()
+                        .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
+                }
             } else {
-                addBranchButton()
-                    .padding(.trailing)
-                tagButton()
-                stashButton()
-                    .padding(.trailing)
-                pullButton()
-                pushButton()
+                ToolbarItem(placement: .principal) {
+                    branchesButton()
+                }
+                ToolbarItem(placement: .principal) {
+                    addBranchButton()
+                        .padding(.trailing)
+                }
+                ToolbarItem(placement: .principal) {
+                    tagButton()
+                        .padding(.trailing)
+                }
+                ToolbarItem(placement: .principal) {
+                    stashButton()
+                        .padding(.trailing)
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    pullButton()
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    pushButton()
+                }
             }
         }
         .onChange(of: showing.stashChanged) { _, new in
@@ -285,12 +298,11 @@ struct FolderView: View {
     }
 
 
-    fileprivate func navigationToolbar() -> ToolbarItem<(), some View> {
-        return ToolbarItem(placement: .navigation) {
-            Button {
+    fileprivate func branchesButton() -> some View {
+        Button {
                 showing.branches.toggle()
             } label: {
-                Image(systemName: "chevron.down")
+                Image(systemName: "arrow.trianglehead.branch")
             }
             .help("Select Branch")
             .popover(isPresented: $showing.branches) {
@@ -369,7 +381,7 @@ struct FolderView: View {
                 .frame(width: 300, height: 660)
                 .padding()
             }
-        }
+
     }
 
     fileprivate func saveSearchTokenHistory(oldValue: [SearchToken], newValue: [SearchToken]) {

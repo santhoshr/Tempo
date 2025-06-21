@@ -78,7 +78,7 @@ struct CommitDetailContentView: View {
                 .foregroundColor(.secondary)
                 .buttonStyle(.link)
             }
-            .padding(.top)
+            .padding(.top, 14)
             .padding(.horizontal)
             HStack {
                 VStack (alignment: .leading, spacing: 0) {

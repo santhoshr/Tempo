@@ -12,17 +12,12 @@ struct FileDiffView: View {
     var onSelectAllExpanded: ((Bool) -> Void)
 
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
-            Section(isExpanded: $expandableFileDiff.isExpanded) {
-                chunksView(expandableFileDiff.model.chunks, filePath: expandableFileDiff.model.toFilePath)
-            } header: {
-                FileDiffHeader(
-                    isExpanded: $expandableFileDiff.isExpanded,
-                    toFilePath: expandableFileDiff.model.toFilePath,
-                    filePathDisplay: expandableFileDiff.model.filePathDisplay,
-                    onSelectAllExpanded: onSelectAllExpanded
-                )
+        DisclosureGroup(isExpanded: $expandableFileDiff.isExpanded) {
+            LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
+                    chunksView(expandableFileDiff.model.chunks, filePath: expandableFileDiff.model.toFilePath)
             }
+        } label: {
+            FileNameView(toFilePath: expandableFileDiff.model.toFilePath, filePathDisplay: expandableFileDiff.model.filePathDisplay)
         }
     }
 

@@ -26,6 +26,23 @@ struct UnstagedView: View {
                         .padding(.bottom)
                         .padding(.trailing)
                 }
+            } else {
+                HStack {
+                Spacer()
+                Button {
+                    fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model)}
+                } label: {
+                    Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
+                }
+                    .help("Expand All Files")
+                Button {
+                fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model)}
+                } label: {
+                    Image(systemName: "arrow.down.and.line.horizontal.and.arrow.up")
+                }
+                    .help("Collapse All Files")
+}
+                .buttonStyle(.accessoryBar)
             }
             StagedFileDiffView(
                 expandableFileDiffs: $fileDiffs,
@@ -34,6 +51,7 @@ struct UnstagedView: View {
                 onSelectFileDiff: onSelectFileDiff,
                 onSelectChunk: onSelectChunk
             )
+            .padding(.leading, 4)
 
             if !untrackedFiles.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
@@ -41,8 +59,6 @@ struct UnstagedView: View {
                         .foregroundStyle(.secondary)
                         .font(.caption)
                         .padding(.top)
-                    Divider()
-                        .padding(.bottom)
                     ForEach(untrackedFiles, id: \.self) { file in
                         HStack {
                             Text(file)
@@ -64,6 +80,7 @@ struct UnstagedView: View {
             }
         } label: {
             SectionHeader(title: "Unstaged Changes")
+                .padding(.leading, 3)
         }
         .padding(.horizontal)
     }

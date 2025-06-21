@@ -55,6 +55,5 @@ struct StagedView: View {
         }
         .padding(.horizontal)
         .padding(.top)
-
     }
 }

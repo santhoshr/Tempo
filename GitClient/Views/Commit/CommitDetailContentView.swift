@@ -79,20 +79,18 @@ struct CommitDetailContentView: View {
                 .buttonStyle(.link)
             }
             .padding(.top)
-            .padding(.top)
             .padding(.horizontal)
             HStack {
-                VStack (alignment: .leading) {
+                VStack (alignment: .leading, spacing: 0) {
                     Text(commit.title.trimmingCharacters(in: .whitespacesAndNewlines))
-                        .font(.title)
-                        .padding(.leading)
-                        .padding(.vertical)
+                        .font(.title2)
+                        .fontWeight(.bold)
                         .layoutPriority(1)
+                        .padding(.top, 8)
                     if !commit.body.isEmpty {
                         Text(commit.body.trimmingCharacters(in: .whitespacesAndNewlines))
                             .font(.body)
-                            .padding(.leading)
-                            .padding(.bottom, 8)
+                            .padding(.top, 4)
                     }
                     HStack {
                         Icon(size: .medium, authorEmail: commit.authorEmail, authorInitial: String(commit.author.initial.prefix(2)))
@@ -104,7 +102,6 @@ struct CommitDetailContentView: View {
                         Text(commit.authorDateDisplay)
                     }
                     .padding(.top)
-                    .padding(.top, 8)
                     .foregroundStyle(.secondary)
                     Divider()
                         .padding(.top)
@@ -117,7 +114,6 @@ struct CommitDetailContentView: View {
                 Spacer(minLength: 0)
             }
             .padding(.horizontal)
-            .padding(.top)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(NSColor.textBackgroundColor))

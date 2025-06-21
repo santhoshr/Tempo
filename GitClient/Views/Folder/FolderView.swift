@@ -212,7 +212,7 @@ struct FolderView: View {
         .navigationTitle(branch?.name ?? "")
         .toolbar {
             if isLoading {
-                ToolbarItem(placement: .principal) {
+                ToolbarItem(placement: .primaryAction) {
                     ProgressView()
                         .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
                 }

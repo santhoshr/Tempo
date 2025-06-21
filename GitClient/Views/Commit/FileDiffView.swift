@@ -15,6 +15,8 @@ struct FileDiffView: View {
         DisclosureGroup(isExpanded: $expandableFileDiff.isExpanded) {
             LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
                     chunksView(expandableFileDiff.model.chunks, filePath: expandableFileDiff.model.toFilePath)
+                    .padding(.top, 8)
+                    .padding(.bottom, 12)
             }
         } label: {
             FileNameView(toFilePath: expandableFileDiff.model.toFilePath, filePathDisplay: expandableFileDiff.model.filePathDisplay)
@@ -25,7 +27,6 @@ struct FileDiffView: View {
     private func chunksView(_ chunks: [Chunk], filePath: String) -> some View {
         ForEach(chunks) { chunk in
             ChunkView(chunk: chunk, filePath: filePath)
-                .padding(.bottom)
         }
     }
 }

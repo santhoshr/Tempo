@@ -23,16 +23,35 @@ struct StagedView: View {
                         .padding()
                         .padding(.trailing)
                 }
+            } else {
+                HStack {
+                    Spacer()
+                    Button {
+                        fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model)}
+                    } label: {
+                        Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
+                    }
+                    .help("Expand All Files")
+                    Button {
+                        fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model)}
+                    } label: {
+                        Image(systemName: "arrow.down.and.line.horizontal.and.arrow.up")
+                    }
+                    .help("Collapse All Files")
+                }
+                .buttonStyle(.accessoryBar)
+                StagedFileDiffView(
+                    expandableFileDiffs: $fileDiffs,
+                    selectButtonImageSystemName: "minus.circle",
+                    selectButtonHelp: "Unstage This Hunk",
+                    onSelectFileDiff: onSelectFileDiff,
+                    onSelectChunk: onSelectChunk
+                )
+                .padding(.leading, 4)
             }
-            StagedFileDiffView(
-                expandableFileDiffs: $fileDiffs,
-                selectButtonImageSystemName: "minus.circle",
-                selectButtonHelp: "Unstage This Hunk",
-                onSelectFileDiff: onSelectFileDiff,
-                onSelectChunk: onSelectChunk
-            )
         } label: {
             SectionHeader(title: "Staged Changes")
+                .padding(.leading, 3)
         }
         .padding(.horizontal)
     }

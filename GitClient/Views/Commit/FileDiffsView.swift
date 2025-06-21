@@ -22,5 +22,6 @@ struct FileDiffsView: View {
             }
         }
         .font(Font.system(.body, design: .monospaced))
+        .padding(.vertical)
     }
 }

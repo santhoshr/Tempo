@@ -18,6 +18,7 @@ struct FileDiffView: View {
             }
         } label: {
             FileNameView(toFilePath: expandableFileDiff.model.toFilePath, filePathDisplay: expandableFileDiff.model.filePathDisplay)
+                .padding(.leading, 3)
         }
     }
 

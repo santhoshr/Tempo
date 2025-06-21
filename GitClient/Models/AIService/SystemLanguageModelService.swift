@@ -137,3 +137,20 @@ struct UnstagedChangesTool: Tool {
         return ToolOutput(GeneratedContent(properties: ["unstagedChanges": diff]))
     }
 }
+
+@available(macOS 26.0, *)
+struct GitLogTool: Tool {
+    @Generable
+    struct Arguments {
+        var maxCount: Int
+    }
+    
+    let name = "gitLog"
+    let description: String = "Get git commits"
+    let directory: URL
+    
+    func call(arguments: Arguments) async throws -> ToolOutput {
+        let logs = try await Process.output(GitLog(directory: directory))
+        return ToolOutput(GeneratedContent(properties: ["commits": logs.description]))
+    }
+}

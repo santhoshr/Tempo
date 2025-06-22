@@ -24,22 +24,6 @@ struct StagedView: View {
                         .padding(.trailing)
                 }
             } else {
-                HStack {
-                    Spacer()
-                    Button {
-                        fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model)}
-                    } label: {
-                        Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
-                    }
-                    .help("Expand All Files")
-                    Button {
-                        fileDiffs = fileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model)}
-                    } label: {
-                        Image(systemName: "arrow.down.and.line.horizontal.and.arrow.up")
-                    }
-                    .help("Collapse All Files")
-                }
-                .buttonStyle(.accessoryBar)
                 StagedFileDiffView(
                     expandableFileDiffs: $fileDiffs,
                     selectButtonImageSystemName: "minus.circle",

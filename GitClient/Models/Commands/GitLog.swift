@@ -37,6 +37,9 @@ struct GitLog: Git {
         if number > 0 {
             args.append("-\(number)")
         }
+        if skip > 0 {
+            args.append("--skip=\(skip)")
+        }
         if !revisionRange.isEmpty {
             args.append(revisionRange)
         }
@@ -65,6 +68,7 @@ struct GitLog: Git {
     var ancestryPath = false
     var reverse = false
     var number = 0
+    var skip = 0
     var revisionRange = ""
     var grep: [String] = []
     var grepAllMatch = false

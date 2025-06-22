@@ -212,13 +212,13 @@ struct FolderView: View {
         .toolbar {
             if isLoading {
                 if #available(macOS 26.0, *) {
-                    ToolbarItem(placement: .principal) {
+                    ToolbarItem(placement: .primaryAction) {
                         ProgressView()
                             .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
                     }
                     .sharedBackgroundVisibility(.hidden)
                 } else {
-                    ToolbarItem(placement: .principal) {
+                    ToolbarItem(placement: .primaryAction) {
                         ProgressView()
                             .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
                     }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct FileDiffsView: View {
+    @Environment(\.expandAllFiles) var expandAllFilesID: UUID?
     @Binding var expandableFileDiffs: [ExpandableModel<FileDiff>]
 
     var body: some View {
@@ -38,6 +39,9 @@ struct FileDiffsView: View {
                 )
             }
             .padding(.top, 2)
+            .onChange(of: expandAllFilesID) { _, _ in
+                expandableFileDiffs = expandableFileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model)}
+            }
         }
         .font(Font.system(.body, design: .monospaced))
         .padding(.top, 6)

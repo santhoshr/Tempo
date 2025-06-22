@@ -51,11 +51,12 @@ import Observation
     }
     var error: Error?
 
-    private func gitLog(directory: URL, number: Int=0, revisionRange: String="") -> GitLog {
+    private func gitLog(directory: URL, number: Int=0, skip: Int=0) -> GitLog {
         GitLog(
             directory: directory,
             number: number,
-            revisionRange: revisionRange,
+            skip: skip,
+            revisionRange: searchTokenRevisionRange,
             grep: grep,
             grepAllMatch: grepAllMatch,
             s: s,
@@ -73,7 +74,7 @@ import Observation
         return logs
     }
 
-    /// 最新500件取得しlogsを差し替え(SearchTokennoRevisionRangeがない場合)
+    /// 最新number件取得しlogsを差し替え
     func refresh() async {
         guard let directory else {
             notCommitted = nil
@@ -82,11 +83,6 @@ import Observation
         }
         do {
             notCommitted = try await notCommitted(directory: directory)
-            guard searchTokenRevisionRange.isEmpty else {
-                commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
-                try await loadTotalCommitsCount()
-                return
-            }
             commits = try await Process.output(gitLog(directory: directory, number: number))
             try await loadTotalCommitsCount()
         } catch {
@@ -94,12 +90,7 @@ import Observation
         }
     }
 
-    /// revisionRangeをSearchTokenで利用するための別メソッド
-    private func loadCommitsWithSearchTokenRevisionRange(directory: URL, revisionRange: String) async throws -> [Commit] {
-        try await Process.output(gitLog(directory: directory, revisionRange: revisionRange))
-    }
-
-    /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加(SearchTokenのRevisionRangeがない場合)
+    /// logsを全てを最新に更新しlogs.first以降のコミットを取得し追加
     func update() async {
         guard let directory else {
             notCommitted = nil
@@ -109,20 +100,10 @@ import Observation
 
         do {
             notCommitted = try await notCommitted(directory: directory)
-            guard searchTokenRevisionRange.isEmpty else {
-                commits = try await loadCommitsWithSearchTokenRevisionRange(directory: directory, revisionRange: searchTokenRevisionRange)
-                return
-            }
-            let current = try await Process.output(gitLog(
+            commits = try await Process.output(gitLog(
                 directory: directory,
-                number: commits.count,
-                revisionRange: commits.first?.hash ?? ""
+                number: commits.count
             ))
-            let adding = try await Process.output(gitLog(
-                directory: directory,
-                revisionRange: commits.first.map { $0.hash + ".."} ?? ""
-            ))
-            commits = adding + current
             try await loadTotalCommitsCount()
         } catch {
             self.error = error
@@ -141,7 +122,7 @@ import Observation
         case .notCommitted:
             return
         case .committed(let commit):
-            if commit == commits.last, searchTokenRevisionRange.isEmpty {
+            if commit == commits.last {
                 await loadMore()
             }
         }
@@ -179,15 +160,13 @@ import Observation
     }
     /// logs.last以前のコミットを取得し追加
     func loadMore() async {
-        guard let last = commits.last, let directory else { return }
+        guard let directory else { return }
         do {
-            // revisionRangeをlast.hash^で指定すると最初のコミットに到達した際に存在しないのでunknown revisionとエラーになる
-            // なのでlast.hashで指定し重複する最初の要素をドロップする
             commits += try await Process.output(gitLog(
                 directory: directory,
-                number: number + 1,
-                revisionRange: last.hash
-            )).dropFirst()
+                number: number,
+                skip: commits.count
+            ))
         } catch {
             self.error = error
         }
@@ -199,8 +178,7 @@ import Observation
             totalCommitsCount = try await Process.output(GitRevListCount(directory: directory))
         } else {
             totalCommitsCount = try await Process.output(gitLog(
-                directory: directory,
-                revisionRange: searchTokenRevisionRange
+                directory: directory
             )).count
         }
     }

@@ -156,7 +156,6 @@ struct FolderView: View {
                 await refreshModels()
                 isLoading = false
             }
-
             saveSearchTokenHistory(oldValue: oldValue, newValue: newValue)
         })
         .onChange(of: selectionLogID, {
@@ -260,7 +259,9 @@ struct FolderView: View {
             logStore.directory = folder.url
             syncState.folderURL = folder.url
             syncState.branch = branch
-
+            if Task.isCancelled {
+                throw CancellationError()
+            }
             await logStore.refresh()
             if Task.isCancelled {
                 throw CancellationError()

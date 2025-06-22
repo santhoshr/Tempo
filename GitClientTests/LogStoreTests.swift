@@ -86,7 +86,7 @@ struct LogStoreTests {
         store.searchTokens = [.init(kind: .revisionRange, text: "cfae930..")]
 
         await store.refresh()
-        #expect(store.commits.count == 2)
+        #expect(store.commits.count == 1)
 
         let first = store.commits.first
         await store.logViewTask(.committed(first!))

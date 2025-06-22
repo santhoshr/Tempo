@@ -9,7 +9,6 @@ import SwiftUI
 
 struct FileDiffView: View {
     @Binding var expandableFileDiff: ExpandableModel<FileDiff>
-    var onSelectAllExpanded: ((Bool) -> Void)
 
     var body: some View {
         DisclosureGroup(isExpanded: $expandableFileDiff.isExpanded) {

@@ -12,6 +12,8 @@ struct StagedFileDiffView: View {
     var selectButtonHelp: String
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
+    @Environment(\.expandAllFiles) private var expandAllFilesID: UUID?
+    @Environment(\.collapseAllFiles) private var collapseAllFilesID: UUID?
 
     var body: some View {
         LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
@@ -25,6 +27,12 @@ struct StagedFileDiffView: View {
                 )
             }
             .font(Font.system(.body, design: .monospaced))
+        }
+        .onChange(of: expandAllFilesID) { _, _ in
+            expandableFileDiffs = expandableFileDiffs.map { ExpandableModel(isExpanded: true, model: $0.model)}
+        }
+        .onChange(of: collapseAllFilesID) { _, _ in
+            expandableFileDiffs = expandableFileDiffs.map { ExpandableModel(isExpanded: false, model: $0.model)}
         }
     }
 }

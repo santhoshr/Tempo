@@ -75,7 +75,7 @@ struct StashChangedContentView: View {
                             }
                         }
                         .buttonStyle(.borderedProminent)
-                        .keyboardShortcut(.init(.return))
+                        .keyboardShortcut(.init(.defaultAction))
                         .disabled(selectionStashID == nil)
                     }
                     .padding()

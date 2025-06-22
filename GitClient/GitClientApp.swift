@@ -31,6 +31,7 @@ struct GitClientApp: App {
                     collapseAllFiles = UUID()
                 }
                 .keyboardShortcut(.leftArrow, modifiers: .option)
+                Divider()
             }
         }
         Settings {

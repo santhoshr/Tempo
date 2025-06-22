@@ -18,6 +18,7 @@ struct GitClientApp: App {
             ContentView()
                 .environment(\.openAIAPISecretKey, keychainStorage.openAIAPISecretKey)
                 .environment(\.expandAllFiles, expandAllFiles)
+                .environment(\.collapseAllFiles, collapseAllFiles)
                 .errorSheet($keychainStorage.error)
         }
         .commands {

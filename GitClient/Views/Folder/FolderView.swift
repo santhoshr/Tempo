@@ -221,15 +221,12 @@ struct FolderView: View {
                 }
                 ToolbarItem(placement: .principal) {
                     addBranchButton()
-                        .padding(.trailing)
                 }
                 ToolbarItem(placement: .principal) {
                     tagButton()
-                        .padding(.trailing)
                 }
                 ToolbarItem(placement: .principal) {
                     stashButton()
-                        .padding(.trailing)
                 }
                 ToolbarItem(placement: .primaryAction) {
                     pullButton()

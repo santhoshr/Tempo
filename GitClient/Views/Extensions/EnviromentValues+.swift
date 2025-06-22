@@ -11,4 +11,5 @@ extension EnvironmentValues {
     @Entry var openAIAPISecretKey: String = ""
     @Entry var folder: URL?
     @Entry var expandAllFiles: UUID?
+    @Entry var collapseAllFiles: UUID?
 }

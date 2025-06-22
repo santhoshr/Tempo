@@ -11,6 +11,7 @@ import SwiftUI
 struct GitClientApp: App {
     @StateObject var keychainStorage = KeychainStorage()
     @State var expandAllFiles: UUID?
+    @State var collapseAllFiles: UUID?
 
     var body: some Scene {
         WindowGroup {
@@ -25,8 +26,8 @@ struct GitClientApp: App {
                     expandAllFiles = UUID()
                 }
                 .keyboardShortcut(.rightArrow, modifiers: .option)
-                Button("Collapose All Files") {
-
+                Button("Collapse All Files") {
+                    collapseAllFiles = UUID()
                 }
                 .keyboardShortcut(.leftArrow, modifiers: .option)
             }

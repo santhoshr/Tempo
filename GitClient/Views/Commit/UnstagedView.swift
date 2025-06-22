@@ -35,6 +35,7 @@ struct UnstagedView: View {
                 onSelectChunk: onSelectChunk
             )
             .padding(.leading, 4)
+            .padding(.top)
 
             if !untrackedFiles.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {

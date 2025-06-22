@@ -32,12 +32,12 @@ struct StagedView: View {
                     onSelectChunk: onSelectChunk
                 )
                 .padding(.leading, 4)
+                .padding(.top)
             }
         } label: {
             SectionHeader(title: "Staged Changes")
                 .padding(.leading, 3)
         }
         .padding(.horizontal)
-        .padding(.top)
     }
 }

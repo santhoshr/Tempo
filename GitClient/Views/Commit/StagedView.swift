@@ -14,17 +14,16 @@ struct StagedView: View {
     @State private var isExpanded = true
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Section (isExpanded: $isExpanded) {
-                if fileDiffs.isEmpty {
-                    LazyVStack(alignment: .center) {
-                        Label("No Changes", systemImage: "plusminus")
-                            .foregroundStyle(.secondary)
-                            .padding()
-                            .padding()
-                            .padding(.trailing)
-                    }
+        DisclosureGroup(isExpanded: $isExpanded) {
+            if fileDiffs.isEmpty {
+                LazyVStack(alignment: .center) {
+                    Label("No Changes", systemImage: "plusminus")
+                        .foregroundStyle(.secondary)
+                        .padding()
+                        .padding()
+                        .padding(.trailing)
                 }
+            } else {
                 StagedFileDiffView(
                     expandableFileDiffs: $fileDiffs,
                     selectButtonImageSystemName: "minus.circle",
@@ -32,13 +31,13 @@ struct StagedView: View {
                     onSelectFileDiff: onSelectFileDiff,
                     onSelectChunk: onSelectChunk
                 )
-            } header: {
-                SectionHeader(
-                    title: "Staged Changes",
-                    isExpanded: $isExpanded) { isExpandedAll in
-                        fileDiffs = fileDiffs.map { .init(isExpanded: isExpandedAll, model: $0.model) }
-                    }
+                .padding(.leading, 4)
+                .padding(.top)
             }
+        } label: {
+            SectionHeader(title: "Staged Changes")
+                .padding(.leading, 3)
         }
+        .padding(.horizontal)
     }
 }

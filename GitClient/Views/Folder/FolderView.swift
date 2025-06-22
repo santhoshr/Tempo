@@ -156,7 +156,6 @@ struct FolderView: View {
                 await refreshModels()
                 isLoading = false
             }
-
             saveSearchTokenHistory(oldValue: oldValue, newValue: newValue)
         })
         .onChange(of: selectionLogID, {
@@ -212,17 +211,9 @@ struct FolderView: View {
         .navigationTitle(branch?.name ?? "")
         .toolbar {
             if isLoading {
-                if #available(macOS 26.0, *) {
-                    ToolbarItem(placement: .principal) {
-                        ProgressView()
-                            .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
-                    }
-                    .sharedBackgroundVisibility(.hidden)
-                } else {
-                    ToolbarItem(placement: .principal) {
-                        ProgressView()
-                            .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
-                    }
+                ToolbarItem(placement: .primaryAction) {
+                    ProgressView()
+                        .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
                 }
             } else {
                 ToolbarItem(placement: .principal) {
@@ -230,18 +221,15 @@ struct FolderView: View {
                 }
                 ToolbarItem(placement: .principal) {
                     addBranchButton()
-                }
-                if #available(macOS 26.0, *) {
-                    ToolbarSpacer(.fixed, placement: .principal)
+                        .padding(.trailing)
                 }
                 ToolbarItem(placement: .principal) {
                     tagButton()
-                }
-                if #available(macOS 26.0, *) {
-                    ToolbarSpacer(.fixed, placement: .principal)
+                        .padding(.trailing)
                 }
                 ToolbarItem(placement: .principal) {
                     stashButton()
+                        .padding(.trailing)
                 }
                 ToolbarItem(placement: .primaryAction) {
                     pullButton()
@@ -271,7 +259,9 @@ struct FolderView: View {
             logStore.directory = folder.url
             syncState.folderURL = folder.url
             syncState.branch = branch
-
+            if Task.isCancelled {
+                throw CancellationError()
+            }
             await logStore.refresh()
             if Task.isCancelled {
                 throw CancellationError()

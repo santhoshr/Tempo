@@ -15,11 +15,13 @@ struct CommitRowView: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(commit.title)
                 Spacer()
-                Text(commit.hash.prefix(5))
-                    .foregroundStyle(.tertiary)
-                if commit.parentHashes.count == 2 {
-                    Image(systemName: "arrow.triangle.merge")
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(commit.hash.prefix(5))
                         .foregroundStyle(.tertiary)
+                    if commit.parentHashes.count == 2 {
+                        Image(systemName: "arrow.triangle.merge")
+                            .foregroundStyle(.tertiary)
+                    }
                 }
             }
             HStack {

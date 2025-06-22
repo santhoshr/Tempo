@@ -9,27 +9,23 @@ import SwiftUI
 
 struct FileDiffView: View {
     @Binding var expandableFileDiff: ExpandableModel<FileDiff>
-    var onSelectAllExpanded: ((Bool) -> Void)
 
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
-            Section(isExpanded: $expandableFileDiff.isExpanded) {
-                chunksView(expandableFileDiff.model.chunks, filePath: expandableFileDiff.model.toFilePath)
-            } header: {
-                FileDiffHeader(
-                    isExpanded: $expandableFileDiff.isExpanded,
-                    toFilePath: expandableFileDiff.model.toFilePath,
-                    filePathDisplay: expandableFileDiff.model.filePathDisplay,
-                    onSelectAllExpanded: onSelectAllExpanded
-                )
+        DisclosureGroup(isExpanded: $expandableFileDiff.isExpanded) {
+            LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
+                    chunksView(expandableFileDiff.model.chunks, filePath: expandableFileDiff.model.toFilePath)
+                    .padding(.top, 8)
+                    .padding(.bottom, 12)
             }
+        } label: {
+            FileNameView(toFilePath: expandableFileDiff.model.toFilePath, filePathDisplay: expandableFileDiff.model.filePathDisplay)
+                .padding(.leading, 3)
         }
     }
 
     private func chunksView(_ chunks: [Chunk], filePath: String) -> some View {
         ForEach(chunks) { chunk in
             ChunkView(chunk: chunk, filePath: filePath)
-                .padding(.bottom)
         }
     }
 }

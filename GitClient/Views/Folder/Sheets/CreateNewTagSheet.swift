@@ -86,7 +86,7 @@ struct CreateNewTagSheet: View {
                             }
                         }
                         .buttonStyle(.borderedProminent)
-                        .keyboardShortcut(.init(.return))
+                        .keyboardShortcut(.init(.defaultAction))
                         .disabled(newTagname.isEmpty)
                     }
                 }

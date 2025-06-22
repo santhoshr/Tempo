@@ -50,7 +50,7 @@ struct RenameBranchSheet: View {
                         }
                     }
                     .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.init(.return))
+                    .keyboardShortcut(.init(.defaultAction))
                     .disabled(newBranchName.isEmpty)
                 }
                 .padding(.top)

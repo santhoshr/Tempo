@@ -54,12 +54,15 @@ struct GitLog: Git {
             args.append(g)
         }
         args = args + authors.map { "--author=\($0)" }
-        
+        if noWalk {
+            args.append("--no-walk")
+        }
+
         let separatedRevisionRange = separatedRevisionRange()
         if !separatedRevisionRange.isEmpty {
             args += separatedRevisionRange
         }
-        
+
         if !paths.isEmpty {
             args.append("--")
             args = args + paths
@@ -77,6 +80,7 @@ struct GitLog: Git {
     var s = ""
     var g = ""
     var authors:[String] = []
+    var noWalk = false
     var revisionRange = ""
     var paths: [String] = []
 

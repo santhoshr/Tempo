@@ -56,12 +56,12 @@ import Observation
             directory: directory,
             number: number,
             skip: skip,
-            revisionRange: searchTokenRevisionRange,
             grep: grep,
             grepAllMatch: grepAllMatch,
             s: s,
             g: g,
             authors: authors,
+            revisionRange: searchTokenRevisionRange,
             paths: paths
         )
     }

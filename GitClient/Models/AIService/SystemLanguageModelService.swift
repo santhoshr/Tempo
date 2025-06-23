@@ -171,7 +171,7 @@ struct GitLogTool: Tool {
 
     func call(arguments: Arguments) async throws -> ToolOutput {
         let logs = try await Process.output(
-            GitLog(directory: directory, number: arguments.number, skip: arguments.skip, revisionRange: searchArguments.revisionRange, grep: searchArguments.grep, grepAllMatch: searchArguments.grepAllMatch, s: searchArguments.s, g: searchArguments.g, authors: searchArguments.authors, paths: searchArguments.paths)
+            GitLog(directory: directory, number: arguments.number, skip: arguments.skip, grep: searchArguments.grep, grepAllMatch: searchArguments.grepAllMatch, s: searchArguments.s, g: searchArguments.g, authors: searchArguments.authors, revisionRange: searchArguments.revisionRange, paths: searchArguments.paths)
         )
         return ToolOutput(GeneratedContent(properties: ["commits": logs.description]))
     }

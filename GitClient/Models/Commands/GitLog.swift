@@ -72,12 +72,12 @@ struct GitLog: Git {
     var reverse = false
     var number = 0
     var skip = 0
-    var revisionRange = ""
     var grep: [String] = []
     var grepAllMatch = false
     var s = ""
     var g = ""
     var authors:[String] = []
+    var revisionRange = ""
     var paths: [String] = []
 
     private func separatedRevisionRange() -> [String] {

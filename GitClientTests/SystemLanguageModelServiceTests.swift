@@ -218,6 +218,15 @@ struct SystemLanguageModelServiceTests {
         #expect(!hunksToStages.isEmpty)
     }
 
+    @available(macOS 26.0, *)
+    @Test func commitHashes() async throws {
+        let commitHashes = try await SystemLanguageModelService().commitHashes(
+            SearchArguments(),
+            prompt: "Commits which updated README.md",
+            directory: .testFixture!
+        )
+        print(commitHashes)
+    }
 }
 
 

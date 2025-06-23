@@ -23,6 +23,13 @@ struct GeneratedStagingChanges {
 }
 
 @available(macOS 26.0, *)
+@Generable
+struct GeneratedCommitHashes {
+    @Guide(description: "The commit hashes")
+    var commitHashes: [String]
+}
+
+@available(macOS 26.0, *)
 struct SystemLanguageModelService {
     func commitMessage(stagedDiff: String) async throws -> String {
         let instructions = """
@@ -85,6 +92,15 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
         let prompt = "Please indicate which unstaged changes should be committed by answering with booleans"
         let session = LanguageModelSession(tools: tools, instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self, options: .init(temperature: 1.0)).content.hunksToStage
+    }
+    
+    func commitHashes(_ searchArgment: SearchArguments, prompt: String, directory: URL) async throws -> [String] {
+        let instructions = """
+            You are a good software engineer.
+            """
+        let prompt = "Please provide the commit hashes using git log for the following: \(prompt)"
+        let session = LanguageModelSession(tools: [GitLogTool(directory: directory, searchArguments: searchArgment)], instructions: instructions)
+        return try await session.respond(to: prompt, generating: GeneratedCommitHashes.self).content.commitHashes
     }
 }
 
@@ -151,17 +167,11 @@ struct GitLogTool: Tool {
     let name = "gitLog"
     let description: String = "Get git commits"
     var directory: URL
-    var revisionRange = ""
-    var grep: [String] = []
-    var grepAllMatch = false
-    var s = ""
-    var g = ""
-    var authors:[String] = []
-    var paths: [String] = []
+    var searchArguments: SearchArguments
 
     func call(arguments: Arguments) async throws -> ToolOutput {
         let logs = try await Process.output(
-            GitLog(directory: directory, number: arguments.number, skip: arguments.skip, revisionRange: revisionRange, grep: grep, grepAllMatch: grepAllMatch, s: s, g: g, authors: authors, paths: paths)
+            GitLog(directory: directory, number: arguments.number, skip: arguments.skip, revisionRange: searchArguments.revisionRange, grep: searchArguments.grep, grepAllMatch: searchArguments.grepAllMatch, s: searchArguments.s, g: searchArguments.g, authors: searchArguments.authors, paths: searchArguments.paths)
         )
         return ToolOutput(GeneratedContent(properties: ["commits": logs.description]))
     }

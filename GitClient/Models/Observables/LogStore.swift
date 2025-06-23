@@ -40,6 +40,9 @@ import Observation
     private var paths: [String] {
         searchTokens.filter { $0.kind == .path }.map { $0.text }
     }
+    private var commitHashesByAI: [String] {
+        []
+    }
 
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
@@ -52,18 +55,28 @@ import Observation
     var error: Error?
 
     private func gitLog(directory: URL, number: Int=0, skip: Int=0) -> GitLog {
-        GitLog(
-            directory: directory,
-            number: number,
-            skip: skip,
-            grep: grep,
-            grepAllMatch: grepAllMatch,
-            s: s,
-            g: g,
-            authors: authors,
-            revisionRange: searchTokenRevisionRange,
-            paths: paths
-        )
+        if commitHashesByAI.isEmpty {
+            return GitLog(
+                directory: directory,
+                number: number,
+                skip: skip,
+                grep: grep,
+                grepAllMatch: grepAllMatch,
+                s: s,
+                g: g,
+                authors: authors,
+                revisionRange: searchTokenRevisionRange,
+                paths: paths
+            )
+        } else {
+            return GitLog(
+                directory: directory,
+                number: number,
+                skip: skip,
+                noWalk: true,
+                revisionRange: commitHashesByAI.joined(separator: " ")
+            )
+        }
     }
 
     func logs() -> [Log] {

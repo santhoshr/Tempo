@@ -142,15 +142,25 @@ struct UnstagedChangesTool: Tool {
 struct GitLogTool: Tool {
     @Generable
     struct Arguments {
-        var maxCount: Int
+        @Guide(description: "Limit the number of commits to output", .range(1...1000))
+        var number: Int
+        @Guide(description: "Skip number commits before starting to show the commit output")
+        var skip: Int
     }
     
     let name = "gitLog"
     let description: String = "Get git commits"
-    let directory: URL
-    
+    var directory: URL
+    var revisionRange = ""
+    var grep: [String] = []
+    var grepAllMatch = false
+    var s = ""
+    var g = ""
+    var authors:[String] = []
+    var paths: [String] = []
+
     func call(arguments: Arguments) async throws -> ToolOutput {
-        let logs = try await Process.output(GitLog(directory: directory))
+        let logs = try await Process.output(GitLog(directory: directory, number: arguments.number, skip: arguments.skip))
         return ToolOutput(GeneratedContent(properties: ["commits": logs.description]))
     }
 }

@@ -160,7 +160,9 @@ struct GitLogTool: Tool {
     var paths: [String] = []
 
     func call(arguments: Arguments) async throws -> ToolOutput {
-        let logs = try await Process.output(GitLog(directory: directory, number: arguments.number, skip: arguments.skip))
+        let logs = try await Process.output(
+            GitLog(directory: directory, number: arguments.number, skip: arguments.skip, revisionRange: revisionRange, grep: grep, grepAllMatch: grepAllMatch, s: s, g: g, authors: authors, paths: paths)
+        )
         return ToolOutput(GeneratedContent(properties: ["commits": logs.description]))
     }
 }

@@ -40,10 +40,7 @@ import Observation
     private var paths: [String] {
         searchTokens.filter { $0.kind == .path }.map { $0.text }
     }
-    private var commitHashesByAI: [String] {
-        []
-    }
-
+    private var commitHashesByAI: [String] = []
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
     var notCommitted: NotCommitted?
@@ -92,10 +89,12 @@ import Observation
         guard let directory else {
             notCommitted = nil
             commits = []
+            commitHashesByAI = []
             return
         }
         do {
             notCommitted = try await notCommitted(directory: directory)
+            
             commits = try await Process.output(gitLog(directory: directory, number: number))
             try await loadTotalCommitsCount()
         } catch {

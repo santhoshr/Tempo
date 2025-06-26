@@ -63,7 +63,7 @@ struct SearchTokensHandler {
                         return true
                     }
                 }
-            case .author, .path:
+            case .author, .path, .ai:
                 return newTokens
             }
         } else {

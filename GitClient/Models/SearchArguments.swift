@@ -8,7 +8,7 @@
 import Foundation
 
 struct SearchArguments {
-    var revisionRange = ""
+    var revisionRange:[String] = []
     var grep: [String] = []
     var grepAllMatch = false
     var s = ""

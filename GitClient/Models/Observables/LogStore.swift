@@ -34,8 +34,8 @@ import Observation
     private var authors: [String] {
         searchTokens.filter { $0.kind == .author }.map { $0.text }
     }
-    private var searchTokenRevisionRange: String {
-        searchTokens.filter { $0.kind == .revisionRange }.map { $0.text }.first ?? ""
+    private var searchTokenRevisionRange: [String] {
+        searchTokens.filter { $0.kind == .revisionRange }.map { $0.text }
     }
     private var paths: [String] {
         searchTokens.filter { $0.kind == .path }.map { $0.text }
@@ -74,7 +74,7 @@ import Observation
                 number: number,
                 skip: skip,
                 noWalk: true,
-                revisionRange: commitHashesByAI.joined(separator: " ")
+                revisionRange: commitHashesByAI
             )
         }
     }

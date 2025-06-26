@@ -58,9 +58,8 @@ struct GitLog: Git {
             args.append("--no-walk")
         }
 
-        let separatedRevisionRange = separatedRevisionRange()
-        if !separatedRevisionRange.isEmpty {
-            args += separatedRevisionRange
+        if !revisionRange.isEmpty {
+            args = args + revisionRange
         }
 
         if !paths.isEmpty {
@@ -81,13 +80,8 @@ struct GitLog: Git {
     var g = ""
     var authors:[String] = []
     var noWalk = false
-    var revisionRange = ""
+    var revisionRange: [String] = []
     var paths: [String] = []
-
-    private func separatedRevisionRange() -> [String] {
-        guard !revisionRange.isEmpty else { return [] }
-        return revisionRange.components(separatedBy: .whitespaces)
-    }
     
     func parse(for stdOut: String) throws -> [Commit] {
         guard !stdOut.isEmpty else { return [] }

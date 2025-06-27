@@ -46,7 +46,7 @@ index abc1234..def5678 100644
   unchanged line (context)
 ```
 """
-        let prompt = "Please provide an appropriate commit message for the following changes: \(stagedDiff)"
+        let prompt = "Generate a commit message (imperative mood) for the following changes: \(stagedDiff)"
         let session = LanguageModelSession(instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedCommitMessage.self).content.commitMessage
     }

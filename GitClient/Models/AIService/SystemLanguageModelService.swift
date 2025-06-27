@@ -94,11 +94,11 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
         return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self, options: .init(temperature: 1.0)).content.hunksToStage
     }
     
-    func commitHashes(_ searchArgment: SearchArguments, prompt: String, directory: URL) async throws -> [String] {
+    func commitHashes(_ searchArgment: SearchArguments, prompt: [String], directory: URL) async throws -> [String] {
         let instructions = """
             You are a good software engineer.
             """
-        let prompt = "Please provide the commit hashes using git log for the following: \(prompt)"
+        let prompt = "Please provide the commit hashes using git log for the following: \(prompt.joined(separator: "\n"))"
         let session = LanguageModelSession(tools: [GitLogTool(directory: directory, searchArguments: searchArgment)], instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedCommitHashes.self).content.commitHashes
     }

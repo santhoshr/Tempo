@@ -40,6 +40,20 @@ import Observation
     private var paths: [String] {
         searchTokens.filter { $0.kind == .path }.map { $0.text }
     }
+    private var promptForAI: [String] {
+        searchTokens.filter { $0.kind == .ai }.map { $0.text }
+    }
+    private var searchArgments: SearchArguments {
+        .init(
+            revisionRange: searchTokenRevisionRange,
+            grep: grep,
+            grepAllMatch: grepAllMatch,
+            s: s,
+            g: g,
+            authors: authors,
+            paths: paths
+        )
+    }
     private var commitHashesByAI: [String] = []
     var searchTokens: [SearchToken] = []
     var commits: [Commit] = []
@@ -93,8 +107,13 @@ import Observation
             return
         }
         do {
+            commitHashesByAI = []
             notCommitted = try await notCommitted(directory: directory)
-            
+            if !promptForAI.isEmpty {
+                if #available(macOS 26.0, *) {
+                    commitHashesByAI = try await SystemLanguageModelService().commitHashes(searchArgments, prompt: promptForAI , directory: directory)
+                }
+            }
             commits = try await Process.output(gitLog(directory: directory, number: number))
             try await loadTotalCommitsCount()
         } catch {

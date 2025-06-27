@@ -222,7 +222,7 @@ struct SystemLanguageModelServiceTests {
     @Test func commitHashes() async throws {
         let commitHashes = try await SystemLanguageModelService().commitHashes(
             SearchArguments(),
-            prompt: "Commits which updated README.md",
+            prompt: ["Commits which updated README.md"],
             directory: .testFixture!
         )
         print(commitHashes)

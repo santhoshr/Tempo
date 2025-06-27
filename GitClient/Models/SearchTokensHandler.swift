@@ -54,16 +54,7 @@ struct SearchTokensHandler {
                         return true
                     }
                 }
-            case .revisionRange:
-                return newTokens.filter { token in
-                    switch token.kind {
-                    case .revisionRange:
-                        return token == newToken
-                    default:
-                        return true
-                    }
-                }
-            case .author, .path, .ai:
+            case .revisionRange, .author, .path, .ai:
                 return newTokens
             }
         } else {

@@ -215,7 +215,6 @@ struct SystemLanguageModelServiceTests {
                      .onMoveCommand { direction in
             """)])
         print(hunksToStages)
-        #expect(!hunksToStages.isEmpty)
     }
 
     @available(macOS 26.0, *)

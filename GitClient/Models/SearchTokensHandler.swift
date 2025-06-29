@@ -54,8 +54,10 @@ struct SearchTokensHandler {
                         return true
                     }
                 }
-            case .revisionRange, .author, .path, .ai:
+            case .revisionRange, .author, .path:
                 return newTokens
+//            case .ai:
+//                return newTokens
             }
         } else {
             return newTokens

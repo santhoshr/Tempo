@@ -8,7 +8,7 @@
 import Foundation
 
 enum SearchKind: Codable, CaseIterable {
-    case grep, grepAllMatch, g, s, author, revisionRange, path, ai
+    case grep, grepAllMatch, g, s, author, revisionRange, path //, ai
 
     var label: String {
         switch self {
@@ -26,8 +26,8 @@ enum SearchKind: Codable, CaseIterable {
             return "Revision Range"
         case .path:
             return "Path"
-        case .ai:
-            return "AI"
+//        case .ai:
+//            return "AI"
         }
     }
 
@@ -47,8 +47,8 @@ enum SearchKind: Codable, CaseIterable {
             return "Revision Range"
         case .path:
             return "Path"
-        case .ai:
-            return "AI"
+//        case .ai:
+//            return "AI"
         }
     }
 
@@ -68,8 +68,8 @@ enum SearchKind: Codable, CaseIterable {
             return "Search commits within the revision range specified by Git syntax. e.g., main.., v1.0.0...v2.0.0"
         case .path:
             return "Search commits that modify the specified file or directory path."
-        case .ai:
-            return "Search commits based on natural language input, powered by AI."
+//        case .ai:
+//            return "Search commits based on natural language input, powered by AI."
         }
     }
 }

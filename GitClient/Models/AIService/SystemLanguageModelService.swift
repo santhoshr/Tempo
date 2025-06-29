@@ -158,12 +158,42 @@ struct UnstagedChangesTool: Tool {
 struct GitLogTool: Tool {
     @Generable
     struct Arguments {
-        @Guide(description: "Limit the number of commits to output", .range(1...1000))
+        @Guide(description: "Limit the number of commits to output", .range(1...100))
         var number: Int
         @Guide(description: "Skip number commits before starting to show the commit output")
         var skip: Int
     }
-    
+
+    @Generable
+    struct GenerableCommit {
+        init(_ commit: Commit) {
+            self.hash = commit.hash
+            self.parentHashes = commit.parentHashes
+            self.author = commit.author
+            self.authorEmail = commit.authorEmail
+            self.authorDate = commit.authorDate
+            self.title = commit.title
+            self.body = commit.body
+            self.branches = commit.branches
+            self.tags = commit.tags
+        }
+        @Guide(description: "The commit hash")
+        var hash: String
+        var parentHashes: [String]
+        var author: String
+        var authorEmail: String
+        @Guide(description: "The date the commit was created")
+        var authorDate: String
+        @Guide(description: "The commit message title")
+        var title: String
+        @Guide(description: "The commit message body")
+        var body: String
+        @Guide(description: "The branches referencing this commit")
+        var branches: [String]
+        @Guide(description: "The tags referencing this commit")
+        var tags: [String]
+    }
+
     let name = "gitLog"
     let description: String = "Get git commits"
     var directory: URL
@@ -173,6 +203,7 @@ struct GitLogTool: Tool {
         let logs = try await Process.output(
             GitLog(directory: directory, number: arguments.number, skip: arguments.skip, grep: searchArguments.grep, grepAllMatch: searchArguments.grepAllMatch, s: searchArguments.s, g: searchArguments.g, authors: searchArguments.authors, revisionRange: searchArguments.revisionRange, paths: searchArguments.paths)
         )
-        return ToolOutput(GeneratedContent(properties: ["commits": logs.description]))
+        let commits = logs.map { GenerableCommit($0) }
+        return ToolOutput(GeneratedContent(properties: ["commits": commits]))
     }
 }

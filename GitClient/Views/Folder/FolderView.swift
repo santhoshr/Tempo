@@ -105,7 +105,7 @@ struct FolderView: View {
                 if !suggestSearchToken.isEmpty {
                     Section("History") {
                         ForEach(suggestSearchToken) { token in
-                            HStack {
+                            VStack(alignment: .leading) {
                                 Text(token.kind.label)
                                     .foregroundStyle(.secondary)
                                 Text(token.text)
@@ -134,7 +134,7 @@ struct FolderView: View {
                 }
             } else {
                 ForEach(SearchKind.allCases, id: \.self) { kind in
-                    HStack {
+                    VStack(alignment: .leading) {
                         Text(kind.label)
                             .foregroundStyle(.secondary)
                         Text(searchText)

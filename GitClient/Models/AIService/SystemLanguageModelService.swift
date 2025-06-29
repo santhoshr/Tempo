@@ -23,6 +23,13 @@ struct GeneratedStagingChanges {
 }
 
 @available(macOS 26.0, *)
+@Generable
+struct GeneratedCommitHashes {
+    @Guide(description: "The commit hashes")
+    var commitHashes: [String]
+}
+
+@available(macOS 26.0, *)
 struct SystemLanguageModelService {
     func commitMessage(stagedDiff: String) async throws -> String {
         let instructions = """
@@ -39,7 +46,7 @@ index abc1234..def5678 100644
   unchanged line (context)
 ```
 """
-        let prompt = "Please provide an appropriate commit message for the following changes: \(stagedDiff)"
+        let prompt = "Generate a commit message (imperative mood) for the following changes: \(stagedDiff)"
         let session = LanguageModelSession(instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedCommitMessage.self).content.commitMessage
     }
@@ -85,6 +92,15 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
         let prompt = "Please indicate which unstaged changes should be committed by answering with booleans"
         let session = LanguageModelSession(tools: tools, instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedStagingChanges.self, options: .init(temperature: 1.0)).content.hunksToStage
+    }
+    
+    func commitHashes(_ searchArgment: SearchArguments, prompt: [String], directory: URL) async throws -> [String] {
+        let instructions = """
+            You are a good software engineer.
+            """
+        let prompt = "Please provide the commit hashes using git log for the following: \(prompt.joined(separator: "\n"))"
+        let session = LanguageModelSession(tools: [GitLogTool(directory: directory, searchArguments: searchArgment)], instructions: instructions)
+        return try await session.respond(to: prompt, generating: GeneratedCommitHashes.self).content.commitHashes
     }
 }
 
@@ -135,5 +151,59 @@ struct UnstagedChangesTool: Tool {
         let gitDiff = try await Process.output(GitDiff(directory: directory))
         let diff = try Diff(raw: gitDiff).fileDiffs.map { $0.raw }
         return ToolOutput(GeneratedContent(properties: ["unstagedChanges": diff]))
+    }
+}
+
+@available(macOS 26.0, *)
+struct GitLogTool: Tool {
+    @Generable
+    struct Arguments {
+        @Guide(description: "Limit the number of commits to output", .range(1...100))
+        var number: Int
+        @Guide(description: "Skip number commits before starting to show the commit output")
+        var skip: Int
+    }
+
+    @Generable
+    struct GenerableCommit {
+        init(_ commit: Commit) {
+            self.hash = commit.hash
+            self.parentHashes = commit.parentHashes
+            self.author = commit.author
+            self.authorEmail = commit.authorEmail
+            self.authorDate = commit.authorDate
+            self.title = commit.title
+            self.body = commit.body
+            self.branches = commit.branches
+            self.tags = commit.tags
+        }
+        @Guide(description: "The commit hash")
+        var hash: String
+        var parentHashes: [String]
+        var author: String
+        var authorEmail: String
+        @Guide(description: "The date the commit was created")
+        var authorDate: String
+        @Guide(description: "The commit message title")
+        var title: String
+        @Guide(description: "The commit message body")
+        var body: String
+        @Guide(description: "The branches referencing this commit")
+        var branches: [String]
+        @Guide(description: "The tags referencing this commit")
+        var tags: [String]
+    }
+
+    let name = "gitLog"
+    let description: String = "Get git commits"
+    var directory: URL
+    var searchArguments: SearchArguments
+
+    func call(arguments: Arguments) async throws -> ToolOutput {
+        let logs = try await Process.output(
+            GitLog(directory: directory, number: arguments.number, skip: arguments.skip, grep: searchArguments.grep, grepAllMatch: searchArguments.grepAllMatch, s: searchArguments.s, g: searchArguments.g, authors: searchArguments.authors, revisionRange: searchArguments.revisionRange, paths: searchArguments.paths)
+        )
+        let commits = logs.map { GenerableCommit($0) }
+        return ToolOutput(GeneratedContent(properties: ["commits": commits]))
     }
 }

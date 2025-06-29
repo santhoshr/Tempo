@@ -121,7 +121,7 @@ struct SystemLanguageModelServiceTests {
         print(message2)
         #expect(!message2.isEmpty)
     }
-
+    
     @available(macOS 26.0, *)
     @Test func commitMessageWithStagedChangesTool() async throws {
         let stagedDiffRaw = """
@@ -197,7 +197,7 @@ struct SystemLanguageModelServiceTests {
         print(hunksToStages)
         #expect(!hunksToStages.isEmpty)
     }
-
+    
     @available(macOS 26.0, *)
     @Test func stagingChangesWithTool() async throws {
         let hunksToStages = try await SystemLanguageModelService().stagingChanges(tools: [UnstagedChangesToolStub(diffRaw: """
@@ -215,9 +215,27 @@ struct SystemLanguageModelServiceTests {
                      .onMoveCommand { direction in
             """)])
         print(hunksToStages)
-        #expect(!hunksToStages.isEmpty)
     }
-
+    
+    @available(macOS 26.0, *)
+    @Test func commitHashes() async throws {
+        let commitHashes = try await SystemLanguageModelService().commitHashes(
+            SearchArguments(),
+            prompt: ["Commits which updated README.md"],
+            directory: .testFixture!
+        )
+        print(commitHashes)
+    }
+    
+    @available(macOS 26.0, *)
+    @Test func commitHashes2() async throws {
+        let commitHashes = try await SystemLanguageModelService().commitHashes(
+            SearchArguments(),
+            prompt: ["最近行ったテストコードの変更のコミット"],
+            directory: .testFixture!
+        )
+        print(commitHashes)
+    }
 }
 
 

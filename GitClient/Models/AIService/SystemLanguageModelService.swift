@@ -105,6 +105,15 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
 }
 
 @available(macOS 26.0, *)
+@Generable
+struct UncommitedChanges {
+    @Guide(description: "The staged changes")
+    var stagedChanges: [String]
+    @Guide(description: "The unstaged changes")
+    var unstagedChanges: [String]
+}
+
+@available(macOS 26.0, *)
 struct UncommitedChangesTool: Tool {
     @Generable
     struct Arguments {}
@@ -113,12 +122,12 @@ struct UncommitedChangesTool: Tool {
     let description: String = "Get a uncommitted changes"
     let directory: URL
     
-    func call(arguments: Arguments) async throws -> ToolOutput {
+    func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let gitDiff = try await Process.output(GitDiff(directory: directory))
         let gitDiffCached = try await Process.output(GitDiffCached(directory: directory))
         let diff = try Diff(raw: gitDiff).fileDiffs.map { $0.raw }
         let cachedDiff = try Diff(raw: gitDiffCached).fileDiffs.map { $0.raw }
-        return ToolOutput(GeneratedContent(properties: ["stagedChanges": cachedDiff, "unstagedChanges": diff]))
+        return  UncommitedChanges(stagedChanges: cachedDiff, unstagedChanges: diff)
     }
 }
 
@@ -131,10 +140,10 @@ struct StagedChangesTool: Tool {
     let description: String = "Get staged changes"
     let directory: URL
     
-    func call(arguments: Arguments) async throws -> ToolOutput {
+    func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let gitDiffCached = try await Process.output(GitDiffCached(directory: directory))
         let cachedDiff = try Diff(raw: gitDiffCached).fileDiffs.map { $0.raw }
-        return ToolOutput(GeneratedContent(properties: ["stagedChanges": cachedDiff]))
+        return cachedDiff
     }
 }
 
@@ -147,10 +156,10 @@ struct UnstagedChangesTool: Tool {
     let description: String = "Get unstaged changes"
     let directory: URL
     
-    func call(arguments: Arguments) async throws -> ToolOutput {
+    func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let gitDiff = try await Process.output(GitDiff(directory: directory))
         let diff = try Diff(raw: gitDiff).fileDiffs.map { $0.raw }
-        return ToolOutput(GeneratedContent(properties: ["unstagedChanges": diff]))
+        return diff
     }
 }
 
@@ -199,11 +208,11 @@ struct GitLogTool: Tool {
     var directory: URL
     var searchArguments: SearchArguments
 
-    func call(arguments: Arguments) async throws -> ToolOutput {
+    func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let logs = try await Process.output(
             GitLog(directory: directory, number: arguments.number, skip: arguments.skip, grep: searchArguments.grep, grepAllMatch: searchArguments.grepAllMatch, s: searchArguments.s, g: searchArguments.g, authors: searchArguments.authors, revisionRange: searchArguments.revisionRange, paths: searchArguments.paths)
         )
         let commits = logs.map { GenerableCommit($0) }
-        return ToolOutput(GeneratedContent(properties: ["commits": commits]))
+        return commits
     }
 }

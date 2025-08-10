@@ -249,10 +249,10 @@ struct UncommitedChangesStubTool: Tool {
     let cachedDiffRaw: String
     let diffRaw: String
     
-    func call(arguments: Arguments) async throws -> ToolOutput {
+    func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let diff = try Diff(raw: diffRaw).fileDiffs.map { $0.raw }
         let cachedDiff = try Diff(raw: cachedDiffRaw).fileDiffs.map { $0.raw }
-        return ToolOutput(GeneratedContent(properties: ["stagedChanges": cachedDiff, "unstagedChanges": diff]))
+        return UncommitedChanges(stagedChanges: cachedDiff, unstagedChanges: diff)
     }
 }
 
@@ -265,9 +265,9 @@ struct StagedChangesToolStub: Tool {
     let description: String = StagedChangesTool(directory: .testFixture!).description
     let cachedDiffRaw: String
     
-    func call(arguments: Arguments) async throws -> ToolOutput {
+    func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let cachedDiff = try Diff(raw: cachedDiffRaw).fileDiffs.map { $0.raw }
-        return ToolOutput(GeneratedContent(properties: ["stagedChanges": cachedDiff]))
+        return cachedDiff
     }
 }
 
@@ -280,8 +280,8 @@ struct UnstagedChangesToolStub: Tool {
     let description: String = UnstagedChangesTool(directory: .testFixture!).description
     let diffRaw: String
     
-    func call(arguments: Arguments) async throws -> ToolOutput {
+    func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let diff = try Diff(raw: diffRaw).fileDiffs.map { $0.raw }
-        return ToolOutput(GeneratedContent(properties: ["unstagedChanges": diff]))
+        return diff
     }
 }

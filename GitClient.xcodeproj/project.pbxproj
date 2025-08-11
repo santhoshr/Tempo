@@ -1022,7 +1022,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.18;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.aoyama.tempo;
 				PRODUCT_NAME = Tempo;
@@ -1055,7 +1055,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.18;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.aoyama.tempo;
 				PRODUCT_NAME = Tempo;

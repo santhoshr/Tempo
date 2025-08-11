@@ -121,6 +121,12 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
         return try await session.respond(to: prompt, generating: GeneratedCommitHashes.self).content.commitHashes
     }
     
+    func gitLogOptions(_ prompt: String) async throws -> GitLogOptions {
+        let instructions = ""
+        let session = LanguageModelSession(instructions: instructions)
+        let prompt = "Generate git log option for the following: \(prompt)"
+        return try await session.respond(to: prompt, generating: GitLogOptions.self).content
+    }
 }
 
 @available(macOS 26.0, *)

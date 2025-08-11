@@ -29,6 +29,24 @@ struct GeneratedCommitHashes {
     var commitHashes: [String]
 }
 
+@Generable
+struct GitLogOptions {
+    @Guide(description: "Look for differences that change the number of occurrences of the specified string (i.e. addition/deletion) in a file. Intended for the scripter’s use.")
+    var s: String?
+    
+    @Guide(description: "Look for differences whose patch text contains added/removed lines that match regex")
+    var g: String?
+    
+    @Guide(description: "Limit the commits output to ones with author header lines that match the specified pattern (regular expression). ")
+    var authors: [String]
+    
+    @Guide(description: "Show only commits that are enough to explain how the files that match the specified paths came to be.")
+    var paths: [String]
+    
+    @Guide(description: "Show only commits in the specified revision range. When no <revision-range> is specified, it defaults to HEAD (i.e. the whole history leading to the current commit). origin..HEAD specifies all the commits reachable from the current commit (i.e. HEAD), but not from origin.")
+    var revisionRange: [String]
+}
+
 @available(macOS 26.0, *)
 struct SystemLanguageModelService {
     func commitMessage(stagedDiff: String) async throws -> String {
@@ -102,6 +120,7 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
         let session = LanguageModelSession(tools: [GitLogTool(directory: directory, searchArguments: searchArgment)], instructions: instructions)
         return try await session.respond(to: prompt, generating: GeneratedCommitHashes.self).content.commitHashes
     }
+    
 }
 
 @available(macOS 26.0, *)

@@ -122,7 +122,9 @@ You are a good software engineer. A hunk starts from @@ -start,count +start,coun
     }
     
     func gitLogOptions(_ prompt: String) async throws -> GitLogOptions {
-        let instructions = ""
+        let instructions = """
+You are a good software engineer. 
+"""
         let session = LanguageModelSession(instructions: instructions)
         let prompt = "Generate git log option for the following: \(prompt)"
         return try await session.respond(to: prompt, generating: GitLogOptions.self).content

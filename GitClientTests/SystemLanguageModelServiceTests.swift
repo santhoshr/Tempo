@@ -236,6 +236,11 @@ struct SystemLanguageModelServiceTests {
         )
         print(commitHashes)
     }
+    
+    @Test func gitLogOptions() async throws {
+        let options = try await SystemLanguageModelService().gitLogOptions("SystemLanguageModelServiceを利用したコミット")
+        print(options)
+    }
 }
 
 

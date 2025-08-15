@@ -88,22 +88,15 @@ struct SettingsView: View {
                             Text("Commit Message Prompt")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                            ZStack(alignment: .bottomTrailing) {
-                                TextEditor(text: $openAIAPIPrompt)
-                                    .frame(minHeight: 80)
-                                    .scrollContentBackground(.hidden)
-                                    .background(Color.white)
-                                    .cornerRadius(6)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .stroke(Color(NSColor.separatorColor), lineWidth: 1)
-                                    )
-                                
-                                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                    .foregroundColor(.secondary)
-                                    .font(.caption2)
-                                    .padding(4)
-                            }
+                            TextEditor(text: $openAIAPIPrompt)
+                                .frame(minHeight: 80, maxHeight: 120)
+                                .scrollContentBackground(.hidden)
+                                .background(Color(NSColor.textBackgroundColor))
+                                .cornerRadius(6)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(Color(NSColor.separatorColor), lineWidth: 1)
+                                )
                             Text("Customize how the AI generates commit messages")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
@@ -114,22 +107,15 @@ struct SettingsView: View {
                             Text("Staging Prompt")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                            ZStack(alignment: .bottomTrailing) {
-                                TextEditor(text: $openAIAPIStagingPrompt)
-                                    .frame(minHeight: 120)
-                                    .scrollContentBackground(.hidden)
-                                    .background(Color.white)
-                                    .cornerRadius(6)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .stroke(Color(NSColor.separatorColor), lineWidth: 1)
-                                    )
-                                
-                                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                    .foregroundColor(.secondary)
-                                    .font(.caption2)
-                                    .padding(4)
-                            }
+                            TextEditor(text: $openAIAPIStagingPrompt)
+                                .frame(minHeight: 120, maxHeight: 200)
+                                .scrollContentBackground(.hidden)
+                                .background(Color(NSColor.textBackgroundColor))
+                                .cornerRadius(6)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(Color(NSColor.separatorColor), lineWidth: 1)
+                                )
                             Text("Controls how the AI decides which changes to stage")
                                 .font(.caption)
                                 .foregroundColor(.secondary)

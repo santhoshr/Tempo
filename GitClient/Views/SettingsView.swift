@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SettingsView: View {
     @Binding var openAIAPISecretKey: String
+    @Binding var openAIAPIURL: String
+    @Binding var openAIAPIPrompt: String
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -27,9 +29,32 @@ struct SettingsView: View {
                 } footer: {
                     Text("""
 Please enter the Secret Key, which can be created from the link https://platform.openai.com/api-keys.
-Grant “Write” permission to the Secret Key for the “/v1/chat/completions” endpoint.
+Grant "Write" permission to the Secret Key for the "/v1/chat/completions" endpoint.
 """
                     )
+                }
+                
+                Section {
+                    HStack {
+                        TextField(text: $openAIAPIURL) {
+                            Text("API URL")
+                        }
+                        .focusable(false)
+                    }
+                } footer: {
+                    Text("The API endpoint URL. Default is https://api.openai.com/v1/chat/completions for OpenAI, or use your local/custom endpoint.")
+                }
+                
+                Section {
+                    HStack {
+                        TextField(text: $openAIAPIPrompt, axis: .vertical) {
+                            Text("SYSTEM PROMPT")
+                        }
+                        .lineLimit(3...6)
+                        .focusable(false)
+                    }
+                } footer: {
+                    Text("The system prompt used for generating commit messages. Customize this to change how the AI generates commit messages.")
                 }
             }
             .padding(.vertical)
@@ -64,5 +89,7 @@ This Git client app and OpenAI API also do not use the inputs and outputs for mo
 
 #Preview {
     @Previewable @State var openAIAPISecretKey = ""
-    SettingsView(openAIAPISecretKey: $openAIAPISecretKey)
+    @Previewable @State var openAIAPIURL = "https://api.openai.com/v1/chat/completions"
+    @Previewable @State var openAIAPIPrompt = "You are a good software engineer. Tell me commit title and message of these changes for git. Add a title starting with nature like feat, bugfix, fix, add, update, etc."
+    SettingsView(openAIAPISecretKey: $openAIAPISecretKey, openAIAPIURL: $openAIAPIURL, openAIAPIPrompt: $openAIAPIPrompt)
 }

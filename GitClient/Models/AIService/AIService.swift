@@ -62,7 +62,11 @@ struct AIService {
     }
 
     var bearer: String
-    private let endpoint = URL(string: "http://192.168.0.3:1234/v1/chat/completions")!
+    var apiURL: String
+    var systemPrompt: String
+    private var endpoint: URL {
+        URL(string: apiURL)!
+    }
     private var jsonEncoder: JSONEncoder {
         let jsonEncoder = JSONEncoder()
         jsonEncoder.outputFormatting = .prettyPrinted
@@ -98,7 +102,7 @@ struct AIService {
     func commitMessage(stagedDiff: String) async throws -> String {
         let body = RequestBody(
             messages: [
-                .init(role: "system", content: "You are a good software engineer. Tell me commit title and message of these changes for git. Add a title starting with nature like feat, bugfix, fix, add, update, etc."),
+                .init(role: "system", content: systemPrompt),
                 .init(role: "user", content: stagedDiff)
             ],
             responseFormat: .init(

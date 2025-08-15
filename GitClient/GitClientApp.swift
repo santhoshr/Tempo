@@ -17,6 +17,8 @@ struct GitClientApp: App {
         WindowGroup {
             ContentView()
                 .environment(\.openAIAPISecretKey, keychainStorage.openAIAPISecretKey)
+                .environment(\.openAIAPIURL, keychainStorage.openAIAPIURL)
+                .environment(\.openAIAPIPrompt, keychainStorage.openAIAPIPrompt)
                 .environment(\.expandAllFiles, expandAllFiles)
                 .environment(\.collapseAllFiles, collapseAllFiles)
                 .errorSheet($keychainStorage.error)
@@ -35,8 +37,14 @@ struct GitClientApp: App {
             }
         }
         Settings {
-            SettingsView(openAIAPISecretKey: $keychainStorage.openAIAPISecretKey)
-                .environment(\.openAIAPISecretKey, keychainStorage.openAIAPISecretKey)
+            SettingsView(
+                openAIAPISecretKey: $keychainStorage.openAIAPISecretKey,
+                openAIAPIURL: $keychainStorage.openAIAPIURL,
+                openAIAPIPrompt: $keychainStorage.openAIAPIPrompt
+            )
+            .environment(\.openAIAPISecretKey, keychainStorage.openAIAPISecretKey)
+            .environment(\.openAIAPIURL, keychainStorage.openAIAPIURL)
+            .environment(\.openAIAPIPrompt, keychainStorage.openAIAPIPrompt)
         }
         Window("Commit Message Snippets", id: WindowID.commitMessageSnippets.rawValue) {
             CommitMessageSnippetView()

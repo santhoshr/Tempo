@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CommitCreateView: View {
     @Environment(\.openAIAPISecretKey) var openAIAPISecretKey: String
+    @Environment(\.openAIAPIURL) var openAIAPIURL: String
+    @Environment(\.openAIAPIPrompt) var openAIAPIPrompt: String
     @Environment(\.openSettings) var openSettings: OpenSettingsAction
     @Environment(\.appearsActive) private var appearsActive
 
@@ -224,7 +226,7 @@ struct CommitCreateView: View {
                             Task {
                                 isGeneratingCommitMessage = true
                                 do {
-                                    commitMessage = try await AIService(bearer: openAIAPISecretKey).commitMessage(stagedDiff: cachedDiffRaw)
+                                    commitMessage = try await AIService(bearer: openAIAPISecretKey, apiURL: openAIAPIURL, systemPrompt: openAIAPIPrompt).commitMessage(stagedDiff: cachedDiffRaw)
                                 } catch {
                                     self.error = error
                                 }
@@ -372,7 +374,7 @@ struct CommitCreateView: View {
         Task {
             isStagingChanges = true
             do {
-                let res = try await AIService(bearer: openAIAPISecretKey).stagingChanges(
+                let res = try await AIService(bearer: openAIAPISecretKey, apiURL: openAIAPIURL, systemPrompt: openAIAPIPrompt).stagingChanges(
                     stagedDiff: cachedDiffRaw,
                     notStagedDiff: diffRaw,
                     untrackedFiles: status?.untrackedFiles ?? []

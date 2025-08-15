@@ -34,7 +34,7 @@ struct AIService {
         var content: String
     }
     private struct RequestBody<T: Codable>: Codable {
-        var model = "gpt-4o-mini"
+        var model: String
         var messages: [Message]
         var responseFormat: ResponseFormat<T>
 
@@ -62,7 +62,13 @@ struct AIService {
     }
 
     var bearer: String
-    private let endpoint = URL(string: "https://api.openai.com/v1/chat/completions")!
+    var apiURL: String
+    var systemPrompt: String
+    var model: String
+    var stagingPrompt: String
+    private var endpoint: URL {
+        URL(string: apiURL)!
+    }
     private var jsonEncoder: JSONEncoder {
         let jsonEncoder = JSONEncoder()
         jsonEncoder.outputFormatting = .prettyPrinted
@@ -97,8 +103,9 @@ struct AIService {
 
     func commitMessage(stagedDiff: String) async throws -> String {
         let body = RequestBody(
+            model: model,
             messages: [
-                .init(role: "system", content: "You are a good software engineer. Tell me commit message of these changes for git."),
+                .init(role: "system", content: systemPrompt),
                 .init(role: "user", content: stagedDiff)
             ],
             responseFormat: .init(
@@ -114,15 +121,9 @@ struct AIService {
 
     func stagingChanges(stagedDiff: String, notStagedDiff: String, untrackedFiles: [String]) async throws  -> StagingChanges {
         let body = RequestBody(
+            model: model,
             messages: [
-                .init(role: "system", content:"""
-You are a good software engineer.
-The first message is the diff that has already been staged. The second message is the unstaged diff. The third message consists of untracked files, separated by new lines. Please advise on what changes should be committed next. It's fine if you think it is appropriate to commit everything together.
-
-For the unstaged diff, please indicate which hunks should be committed by answering with booleans so that the response can be used as input for git add -p. For the untracked files, please also answer with booleans for each file.
-
-Additionally, please provide a good commit message for committing the changes that should be staged.
-"""),
+                .init(role: "system", content: stagingPrompt),
                 .init(role: "user", content: stagedDiff),
                 .init(role: "user", content: notStagedDiff),
                 .init(role: "user", content: untrackedFiles.joined(separator: "\n"))

@@ -303,7 +303,7 @@ struct FolderView: View {
         Button {
                 showing.branches.toggle()
             } label: {
-                Image(systemName: "arrow.trianglehead.branch")
+                Image(systemName: "arrow.triangle.branch")
             }
             .help("Select Branch")
             .popover(isPresented: $showing.branches) {

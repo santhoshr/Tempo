@@ -94,3 +94,4 @@ iOSInjectionProject/
 vendor/bundle
 
 .DS_Store
+*.swp

@@ -1,18 +1,20 @@
 //
-//  GitStash.swift
+//  GitStashStaged.swift
 //  GitClient
 //
-//  Created by Makoto Aoyama on 2024/09/15.
+//  Created by Santhosh R on 2025/08/27.
 //
 
 import Foundation
 
-struct GitStash: Git {
+struct GitStashStaged: Git {
     typealias OutputModel = Void
     var arguments: [String] {
         var args = [
             "git",
             "stash",
+            "push",
+            "--staged",
         ]
         if !message.isEmpty {
             args.append("-m")

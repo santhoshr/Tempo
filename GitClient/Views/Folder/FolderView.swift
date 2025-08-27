@@ -232,6 +232,12 @@ struct FolderView: View {
                         .padding(.trailing)
                 }
                 ToolbarItem(placement: .primaryAction) {
+                    stashChangesButton()
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    stashStagedButton()
+                }
+                ToolbarItem(placement: .primaryAction) {
                     pullButton()
                 }
                 ToolbarItem(placement: .primaryAction) {
@@ -507,6 +513,53 @@ struct FolderView: View {
             return Text("")
         }
     }
+    
+    fileprivate func stashChangesButton() -> some View {
+        Button {
+            isLoading = true
+            Task {
+                do {
+                    try await Process.output(GitStash(directory: folder.url))
+                    isLoading = false
+                    await refreshModels()
+                    // Trigger parent view refresh like the built-in stash functionality
+                    await MainActor.run {
+                        isRefresh.toggle()
+                    }
+                } catch {
+                    isLoading = false
+                    self.error = error
+                }
+            }
+        } label: {
+            Image(systemName: "tray.and.arrow.down")
+        }
+        .help("Stash Changes")
+    }
+    
+    fileprivate func stashStagedButton() -> some View {
+        Button {
+            isLoading = true
+            Task {
+                do {
+                    try await Process.output(GitStashStaged(directory: folder.url))
+                    isLoading = false
+                    await refreshModels()
+                    // Trigger parent view refresh like the built-in stash functionality
+                    await MainActor.run {
+                        isRefresh.toggle()
+                    }
+                } catch {
+                    isLoading = false
+                    self.error = error
+                }
+            }
+        } label: {
+            Image(systemName: "tray.and.arrow.down.fill")
+        }
+        .help("Stash Staged Changes Only")
+    }
+    
 }
 
 struct CommitsView_Previews: PreviewProvider {

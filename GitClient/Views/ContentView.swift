@@ -9,6 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct ContentView: View {
+    @Environment(\.openSettings) private var openSettings: OpenSettingsAction
     @AppStorage(AppStorageKey.folder.rawValue) var folders: Data?
     @AppStorage(AppStorageKey.gitRepoFolders.rawValue) private var gitRepoSettingsData: Data?
     
@@ -110,6 +111,13 @@ struct ContentView: View {
                         Image(systemName: "arrow.clockwise")
                     }
                     .help("Rescan for Git Repositories")
+                    
+                    Button {
+                        openSettings()
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    .help("Settings")
                 }
             }
 

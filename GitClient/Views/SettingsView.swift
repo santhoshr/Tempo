@@ -31,6 +31,11 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Repositories", systemImage: "folder.badge.gearshape")
                 }
+            
+            TerminalSettingsView()
+                .tabItem {
+                    Label("Terminal", systemImage: "terminal")
+                }
         }
         .frame(minWidth: 650, maxWidth: 650, minHeight: 500)
     }

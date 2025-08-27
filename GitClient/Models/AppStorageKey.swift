@@ -12,5 +12,6 @@ enum AppStorageKey: String {
     case commitMessageSnippet
     case searchTokenHisrtory
     case gitRepoFolders
+    case terminalSettings
 }
 

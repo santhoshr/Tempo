@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1620"
+   LastUpgradeVersion = "1500"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      runPostActionsOnFailure = "NO">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,9 +15,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "61347EE928D5D16C00625FC4"
-               BuildableName = "Tempo.app"
+               BlueprintIdentifier = "27E8DD0C7603E4509EE8D182"
+               BuildableName = "GitClient.app"
                BlueprintName = "GitClient"
+               ReferencedContainer = "container:GitClient.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A9C6861D3262D6DB8195C78B"
+               BuildableName = "GitClientTests.xctest"
+               BlueprintName = "GitClientTests"
                ReferencedContainer = "container:GitClient.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,37 +41,32 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
-      <TestPlans>
-         <TestPlanReference
-            reference = "container:GitClient.xctestplan"
-            default = "YES">
-         </TestPlanReference>
-      </TestPlans>
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "27E8DD0C7603E4509EE8D182"
+            BuildableName = "GitClient.app"
+            BlueprintName = "GitClient"
+            ReferencedContainer = "container:GitClient.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <Testables>
          <TestableReference
             skipped = "NO"
-            parallelizable = "YES">
+            parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "61347EFA28D5D16D00625FC4"
+               BlueprintIdentifier = "A9C6861D3262D6DB8195C78B"
                BuildableName = "GitClientTests.xctest"
                BlueprintName = "GitClientTests"
                ReferencedContainer = "container:GitClient.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "YES"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "61347F0428D5D16D00625FC4"
-               BuildableName = "GitClientUITests.xctest"
-               BlueprintName = "GitClientUITests"
-               ReferencedContainer = "container:GitClient.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -72,12 +82,14 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "61347EE928D5D16C00625FC4"
-            BuildableName = "Tempo.app"
+            BlueprintIdentifier = "27E8DD0C7603E4509EE8D182"
+            BuildableName = "GitClient.app"
             BlueprintName = "GitClient"
             ReferencedContainer = "container:GitClient.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -89,8 +101,8 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "61347EE928D5D16C00625FC4"
-            BuildableName = "Tempo.app"
+            BlueprintIdentifier = "27E8DD0C7603E4509EE8D182"
+            BuildableName = "GitClient.app"
             BlueprintName = "GitClient"
             ReferencedContainer = "container:GitClient.xcodeproj">
          </BuildableReference>

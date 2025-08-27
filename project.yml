@@ -1,0 +1,65 @@
+name: GitClient
+options:
+  bundleIdPrefix: com.maoyama
+  deploymentTarget:
+    macOS: "14.6"
+  developmentLanguage: en
+  xcodeVersion: "15.0"
+
+packages:
+  KeychainAccess:
+    url: https://github.com/kishikawakatsumi/KeychainAccess
+    from: 4.2.2
+  Sourceful:
+    url: https://github.com/maoyama/Sourceful
+    from: 1.0.0
+
+targets:
+  GitClient:
+    type: application
+    platform: macOS
+    sources:
+      - path: GitClient
+        excludes:
+          - "**/*.md"
+    dependencies:
+      - package: KeychainAccess
+      - package: Sourceful
+    info:
+      path: GitClient/Info.plist
+      properties:
+        CFBundleName: Tempo
+        CFBundleDisplayName: Tempo
+        CFBundleIdentifier: com.maoyama.GitClient
+        CFBundleVersion: "1.0"
+        CFBundleShortVersionString: "1.0.0"
+        LSMinimumSystemVersion: "14.6"
+        NSHumanReadableCopyright: "Copyright © 2022 Makoto Aoyama. All rights reserved."
+        NSMainStoryboardFile: ""
+        NSPrincipalClass: NSApplication
+        LSApplicationCategoryType: public.app-category.developer-tools
+        NSSupportsAutomaticGraphicsSwitching: true
+        NSHighResolutionCapable: true
+
+  GitClientTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - GitClientTests
+    dependencies:
+      - target: GitClient
+
+schemes:
+  GitClient:
+    build:
+      targets:
+        GitClient: all
+        GitClientTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - GitClientTests
+    archive:
+      config: Release

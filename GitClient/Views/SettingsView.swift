@@ -15,6 +15,35 @@ struct SettingsView: View {
     @Binding var openAIAPIStagingPrompt: String
 
     var body: some View {
+        TabView {
+            OpenAISettingsView(
+                openAIAPISecretKey: $openAIAPISecretKey,
+                openAIAPIURL: $openAIAPIURL,
+                openAIAPIPrompt: $openAIAPIPrompt,
+                openAIAPIModel: $openAIAPIModel,
+                openAIAPIStagingPrompt: $openAIAPIStagingPrompt
+            )
+            .tabItem {
+                Label("OpenAI", systemImage: "sparkles")
+            }
+            
+            GitRepoSettingsView()
+                .tabItem {
+                    Label("Repositories", systemImage: "folder.badge.gearshape")
+                }
+        }
+        .frame(minWidth: 650, maxWidth: 650, minHeight: 500)
+    }
+}
+
+struct OpenAISettingsView: View {
+    @Binding var openAIAPISecretKey: String
+    @Binding var openAIAPIURL: String
+    @Binding var openAIAPIPrompt: String
+    @Binding var openAIAPIModel: String
+    @Binding var openAIAPIStagingPrompt: String
+
+    var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 // Header

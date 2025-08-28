@@ -15,6 +15,8 @@ struct StashChangedContentView: View {
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var error: Error?
     var onTapDropButton: ((Stash) -> Void)?
+    var onStashApplied: (() -> Void)?
+    var onNavigateToUncommitted: (() -> Void)?
 
     var body: some View {
         NavigationSplitView {
@@ -68,7 +70,9 @@ struct StashChangedContentView: View {
                             Task {
                                 do {
                                     try await Process.output(GitStashApply(directory: folder.url, index: selectionStashID!))
+                                    onStashApplied?()
                                     showingStashChanged = false
+                                    onNavigateToUncommitted?()
                                 } catch {
                                     self.error = error
                                 }
@@ -76,6 +80,21 @@ struct StashChangedContentView: View {
                         }
                         .buttonStyle(.borderedProminent)
                         .keyboardShortcut(.init(.defaultAction))
+                        .disabled(selectionStashID == nil)
+                        Button("Apply & Clear") {
+                            Task {
+                                do {
+                                    try await Process.output(GitStashApply(directory: folder.url, index: selectionStashID!))
+                                    try await Process.output(GitStashDrop(directory: folder.url, index: selectionStashID!))
+                                    onStashApplied?()
+                                    showingStashChanged = false
+                                    onNavigateToUncommitted?()
+                                } catch {
+                                    self.error = error
+                                }
+                            }
+                        }
+                        .buttonStyle(.bordered)
                         .disabled(selectionStashID == nil)
                     }
                     .padding()

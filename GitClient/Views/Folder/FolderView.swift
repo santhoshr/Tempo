@@ -206,7 +206,13 @@ struct FolderView: View {
             }
         })
         .sheet(isPresented: $showing.stashChanged, content: {
-            StashChangedView(folder: folder, showingStashChanged: $showing.stashChanged)
+            StashChangedView(folder: folder, showingStashChanged: $showing.stashChanged, onNavigateToUncommitted: {
+                if selectionLog == .notCommitted {
+                    isRefresh = true
+                } else {
+                    selectionLog = .notCommitted
+                }
+            })
         })
         .navigationTitle(branch?.name ?? "")
         .toolbar {

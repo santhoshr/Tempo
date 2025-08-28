@@ -12,6 +12,7 @@ struct StashChangedView: View {
     @Binding var showingStashChanged: Bool
     @State private var stashList: [Stash]?
     @State private var error: Error?
+    var onNavigateToUncommitted: (() -> Void)?
 
     var body: some View {
         StashChangedContentView(folder: folder, showingStashChanged: $showingStashChanged, stashList: stashList, onTapDropButton: { stash in
@@ -23,7 +24,15 @@ struct StashChangedView: View {
                     self.error = error
                 }
             }
-        })
+        }, onStashApplied: {
+            Task {
+                do {
+                    stashList = try await Process.output(GitStashList(directory: folder.url))
+                } catch {
+                    self.error = error
+                }
+            }
+        }, onNavigateToUncommitted: onNavigateToUncommitted)
         .task {
             do {
                stashList = try await Process.output(GitStashList(directory: folder.url))

@@ -103,6 +103,12 @@ struct GitRepoSettingsView: View {
                         }
                         .padding(.leading, 20)
                     }
+                    
+                    Toggle("Auto-sort repositories", isOn: $gitRepoSettings.autoSort)
+                        .help("Automatically sort repositories by name. When disabled, repositories are grouped by search folder.")
+                        .onChange(of: gitRepoSettings.autoSort) { _, _ in
+                            saveSettings()
+                        }
                 }
                 .padding(16)
                 .background(Color(NSColor.controlBackgroundColor))
@@ -208,7 +214,8 @@ struct GitRepoSettingsView: View {
             let repos = GitRepoSettings.findGitRepositories(
                 in: gitRepoSettings.searchFolders,
                 autoScanSubfolders: gitRepoSettings.autoScanSubfolders,
-                maxDepth: gitRepoSettings.maxScanDepth
+                maxDepth: gitRepoSettings.maxScanDepth,
+                autoSort: gitRepoSettings.autoSort
             )
             
             await MainActor.run {

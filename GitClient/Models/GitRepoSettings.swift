@@ -11,16 +11,18 @@ struct GitRepoSettings: Codable {
     var searchFolders: [URL]
     var autoScanSubfolders: Bool
     var maxScanDepth: Int
+    var autoSort: Bool
     
     init() {
         self.searchFolders = []
         self.autoScanSubfolders = true
         self.maxScanDepth = 3
+        self.autoSort = true
     }
 }
 
 extension GitRepoSettings {
-    static func findGitRepositories(in folders: [URL], autoScanSubfolders: Bool, maxDepth: Int) -> [Folder] {
+    static func findGitRepositories(in folders: [URL], autoScanSubfolders: Bool, maxDepth: Int, autoSort: Bool = true) -> [Folder] {
         var gitRepos: [Folder] = []
         
         for folder in folders {
@@ -34,9 +36,22 @@ extension GitRepoSettings {
             }
         }
         
-        // Remove duplicates and sort
-        let uniqueRepos = Array(Set(gitRepos)).sorted { $0.displayName < $1.displayName }
-        return uniqueRepos
+        // Remove duplicates
+        let uniqueRepos = Array(Set(gitRepos))
+        
+        if autoSort {
+            return uniqueRepos.sorted { $0.displayName < $1.displayName }
+        } else {
+            // Maintain order by search folder
+            var orderedRepos: [Folder] = []
+            for searchFolder in folders {
+                let reposFromThisFolder = uniqueRepos.filter { repo in
+                    repo.url.path.hasPrefix(searchFolder.path)
+                }
+                orderedRepos.append(contentsOf: reposFromThisFolder)
+            }
+            return orderedRepos
+        }
     }
     
     private static func scanForGitRepos(in folder: URL, currentDepth: Int, maxDepth: Int) -> [Folder] {

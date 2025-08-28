@@ -28,15 +28,33 @@ struct ContentView: View {
             }
         }
         
-        // Sort by simple display name first for performance
-        return allFolders.sorted { folder1, folder2 in
-            let name1 = folder1.displayName
-            let name2 = folder2.displayName
-            if name1 == name2 {
-                // If names are the same, sort by full path to ensure stable ordering
-                return folder1.url.path.localizedCaseInsensitiveCompare(folder2.url.path) == .orderedAscending
+        // Check if autosort is enabled
+        let shouldSort = getAutoSortSetting()
+        
+        if shouldSort {
+            // Sort by simple display name first for performance
+            return allFolders.sorted { folder1, folder2 in
+                let name1 = folder1.displayName
+                let name2 = folder2.displayName
+                if name1 == name2 {
+                    // If names are the same, sort by full path to ensure stable ordering
+                    return folder1.url.path.localizedCaseInsensitiveCompare(folder2.url.path) == .orderedAscending
+                }
+                return name1.localizedCaseInsensitiveCompare(name2) == .orderedAscending
             }
-            return name1.localizedCaseInsensitiveCompare(name2) == .orderedAscending
+        } else {
+            // Return without sorting but maintain stable order by URL path to prevent random reordering
+            return allFolders.sorted { $0.url.path < $1.url.path }
+        }
+    }
+    
+    private func getAutoSortSetting() -> Bool {
+        guard let settingsData = gitRepoSettingsData else { return true }
+        do {
+            let settings = try JSONDecoder().decode(GitRepoSettings.self, from: settingsData)
+            return settings.autoSort
+        } catch {
+            return true // Default to sorting if there's an error
         }
     }
     
@@ -64,7 +82,8 @@ struct ContentView: View {
             return GitRepoSettings.findGitRepositories(
                 in: settings.searchFolders,
                 autoScanSubfolders: settings.autoScanSubfolders,
-                maxDepth: settings.maxScanDepth
+                maxDepth: settings.maxScanDepth,
+                autoSort: settings.autoSort
             )
         } catch {
             return []

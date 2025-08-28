@@ -36,6 +36,11 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Terminal", systemImage: "terminal")
                 }
+            
+            AdvancedSettingsView()
+                .tabItem {
+                    Label("Advanced", systemImage: "gearshape.2")
+                }
         }
         .frame(minWidth: 650, maxWidth: 650, minHeight: 500)
     }

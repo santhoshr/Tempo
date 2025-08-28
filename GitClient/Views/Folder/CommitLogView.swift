@@ -15,6 +15,7 @@ struct CommitLogView: View {
     @Binding var showing: FolderViewShowing
     @Binding var isRefresh: Bool
     @Binding var error: Error?
+    var allowExpertOptions: Bool = false
     @State private var selectionLogIDs = Set<String>()
 
     var body: some View {
@@ -78,23 +79,28 @@ struct CommitLogView: View {
             case .notCommitted:
                 Text("Uncommitted Changes")
                     .foregroundStyle(Color.secondary)
-                    .contextMenu {
-                        Button("Hard Reset (HEAD)") {
-                            showing.confirmDiscardAll = true
-                        }
-                        Divider()
-                        Menu("Clean") {
-                            Button("Files") {
-                                showing.confirmCleanFiles = true
+                    .modifier(
+                        ConditionalContextMenu(
+                            enabled: allowExpertOptions,
+                            contextMenu: {
+                                Button("Hard Reset (HEAD)") {
+                                    showing.confirmDiscardAll = true
+                                }
+                                Divider()
+                                Menu("Clean") {
+                                    Button("Files") {
+                                        showing.confirmCleanFiles = true
+                                    }
+                                    Button("Files & Directories") {
+                                        showing.confirmCleanFilesAndDirs = true
+                                    }
+                                    Button("Ignored") {
+                                        showing.confirmCleanIgnored = true
+                                    }
+                                }
                             }
-                            Button("Files & Directories") {
-                                showing.confirmCleanFilesAndDirs = true
-                            }
-                            Button("Ignored") {
-                                showing.confirmCleanIgnored = true
-                            }
-                        }
-                    }
+                        )
+                    )
             case .committed(let commit):
                 if let folder {
                     CommitRowView(commit: commit)
@@ -104,7 +110,8 @@ struct CommitLogView: View {
                             logStore: logStore,
                             isRefresh: $isRefresh,
                             showing: $showing,
-                            bindingError: $error
+                            bindingError: $error,
+                            allowExpertOptions: allowExpertOptions
                         )
                 }
             }

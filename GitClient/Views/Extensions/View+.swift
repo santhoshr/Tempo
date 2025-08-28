@@ -20,7 +20,8 @@ extension View {
         logStore: LogStore,
         isRefresh: Binding<Bool>,
         showing: Binding<FolderViewShowing>,
-        bindingError: Binding<Error?>
+        bindingError: Binding<Error?>,
+        allowExpertOptions: Bool = false
     ) -> some View {
         contextMenu{
             Button("Checkout") {
@@ -63,16 +64,19 @@ extension View {
             Button("Tag") {
                 showing.wrappedValue.createNewTagAt = commit
             }
-            Divider()
-            Menu("Reset") {
-                Button("Soft Reset") {
-                    showing.wrappedValue.confirmSoftReset = commit
-                }
-                Button("Mixed Reset") {
-                    showing.wrappedValue.confirmMixedReset = commit
-                }
-                Button("Hard Reset") {
-                    showing.wrappedValue.confirmHardReset = commit
+            
+            if allowExpertOptions {
+                Divider()
+                Menu("Reset") {
+                    Button("Soft Reset") {
+                        showing.wrappedValue.confirmSoftReset = commit
+                    }
+                    Button("Mixed Reset") {
+                        showing.wrappedValue.confirmMixedReset = commit
+                    }
+                    Button("Hard Reset") {
+                        showing.wrappedValue.confirmHardReset = commit
+                    }
                 }
             }
         }
@@ -106,6 +110,21 @@ extension View {
                 selectionLogID.wrappedValue = logID
                 subSelectionLogID.wrappedValue = nil
             }
+        }
+    }
+}
+
+struct ConditionalContextMenu<MenuItems: View>: ViewModifier {
+    let enabled: Bool
+    @ViewBuilder let contextMenu: () -> MenuItems
+    
+    func body(content: Content) -> some View {
+        if enabled {
+            content.contextMenu {
+                contextMenu()
+            }
+        } else {
+            content
         }
     }
 }

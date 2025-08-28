@@ -14,6 +14,7 @@ struct FolderViewShowing {
     var stashChanged = false
     var stashMenu = false
     var tags = false
+    var reflog = false
     var createNewTagAt: Commit?
     var amendCommitAt: Commit?
     var confirmSoftReset: Commit?

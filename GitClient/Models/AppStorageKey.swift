@@ -13,5 +13,6 @@ enum AppStorageKey: String {
     case searchTokenHisrtory
     case gitRepoFolders
     case terminalSettings
+    case allowExpertOptions
 }
 

@@ -14,6 +14,7 @@ struct FolderView: View {
     @Binding var selectionLog: Log?
     @Binding var subSelectionLogID: String?
     @Binding var isRefresh: Bool
+    @AppStorage(AppStorageKey.allowExpertOptions.rawValue) private var allowExpertOptions = false
     @State private var logStore = LogStore()
     @State private var syncState = SyncState()
     @State private var isLoading = false
@@ -21,6 +22,7 @@ struct FolderView: View {
     @State private var showing = FolderViewShowing()
     @State private var branch: Branch?
     @State private var selectionLogID: String?
+    @State private var originalBranchForReturn: String?
     @State private var searchTokens: [SearchToken] = []
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
@@ -38,7 +40,7 @@ struct FolderView: View {
         decodedSearchTokenHistory.filter { !searchTokens.contains($0)}
     }
 
-    var body: some View {
+    private var mainContentView: some View {
         VStack(spacing: 0) {
             if showGraph {
                 CommitGraphView(
@@ -55,33 +57,42 @@ struct FolderView: View {
                     subSelectionLogID: $subSelectionLogID,
                     showing: $showing,
                     isRefresh: $isRefresh,
-                    error: $error
+                    error: $error,
+                    allowExpertOptions: allowExpertOptions
                 )
             }
         }
+    }
+
+    private var bottomBarView: some View {
+        VStack(spacing: 0) {
+            Divider()
+            Spacer()
+            countText()
+                .font(.callout)
+            Spacer()
+        }
+        .frame(height: 40)
+        .background(Color(nsColor: .textBackgroundColor))
+        .overlay(alignment: .trailing) {
+            Button(action: {
+                showGraph.toggle()
+            }) {
+                Image(systemName: showGraph ? "point.3.filled.connected.trianglepath.dotted" : "point.3.connected.trianglepath.dotted")
+                    .font(.title3)
+                    .rotationEffect(.init(degrees: 270))
+                    .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
+            }
+            .buttonStyle(.accessoryBar)
+            .padding(.horizontal, 8)
+            .help("Commit Graph")
+        }
+    }
+
+    private var contentWithBottomBar: some View {
+        mainContentView
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
-                Divider()
-                Spacer()
-                countText()
-                    .font(.callout)
-                Spacer()
-            }
-            .frame(height: 40)
-            .background(Color(nsColor: .textBackgroundColor))
-            .overlay(alignment: .trailing) {
-                Button(action: {
-                    showGraph.toggle()
-                }) {
-                    Image(systemName: showGraph ? "point.3.filled.connected.trianglepath.dotted" : "point.3.connected.trianglepath.dotted")
-                        .font(.title3)
-                        .rotationEffect(.init(degrees: 270))
-                        .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
-                }
-                .buttonStyle(.accessoryBar)
-                .padding(.horizontal, 8)
-                .help("Commit Graph")
-            }
+            bottomBarView
         }
         .overlay(content: {
             if logStore.commits.isEmpty && !searchTokens.isEmpty {
@@ -89,6 +100,10 @@ struct FolderView: View {
                     .foregroundColor(.secondary)
             }
         })
+    }
+
+    private var contentWithSearch: some View {
+        contentWithBottomBar
         .searchable(text: $searchText, editableTokens: $searchTokens, prompt: "Search Commits", token: { $token in
             Picker(selection: $token.kind) {
                 ForEach(SearchKind.allCases, id: \.self) { kind in
@@ -144,6 +159,10 @@ struct FolderView: View {
                 }
             }
         })
+    }
+
+    private var contentWithLifecycle: some View {
+        contentWithSearch
         .task {
             await refreshModels()
         }
@@ -175,8 +194,16 @@ struct FolderView: View {
                 }
             }
         })
+    }
+
+    private var contentWithErrors: some View {
+        contentWithLifecycle
         .errorSheet($error)
         .errorSheet($logStore.error)
+    }
+
+    private var contentWithSheets: some View {
+        contentWithErrors
         .sheet(item: $showing.createNewBranchFrom, content: { _ in
             CreateNewBranchSheet(folder: folder, showingCreateNewBranchFrom: $showing.createNewBranchFrom) {
                 Task {
@@ -214,6 +241,10 @@ struct FolderView: View {
                 }
             })
         })
+    }
+
+    private var contentWithConfirmations: some View {
+        contentWithSheets
         .confirmationDialog("Soft Reset", isPresented: .constant(showing.confirmSoftReset != nil)) {
             Button("Reset", role: .destructive) {
                 if let commit = showing.confirmSoftReset {
@@ -361,6 +392,10 @@ struct FolderView: View {
         } message: {
             Text("Remove untracked and ignored files?")
         }
+    }
+
+    private var finalView: some View {
+        contentWithConfirmations
         .navigationTitle(branch?.name ?? "")
         .toolbar {
             if isLoading {
@@ -369,23 +404,21 @@ struct FolderView: View {
                         .scaleEffect(x: 0.5, y: 0.5, anchor: .center)
                 }
             } else {
-                ToolbarItem(placement: .principal) {
+                ToolbarItemGroup(placement: .principal) {
                     Button {
                         NSWorkspace.shared.open(folder.url)
                     } label: {
                         Image(systemName: "folder")
                     }
                     .help("Open in Finder")
-                }
-                ToolbarItem(placement: .principal) {
+                    
                     Button {
                         openInBrowser()
                     } label: {
                         Image(systemName: "globe")
                     }
                     .help("Open in Browser")
-                }
-                ToolbarItem(placement: .principal) {
+                    
                     Button {
                         openInTerminal()
                     } label: {
@@ -393,30 +426,40 @@ struct FolderView: View {
                     }
                     .help("Open in Terminal")
                     .padding(.trailing)
-                }
-                ToolbarItem(placement: .principal) {
+                    
                     branchesButton()
-                }
-                ToolbarItem(placement: .principal) {
+                    
+                    if allowExpertOptions {
+                        ReflogButton(
+                            folder: folder,
+                            showing: $showing,
+                            onRefresh: { await refreshModels() },
+                            error: $error,
+                            selectionLog: $selectionLog,
+                            originalBranchForReturn: $originalBranchForReturn
+                        )
+                    }
+                    
+                    // Show return button when in detached HEAD mode and we have an original branch to return to
+                    if allowExpertOptions && branch?.isDetached == true && originalBranchForReturn != nil {
+                        returnToBranchButton()
+                    }
+                    
                     addBranchButton()
                         .padding(.trailing)
-                }
-                ToolbarItem(placement: .principal) {
+                    
                     tagButton()
                         .padding(.trailing)
-                }
-                ToolbarItem(placement: .principal) {
+                    
                     stashButton()
                         .padding(.trailing)
-                }
-                ToolbarItem(placement: .principal) {
+                    
                     stashActionsButton()
                         .padding(.trailing)
                 }
-                ToolbarItem(placement: .primaryAction) {
+                
+                ToolbarItemGroup(placement: .primaryAction) {
                     pullButton()
-                }
-                ToolbarItem(placement: .primaryAction) {
                     pushButton()
                 }
             }
@@ -433,6 +476,10 @@ struct FolderView: View {
                 await updateModels()
             }
         }
+    }
+
+    var body: some View {
+        finalView
     }
 
     fileprivate func refreshModels() async {
@@ -897,6 +944,33 @@ struct FolderView: View {
             Image(systemName: "tray.and.arrow.down.fill")
         }
         .help("Stash Staged Changes Only")
+    }
+    
+    fileprivate func returnToBranchButton() -> some View {
+        Button {
+            Task {
+                do {
+                    if let originalBranch = originalBranchForReturn {
+                        // Return to the stored original branch
+                        try await Process.output(GitSwitch(directory: folder.url, branchName: originalBranch))
+                        originalBranchForReturn = nil // Clear after use
+                    } else {
+                        // Fallback to main/master if no original branch stored
+                        do {
+                            try await Process.output(GitSwitch(directory: folder.url, branchName: "main"))
+                        } catch {
+                            try await Process.output(GitSwitch(directory: folder.url, branchName: "master"))
+                        }
+                    }
+                    await refreshModels()
+                } catch {
+                    self.error = error
+                }
+            }
+        } label: {
+            Image(systemName: "arrow.uturn.backward")
+        }
+        .help("Return to Branch")
     }
     
     fileprivate func openInBrowser() {

@@ -405,8 +405,17 @@ struct FolderView: View {
                 }
             } else {
                 ToolbarItemGroup(placement: .principal) {
-                    // Group 1: Launch buttons (Finder, Browser, Terminal)
+                    // Group 1: Launch buttons (Gitup, Finder, Browser, Terminal)
                     Group {
+                        if isGitupAvailable() {
+                            Button {
+                                openInGitup()
+                            } label: {
+                                Image(systemName: "externaldrive.connected.to.line.below")
+                            }
+                            .help("Open in Gitup")
+                        }
+                        
                         Button {
                             NSWorkspace.shared.open(folder.url)
                         } label: {
@@ -1062,6 +1071,18 @@ struct FolderView: View {
         // Fallback to default Terminal.app
         let defaultTerminal = TerminalApp.availableTerminals.first { $0.bundleIdentifier == "com.apple.Terminal" }
         defaultTerminal?.openTerminal(at: folder.url)
+    }
+    
+    fileprivate func isGitupAvailable() -> Bool {
+        return NSWorkspace.shared.urlForApplication(withBundleIdentifier: "co.gitup.mac") != nil
+    }
+    
+    fileprivate func openInGitup() {
+        guard let gitupURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "co.gitup.mac") else {
+            return
+        }
+        
+        NSWorkspace.shared.open([folder.url], withApplicationAt: gitupURL, configuration: NSWorkspace.OpenConfiguration())
     }
     
 }

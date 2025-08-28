@@ -26,7 +26,7 @@ struct TerminalApp: Codable, Identifiable, Hashable {
         ("Tabby", "org.tabby", "Tabby", "--working-directory '{REPO_PATH}'", .openCommand("Tabby")),
         ("WezTerm", "com.github.wez.wezterm", "WezTerm", "start --cwd '{REPO_PATH}'", .openCommand("WezTerm")),
         ("Rio", "com.raphamorim.rio", "Rio", "--working-directory '{REPO_PATH}'", .openCommand("Rio")),
-        ("Ghostty", "com.mitchellh.ghostty", "Ghostty", "'{REPO_PATH}'", .openCommand("Ghostty")),
+        ("Ghostty", "com.mitchellh.ghostty", "Ghostty", "--working-directory='{REPO_PATH}'", .openCommand("Ghostty")),
         ("Contour", "org.contourterminal.contour", "Contour", "--working-directory '{REPO_PATH}'", .openCommand("Contour"))
     ]
     
@@ -200,8 +200,8 @@ end tell
             
         case .openCommand(let appName):
             // Improved argument handling with proper quoting
-            let processedArgs = arguments.replacingOccurrences(of: "'{REPO_PATH}'", with: pathString)
-                .replacingOccurrences(of: "{REPO_PATH}", with: pathString)
+            let processedArgs = arguments.replacingOccurrences(of: "'{REPO_PATH}'", with: "'\(pathString)'")
+                .replacingOccurrences(of: "{REPO_PATH}", with: "'\(pathString)'")
             
             // Parse shell arguments properly instead of splitting by spaces
             let argComponents = parseShellArguments(processedArgs)

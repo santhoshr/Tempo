@@ -405,59 +405,72 @@ struct FolderView: View {
                 }
             } else {
                 ToolbarItemGroup(placement: .principal) {
-                    Button {
-                        NSWorkspace.shared.open(folder.url)
-                    } label: {
-                        Image(systemName: "folder")
-                    }
-                    .help("Open in Finder")
-                    
-                    Button {
-                        openInBrowser()
-                    } label: {
-                        Image(systemName: "globe")
-                    }
-                    .help("Open in Browser")
-                    
-                    Button {
-                        openInTerminal()
-                    } label: {
-                        Image(systemName: "terminal")
-                    }
-                    .help("Open in Terminal")
-                    .padding(.trailing)
-                    
-                    branchesButton()
-                    
-                    if allowExpertOptions {
-                        ReflogButton(
-                            folder: folder,
-                            showing: $showing,
-                            onRefresh: { await refreshModels() },
-                            error: $error,
-                            selectionLog: $selectionLog,
-                            originalBranchForReturn: $originalBranchForReturn
-                        )
+                    // Group 1: Launch buttons (Finder, Browser, Terminal)
+                    Group {
+                        Button {
+                            NSWorkspace.shared.open(folder.url)
+                        } label: {
+                            Image(systemName: "folder")
+                        }
+                        .help("Open in Finder")
+                        
+                        Button {
+                            openInBrowser()
+                        } label: {
+                            Image(systemName: "globe")
+                        }
+                        .help("Open in Browser")
+                        
+                        Button {
+                            openInTerminal()
+                        } label: {
+                            Image(systemName: "terminal")
+                        }
+                        .help("Open in Terminal")
                     }
                     
-                    // Show return button when in detached HEAD mode and we have an original branch to return to
-                    if allowExpertOptions && branch?.isDetached == true && originalBranchForReturn != nil {
-                        returnToBranchButton()
+                    Spacer()
+                        .frame(width: 16)
+                    
+                    // Group 2: Git operations (Branches, Reflog, Return, Add Branch)
+                    Group {
+                        branchesButton()
+                        
+                        if allowExpertOptions {
+                            ReflogButton(
+                                folder: folder,
+                                showing: $showing,
+                                onRefresh: { await refreshModels() },
+                                error: $error,
+                                selectionLog: $selectionLog,
+                                originalBranchForReturn: $originalBranchForReturn
+                            )
+                        }
+                        
+                        // Show return button when in detached HEAD mode and we have an original branch to return to
+                        if allowExpertOptions && branch?.isDetached == true && originalBranchForReturn != nil {
+                            returnToBranchButton()
+                        }
+                        
+                        addBranchButton()
+                        
+                        tagButton()
                     }
                     
-                    addBranchButton()
-                        .padding(.trailing)
+                    Spacer()
+                        .frame(width: 16)
                     
-                    tagButton()
-                        .padding(.trailing)
+                    // Group 3: Stash operations
+                    Group {
+                        stashButton()
+                        stashActionsButton()
+                    }
                     
-                    stashButton()
-                        .padding(.trailing)
-                    
-                    stashActionsButton()
-                        .padding(.trailing)
+                    Spacer()
+                        .frame(width: 24)
                 }
                 
+                // Group 4: Push/Pull operations (naturally separated by placement)
                 ToolbarItemGroup(placement: .primaryAction) {
                     pullButton()
                     pushButton()

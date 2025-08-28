@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AdvancedSettingsView: View {
     @AppStorage(AppStorageKey.allowExpertOptions.rawValue) private var allowExpertOptions = false
+    @AppStorage(AppStorageKey.reflogLimit.rawValue) private var reflogLimit = 100
     
     var body: some View {
         ScrollView {
@@ -66,6 +67,43 @@ struct AdvancedSettingsView: View {
                     .padding(16)
                     .background(Color(NSColor.controlBackgroundColor))
                     .cornerRadius(8)
+                }
+                
+                // Reflog Settings Section
+                if allowExpertOptions {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Reflog Settings")
+                            .font(.headline)
+                            .fontWeight(.medium)
+                        
+                        VStack(alignment: .leading, spacing: 16) {
+                            HStack(alignment: .top, spacing: 12) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("Entries per load")
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                    
+                                    Text("Number of reflog entries to load at once")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Spacer()
+                                
+                                HStack {
+                                    TextField("Limit", value: $reflogLimit, format: .number)
+                                        .textFieldStyle(.roundedBorder)
+                                        .frame(width: 80)
+                                    
+                                    Stepper("", value: $reflogLimit, in: 25...500, step: 25)
+                                        .labelsHidden()
+                                }
+                            }
+                        }
+                        .padding(16)
+                        .background(Color(NSColor.controlBackgroundColor))
+                        .cornerRadius(8)
+                    }
                 }
                 
                 // Warning Section

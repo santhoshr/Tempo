@@ -14,5 +14,6 @@ enum AppStorageKey: String {
     case gitRepoFolders
     case terminalSettings
     case allowExpertOptions
+    case reflogLimit
 }
 

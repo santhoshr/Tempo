@@ -9,14 +9,32 @@ import Foundation
 
 struct GitReflog: Git {
     typealias OutputModel = [ReflogEntry]
+    let limit: Int
+    let skip: Int
+    
+    init(directory: URL, limit: Int = 25, skip: Int = 0) {
+        self.directory = directory
+        self.limit = limit
+        self.skip = skip
+    }
+    
     var arguments: [String] {
-        return [
+        var args = [
             "git",
             "reflog",
-            "--pretty=format:%H%x09%gD%x09%gs",
-            "-n",
-            "100"
+            "--pretty=format:%H%x09%gD%x09%gs"
         ]
+        
+        if skip > 0 {
+            args.append("--skip=\(skip)")
+        }
+        
+        if limit > 0 {
+            args.append("-n")
+            args.append("\(limit)")
+        }
+        
+        return args
     }
     var directory: URL
 

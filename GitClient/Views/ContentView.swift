@@ -18,45 +18,22 @@ struct ContentView: View {
         var allFolders = getManualFolders()
         let discoveredFolders = getDiscoveredFolders()
         
-        // Merge and remove duplicates
+        // Merge and remove duplicates, preserving the order of discovered folders
+        var mergedFolders = allFolders
         for discoveredFolder in discoveredFolders {
             let folderExists = allFolders.contains { existingFolder in
                 existingFolder.url == discoveredFolder.url
             }
             if !folderExists {
-                allFolders.append(discoveredFolder)
+                mergedFolders.append(discoveredFolder)
             }
         }
         
-        // Check if autosort is enabled
-        let shouldSort = getAutoSortSetting()
-        
-        if shouldSort {
-            // Sort by simple display name first for performance
-            return allFolders.sorted { folder1, folder2 in
-                let name1 = folder1.displayName
-                let name2 = folder2.displayName
-                if name1 == name2 {
-                    // If names are the same, sort by full path to ensure stable ordering
-                    return folder1.url.path.localizedCaseInsensitiveCompare(folder2.url.path) == .orderedAscending
-                }
-                return name1.localizedCaseInsensitiveCompare(name2) == .orderedAscending
-            }
-        } else {
-            // Return without sorting but maintain stable order by URL path to prevent random reordering
-            return allFolders.sorted { $0.url.path < $1.url.path }
-        }
+        // The discovered folders are already sorted according to the sortOption,
+        // so we should preserve that ordering instead of applying our own sorting
+        return mergedFolders
     }
     
-    private func getAutoSortSetting() -> Bool {
-        guard let settingsData = gitRepoSettingsData else { return true }
-        do {
-            let settings = try JSONDecoder().decode(GitRepoSettings.self, from: settingsData)
-            return settings.autoSort
-        } catch {
-            return true // Default to sorting if there's an error
-        }
-    }
     
     // Pre-calculate display names and badges for performance
     private var foldersWithDisplayNames: [(folder: Folder, displayName: String, badge: String?)] {
@@ -83,7 +60,8 @@ struct ContentView: View {
                 in: settings.searchFolders,
                 autoScanSubfolders: settings.autoScanSubfolders,
                 maxDepth: settings.maxScanDepth,
-                autoSort: settings.autoSort
+                sortOption: settings.sortOption,
+                manualOrder: settings.manualOrder
             )
         } catch {
             return []

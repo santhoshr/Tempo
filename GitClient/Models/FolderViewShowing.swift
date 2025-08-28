@@ -16,5 +16,12 @@ struct FolderViewShowing {
     var tags = false
     var createNewTagAt: Commit?
     var amendCommitAt: Commit?
+    var confirmSoftReset: Commit?
+    var confirmMixedReset: Commit?
+    var confirmHardReset: Commit?
+    var confirmDiscardAll = false
+    var confirmCleanFiles = false
+    var confirmCleanFilesAndDirs = false
+    var confirmCleanIgnored = false
 }
 

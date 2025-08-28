@@ -214,6 +214,153 @@ struct FolderView: View {
                 }
             })
         })
+        .confirmationDialog("Soft Reset", isPresented: .constant(showing.confirmSoftReset != nil)) {
+            Button("Reset", role: .destructive) {
+                if let commit = showing.confirmSoftReset {
+                    Task {
+                        do {
+                            try await Process.output(GitResetSoft(directory: folder.url, commitHash: commit.hash))
+                            await refreshModels()
+                            isRefresh = true
+                        } catch {
+                            let errorMessage = error.localizedDescription
+                            self.error = GenericError(errorDescription: "Soft reset failed: \(errorMessage)")
+                        }
+                        showing.confirmSoftReset = nil
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                showing.confirmSoftReset = nil
+            }
+        } message: {
+            if let commit = showing.confirmSoftReset {
+                Text("Reset to \(commit.hash.prefix(8)) and keep changes staged?")
+            }
+        }
+        .confirmationDialog("Mixed Reset", isPresented: .constant(showing.confirmMixedReset != nil)) {
+            Button("Reset", role: .destructive) {
+                if let commit = showing.confirmMixedReset {
+                    Task {
+                        do {
+                            try await Process.output(GitResetMixed(directory: folder.url, commitHash: commit.hash))
+                            await refreshModels()
+                            isRefresh = true
+                        } catch {
+                            let errorMessage = error.localizedDescription
+                            self.error = GenericError(errorDescription: "Mixed reset failed: \(errorMessage)")
+                        }
+                        showing.confirmMixedReset = nil
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                showing.confirmMixedReset = nil
+            }
+        } message: {
+            if let commit = showing.confirmMixedReset {
+                Text("Reset to \(commit.hash.prefix(8)) and put changes in working directory?")
+            }
+        }
+        .confirmationDialog("Hard Reset", isPresented: .constant(showing.confirmHardReset != nil)) {
+            Button("Reset", role: .destructive) {
+                if let commit = showing.confirmHardReset {
+                    Task {
+                        do {
+                            try await Process.output(GitResetHard(directory: folder.url, commitHash: commit.hash))
+                            await refreshModels()
+                        } catch {
+                            let errorMessage = error.localizedDescription
+                            self.error = GenericError(errorDescription: "Hard reset failed: \(errorMessage)")
+                        }
+                        showing.confirmHardReset = nil
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                showing.confirmHardReset = nil
+            }
+        } message: {
+            if let commit = showing.confirmHardReset {
+                Text("Reset to \(commit.hash.prefix(8)) and discard all changes?")
+            }
+        }
+        .confirmationDialog("Discard All Changes", isPresented: $showing.confirmDiscardAll) {
+            Button("Discard", role: .destructive) {
+                Task {
+                    do {
+                        try await Process.output(GitResetToHead(directory: folder.url))
+                        await refreshModels()
+                    } catch {
+                        let errorMessage = error.localizedDescription
+                        self.error = GenericError(errorDescription: "Discard all failed: \(errorMessage)")
+                    }
+                    showing.confirmDiscardAll = false
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                showing.confirmDiscardAll = false
+            }
+        } message: {
+            Text("Discard all uncommitted changes?")
+        }
+        .confirmationDialog("Clean Files", isPresented: $showing.confirmCleanFiles) {
+            Button("Clean", role: .destructive) {
+                Task {
+                    do {
+                        try await Process.output(GitCleanFiles(directory: folder.url))
+                        await refreshModels()
+                    } catch {
+                        let errorMessage = error.localizedDescription
+                        self.error = GenericError(errorDescription: "Clean files failed: \(errorMessage)")
+                    }
+                    showing.confirmCleanFiles = false
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                showing.confirmCleanFiles = false
+            }
+        } message: {
+            Text("Remove untracked files?")
+        }
+        .confirmationDialog("Clean Files & Directories", isPresented: $showing.confirmCleanFilesAndDirs) {
+            Button("Clean", role: .destructive) {
+                Task {
+                    do {
+                        try await Process.output(GitCleanFilesAndDirs(directory: folder.url))
+                        await refreshModels()
+                    } catch {
+                        let errorMessage = error.localizedDescription
+                        self.error = GenericError(errorDescription: "Clean files and directories failed: \(errorMessage)")
+                    }
+                    showing.confirmCleanFilesAndDirs = false
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                showing.confirmCleanFilesAndDirs = false
+            }
+        } message: {
+            Text("Remove untracked files and directories?")
+        }
+        .confirmationDialog("Clean Ignored", isPresented: $showing.confirmCleanIgnored) {
+            Button("Clean", role: .destructive) {
+                Task {
+                    do {
+                        try await Process.output(GitCleanIgnored(directory: folder.url))
+                        await refreshModels()
+                    } catch {
+                        let errorMessage = error.localizedDescription
+                        self.error = GenericError(errorDescription: "Clean ignored files failed: \(errorMessage)")
+                    }
+                    showing.confirmCleanIgnored = false
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                showing.confirmCleanIgnored = false
+            }
+        } message: {
+            Text("Remove untracked and ignored files?")
+        }
         .navigationTitle(branch?.name ?? "")
         .toolbar {
             if isLoading {

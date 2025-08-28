@@ -63,6 +63,18 @@ extension View {
             Button("Tag") {
                 showing.wrappedValue.createNewTagAt = commit
             }
+            Divider()
+            Menu("Reset") {
+                Button("Soft Reset") {
+                    showing.wrappedValue.confirmSoftReset = commit
+                }
+                Button("Mixed Reset") {
+                    showing.wrappedValue.confirmMixedReset = commit
+                }
+                Button("Hard Reset") {
+                    showing.wrappedValue.confirmHardReset = commit
+                }
+            }
         }
     }
 

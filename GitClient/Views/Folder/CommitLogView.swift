@@ -78,6 +78,23 @@ struct CommitLogView: View {
             case .notCommitted:
                 Text("Uncommitted Changes")
                     .foregroundStyle(Color.secondary)
+                    .contextMenu {
+                        Button("Hard Reset (HEAD)") {
+                            showing.confirmDiscardAll = true
+                        }
+                        Divider()
+                        Menu("Clean") {
+                            Button("Files") {
+                                showing.confirmCleanFiles = true
+                            }
+                            Button("Files & Directories") {
+                                showing.confirmCleanFilesAndDirs = true
+                            }
+                            Button("Ignored") {
+                                showing.confirmCleanIgnored = true
+                            }
+                        }
+                    }
             case .committed(let commit):
                 if let folder {
                     CommitRowView(commit: commit)

@@ -217,6 +217,31 @@ struct FolderView: View {
                 }
             } else {
                 ToolbarItem(placement: .principal) {
+                    Button {
+                        NSWorkspace.shared.open(folder.url)
+                    } label: {
+                        Image(systemName: "folder")
+                    }
+                    .help("Open in Finder")
+                }
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        openInBrowser()
+                    } label: {
+                        Image(systemName: "globe")
+                    }
+                    .help("Open in Browser")
+                }
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        openInTerminal()
+                    } label: {
+                        Image(systemName: "terminal")
+                    }
+                    .help("Open in Terminal")
+                    .padding(.trailing)
+                }
+                ToolbarItem(placement: .principal) {
                     branchesButton()
                 }
                 ToolbarItem(placement: .principal) {
@@ -231,11 +256,9 @@ struct FolderView: View {
                     stashButton()
                         .padding(.trailing)
                 }
-                ToolbarItem(placement: .primaryAction) {
-                    stashChangesButton()
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    stashStagedButton()
+                ToolbarItem(placement: .principal) {
+                    stashActionsButton()
+                        .padding(.trailing)
                 }
                 ToolbarItem(placement: .primaryAction) {
                     pullButton()
@@ -385,7 +408,7 @@ struct FolderView: View {
                             Text("Remotes")
                         }
                 }
-                .frame(width: 300, height: 660)
+                .frame(width: 300, height: 420)
                 .padding()
             }
 
@@ -436,6 +459,93 @@ struct FolderView: View {
             Image(systemName: "tray")
         }
         .help("Show Stashed Changes")
+    }
+
+    fileprivate func stashTextRow(_ title: String, help: String, action: @escaping () -> Void) -> some View {
+        Text(title)
+            .font(.system(size: 13))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture(perform: action)
+            .help(help)
+    }
+
+    fileprivate func stashActionsButton() -> some View {
+        Button {
+            showing.stashMenu.toggle()
+        } label: {
+            Image(systemName: "tray.and.arrow.down")
+        }
+        .help("Stash Options")
+        .popover(isPresented: $showing.stashMenu) {
+            VStack(alignment: .leading, spacing: 0) {
+                menuItem("Stash", icon: "tray.and.arrow.down", help: "Stash staged + unstaged. Working tree cleared of changes; untracked files unaffected.") {
+                    runStash(keepIndex: false, includeUntracked: false)
+                }
+                
+                menuItem("Stash +Index", icon: "tray.and.arrow.down", help: "Stash staged + unstaged, but keep index (staged) intact. Working tree cleared of unstaged; untracked unaffected.") {
+                    runStash(keepIndex: true, includeUntracked: false)
+                }
+                
+                Divider()
+                    .padding(.horizontal, 8)
+                
+                menuItem("Stash Staged", icon: "tray.and.arrow.down.fill", help: "Stash only staged changes. Working tree untouched except staged paths may reflect indexed content; untracked unaffected.") {
+                    runStashStaged(keepIndex: false)
+                }
+                
+                Divider()
+                    .padding(.horizontal, 8)
+                
+                menuItem("Stash Untracked", icon: "tray.and.arrow.down", help: "Stash untracked files too. Working tree cleared of untracked and tracked changes.") {
+                    runStash(keepIndex: false, includeUntracked: true)
+                }
+                
+                menuItem("Stash Untracked +Index", icon: "tray.and.arrow.down", help: "Stash untracked + staged/unstaged, keep index intact. Working tree cleared of unstaged + untracked.") {
+                    runStash(keepIndex: true, includeUntracked: true)
+                }
+                
+                Divider()
+                    .padding(.horizontal, 8)
+                
+                menuItem("Clear all stashes", icon: "trash", help: "Delete all stashes. Irreversible.") {
+                    runStashClear()
+                }
+                
+                menuItem("Clear & keep last 5", icon: "trash", help: "Deletes older stashes, keeps the 5 most recent.") {
+                    runStashKeepLast(5)
+                }
+            }
+            .background(Color(NSColor.controlBackgroundColor))
+            .cornerRadius(8)
+            .shadow(radius: 8)
+            .frame(minWidth: 200)
+        }
+    }
+    
+    fileprivate func menuItem(_ title: String, icon: String, help: String, action: @escaping () -> Void) -> some View {
+        Button(action: {
+            showing.stashMenu = false
+            action()
+        }) {
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .frame(width: 16)
+                    .foregroundColor(.primary)
+                Text(title)
+                    .foregroundColor(.primary)
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+        .background(Color.clear)
+        .onHover { isHovered in
+            // Menu item hover effect could be added here
+        }
+        .help(help)
     }
 
     fileprivate func badge() -> some View {
@@ -514,6 +624,80 @@ struct FolderView: View {
         }
     }
     
+    fileprivate func runStash(keepIndex: Bool, includeUntracked: Bool) {
+        showing.stashMenu = false
+        isLoading = true
+        Task {
+            do {
+                try await Process.output(GitStash(directory: folder.url, message: "", keepIndex: keepIndex, includeUntracked: includeUntracked))
+                isLoading = false
+                await refreshModels()
+                await MainActor.run {
+                    isRefresh.toggle()
+                }
+            } catch {
+                isLoading = false
+                self.error = error
+            }
+        }
+    }
+
+    fileprivate func runStashStaged(keepIndex: Bool) {
+        showing.stashMenu = false
+        isLoading = true
+        Task {
+            do {
+                try await Process.output(GitStashStaged(directory: folder.url, message: "", keepIndex: keepIndex))
+                isLoading = false
+                await refreshModels()
+                await MainActor.run {
+                    isRefresh.toggle()
+                }
+            } catch {
+                isLoading = false
+                self.error = error
+            }
+        }
+    }
+
+    fileprivate func runStashClear() {
+        showing.stashMenu = false
+        isLoading = true
+        Task {
+            do {
+                try await Process.output(GitStashClear(directory: folder.url))
+                isLoading = false
+                await refreshModels()
+            } catch {
+                isLoading = false
+                self.error = error
+            }
+        }
+    }
+
+    fileprivate func runStashKeepLast(_ keepLast: Int) {
+        showing.stashMenu = false
+        isLoading = true
+        Task {
+            do {
+                let list = try await Process.output(GitStashList(directory: folder.url))
+                if list.count > keepLast {
+                    // Drop from oldest to the keepLast-th (descending indices)
+                    for idx in stride(from: list.count - 1, through: keepLast, by: -1) {
+                        try await Process.output(GitStashDrop(directory: folder.url, index: idx))
+                    }
+                }
+                isLoading = false
+                await refreshModels()
+            } catch {
+                isLoading = false
+                self.error = error
+            }
+        }
+    }
+
+    // Deprecated: replaced by stashActionsButton
+    @available(*, deprecated)
     fileprivate func stashChangesButton() -> some View {
         Button {
             isLoading = true
@@ -537,6 +721,8 @@ struct FolderView: View {
         .help("Stash Changes")
     }
     
+    // Deprecated: replaced by stashActionsButton
+    @available(*, deprecated)
     fileprivate func stashStagedButton() -> some View {
         Button {
             isLoading = true
@@ -558,6 +744,84 @@ struct FolderView: View {
             Image(systemName: "tray.and.arrow.down.fill")
         }
         .help("Stash Staged Changes Only")
+    }
+    
+    fileprivate func openInBrowser() {
+        // Check if there's a remote URL in git config
+        let gitConfigURL = folder.url.appendingPathComponent(".git/config")
+        
+        if FileManager.default.fileExists(atPath: gitConfigURL.path) {
+            do {
+                let gitConfig = try String(contentsOf: gitConfigURL)
+                
+                // Look for remote origin URL
+                let lines = gitConfig.components(separatedBy: .newlines)
+                var inOriginSection = false
+                
+                for line in lines {
+                    let trimmedLine = line.trimmingCharacters(in: .whitespaces)
+                    
+                    if trimmedLine == "[remote \"origin\"]" {
+                        inOriginSection = true
+                        continue
+                    }
+                    
+                    if trimmedLine.hasPrefix("[") && trimmedLine != "[remote \"origin\"]" {
+                        inOriginSection = false
+                        continue
+                    }
+                    
+                    if inOriginSection && trimmedLine.hasPrefix("url = ") {
+                        let urlString = String(trimmedLine.dropFirst(6))
+                        
+                        // Convert SSH URLs to HTTPS
+                        var webURL = urlString
+                        if webURL.hasPrefix("git@github.com:") {
+                            webURL = webURL.replacingOccurrences(of: "git@github.com:", with: "https://github.com/")
+                        } else if webURL.hasPrefix("git@gitlab.com:") {
+                            webURL = webURL.replacingOccurrences(of: "git@gitlab.com:", with: "https://gitlab.com/")
+                        } else if webURL.hasPrefix("git@bitbucket.org:") {
+                            webURL = webURL.replacingOccurrences(of: "git@bitbucket.org:", with: "https://bitbucket.org/")
+                        }
+                        
+                        // Remove .git suffix
+                        if webURL.hasSuffix(".git") {
+                            webURL = String(webURL.dropLast(4))
+                        }
+                        
+                        if let url = URL(string: webURL) {
+                            NSWorkspace.shared.open(url)
+                            return
+                        }
+                    }
+                }
+            } catch {
+                // If we can't read git config, fall back to opening the folder
+            }
+        }
+        
+        // Fallback: open the folder in Finder
+        NSWorkspace.shared.open(folder.url)
+    }
+    
+    fileprivate func openInTerminal() {
+        // Get terminal settings from app storage
+        if let terminalSettingsData = UserDefaults.standard.data(forKey: AppStorageKey.terminalSettings.rawValue) {
+            do {
+                let terminalSettings = try JSONDecoder().decode(TerminalSettings.self, from: terminalSettingsData)
+                if let selectedTerminal = terminalSettings.selectedTerminal {
+                    let customArguments = terminalSettings.customArguments(for: selectedTerminal.bundleIdentifier)
+                    selectedTerminal.openTerminal(at: folder.url, customArguments: customArguments)
+                    return
+                }
+            } catch {
+                // Fall back to default if decoding fails
+            }
+        }
+        
+        // Fallback to default Terminal.app
+        let defaultTerminal = TerminalApp.availableTerminals.first { $0.bundleIdentifier == "com.apple.Terminal" }
+        defaultTerminal?.openTerminal(at: folder.url)
     }
     
 }

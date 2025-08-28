@@ -16,6 +16,9 @@ struct GitStashStaged: Git {
             "push",
             "--staged",
         ]
+        if keepIndex {
+            args.append("--keep-index")
+        }
         if !message.isEmpty {
             args.append("-m")
             args.append(message)
@@ -24,6 +27,7 @@ struct GitStashStaged: Git {
     }
     var directory: URL
     var message = ""
+    var keepIndex: Bool = false
 
     func parse(for stdOut: String) -> Void {}
 }

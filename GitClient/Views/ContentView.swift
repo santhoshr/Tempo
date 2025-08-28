@@ -28,7 +28,24 @@ struct ContentView: View {
             }
         }
         
-        return allFolders.sorted { $0.displayName < $1.displayName }
+        // Sort by simple display name first for performance
+        return allFolders.sorted { folder1, folder2 in
+            let name1 = folder1.displayName
+            let name2 = folder2.displayName
+            if name1 == name2 {
+                // If names are the same, sort by full path to ensure stable ordering
+                return folder1.url.path.localizedCaseInsensitiveCompare(folder2.url.path) == .orderedAscending
+            }
+            return name1.localizedCaseInsensitiveCompare(name2) == .orderedAscending
+        }
+    }
+    
+    // Pre-calculate display names and badges for performance
+    private var foldersWithDisplayNames: [(folder: Folder, displayName: String, badge: String?)] {
+        let folders = decodedFolders
+        return folders.map { folder in
+            (folder: folder, displayName: folder.displayName, badge: folder.parentDirectoryForBadge(amongFolders: folders))
+        }
     }
     
     private func getManualFolders() -> [Folder] {
@@ -56,7 +73,7 @@ struct ContentView: View {
     @State private var selectionFolderURL: URL?
     private var selectionFolder: Folder? {
         guard let selectionFolderURL = selectionFolderURL else { return nil}
-        return decodedFolders.first(where: { $0.url == selectionFolderURL })
+        return foldersWithDisplayNames.first(where: { $0.folder.url == selectionFolderURL })?.folder
     }
     @State private var selectionLog: Log?
     @State private var subSelectionLogID: String?
@@ -80,58 +97,35 @@ struct ContentView: View {
                     .foregroundColor(.secondary)
                     .padding(.horizontal)
                 } else {
-                    List(decodedFolders, id: \.url, selection: $selectionFolderURL) { folder in
+                    List(foldersWithDisplayNames, id: \.folder.url, selection: $selectionFolderURL) { item in
                         HStack {
-                            Label(folder.displayName, systemImage: "folder")
-                                .help(folder.url.path)
-                            
+                            Label(item.displayName, systemImage: "folder")
                             Spacer()
-                            
-                            HStack(spacing: 8) {
-                                Button {
-                                    NSWorkspace.shared.open(folder.url)
-                                } label: {
-                                    Image(systemName: "folder")
-                                        .foregroundColor(.orange)
-                                }
-                                .buttonStyle(.plain)
-                                .help("Open in Finder")
-                                
-                                Button {
-                                    openInBrowser(folder: folder)
-                                } label: {
-                                    Image(systemName: "globe")
-                                        .foregroundColor(.blue)
-                                }
-                                .buttonStyle(.plain)
-                                .help("Open in Browser")
-                                
-                                Button {
-                                    openInTerminal(folder: folder)
-                                } label: {
-                                    Image(systemName: "terminal")
-                                        .foregroundColor(.green)
-                                }
-                                .buttonStyle(.plain)
-                                .help("Open in Terminal")
+                            if let badge = item.badge {
+                                Text(badge)
+                                    .font(.caption)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.secondary.opacity(0.2))
+                                    .foregroundColor(.secondary)
+                                    .cornerRadius(4)
                             }
-                            .opacity(selectionFolderURL == folder.url ? 1.0 : 0.0)
-                            .animation(.easeInOut(duration: 0.2), value: selectionFolderURL)
                         }
+                        .help(item.folder.url.path)
                         .contextMenu {
                             Button("Open in Browser") {
-                                openInBrowser(folder: folder)
+                                openInBrowser(folder: item.folder)
                             }
                             Button("Open in Terminal") {
-                                openInTerminal(folder: folder)
+                                openInTerminal(folder: item.folder)
                             }
                             Divider()
                             Button("Remove from List") {
-                                removeFolder(folder)
+                                removeFolder(item.folder)
                             }
                             Divider()
                             Button("Show in Finder") {
-                                NSWorkspace.shared.open(folder.url)
+                                NSWorkspace.shared.open(item.folder.url)
                             }
                         }
                     }

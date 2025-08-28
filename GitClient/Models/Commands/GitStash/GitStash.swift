@@ -13,7 +13,14 @@ struct GitStash: Git {
         var args = [
             "git",
             "stash",
+            "push",
         ]
+        if keepIndex {
+            args.append("--keep-index")
+        }
+        if includeUntracked {
+            args.append("--include-untracked")
+        }
         if !message.isEmpty {
             args.append("-m")
             args.append(message)
@@ -22,6 +29,8 @@ struct GitStash: Git {
     }
     var directory: URL
     var message = ""
+    var keepIndex: Bool = false
+    var includeUntracked: Bool = false
 
     func parse(for stdOut: String) -> Void {}
 }

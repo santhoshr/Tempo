@@ -95,3 +95,5 @@ vendor/bundle
 
 .DS_Store
 *.swp
+.agent.md
+GitClient.app/

@@ -132,7 +132,7 @@ struct CommitCreateView: View {
                         Button {
                             Task {
                                 do {
-                                    try await Process.output(GitStash(directory: folder.url))
+                                    try await Process.output(GitStash(directory: folder.url, message: "", keepIndex: false, includeUntracked: true))
                                     onStash()
                                 } catch {
                                     self.error = error

@@ -61,9 +61,13 @@ struct ReflogButton: View {
                     showing.reflog = false
                     Task {
                         do {
-                            if !entry.branchNames.isEmpty {
-                                // Switch to branch instead of detached HEAD
-                                try await Process.output(GitSwitch(directory: folder.url, branchName: entry.branchNames.first!))
+                            // Smart checkout logic:
+                            // - For local branches: checkout branch to avoid detached HEAD
+                            // - For remote branches: checkout commit ID (can't checkout remote branches directly)
+                            let localBranch = entry.branchNames.first { !$0.hasPrefix("remotes/") }
+                            
+                            if let localBranchName = localBranch {
+                                try await Process.output(GitSwitch(directory: folder.url, branchName: localBranchName))
                             } else {
                                 try await Process.output(GitCheckout(directory: folder.url, commitHash: entry.hash))
                             }

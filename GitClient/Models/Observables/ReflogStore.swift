@@ -26,50 +26,53 @@ import Observation
         }
         
         do {
-            // Smart refresh: if we have loaded all entries, check for newer ones
-            // If we have partial entries, check if there are newer ones than our first entry
-            let checkLimit = entries.isEmpty ? limit : (hasMoreEntries ? limit : 0)
-            
             if entries.isEmpty {
-                // Initial load - use configured limit
+                // Initial load - use loadInitial to maintain consistency
                 await loadInitial()
-            } else if !hasMoreEntries {
-                // We have loaded all entries - check for new ones at the beginning
-                let latestEntries = try await Process.output(GitReflog(directory: directory, limit: limit))
+                return
+            }
+            
+            // Progressive batch refresh: compare batch by batch until we find a match
+            let totalLoaded = entries.count
+            let totalBatches = (totalLoaded + limit - 1) / limit // Ceiling division
+            var refreshedEntries: [ReflogEntry] = []
+            var batchesProcessed = 0
+            
+            for batchIndex in 0..<totalBatches {
+                let skip = batchIndex * limit
+                let currentBatch = Array(entries.dropFirst(skip).prefix(limit))
                 
-                // Find entries that are newer than our first (most recent) entry
-                let firstEntryHash = entries.first?.hash
-                var newEntries: [ReflogEntry] = []
+                if currentBatch.isEmpty { break }
                 
-                for entry in latestEntries {
-                    if entry.hash == firstEntryHash {
-                        break // Found our first entry, stop here
+                // Fetch the corresponding batch from git
+                let latestBatch = try await Process.output(GitReflog(directory: directory, limit: limit, skip: skip))
+                
+                // Compare this batch with our cached batch
+                let batchMatches = latestBatch.count == currentBatch.count &&
+                                 zip(latestBatch, currentBatch).allSatisfy { $0.hash == $1.hash }
+                
+                if batchMatches {
+                    // This batch matches, we can stop here
+                    break
+                } else {
+                    // This batch is different, add it to refreshed entries and continue
+                    refreshedEntries.append(contentsOf: latestBatch)
+                    batchesProcessed += 1
+                    
+                    // Clear branch info for entries we're replacing
+                    for entry in currentBatch {
+                        branchInfoLoaded.remove(entry.hash)
                     }
-                    newEntries.append(entry)
                 }
+            }
+            
+            if !refreshedEntries.isEmpty {
+                // Keep entries that weren't refreshed
+                let unchangedEntries = Array(entries.dropFirst(batchesProcessed * limit))
+                entries = refreshedEntries + unchangedEntries
                 
-                if !newEntries.isEmpty {
-                    // Prepend new entries to the beginning
-                    entries = newEntries + entries
-                    
-                    // Load branch info for the new entries only
-                    await loadBranchesForNewEntries(startIndex: 0, count: newEntries.count)
-                }
-            } else {
-                // We have partial entries - do intelligent refresh
-                let latestEntries = try await Process.output(GitReflog(directory: directory, limit: limit))
-                
-                // Find new entries that aren't already in our cache
-                let existingHashes = Set(entries.map { $0.hash })
-                let newEntries = latestEntries.filter { !existingHashes.contains($0.hash) }
-                
-                if !newEntries.isEmpty {
-                    // Prepend new entries to the beginning
-                    entries = newEntries + entries
-                    
-                    // Load branch info for the new entries only
-                    await loadBranchesForNewEntries(startIndex: 0, count: newEntries.count)
-                }
+                // Load branch info for the refreshed entries only
+                await loadBranchesForNewEntries(startIndex: 0, count: refreshedEntries.count)
             }
         } catch {
             self.error = error

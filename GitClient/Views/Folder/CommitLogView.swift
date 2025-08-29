@@ -19,11 +19,21 @@ struct CommitLogView: View {
     @State private var selectionLogIDs = Set<String>()
 
     var body: some View {
-        List(logStore.logs(), selection: $selectionLogIDs) { log in
-            logsRow(log)
-                .task {
-                    await logStore.logViewTask(log)
+        ScrollViewReader { proxy in
+            List(logStore.logs(), selection: $selectionLogIDs) { log in
+                logsRow(log)
+                    .id(log.id)
+                    .task {
+                        await logStore.logViewTask(log)
+                    }
+            }
+            .onChange(of: selectionLogID) { _, newSelectionLogID in
+                if let logID = newSelectionLogID {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        proxy.scrollTo(logID, anchor: .top)
+                    }
                 }
+            }
         }
         .onChange(of: selectionLogIDs) { oldValue, newValue in
             if newValue.count <= 1 {

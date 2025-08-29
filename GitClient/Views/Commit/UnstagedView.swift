@@ -13,6 +13,8 @@ struct UnstagedView: View {
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
     var onSelectUntrackedFile: ((String) -> Void)?
+    var onNavigateToStagedChanges: (() -> Void)?
+    var onNavigateToFile: ((String) -> Void)?
     @State private var isExpanded = true
 
     var body: some View {
@@ -32,7 +34,10 @@ struct UnstagedView: View {
                 selectButtonImageSystemName: "plus.circle",
                 selectButtonHelp: "Stage This Hunk",
                 onSelectFileDiff: onSelectFileDiff,
-                onSelectChunk: onSelectChunk
+                onSelectChunk: onSelectChunk,
+                contextMenuFileNames: fileDiffs.compactMap { $0.model.toFilePath },
+                onNavigateToFile: onNavigateToFile,
+                fileIDPrefix: "us"
             )
             .padding(.leading, 4)
             .padding(.top)
@@ -63,9 +68,27 @@ struct UnstagedView: View {
                 .padding(.bottom)
             }
         } label: {
-            SectionHeader(title: "Unstaged Changes")
-                .padding(.leading, 3)
+            SectionHeader(
+                title: "Unstaged Changes",
+                contextMenuOptions: [
+                    SectionHeader.ContextMenuOption(
+                        title: "Staged Changes", 
+                        systemImage: "plus.circle", 
+                        action: "staged"
+                    )
+                ],
+                onContextMenuAction: { action in
+                    switch action {
+                    case "staged":
+                        onNavigateToStagedChanges?()
+                    default:
+                        break
+                    }
+                }
+            )
+            .padding(.leading, 3)
         }
+        .id("unstaged_header")
         .padding(.horizontal)
     }
 }

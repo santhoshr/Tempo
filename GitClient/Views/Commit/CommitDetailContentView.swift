@@ -15,9 +15,16 @@ struct CommitDetailContentView: View {
     @State private var fileDiffs: [ExpandableModel<FileDiff>] = []
     @State private var mergedIn: Commit?
     @State private var error: Error?
+    @State private var fileScrollTargetID: String?
+    @State private var resetScrollID = UUID()
 
     var body: some View {
-        ScrollView {
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack {
+                    EmptyView()
+                }
+                .id("top")
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     Text(commit.hash.prefix(10))
@@ -109,7 +116,15 @@ struct CommitDetailContentView: View {
                     if commit.parentHashes.count == 2 {
                         MergeCommitContentView(mergeCommit: commit, directoryURL: folder.url)
                     } else {
-                        FileDiffsView(expandableFileDiffs: $fileDiffs)
+                        FileDiffsView(
+                            expandableFileDiffs: $fileDiffs,
+                            contextMenuFileNames: fileDiffs.compactMap { $0.model.toFilePath },
+                            onNavigateToFile: { fileName in
+                                if let index = fileDiffs.firstIndex(where: { $0.model.toFilePath == fileName }) {
+                                    fileScrollTargetID = "file\(index + 1)"
+                                }
+                            }
+                        )
                     }
                 }
                 Spacer(minLength: 0)
@@ -134,7 +149,23 @@ struct CommitDetailContentView: View {
             .background(Color(nsColor: .textBackgroundColor))
             .frame(height: 40)
         })
+        .onChange(of: fileScrollTargetID) { _, newFileTargetID in
+            if let targetID = newFileTargetID {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        proxy.scrollTo(targetID, anchor: .top)
+                    }
+                }
+                fileScrollTargetID = nil
+            }
+        }
+        .onChange(of: resetScrollID) { _, _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                proxy.scrollTo("top", anchor: .top)
+            }
+        }
         .onChange(of: commit, initial: true, { _, commit in
+            resetScrollID = UUID() // Trigger scroll reset
             Task {
                 do {
                     commitDetail = try await Process.output(GitShow(directory: folder.url, object: commit.hash))
@@ -165,7 +196,8 @@ struct CommitDetailContentView: View {
                     self.error = error
                 }
             }
-        })
+            })
+        }
         .onChange(of: commitDetail, { _, newValue in
             if let newValue {
                 fileDiffs = newValue.diff.fileDiffs.map { .init(isExpanded: true, model: $0) }

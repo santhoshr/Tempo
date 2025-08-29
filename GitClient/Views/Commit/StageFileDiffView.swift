@@ -16,6 +16,10 @@ struct StageFileDiffView: View {
     var selectButtonHelp: String
     var onSelectFileDiff: ((FileDiff) -> Void)?
     var onSelectChunk: ((FileDiff, Chunk) -> Void)?
+    var contextMenuFileNames: [String]? // Other files in the same commit
+    var onNavigateToFile: ((String) -> Void)? // Navigation callback
+    var fileIndex: Int = 1 // Running number for this file
+    var fileIDPrefix: String = "file" // Prefix for file IDs
 
     var body: some View {
         DisclosureGroup(isExpanded: $expandableFileDiff.isExpanded) {
@@ -59,8 +63,13 @@ struct StageFileDiffView: View {
                 }
             }
         } label: {
-            StageFileDiffHeaderView(fileDiff: fileDiff)
-                .padding(.leading, 3)
+            StageFileDiffHeaderView(
+                fileDiff: fileDiff,
+                contextMenuFileNames: contextMenuFileNames,
+                onNavigateToFile: onNavigateToFile
+            )
+            .padding(.leading, 3)
         }
+        .id("\(fileIDPrefix)\(fileIndex)")
     }
 }

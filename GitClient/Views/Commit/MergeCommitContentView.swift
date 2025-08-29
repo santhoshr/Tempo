@@ -13,9 +13,30 @@ struct MergeCommitContentView: View {
     @State private var commits: [Commit] = []
     @State private var filesChanged: [ExpandableModel<FileDiff>] = []
     @State private var error: Error?
+    @State private var fileScrollTargetID: String?
 
     var body: some View {
-        DiffView(commits: $commits, filesChanged: $filesChanged)
+        ScrollViewReader { proxy in
+            DiffView(
+                commits: $commits, 
+                filesChanged: $filesChanged,
+                contextMenuFileNames: filesChanged.compactMap { $0.model.toFilePath },
+                onNavigateToFile: { fileName in
+                    if let index = filesChanged.firstIndex(where: { $0.model.toFilePath == fileName }) {
+                        fileScrollTargetID = "file\(index + 1)"
+                    }
+                }
+            )
+            .onChange(of: fileScrollTargetID) { _, newFileTargetID in
+                if let targetID = newFileTargetID {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            proxy.scrollTo(targetID, anchor: .top)
+                        }
+                    }
+                    fileScrollTargetID = nil
+                }
+            }
             .onChange(of: mergeCommit, initial: true) {
                 Task {
                     do {
@@ -30,6 +51,7 @@ struct MergeCommitContentView: View {
                 }
             }
             .errorSheet($error)
+        }
     }
 }
 

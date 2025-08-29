@@ -9,6 +9,13 @@ import SwiftUI
 
 struct FileDiffView: View {
     @Binding var expandableFileDiff: ExpandableModel<FileDiff>
+    var contextMenuFileNames: [String]? // Other files in the same commit
+    var onNavigateToFile: ((String) -> Void)? // Navigation callback
+    
+    private func sanitizeFilePathForID(_ filePath: String) -> String {
+        // Only escape truly problematic characters, keep path structure
+        return filePath.replacingOccurrences(of: " ", with: "_")
+    }
 
     var body: some View {
         DisclosureGroup(isExpanded: $expandableFileDiff.isExpanded) {
@@ -18,8 +25,14 @@ struct FileDiffView: View {
                     .padding(.bottom, 12)
             }
         } label: {
-            FileNameView(toFilePath: expandableFileDiff.model.toFilePath, filePathDisplay: expandableFileDiff.model.filePathDisplay)
-                .padding(.leading, 3)
+            FileNameView(
+                toFilePath: expandableFileDiff.model.toFilePath, 
+                filePathDisplay: expandableFileDiff.model.filePathDisplay,
+                contextMenuFileNames: contextMenuFileNames,
+                onNavigateToFile: onNavigateToFile
+            )
+            .padding(.leading, 3)
+            .id("commit_file_header_\(expandableFileDiff.model.toFilePath)")
         }
     }
 

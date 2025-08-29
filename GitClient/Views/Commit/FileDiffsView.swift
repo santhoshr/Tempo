@@ -9,13 +9,20 @@ import SwiftUI
 
 struct FileDiffsView: View {
     @Binding var expandableFileDiffs: [ExpandableModel<FileDiff>]
+    var contextMenuFileNames: [String]? // Other files in the same commit
+    var onNavigateToFile: ((String) -> Void)? // Navigation callback
     @Environment(\.expandAllFiles) private var expandAllFilesID: UUID?
     @Environment(\.collapseAllFiles) private var collapseAllFilesID: UUID?
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
-            ForEach($expandableFileDiffs, id: \.self) { $expandedFileDiff in
-                FileDiffView(expandableFileDiff: $expandedFileDiff)
+            ForEach(Array(expandableFileDiffs.enumerated()), id: \.offset) { index, expandedFileDiff in
+                FileDiffView(
+                    expandableFileDiff: $expandableFileDiffs[index],
+                    contextMenuFileNames: contextMenuFileNames,
+                    onNavigateToFile: onNavigateToFile
+                )
+                .id("file\(index + 1)")
             }
             .padding(.top, 2)
             .onChange(of: expandAllFilesID) { _, _ in

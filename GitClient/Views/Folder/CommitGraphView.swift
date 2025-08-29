@@ -16,39 +16,48 @@ struct CommitGraphView: View {
     @State private var isLoading = false
 
     var body: some View {
-        ScrollView([.horizontal, .vertical]) {
-            CommitGraphContentView(
-                notCommitted: $logStore.notCommitted,
-                selectionLogID: $selectionLogID,
-                subSelectionLogID: $subSelectionLogID,
-                logStore: $logStore,
-                showing: $showing,
-                isRefresh: $isRefresh,
-                commits: CommitGraph().positionedCommits(logStore.commits)
-            )
-            .padding(.horizontal)
-            .padding(.top, logStore.notCommitted?.isEmpty == true ? 22 : 14)
-            .padding(.bottom, 22)
-            if logStore.canLoadMore {
-                HStack {
-                    if isLoading {
-                        ProgressView()
-                            .scaleEffect(0.6)
-                    } else {
-                        Button("More") {
-                            Task {
-                                isLoading = true
-                                await logStore.loadMore()
-                                isLoading = false
-                            }
-                        }
-                        .buttonStyle(.link)
-                    }
-                    Spacer()
-                }
+        ScrollViewReader { proxy in
+            ScrollView([.horizontal, .vertical]) {
+                CommitGraphContentView(
+                    notCommitted: $logStore.notCommitted,
+                    selectionLogID: $selectionLogID,
+                    subSelectionLogID: $subSelectionLogID,
+                    logStore: $logStore,
+                    showing: $showing,
+                    isRefresh: $isRefresh,
+                    commits: CommitGraph().positionedCommits(logStore.commits)
+                )
                 .padding(.horizontal)
-                .padding(.horizontal, 8)
+                .padding(.top, logStore.notCommitted?.isEmpty == true ? 22 : 14)
                 .padding(.bottom, 22)
+                if logStore.canLoadMore {
+                    HStack {
+                        if isLoading {
+                            ProgressView()
+                                .scaleEffect(0.6)
+                        } else {
+                            Button("More") {
+                                Task {
+                                    isLoading = true
+                                    await logStore.loadMore()
+                                    isLoading = false
+                                }
+                            }
+                            .buttonStyle(.link)
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.horizontal, 8)
+                    .padding(.bottom, 22)
+                }
+            }
+            .onChange(of: selectionLogID) { _, newSelectionLogID in
+                if let logID = newSelectionLogID {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        proxy.scrollTo(logID, anchor: .top)
+                    }
+                }
             }
         }
         .background(Color(NSColor.textBackgroundColor))
@@ -137,6 +146,7 @@ struct CommitGraphContentView: View {
                             subSelectionLogID: $subSelectionLogID
                         )
                             .position(point)
+                            .id(commit.id)
                             .commitContextMenu(
                                 folder: folder,
                                 commit: commit.commit,

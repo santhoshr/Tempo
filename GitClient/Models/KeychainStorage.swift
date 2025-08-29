@@ -61,10 +61,15 @@ final class KeychainStorage: ObservableObject {
     
     @Published var error: Error?
     private let apiKeyDB = Keychain(service: Bundle.main.bundleIdentifier! + ".openai-api-secret-key")
+        .accessibility(.whenUnlockedThisDeviceOnly)
     private let apiURLDB = Keychain(service: Bundle.main.bundleIdentifier! + ".openai-api-url")
+        .accessibility(.whenUnlockedThisDeviceOnly)
     private let apiPromptDB = Keychain(service: Bundle.main.bundleIdentifier! + ".openai-api-prompt")
+        .accessibility(.whenUnlockedThisDeviceOnly)
     private let apiModelDB = Keychain(service: Bundle.main.bundleIdentifier! + ".openai-api-model")
+        .accessibility(.whenUnlockedThisDeviceOnly)
     private let apiStagingPromptDB = Keychain(service: Bundle.main.bundleIdentifier! + ".openai-api-staging-prompt")
+        .accessibility(.whenUnlockedThisDeviceOnly)
     private let apiKeyKey = "OpenAIAPISecretKey"
     private let apiURLKey = "OpenAIAPIURL"
     private let apiPromptKey = "OpenAIAPIPrompt"

@@ -97,3 +97,6 @@ vendor/bundle
 *.swp
 .agent.md
 GitClient.app/
+*-claude.md
+.claude/
+CLAUDE.md

@@ -51,6 +51,8 @@ enum Language: String {
             return SwiftLexer()
         case .ocaml:
             return OCamlLexer()
+        case .markdown:
+            return PlainLexer() // TODO: Consider implementing MarkdownLexer for better highlighting
         default:
             return PlainLexer()
         }

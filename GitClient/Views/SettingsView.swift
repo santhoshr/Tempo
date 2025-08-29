@@ -41,6 +41,11 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Advanced", systemImage: "gearshape.2")
                 }
+            
+            NotesToRepoSettingsView()
+                .tabItem {
+                    Label("Notes to Repo", systemImage: "note.text.badge.plus")
+                }
         }
         .frame(minWidth: 650, maxWidth: 650, minHeight: 500)
     }

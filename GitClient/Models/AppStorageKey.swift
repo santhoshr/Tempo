@@ -15,5 +15,6 @@ enum AppStorageKey: String {
     case terminalSettings
     case allowExpertOptions
     case reflogLimit
+    case notesToRepoSettings
 }
 

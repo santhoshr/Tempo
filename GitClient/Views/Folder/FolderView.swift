@@ -27,6 +27,7 @@ struct FolderView: View {
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
     @State private var showGraph = false
+    @State private var showNotesToSelfPopup = false
     @AppStorage(AppStorageKey.searchTokenHisrtory.rawValue) var searchTokenHistory: Data?
     private var decodedSearchTokenHistory: [SearchToken] {
         guard let searchTokenHistory else { return [] }
@@ -75,17 +76,28 @@ struct FolderView: View {
         .frame(height: 40)
         .background(Color(nsColor: .textBackgroundColor))
         .overlay(alignment: .trailing) {
-            Button(action: {
-                showGraph.toggle()
-            }) {
-                Image(systemName: showGraph ? "point.3.filled.connected.trianglepath.dotted" : "point.3.connected.trianglepath.dotted")
-                    .font(.title3)
-                    .rotationEffect(.init(degrees: 270))
-                    .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
+            HStack(spacing: 4) {
+                Button(action: {
+                    showNotesToSelfPopup = true
+                }) {
+                    Image(systemName: "note.text")
+                        .font(.title3)
+                }
+                .buttonStyle(.accessoryBar)
+                .help("Notes to Self")
+                
+                Button(action: {
+                    showGraph.toggle()
+                }) {
+                    Image(systemName: showGraph ? "point.3.filled.connected.trianglepath.dotted" : "point.3.connected.trianglepath.dotted")
+                        .font(.title3)
+                        .rotationEffect(.init(degrees: 270))
+                        .foregroundStyle( showGraph ? Color.accentColor : Color.secondary)
+                }
+                .buttonStyle(.accessoryBar)
+                .help("Commit Graph")
             }
-            .buttonStyle(.accessoryBar)
             .padding(.horizontal, 8)
-            .help("Commit Graph")
         }
     }
 
@@ -241,6 +253,15 @@ struct FolderView: View {
                 }
             })
         })
+        .background(
+            EmptyView()
+                .onChange(of: showNotesToSelfPopup) { _, isPresented in
+                    if isPresented {
+                        openNotesToSelfWindow()
+                        showNotesToSelfPopup = false
+                    }
+                }
+        )
     }
 
     private var contentWithConfirmations: some View {
@@ -1083,6 +1104,27 @@ struct FolderView: View {
         }
         
         NSWorkspace.shared.open([folder.url], withApplicationAt: gitupURL, configuration: NSWorkspace.OpenConfiguration())
+    }
+    
+    fileprivate func openNotesToSelfWindow() {
+        let windowController = NSWindowController(window: NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        ))
+        
+        windowController.window?.center()
+        windowController.window?.setFrameAutosaveName("NotesToSelfWindow")
+        windowController.window?.contentView = NSHostingView(
+            rootView: NotesToSelfPopupView()
+                .environment(\.folder, folder.url)
+        )
+        windowController.window?.title = "Repository Notes - \(folder.displayName)"
+        windowController.showWindow(nil)
+        
+        // Keep a reference to prevent deallocation
+        windowController.window?.makeKeyAndOrderFront(nil)
     }
     
 }

@@ -15,7 +15,7 @@ struct ContentView: View {
     @AppStorage(AppStorageKey.terminalSettings.rawValue) private var terminalSettingsData: Data?
     
     private var decodedFolders: [Folder] {
-        var allFolders = getManualFolders()
+        let allFolders = getManualFolders()
         let discoveredFolders = getDiscoveredFolders()
         
         // Merge and remove duplicates, preserving the order of discovered folders
@@ -209,8 +209,13 @@ struct ContentView: View {
         .onAppear {
             loadTerminalSettings()
         }
-        .onChange(of: terminalSettingsData) { _ in
+        .onChange(of: terminalSettingsData) { _, _ in
             loadTerminalSettings()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SelectRepository"))) { notification in
+            if let url = notification.object as? URL {
+                selectionFolderURL = url
+            }
         }
 
     }
@@ -272,7 +277,7 @@ struct ContentView: View {
     private func rescanFolders() {
         // Trigger a refresh by updating the gitRepoSettingsData
         // This will cause decodedFolders to recompute
-        if let settingsData = gitRepoSettingsData {
+        if gitRepoSettingsData != nil {
             // Force a refresh by temporarily setting to nil and back
             let temp = gitRepoSettingsData
             gitRepoSettingsData = nil

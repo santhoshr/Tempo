@@ -6,6 +6,15 @@ options:
   developmentLanguage: en
   xcodeVersion: "15.0"
 
+settings:
+  base:
+    # Enable Dead Code Stripping (recommended by Xcode)
+    DEAD_CODE_STRIPPING: YES
+    # Enable User Script Sandboxing (recommended by Xcode)
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    # Enable Generated Asset Symbol Extensions (recommended by Xcode)
+    ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS: YES
+
 packages:
   Sourceful:
     url: https://github.com/maoyama/Sourceful

@@ -35,28 +35,13 @@ struct Icon: View {
             }
         }
     }
-    @Environment(\.openURL) private var openURL
     var size: Size
     var authorEmail: String
     var authorInitial: String
 
     var body: some View {
-        AsyncImage(url: URL.gravater(email: authorEmail, size: size.image*3)) { phase in
-            if let image = phase.image {
-                image.resizable()
-                    .onTapGesture {
-                        guard let url = URL.gravater(email: authorEmail, size: 400) else { return }
-                        openURL(url)
-                    }
-
-            } else if phase.error != nil {
-                AuthorInitialIcon(initial: authorInitial)
-                    .font(.system(size: size.font, weight: .medium))
-            } else {
-                RoundedRectangle(cornerSize: size.corner, style: .circular)
-                    .foregroundStyle(.quinary)
-            }
-        }
+        AuthorInitialIcon(initial: authorInitial)
+            .font(.system(size: size.font, weight: .medium))
             .frame(width: size.image, height: size.image)
             .clipShape(RoundedRectangle(cornerSize: size.corner, style: .circular))
     }

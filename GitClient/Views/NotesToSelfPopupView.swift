@@ -14,30 +14,31 @@ import Sourceful
 
 // MARK: - Notes to Repo Auto-commit Documentation
 /*
- Auto-commit is triggered in the following scenarios:
- 
- 1. **Auto-save with navigation**: When auto-save is enabled and user navigates away from a dirty note
-    - Triggered by: onDisappear, selectNote(), createNewNote()
-    - Condition: isDirty && autoSaveEnabled && (selectedNote != nil || isCreatingNew)
- 
- 2. **Explicit save with auto-commit**: When saving with shouldAutoCommit=true
-    - Triggered by: navigation warnings, window closing, manual saves
-    - Condition: shouldAutoCommit && isGitRepo && autoCommitEnabled && hasContentChanges
- 
- 3. **File deletion**: When deleting a note file
+ Auto-save and auto-commit behavior:
+
+ 1. **Auto-save on navigation**: Always save when navigating away from a dirty note
+    - Triggered by: onDisappear, selectNote(), createNewNote(), navigation keys
+    - Condition: isDirty
+
+ 2. **Auto-commit**: Always commit individual files if notes location is a Git repository
+    - Triggered by: saveNote() function
+    - Condition: isGitRepo
+    - Uses individual file commits (not blanket commits)
+
+ 3. **File deletion**: Auto-commit deletion if Git repository
     - Triggered by: deleteSelectedNote()
-    - Condition: isGitRepo && autoCommitEnabled
- 
+    - Condition: isGitRepo
+
  Auto-commit requirements:
  - Notes location must be a valid Git repository (.git directory or worktree file)
- - Auto-commit must be enabled in settings
- - There must be actual content changes to commit
- 
- Improved error handling includes:
- - Pre-flight Git repository validation
- - Change detection before attempting commits
- - Graceful fallback from specific file adds to add-all
- - Better error messages for common failure scenarios
+ - Must have valid git user configuration
+ - File must have actual changes (checked via git status)
+
+ Auto-commit will be skipped if:
+ - Notes location is not a valid Git repository
+ - Git user configuration is missing
+ - No changes detected in the file
+ - Git command fails (logged for debugging)
 */
 
 struct NotesToSelfPopupView: View {

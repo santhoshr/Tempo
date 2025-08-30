@@ -46,8 +46,6 @@ struct NotesToSelfPopupView: View {
     @Environment(\.scenePhase) private var scenePhase
     
     @Default(.notesToRepoSettings) private var notesToRepoSettings
-    @Default(.notesToSelfAutoSave) private var autoSaveEnabled
-    @Default(.notesToSelfAutoCommit) private var autoCommitEnabled
     @Default(.notesToSelfFileListWidth) private var fileListWidth
     @Default(.notesToSelfLastOpenedFile) private var lastOpenedFileID
     
@@ -57,12 +55,9 @@ struct NotesToSelfPopupView: View {
     @State private var isCreatingNew = false
     @State private var newNoteFileName = ""
     @State private var showDeleteConfirmation = false
-    @State private var showNavigationWarning = false
-    @State private var pendingNavigationAction: (() -> Void)?
     @State private var isDirty = false
     @State private var originalContent = ""
     @State private var isGitRepo = false
-    @State private var autoSaveTimer: Timer?
     @State private var showGitMenu = false
     @State private var error: Error?
     @State private var hasUncommittedChanges = false
@@ -111,22 +106,6 @@ struct NotesToSelfPopupView: View {
                         .buttonStyle(.bordered)
                         .help("Open notes repository in main app")
                         
-                        Button {
-                            autoCommitEnabled.toggle()
-                        } label: {
-                            Image(systemName: autoCommitEnabled ? "checkmark.circle.fill" : "checkmark.circle")
-                                .foregroundColor(autoCommitEnabled ? .green : .secondary)
-                        }
-                        .buttonStyle(.bordered)
-                        .help("Toggle automatic git commits")
-                        
-                        Button {
-                            manualCommit()
-                        } label: {
-                            Image(systemName: "arrow.up.doc")
-                        }
-                        .buttonStyle(.bordered)
-                        .help("Commit all notes changes")
                     }
                     
                     Spacer()
@@ -270,26 +249,6 @@ struct NotesToSelfPopupView: View {
                         
                         Spacer()
                         
-                        // Auto-save toggle
-                        Button {
-                            autoSaveEnabled.toggle()
-                            updateAutoSaveTimer()
-                        } label: {
-                            Image(systemName: autoSaveEnabled ? "arrow.triangle.2.circlepath" : "arrow.triangle.2.circlepath")
-                                .foregroundColor(autoSaveEnabled ? .green : .secondary)
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.regular)
-                        .help(autoSaveEnabled ? "Auto-save enabled" : "Auto-save disabled")
-                        
-                        Button {
-                            saveNote()
-                        } label: {
-                            Image(systemName: "square.and.arrow.down")
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(noteContent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                        .help("Save note")
                         
                         Button {
                             performAutoSaveAndClose()
@@ -327,9 +286,6 @@ struct NotesToSelfPopupView: View {
                         .padding()
                         .onChange(of: noteContent) { _, newValue in
                             updateDirtyState(newContent: newValue)
-                            if autoSaveEnabled {
-                                updateAutoSaveTimer()
-                            }
                         }
                 } else {
                     VStack {
@@ -378,11 +334,10 @@ struct NotesToSelfPopupView: View {
             restoreLastOpenedFile()
         }
         .onDisappear {
-            autoSaveTimer?.invalidate()
-            // Auto-save and auto-commit when closing if enabled and dirty
-            if isDirty && autoSaveEnabled {
+            // Auto-save and auto-commit when closing if dirty
+            if isDirty {
                 print("DEBUG: OnDisappear - auto-saving with auto commit")
-                saveNote(shouldAutoCommit: true)
+                saveNote()
             }
         }
         .confirmationDialog("Delete Note", isPresented: $showDeleteConfirmation) {
@@ -392,23 +347,6 @@ struct NotesToSelfPopupView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Are you sure you want to delete this note? This action cannot be undone.")
-        }
-        .confirmationDialog("Unsaved Changes", isPresented: $showNavigationWarning) {
-            Button("Save & Continue", role: .destructive) {
-                saveNote(shouldAutoCommit: true)
-                pendingNavigationAction?()
-                pendingNavigationAction = nil
-            }
-            Button("Discard Changes", role: .destructive) {
-                isDirty = false
-                pendingNavigationAction?()
-                pendingNavigationAction = nil
-            }
-            Button("Cancel", role: .cancel) {
-                pendingNavigationAction = nil
-            }
-        } message: {
-            Text("You have unsaved changes. What would you like to do?")
         }
         .errorSheet($error)
         .onChange(of: scenePhase) { _, newPhase in
@@ -500,10 +438,10 @@ struct NotesToSelfPopupView: View {
     }
     
     private func selectNote(_ noteFile: NoteFile) {
-        // Auto-save current note before switching if enabled and dirty
-        if isDirty && autoSaveEnabled && (selectedNote != nil || isCreatingNew) {
+        // Auto-save current note before switching if dirty
+        if isDirty && (selectedNote != nil || isCreatingNew) {
             print("DEBUG: Auto-saving before note selection with auto commit")
-            saveNote(shouldAutoCommit: true)
+            saveNote()
         }
         
         selectedNote = noteFile
@@ -525,9 +463,9 @@ struct NotesToSelfPopupView: View {
     private func createNewNote() {
         guard folder != nil else { return }
         
-        // Auto-save current note before creating new one if enabled and dirty
-        if isDirty && autoSaveEnabled && (selectedNote != nil || isCreatingNew) {
-            saveNote(shouldAutoCommit: true)
+        // Auto-save current note before creating new one if dirty
+        if isDirty && (selectedNote != nil || isCreatingNew) {
+            saveNote()
         }
         
         selectedNote = nil
@@ -548,7 +486,7 @@ struct NotesToSelfPopupView: View {
             .replacingOccurrences(of: "DDMMYYYYHHMMSS", with: timestamp) + ".md"
     }
     
-    private func saveNote(shouldAutoCommit: Bool = false) {
+    private func saveNote(caller: String = #function) {
         guard folder != nil,
               !notesToRepoSettings.notesLocation.isEmpty else { return }
         
@@ -568,32 +506,35 @@ struct NotesToSelfPopupView: View {
             let previousContent = originalContent
             try noteContent.write(to: fileURL, atomically: true, encoding: .utf8)
             
-            // Handle git auto-commit ONLY when explicitly requested (navigation/close events)
-            print("DEBUG: Save note - shouldAutoCommit: \(shouldAutoCommit), isGitRepo: \(isGitRepo), autoCommitEnabled: \(autoCommitEnabled)")
-            print("DEBUG: Save note - hasContentChanges: \(hasContentChanges(from: previousContent, to: noteContent))")
+            print("DEBUG: === SAVE NOTE CALLED ===")
+            print("DEBUG: Called by: \(caller)")
             
-            if shouldAutoCommit && isGitRepo && autoCommitEnabled && hasContentChanges(from: previousContent, to: noteContent) {
-                // Calculate relative path more reliably
+            // Update dirty state and git status
+            originalContent = noteContent
+            isDirty = false
+            checkGitStatus()
+            checkCurrentFileGitStatus()
+            
+            // Simple autocommit logic: always auto-commit if git repo
+            if isGitRepo {
+                print("DEBUG: Git repo detected, auto-committing...")
+                
+                // Calculate relative path
                 let relativePath: String
                 if fileURL.path.hasPrefix(notesURL.path + "/") {
                     relativePath = String(fileURL.path.dropFirst(notesURL.path.count + 1))
                 } else {
                     relativePath = fileURL.lastPathComponent
                 }
-                print("DEBUG: Calculated relative path: \(relativePath)")
-                print("DEBUG: Calling performAutoCommit for action: \(isCreatingNew ? "added" : "edited")")
+                
+                print("DEBUG: File path: \(relativePath)")
+                
+                // Always try to commit if it's a git repo
+                // The commit function will check if there are actually changes
                 performAutoCommit(for: relativePath, action: isCreatingNew ? "added" : "edited")
             } else {
-                print("DEBUG: Auto commit conditions not met - skipping")
+                print("DEBUG: Not a git repo - skipping commit")
             }
-            
-            // Update dirty state
-            originalContent = noteContent
-            isDirty = false
-            
-            // Update git status
-            checkGitStatus()
-            checkCurrentFileGitStatus()
             
             if isCreatingNew {
                 // Create the new note object directly instead of reloading all notes
@@ -659,8 +600,8 @@ struct NotesToSelfPopupView: View {
         do {
             try FileManager.default.removeItem(at: selectedNote.url)
             
-            // Handle git auto-commit if enabled
-            if isGitRepo && autoCommitEnabled {
+            // Handle git auto-commit 
+            if isGitRepo {
                 performAutoCommit(for: relativePath, action: "deleted")
             }
             
@@ -727,22 +668,16 @@ struct NotesToSelfPopupView: View {
     // MARK: - Navigation with Dirty Check
     
     private func navigateUpWithDirtyCheck() {
-        if isDirty && autoSaveEnabled {
+        if isDirty {
             performAutoSaveAndNavigate(action: navigateUp)
-        } else if isDirty {
-            pendingNavigationAction = navigateUp
-            showNavigationWarning = true
         } else {
             navigateUp()
         }
     }
     
     private func navigateDownWithDirtyCheck() {
-        if isDirty && autoSaveEnabled {
+        if isDirty {
             performAutoSaveAndNavigate(action: navigateDown)
-        } else if isDirty {
-            pendingNavigationAction = navigateDown
-            showNavigationWarning = true
         } else {
             navigateDown()
         }
@@ -762,45 +697,27 @@ struct NotesToSelfPopupView: View {
     
     // MARK: - Auto-Save Functionality
     
-    private func updateAutoSaveTimer() {
-        autoSaveTimer?.invalidate()
-        
-        if autoSaveEnabled && isDirty {
-            autoSaveTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
-                Task { @MainActor in
-                    if self.isDirty {
-                        self.saveNote()
-                    }
-                }
-            }
-        }
-    }
-    
     private func performAutoSaveAndNavigate(action: @escaping () -> Void) {
-        if isDirty && autoSaveEnabled {
-            print("DEBUG: Auto-save and navigate with auto commit")
-            saveNote(shouldAutoCommit: true)
+        if isDirty {
+            print("DEBUG: Auto-save and navigate - always auto-commit if git repo")
+            saveNote()
         }
         action()
     }
     
     private func performAutoSaveAndClose() {
-        if isDirty && autoSaveEnabled {
-            print("DEBUG: Auto-save and close with auto commit")
-            saveNote(shouldAutoCommit: true)
+        if isDirty {
+            print("DEBUG: Auto-save and close - always auto-commit if git repo")
+            saveNote()
         }
         dismiss()
     }
     
     private func selectNoteWithAutoSave(_ noteFile: NoteFile) {
-        if isDirty && autoSaveEnabled {
+        if isDirty {
             performAutoSaveAndNavigate {
                 self.selectNote(noteFile)
             }
-        } else if isDirty {
-            // Show warning dialog for manual save
-            pendingNavigationAction = { self.selectNote(noteFile) }
-            showNavigationWarning = true
         } else {
             selectNote(noteFile)
         }
@@ -1149,81 +1066,10 @@ struct NotesToSelfPopupView: View {
         }
     }
     
-    private func manualCommit() {
-        guard isGitRepo else { return }
-        
-        let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
-        
-        // Determine what to commit
-        let commitMessage: String
-        let filesToCommit: String?
-        
-        if let selectedNote = selectedNote {
-            // Commit only the current file
-            let relativePath: String
-            if selectedNote.url.path.hasPrefix(notesURL.path + "/") {
-                relativePath = String(selectedNote.url.path.dropFirst(notesURL.path.count + 1))
-            } else {
-                relativePath = selectedNote.url.lastPathComponent
-            }
-            commitMessage = "Manual commit: \(relativePath)\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
-            filesToCommit = relativePath
-        } else {
-            // No specific file selected, commit all
-            let repoName = getRepositoryName()
-            commitMessage = "Manual commit of \(repoName) notes\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
-            filesToCommit = nil
-        }
-        
-        Task {
-            do {
-                if let filePath = filesToCommit {
-                    print("DEBUG: Manual commit - adding specific file: \(filePath)")
-                    
-                    // Save current file first if dirty
-                    if isDirty {
-                        await MainActor.run {
-                            saveNote()
-                        }
-                    }
-                    
-                    // Add the specific file
-                    let gitAddFile = GitAddPathspec(directory: notesURL, pathspec: filePath)
-                    try await Process.output(gitAddFile)
-                } else {
-                    print("DEBUG: Manual commit - adding all files")
-                    
-                    // Add all changes in the notes directory
-                    let gitAddAll = GitAdd(directory: notesURL)
-                    try await Process.output(gitAddAll)
-                }
-                
-                print("DEBUG: Manual commit - files added, attempting commit")
-                
-                // Commit changes
-                let gitCommit = GitCommit(directory: notesURL, message: commitMessage)
-                try await Process.output(gitCommit)
-                
-                print("DEBUG: Manual commit successful")
-                
-                // Update git status
-                await MainActor.run {
-                    checkGitStatus()
-                    checkCurrentFileGitStatus()
-                }
-                
-            } catch {
-                print("DEBUG: Manual commit failed: \(error)")
-                await MainActor.run {
-                    self.error = GenericError(errorDescription: "Manual commit failed: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
     
     private func performAutoCommit(for filePath: String, action: String) {
-        guard isGitRepo && autoCommitEnabled else { 
-            print("DEBUG: Auto commit skipped - isGitRepo: \(isGitRepo), autoCommitEnabled: \(autoCommitEnabled)")
+        guard isGitRepo else { 
+            print("DEBUG: Auto commit skipped - not a git repo")
             return 
         }
         
@@ -1232,7 +1078,7 @@ struct NotesToSelfPopupView: View {
         
         print("DEBUG: === AUTOCOMMIT START ===")
         print("DEBUG: File: \(filePath), Action: \(action)")
-        print("DEBUG: isGitRepo: \(isGitRepo), autoCommitEnabled: \(autoCommitEnabled)")
+        print("DEBUG: isGitRepo: \(isGitRepo)")
         print("DEBUG: Notes location: \(notesToRepoSettings.notesLocation)")
         print("DEBUG: Notes URL: \(notesURL.path)")
         print("DEBUG: Commit message: \(commitMessage)")
@@ -1272,7 +1118,7 @@ struct NotesToSelfPopupView: View {
                 print("DEBUG: Error description: \(error.localizedDescription)")
                 
                 if let processError = error as? ProcessError {
-                    print("DEBUG: ProcessError details: \(processError.errorDescription ?? \"No description\")")
+                    print("DEBUG: ProcessError details: \(processError.errorDescription ?? "No description")")
                 }
                 
                 // Show user-friendly error
@@ -1368,30 +1214,52 @@ struct NotesToSelfPopupView: View {
     }
     
     private func addFilesToGit(directory: URL, specificFile: String) async throws {
+        print("DEBUG: addFilesToGit called with directory: \(directory.path), specificFile: \(specificFile)")
+        
         // First try to add the specific file
         do {
             let gitAddFile = GitAddPathspec(directory: directory, pathspec: specificFile)
+            print("DEBUG: Executing git command: \(gitAddFile.arguments.joined(separator: " ")) in \(directory.path)")
             try await Process.output(gitAddFile)
             print("DEBUG: Successfully added specific file: \(specificFile)")
         } catch {
-            print("DEBUG: Failed to add specific file \(specificFile), trying add all: \(error)")
+            print("DEBUG: Failed to add specific file \(specificFile), error: \(error)")
+            print("DEBUG: Error type: \(type(of: error))")
+            
+            if let processError = error as? ProcessError {
+                print("DEBUG: ProcessError description: \(processError.errorDescription ?? "None")")
+            }
+            
+            print("DEBUG: Trying fallback to add all files...")
             
             // Fallback to adding all files
             let gitAddAll = GitAdd(directory: directory)
+            print("DEBUG: Executing fallback git command: \(gitAddAll.arguments.joined(separator: " ")) in \(directory.path)")
             try await Process.output(gitAddAll)
-            print("DEBUG: Successfully added all files")
+            print("DEBUG: Successfully added all files via fallback")
         }
     }
     
     private func commitChanges(directory: URL, message: String) async throws {
+        print("DEBUG: commitChanges called with directory: \(directory.path)")
+        print("DEBUG: Commit message: \(message)")
+        
         // Check if there are staged changes before committing
         do {
             let gitStatus = GitStatus(directory: directory)
+            print("DEBUG: Checking git status before commit...")
             let status = try await Process.output(gitStatus)
+            
+            print("DEBUG: Git status - addedFiles: \(status.addedFiles.count), modifiedFiles: \(status.modifiedFiles.count), unmergedFiles: \(status.unmergedFiles.count)")
+            print("DEBUG: addedFiles: \(status.addedFiles)")
+            print("DEBUG: modifiedFiles: \(status.modifiedFiles)")
+            print("DEBUG: unmergedFiles: \(status.unmergedFiles)")
             
             let hasStagedChanges = !status.addedFiles.isEmpty ||
                                  !status.modifiedFiles.isEmpty ||
                                  !status.unmergedFiles.isEmpty
+            
+            print("DEBUG: hasStagedChanges: \(hasStagedChanges)")
             
             guard hasStagedChanges else {
                 throw GenericError(errorDescription: "No staged changes to commit")
@@ -1402,7 +1270,9 @@ struct NotesToSelfPopupView: View {
         
         // Perform the commit
         let gitCommit = GitCommit(directory: directory, message: message)
+        print("DEBUG: Executing commit command: \(gitCommit.arguments.joined(separator: " ")) in \(directory.path)")
         try await Process.output(gitCommit)
+        print("DEBUG: Commit completed successfully")
     }
 }
 

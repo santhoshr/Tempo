@@ -38,10 +38,10 @@ extension Process {
     }
 
     static private func outputSync(arguments: [String], currentDirectoryURL: URL?, inputs: [String]=[]) throws -> Output {
-        // let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "process")
-        // logger.debug("Process run: arguments: \(arguments), currentDirectoryURL: \(currentDirectoryURL?.description ?? ""), inputs: \(inputs, privacy: .public)")
+        let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "process")
+        logger.debug("Process run: arguments: \(arguments), currentDirectoryURL: \(currentDirectoryURL?.description ?? ""), inputs: \(inputs, privacy: .public)")
         let output = try run(arguments: arguments, currentDirectoryURL: currentDirectoryURL, inputs: inputs)
-        // logger.debug("Process output of \(arguments): \(output.standardOutput + output.standartError, privacy: .public)")
+        logger.debug("Process output of \(arguments): \(output.standardOutput + output.standartError, privacy: .public)")
         return output
     }
 

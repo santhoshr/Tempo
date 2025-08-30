@@ -192,6 +192,13 @@ struct ContentView: View {
         .frame(minWidth: 700, minHeight: 300)
         .onChange(of: selectionFolder, {
             selectionLog = nil
+            // Notify app about folder selection for menu item
+            if let folder = selectionFolder {
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("FolderSelected"),
+                    object: folder.url
+                )
+            }
         })
         .errorSheet($error)
         .environment(\.folder, selectionFolderURL)

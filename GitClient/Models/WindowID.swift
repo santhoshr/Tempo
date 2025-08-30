@@ -9,4 +9,5 @@ import Foundation
 
 enum WindowID: String {
     case commitMessageSnippets
+    case notesToRepo
 }

@@ -54,6 +54,7 @@ struct NotesToSelfPopupView: View {
     @State private var autoSaveTimer: Timer?
     @State private var showGitMenu = false
     @State private var error: Error?
+    @State private var hasUncommittedChanges = false
     
     var body: some View {
         HSplitView {
@@ -61,8 +62,29 @@ struct NotesToSelfPopupView: View {
             VStack(alignment: .leading, spacing: 0) {
                 // Title Bar
                 HStack {
-                    Text("Repository Notes")
-                        .font(.headline)
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 4) {
+                            Text("Repository Notes")
+                                .font(.headline)
+                            
+                            if isGitRepo {
+                                Image(systemName: hasUncommittedChanges ? "circle.fill" : "checkmark.circle.fill")
+                                    .foregroundColor(hasUncommittedChanges ? .orange : .green)
+                                    .font(.caption)
+                                    .help(hasUncommittedChanges ? "Uncommitted changes" : "All changes committed")
+                            }
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(getRepositoryName())
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Text("\(noteFiles.count) note\(noteFiles.count == 1 ? "" : "s")")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                     
                     if isDirty {
                         Image(systemName: "circle.fill")
@@ -75,59 +97,61 @@ struct NotesToSelfPopupView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color(NSColor.controlBackgroundColor).opacity(0.3))
+                .background(Color(NSColor.windowBackgroundColor))
                 
                 // Toolbar
-                HStack(spacing: 0) {
+                HStack(spacing: 8) {
                     // Git repository buttons (left edge)
-                    HStack(spacing: 4) {
-                        if isGitRepo {
-                            Button {
-                                openNotesRepoInApp()
-                            } label: {
-                                Image(systemName: "folder.badge.gearshape")
-                            }
-                            .buttonStyle(.bordered)
-                            .help("Open notes repository in main app")
-                            
-                            Button {
-                                autoCommitEnabled.toggle()
-                            } label: {
-                                Image(systemName: autoCommitEnabled ? "checkmark.circle.fill" : "checkmark.circle")
-                                    .foregroundColor(autoCommitEnabled ? .green : .secondary)
-                            }
-                            .buttonStyle(.bordered)
-                            .help("Toggle automatic git commits")
+                    if isGitRepo {
+                        Button {
+                            openNotesRepoInApp()
+                        } label: {
+                            Image(systemName: "folder.badge.gearshape")
                         }
+                        .buttonStyle(.bordered)
+                        .help("Open notes repository in main app")
+                        
+                        Button {
+                            autoCommitEnabled.toggle()
+                        } label: {
+                            Image(systemName: autoCommitEnabled ? "checkmark.circle.fill" : "checkmark.circle")
+                                .foregroundColor(autoCommitEnabled ? .green : .secondary)
+                        }
+                        .buttonStyle(.bordered)
+                        .help("Toggle automatic git commits")
+                        
+                        Button {
+                            manualCommit()
+                        } label: {
+                            Image(systemName: "arrow.up.doc")
+                        }
+                        .buttonStyle(.bordered)
+                        .help("Commit all notes changes")
                     }
                     
                     Spacer()
                     
                     // Add/Delete buttons (right edge)
-                    HStack(spacing: 4) {
-                        Button {
-                            showDeleteConfirmation = true
-                        } label: {
-                            Image(systemName: "minus")
-                        }
-                        .buttonStyle(.bordered)
-                        .disabled(selectedNote == nil)
-                        .help("Delete selected note")
-                        
-                        Button {
-                            createNewNote()
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                        .buttonStyle(.bordered)
-                        .help("Create new note")
+                    Button {
+                        showDeleteConfirmation = true
+                    } label: {
+                        Image(systemName: "minus")
                     }
-                    .padding(.trailing, 0)
+                    .buttonStyle(.bordered)
+                    .disabled(selectedNote == nil)
+                    .help("Delete selected note")
+                    
+                    Button {
+                        createNewNote()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .buttonStyle(.bordered)
+                    .help("Create new note")
                 }
-                .padding(.leading, 8)
-                .padding(.vertical, 4)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
                 .background(Color(NSColor.controlBackgroundColor))
-                .padding()
                 
                 Divider()
                 
@@ -191,7 +215,7 @@ struct NotesToSelfPopupView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color(NSColor.controlBackgroundColor).opacity(0.3))
+                .background(Color(NSColor.windowBackgroundColor))
                 
                 // Toolbar
                 if selectedNote != nil || isCreatingNew {
@@ -291,6 +315,7 @@ struct NotesToSelfPopupView: View {
         .onAppear {
             loadNotes()
             checkIfGitRepo()
+            checkGitStatus()
             // Restore last opened file or create new note
             restoreLastOpenedFile()
         }
@@ -472,14 +497,14 @@ struct NotesToSelfPopupView: View {
         let repoName = getRepositoryName()
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
         
-        let fileName: String
+        let fileURL: URL
         if let selectedNote = selectedNote {
-            fileName = selectedNote.name
+            // Use the existing file's URL directly
+            fileURL = selectedNote.url
         } else {
-            fileName = newNoteFileName
+            // For new notes, create the file path
+            fileURL = notesURL.appendingPathComponent(newNoteFileName)
         }
-        
-        let fileURL = notesURL.appendingPathComponent(fileName)
         
         do {
             let previousContent = originalContent
@@ -487,21 +512,57 @@ struct NotesToSelfPopupView: View {
             
             // Handle git auto-commit ONLY when explicitly requested (navigation/close events)
             if shouldAutoCommit && isGitRepo && autoCommitEnabled && hasContentChanges(from: previousContent, to: noteContent) {
-                performAutoCommit(for: fileName, action: isCreatingNew ? "added" : "edited")
+                let relativePath = fileURL.path.replacingOccurrences(of: notesURL.path + "/", with: "")
+                performAutoCommit(for: relativePath, action: isCreatingNew ? "added" : "edited")
             }
             
             // Update dirty state
             originalContent = noteContent
             isDirty = false
             
-            loadNotes() // Refresh the list
+            // Update git status
+            checkGitStatus()
             
             if isCreatingNew {
-                // Select the newly created note
-                if let newNote = noteFiles.first(where: { $0.url == fileURL }) {
-                    selectedNote = newNote
-                }
+                // Create the new note object directly instead of reloading all notes
+                let resourceValues = try? fileURL.resourceValues(forKeys: [.creationDateKey, .contentModificationDateKey])
+                let creationDate = resourceValues?.creationDate ?? Date()
+                let modificationDate = resourceValues?.contentModificationDate ?? Date()
+                let relativePath = fileURL.path.replacingOccurrences(of: notesURL.path + "/", with: "")
+                
+                let newNote = NoteFile(
+                    id: fileURL.absoluteString,
+                    name: fileURL.lastPathComponent,
+                    relativePath: relativePath,
+                    url: fileURL,
+                    creationDate: creationDate,
+                    modificationDate: modificationDate
+                )
+                
+                // Add to the beginning of the list (newest first)
+                noteFiles.insert(newNote, at: 0)
+                selectedNote = newNote
                 isCreatingNew = false
+            } else {
+                // For existing notes, just update the modification date
+                if let selectedNote = selectedNote,
+                   let index = noteFiles.firstIndex(where: { $0.id == selectedNote.id }) {
+                    let resourceValues = try? fileURL.resourceValues(forKeys: [.contentModificationDateKey])
+                    let modificationDate = resourceValues?.contentModificationDate ?? Date()
+                    
+                    // Update the note in place
+                    let updatedNote = NoteFile(
+                        id: selectedNote.id,
+                        name: selectedNote.name,
+                        relativePath: selectedNote.relativePath,
+                        url: selectedNote.url,
+                        creationDate: selectedNote.creationDate,
+                        modificationDate: modificationDate
+                    )
+                    
+                    noteFiles[index] = updatedNote
+                    self.selectedNote = updatedNote
+                }
             }
         } catch {
             self.error = error
@@ -512,14 +573,15 @@ struct NotesToSelfPopupView: View {
         guard let selectedNote = selectedNote,
               let currentIndex = noteFiles.firstIndex(where: { $0.id == selectedNote.id }) else { return }
         
-        let fileName = selectedNote.name
+        let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
+        let relativePath = selectedNote.url.path.replacingOccurrences(of: notesURL.path + "/", with: "")
         
         do {
             try FileManager.default.removeItem(at: selectedNote.url)
             
             // Handle git auto-commit if enabled
             if isGitRepo && autoCommitEnabled {
-                performAutoCommit(for: fileName, action: "deleted")
+                performAutoCommit(for: relativePath, action: "deleted")
             }
             
             // Refresh the notes list first
@@ -667,6 +729,28 @@ struct NotesToSelfPopupView: View {
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
         let gitURL = notesURL.appendingPathComponent(".git")
         isGitRepo = FileManager.default.fileExists(atPath: gitURL.path)
+    }
+    
+    private func checkGitStatus() {
+        guard isGitRepo else {
+            hasUncommittedChanges = false
+            return
+        }
+        
+        let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
+        
+        Task {
+            do {
+                let gitStatus = GitStatus(directory: notesURL)
+                let status = try await Process.output(gitStatus)
+                
+                // Check if there are any untracked or unmerged files
+                hasUncommittedChanges = !status.untrackedFiles.isEmpty || !status.unmergedFiles.isEmpty
+            } catch {
+                print("DEBUG: Git status check failed: \(error)")
+                hasUncommittedChanges = false
+            }
+        }
     }
     
     // MARK: - Repository Name Detection
@@ -879,23 +963,74 @@ struct NotesToSelfPopupView: View {
         }
     }
     
-    private func performAutoCommit(for fileName: String, action: String) {
-        guard isGitRepo && autoCommitEnabled else { return }
+    private func manualCommit() {
+        guard isGitRepo else { return }
         
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
-        let commitMessage = "\(fileName) \(action)\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+        let repoName = getRepositoryName()
+        let commitMessage = "Manual commit of \(repoName) notes\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
         
         Task {
             do {
-                // Add file to git using existing command infrastructure
-                try await Process.output(arguments: ["git", "add", fileName], currentDirectoryURL: notesURL)
+                print("DEBUG: Manual commit - adding all files")
                 
-                // Commit the change using existing GitCommit command
+                // Add all changes in the notes directory
+                let gitAddAll = GitAdd(directory: notesURL)
+                try await Process.output(gitAddAll)
+                
+                print("DEBUG: Manual commit - files added, attempting commit")
+                
+                // Commit all changes
                 let gitCommit = GitCommit(directory: notesURL, message: commitMessage)
                 try await Process.output(gitCommit)
                 
+                print("DEBUG: Manual commit successful")
+                
             } catch {
-                print("Git auto-commit failed: \(error)")
+                print("DEBUG: Manual commit failed: \(error)")
+                self.error = GenericError(errorDescription: "Manual commit failed: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    private func performAutoCommit(for filePath: String, action: String) {
+        guard isGitRepo && autoCommitEnabled else { return }
+        
+        let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
+        let commitMessage = "\(filePath) \(action)\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+        
+        Task {
+            do {
+                print("DEBUG: Attempting to add file: \(filePath)")
+                
+                // Use existing GitAddPathspec command from the application's Git infrastructure
+                // Always add the specific file path, git will handle the directory structure
+                let gitAddFile = GitAddPathspec(directory: notesURL, pathspec: filePath)
+                try await Process.output(gitAddFile)
+                
+                print("DEBUG: File added successfully, attempting commit")
+                
+                // Use existing GitCommit command from the application's Git infrastructure
+                let gitCommit = GitCommit(directory: notesURL, message: commitMessage)
+                try await Process.output(gitCommit)
+                
+                print("DEBUG: Commit successful for: \(filePath)")
+                
+            } catch {
+                print("DEBUG: Git auto-commit failed for \(filePath): \(error)")
+                // Fallback: add all changes and commit
+                do {
+                    print("DEBUG: Trying fallback - add all files")
+                    let gitAddAll = GitAdd(directory: notesURL)
+                    try await Process.output(gitAddAll)
+                    
+                    let gitCommit = GitCommit(directory: notesURL, message: commitMessage)
+                    try await Process.output(gitCommit)
+                    
+                    print("DEBUG: Fallback commit successful")
+                } catch {
+                    print("DEBUG: Git auto-commit fallback also failed: \(error)")
+                }
             }
         }
     }

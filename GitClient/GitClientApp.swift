@@ -12,6 +12,7 @@ import Defaults
 struct GitClientApp: App {
     @State var expandAllFiles: UUID?
     @State var collapseAllFiles: UUID?
+    @State var selectedFolder: URL?
 
     var body: some Scene {
         WindowGroup {
@@ -23,6 +24,11 @@ struct GitClientApp: App {
                 .environment(\.openAIAPIStagingPrompt, Defaults[.openAIAPIStagingPrompt])
                 .environment(\.expandAllFiles, expandAllFiles)
                 .environment(\.collapseAllFiles, collapseAllFiles)
+                .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("FolderSelected"))) { notification in
+                    if let folderURL = notification.object as? URL {
+                        selectedFolder = folderURL
+                    }
+                }
         }
         .commands {
             CommandGroup(before: .toolbar) {
@@ -36,6 +42,13 @@ struct GitClientApp: App {
                 .keyboardShortcut(.leftArrow, modifiers: .option)
                 Divider()
             }
+            CommandGroup(after: .windowArrangement) {
+                Button("Notes to Repo") {
+                    openNotesToRepoWindow()
+                }
+                .keyboardShortcut("n", modifiers: [.command, .shift])
+                .disabled(selectedFolder == nil)
+            }
         }
         Settings {
             SettingsView()
@@ -48,5 +61,28 @@ struct GitClientApp: App {
         Window("Commit Message Snippets", id: WindowID.commitMessageSnippets.rawValue) {
             CommitMessageSnippetView()
         }
+    }
+    
+    private func openNotesToRepoWindow() {
+        guard let folderURL = selectedFolder else { return }
+        
+        let windowController = NSWindowController(window: NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        ))
+        
+        windowController.window?.center()
+        windowController.window?.setFrameAutosaveName("NotesToRepoWindow")
+        windowController.window?.contentView = NSHostingView(
+            rootView: NotesToSelfPopupView()
+                .environment(\.folder, folderURL)
+        )
+        
+        let folderName = folderURL.lastPathComponent
+        windowController.window?.title = "Repository Notes - \(folderName)"
+        windowController.showWindow(nil)
+        windowController.window?.makeKeyAndOrderFront(nil)
     }
 }

@@ -74,15 +74,6 @@ struct FolderView: View {
         .overlay(alignment: .trailing) {
             HStack(spacing: 4) {
                 Button(action: {
-                    showNotesToSelfPopup = true
-                }) {
-                    Image(systemName: "note.text")
-                        .font(.title3)
-                }
-                .buttonStyle(.accessoryBar)
-                .help("Notes to Self")
-                
-                Button(action: {
                     showGraph.toggle()
                 }) {
                     Image(systemName: showGraph ? "point.3.filled.connected.trianglepath.dotted" : "point.3.connected.trianglepath.dotted")
@@ -92,6 +83,15 @@ struct FolderView: View {
                 }
                 .buttonStyle(.accessoryBar)
                 .help("Commit Graph")
+                
+                Button(action: {
+                    showNotesToSelfPopup = true
+                }) {
+                    Image(systemName: "note.text")
+                        .font(.title3)
+                }
+                .buttonStyle(.accessoryBar)
+                .help("Notes to Self")
             }
             .padding(.horizontal, 8)
         }

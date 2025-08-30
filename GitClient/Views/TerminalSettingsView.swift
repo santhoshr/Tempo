@@ -47,7 +47,7 @@ struct TerminalSettingsView: View {
                             }
                             .pickerStyle(.menu)
                             .frame(minWidth: 200)
-                            .onChange(of: terminalSettings.preferredTerminal) { _ in
+                            .onChange(of: terminalSettings.preferredTerminal) {
                                 // Settings automatically saved via Defaults
                             }
                         }

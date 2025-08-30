@@ -9,7 +9,7 @@ import Foundation
 import AppKit
 
 struct TerminalApp: Codable, Identifiable, Hashable {
-    let id = UUID()
+    var id = UUID()
     let name: String
     let bundleIdentifier: String
     let executableName: String

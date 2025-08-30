@@ -23,6 +23,14 @@ struct GitStatus: Git {
         // https://git-scm.com/docs/git-status#_short_format
         let untrackedLines = lines.filter { $0.hasPrefix("?? ") }
         let unmergedLines = lines.filter { $0.hasPrefix("U") }
-        return .init(untrackedFiles: untrackedLines.map { String($0.dropFirst(3)) }, unmergedFiles: unmergedLines.map {  $0.components(separatedBy: .whitespaces).last ?? "" })
+        let modifiedLines = lines.filter { $0.hasPrefix(" M ") || $0.hasPrefix("M ") || $0.hasPrefix("MM ") }
+        let addedLines = lines.filter { $0.hasPrefix("A ") || $0.hasPrefix("AM ") }
+        
+        return .init(
+            untrackedFiles: untrackedLines.map { String($0.dropFirst(3)) }, 
+            unmergedFiles: unmergedLines.map { $0.components(separatedBy: .whitespaces).last ?? "" },
+            modifiedFiles: modifiedLines.map { String($0.dropFirst(3)) },
+            addedFiles: addedLines.map { String($0.dropFirst(3)) }
+        )
     }
 }

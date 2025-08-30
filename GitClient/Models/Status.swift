@@ -19,4 +19,6 @@ struct Status: Hashable {
         }
     }
     var unmergedFiles: [String]
+    var modifiedFiles: [String]
+    var addedFiles: [String]
 }

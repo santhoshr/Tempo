@@ -9,25 +9,36 @@ import SwiftUI
 import Foundation
 import Defaults
 
-extension CGSize: Codable {
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(width, forKey: .width)
-        try container.encode(height, forKey: .height)
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let width = try container.decode(CGFloat.self, forKey: .width)
-        let height = try container.decode(CGFloat.self, forKey: .height)
-        self.init(width: width, height: height)
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case width, height
-    }
-}
 import Sourceful
+
+
+// MARK: - Notes to Repo Auto-commit Documentation
+/*
+ Auto-commit is triggered in the following scenarios:
+ 
+ 1. **Auto-save with navigation**: When auto-save is enabled and user navigates away from a dirty note
+    - Triggered by: onDisappear, selectNote(), createNewNote()
+    - Condition: isDirty && autoSaveEnabled && (selectedNote != nil || isCreatingNew)
+ 
+ 2. **Explicit save with auto-commit**: When saving with shouldAutoCommit=true
+    - Triggered by: navigation warnings, window closing, manual saves
+    - Condition: shouldAutoCommit && isGitRepo && autoCommitEnabled && hasContentChanges
+ 
+ 3. **File deletion**: When deleting a note file
+    - Triggered by: deleteSelectedNote()
+    - Condition: isGitRepo && autoCommitEnabled
+ 
+ Auto-commit requirements:
+ - Notes location must be a valid Git repository (.git directory or worktree file)
+ - Auto-commit must be enabled in settings
+ - There must be actual content changes to commit
+ 
+ Improved error handling includes:
+ - Pre-flight Git repository validation
+ - Change detection before attempting commits
+ - Graceful fallback from specific file adds to add-all
+ - Better error messages for common failure scenarios
+*/
 
 struct NotesToSelfPopupView: View {
     @Environment(\.folder) private var folder
@@ -55,6 +66,8 @@ struct NotesToSelfPopupView: View {
     @State private var showGitMenu = false
     @State private var error: Error?
     @State private var hasUncommittedChanges = false
+    @State private var currentFileHasUncommittedChanges = false
+    @State private var titleUpdateTrigger = false
     
     var body: some View {
         HSplitView {
@@ -66,13 +79,6 @@ struct NotesToSelfPopupView: View {
                         HStack(spacing: 4) {
                             Text("Repository Notes")
                                 .font(.headline)
-                            
-                            if isGitRepo {
-                                Image(systemName: hasUncommittedChanges ? "circle.fill" : "checkmark.circle.fill")
-                                    .foregroundColor(hasUncommittedChanges ? .orange : .green)
-                                    .font(.caption)
-                                    .help(hasUncommittedChanges ? "Uncommitted changes" : "All changes committed")
-                            }
                         }
                         
                         VStack(alignment: .leading, spacing: 1) {
@@ -86,12 +92,6 @@ struct NotesToSelfPopupView: View {
                         }
                     }
                     
-                    if isDirty {
-                        Image(systemName: "circle.fill")
-                            .foregroundColor(.orange)
-                            .font(.caption)
-                            .help("Unsaved changes")
-                    }
                     
                     Spacer()
                 }
@@ -188,26 +188,55 @@ struct NotesToSelfPopupView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         if let selectedNote = selectedNote {
-                            Text(selectedNote.name)
-                                .font(.headline)
+                            HStack(spacing: 4) {
+                                Text(selectedNote.name)
+                                    .font(.headline)
+                                if currentFileHasUncommittedChanges {
+                                    Text("+")
+                                        .font(.headline)
+                                        .foregroundColor(.orange)
+                                        .help("File has uncommitted changes")
+                                }
+                            }
                             VStack(alignment: .leading, spacing: 1) {
                                 Text("Created: \(selectedNote.creationDate, format: .dateTime.month().day().year().hour().minute())")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
+                                    .redacted(reason: selectedNote.creationDate.timeIntervalSince1970 == 0 ? .placeholder : [])
                                 Text("Modified: \(selectedNote.modificationDate, format: .dateTime.month().day().year().hour().minute())")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
+                                    .redacted(reason: selectedNote.modificationDate.timeIntervalSince1970 == 0 ? .placeholder : [])
                             }
                         } else if isCreatingNew {
-                            Text(newNoteFileName)
-                                .font(.headline)
-                            Text("New note")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            HStack(spacing: 4) {
+                                Text(newNoteFileName)
+                                    .font(.headline)
+                                Text("+")
+                                    .font(.headline)
+                                    .foregroundColor(.green)
+                                    .help("New file (not yet saved)")
+                            }
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("New note")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         } else {
                             Text("Select a note or create a new one")
                                 .font(.headline)
                                 .foregroundColor(.secondary)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                     
@@ -217,9 +246,9 @@ struct NotesToSelfPopupView: View {
                 .padding(.vertical, 8)
                 .background(Color(NSColor.windowBackgroundColor))
                 
-                // Toolbar
-                if selectedNote != nil || isCreatingNew {
-                    HStack(spacing: 8) {
+                // Toolbar - Always visible
+                HStack(spacing: 8) {
+                    if selectedNote != nil || isCreatingNew {
                         // Navigation buttons
                         Button {
                             navigateUpWithDirtyCheck()
@@ -269,11 +298,23 @@ struct NotesToSelfPopupView: View {
                         }
                         .buttonStyle(.bordered)
                         .help("Close editor")
+                    } else {
+                        // Placeholder content when no note is selected
+                        Spacer()
+                        
+                        // Create new note button
+                        Button {
+                            createNewNote()
+                        } label: {
+                            Image(systemName: "plus.circle")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .help("Create new note")
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color(NSColor.controlBackgroundColor))
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color(NSColor.controlBackgroundColor))
                 
                 Divider()
                 
@@ -311,7 +352,24 @@ struct NotesToSelfPopupView: View {
         }
         .frame(minWidth: 600, maxWidth: .infinity, 
                minHeight: 400, maxHeight: .infinity)
-        .navigationTitle("Notes to Self")
+        .navigationTitle(getWindowTitle())
+        .onChange(of: titleUpdateTrigger) { _, _ in
+            // This triggers when title needs to update
+        }
+        .onChange(of: hasUncommittedChanges) { _, _ in
+            titleUpdateTrigger.toggle()
+        }
+        .onChange(of: currentFileHasUncommittedChanges) { _, _ in
+            titleUpdateTrigger.toggle()
+        }
+        .onChange(of: selectedNote?.id) { _, _ in
+            checkCurrentFileGitStatus()
+            titleUpdateTrigger.toggle()
+        }
+        .onChange(of: isCreatingNew) { _, _ in
+            checkCurrentFileGitStatus()
+            titleUpdateTrigger.toggle()
+        }
         .onAppear {
             loadNotes()
             checkIfGitRepo()
@@ -323,6 +381,7 @@ struct NotesToSelfPopupView: View {
             autoSaveTimer?.invalidate()
             // Auto-save and auto-commit when closing if enabled and dirty
             if isDirty && autoSaveEnabled {
+                print("DEBUG: OnDisappear - auto-saving with auto commit")
                 saveNote(shouldAutoCommit: true)
             }
         }
@@ -361,15 +420,14 @@ struct NotesToSelfPopupView: View {
     
     
     private func loadNotes() {
-        guard let folder = folder,
+        guard folder != nil,
               !notesToRepoSettings.notesLocation.isEmpty else { return }
         
         let repoName = getRepositoryName()
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
         
-        do {
-            // Use recursive enumeration to find files in subdirectories
-            let fileURLs = FileManager.default.enumerator(
+        // Use recursive enumeration to find files in subdirectories
+        let fileURLs = FileManager.default.enumerator(
                 at: notesURL,
                 includingPropertiesForKeys: [.creationDateKey, .contentModificationDateKey, .isDirectoryKey],
                 options: [.skipsHiddenFiles, .skipsPackageDescendants]
@@ -430,9 +488,6 @@ struct NotesToSelfPopupView: View {
                     )
                 }
                 .sorted { $0.creationDate > $1.creationDate }
-        } catch {
-            self.error = error
-        }
     }
     
     private func isRepoNameInFileName(fileName: String, repoName: String) -> Bool {
@@ -447,6 +502,7 @@ struct NotesToSelfPopupView: View {
     private func selectNote(_ noteFile: NoteFile) {
         // Auto-save current note before switching if enabled and dirty
         if isDirty && autoSaveEnabled && (selectedNote != nil || isCreatingNew) {
+            print("DEBUG: Auto-saving before note selection with auto commit")
             saveNote(shouldAutoCommit: true)
         }
         
@@ -458,6 +514,7 @@ struct NotesToSelfPopupView: View {
             noteContent = try String(contentsOf: noteFile.url)
             originalContent = noteContent
             isDirty = false
+            checkCurrentFileGitStatus()
         } catch {
             self.error = error
             noteContent = ""
@@ -466,7 +523,7 @@ struct NotesToSelfPopupView: View {
     }
     
     private func createNewNote() {
-        guard let folder = folder else { return }
+        guard folder != nil else { return }
         
         // Auto-save current note before creating new one if enabled and dirty
         if isDirty && autoSaveEnabled && (selectedNote != nil || isCreatingNew) {
@@ -478,6 +535,7 @@ struct NotesToSelfPopupView: View {
         noteContent = ""
         originalContent = ""
         isDirty = false
+        checkCurrentFileGitStatus()
         
         // Generate new file name based on format
         let repoName = getRepositoryName()
@@ -491,10 +549,10 @@ struct NotesToSelfPopupView: View {
     }
     
     private func saveNote(shouldAutoCommit: Bool = false) {
-        guard let folder = folder,
+        guard folder != nil,
               !notesToRepoSettings.notesLocation.isEmpty else { return }
         
-        let repoName = getRepositoryName()
+        _ = getRepositoryName()
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
         
         let fileURL: URL
@@ -511,9 +569,22 @@ struct NotesToSelfPopupView: View {
             try noteContent.write(to: fileURL, atomically: true, encoding: .utf8)
             
             // Handle git auto-commit ONLY when explicitly requested (navigation/close events)
+            print("DEBUG: Save note - shouldAutoCommit: \(shouldAutoCommit), isGitRepo: \(isGitRepo), autoCommitEnabled: \(autoCommitEnabled)")
+            print("DEBUG: Save note - hasContentChanges: \(hasContentChanges(from: previousContent, to: noteContent))")
+            
             if shouldAutoCommit && isGitRepo && autoCommitEnabled && hasContentChanges(from: previousContent, to: noteContent) {
-                let relativePath = fileURL.path.replacingOccurrences(of: notesURL.path + "/", with: "")
+                // Calculate relative path more reliably
+                let relativePath: String
+                if fileURL.path.hasPrefix(notesURL.path + "/") {
+                    relativePath = String(fileURL.path.dropFirst(notesURL.path.count + 1))
+                } else {
+                    relativePath = fileURL.lastPathComponent
+                }
+                print("DEBUG: Calculated relative path: \(relativePath)")
+                print("DEBUG: Calling performAutoCommit for action: \(isCreatingNew ? "added" : "edited")")
                 performAutoCommit(for: relativePath, action: isCreatingNew ? "added" : "edited")
+            } else {
+                print("DEBUG: Auto commit conditions not met - skipping")
             }
             
             // Update dirty state
@@ -522,6 +593,7 @@ struct NotesToSelfPopupView: View {
             
             // Update git status
             checkGitStatus()
+            checkCurrentFileGitStatus()
             
             if isCreatingNew {
                 // Create the new note object directly instead of reloading all notes
@@ -574,7 +646,15 @@ struct NotesToSelfPopupView: View {
               let currentIndex = noteFiles.firstIndex(where: { $0.id == selectedNote.id }) else { return }
         
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
-        let relativePath = selectedNote.url.path.replacingOccurrences(of: notesURL.path + "/", with: "")
+        
+        // Calculate relative path more reliably
+        let relativePath: String
+        if selectedNote.url.path.hasPrefix(notesURL.path + "/") {
+            relativePath = String(selectedNote.url.path.dropFirst(notesURL.path.count + 1))
+        } else {
+            relativePath = selectedNote.url.lastPathComponent
+        }
+        print("DEBUG: Delete - calculated relative path: \(relativePath)")
         
         do {
             try FileManager.default.removeItem(at: selectedNote.url)
@@ -671,7 +751,13 @@ struct NotesToSelfPopupView: View {
     // MARK: - Dirty State Management
     
     private func updateDirtyState(newContent: String) {
+        let wasDirty = isDirty
         isDirty = (newContent != originalContent)
+        
+        // Update window title when dirty state changes
+        if wasDirty != isDirty {
+            titleUpdateTrigger.toggle()
+        }
     }
     
     // MARK: - Auto-Save Functionality
@@ -692,6 +778,7 @@ struct NotesToSelfPopupView: View {
     
     private func performAutoSaveAndNavigate(action: @escaping () -> Void) {
         if isDirty && autoSaveEnabled {
+            print("DEBUG: Auto-save and navigate with auto commit")
             saveNote(shouldAutoCommit: true)
         }
         action()
@@ -699,6 +786,7 @@ struct NotesToSelfPopupView: View {
     
     private func performAutoSaveAndClose() {
         if isDirty && autoSaveEnabled {
+            print("DEBUG: Auto-save and close with auto commit")
             saveNote(shouldAutoCommit: true)
         }
         dismiss()
@@ -727,13 +815,22 @@ struct NotesToSelfPopupView: View {
         }
         
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
-        let gitURL = notesURL.appendingPathComponent(".git")
-        isGitRepo = FileManager.default.fileExists(atPath: gitURL.path)
+        let gitPath = notesURL.appendingPathComponent(".git")
+        
+        // Check for regular git directory or git worktree file
+        let isDirectory = FileManager.default.fileExists(atPath: gitPath.path) && 
+                         (try? gitPath.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true
+        let isFile = FileManager.default.fileExists(atPath: gitPath.path) && 
+                    (try? gitPath.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == false
+        
+        isGitRepo = isDirectory || isFile
+        print("DEBUG: Git repo check - path: \(gitPath.path), isDirectory: \(isDirectory), isFile: \(isFile), result: \(isGitRepo)")
     }
     
     private func checkGitStatus() {
         guard isGitRepo else {
             hasUncommittedChanges = false
+            currentFileHasUncommittedChanges = false
             return
         }
         
@@ -744,13 +841,102 @@ struct NotesToSelfPopupView: View {
                 let gitStatus = GitStatus(directory: notesURL)
                 let status = try await Process.output(gitStatus)
                 
-                // Check if there are any untracked or unmerged files
-                hasUncommittedChanges = !status.untrackedFiles.isEmpty || !status.unmergedFiles.isEmpty
+                // Check if there are any uncommitted changes
+                await MainActor.run {
+                    hasUncommittedChanges = !status.untrackedFiles.isEmpty || 
+                                          !status.unmergedFiles.isEmpty || 
+                                          !status.modifiedFiles.isEmpty || 
+                                          !status.addedFiles.isEmpty
+                    checkCurrentFileGitStatus()
+                }
             } catch {
                 print("DEBUG: Git status check failed: \(error)")
-                hasUncommittedChanges = false
+                await MainActor.run {
+                    hasUncommittedChanges = false
+                    currentFileHasUncommittedChanges = false
+                }
             }
         }
+    }
+    
+    private func checkCurrentFileGitStatus() {
+        guard isGitRepo else {
+            currentFileHasUncommittedChanges = false
+            return
+        }
+        
+        let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
+        
+        if isCreatingNew {
+            // New files are always uncommitted
+            currentFileHasUncommittedChanges = true
+            return
+        }
+        
+        guard let selectedNote = selectedNote else {
+            currentFileHasUncommittedChanges = false
+            return
+        }
+        
+        Task {
+            do {
+                let gitStatus = GitStatus(directory: notesURL)
+                let status = try await Process.output(gitStatus)
+                
+                // Get relative path of current file more reliably
+                let relativePath: String
+                if selectedNote.url.path.hasPrefix(notesURL.path + "/") {
+                    relativePath = String(selectedNote.url.path.dropFirst(notesURL.path.count + 1))
+                } else {
+                    relativePath = selectedNote.url.lastPathComponent
+                }
+                
+                // Check if current file has any uncommitted changes
+                await MainActor.run {
+                    currentFileHasUncommittedChanges = status.untrackedFiles.contains(relativePath) ||
+                                                     status.unmergedFiles.contains(relativePath) ||
+                                                     status.modifiedFiles.contains(relativePath) ||
+                                                     status.addedFiles.contains(relativePath)
+                }
+            } catch {
+                print("DEBUG: Current file git status check failed: \(error)")
+                await MainActor.run {
+                    currentFileHasUncommittedChanges = false
+                }
+            }
+        }
+    }
+    
+    // MARK: - Window Title Management
+    
+    private func getWindowTitle() -> String {
+        var title = "Notes to Self"
+        
+        if let selectedNote = selectedNote {
+            title = selectedNote.name
+            if isDirty {
+                title += " *"
+            }
+            if isGitRepo && currentFileHasUncommittedChanges {
+                title += " <*>"
+            }
+        } else if isCreatingNew {
+            title = newNoteFileName
+            if isDirty {
+                title += " *"
+            }
+            // New files are always uncommitted until first commit
+            if isGitRepo {
+                title += " <*>"
+            }
+        } else {
+            title = "Notes to Self"
+            if isGitRepo && hasUncommittedChanges {
+                title += " <*>"
+            }
+        }
+        
+        return title
     }
     
     // MARK: - Repository Name Detection
@@ -967,72 +1153,256 @@ struct NotesToSelfPopupView: View {
         guard isGitRepo else { return }
         
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
-        let repoName = getRepositoryName()
-        let commitMessage = "Manual commit of \(repoName) notes\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+        
+        // Determine what to commit
+        let commitMessage: String
+        let filesToCommit: String?
+        
+        if let selectedNote = selectedNote {
+            // Commit only the current file
+            let relativePath: String
+            if selectedNote.url.path.hasPrefix(notesURL.path + "/") {
+                relativePath = String(selectedNote.url.path.dropFirst(notesURL.path.count + 1))
+            } else {
+                relativePath = selectedNote.url.lastPathComponent
+            }
+            commitMessage = "Manual commit: \(relativePath)\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+            filesToCommit = relativePath
+        } else {
+            // No specific file selected, commit all
+            let repoName = getRepositoryName()
+            commitMessage = "Manual commit of \(repoName) notes\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+            filesToCommit = nil
+        }
         
         Task {
             do {
-                print("DEBUG: Manual commit - adding all files")
-                
-                // Add all changes in the notes directory
-                let gitAddAll = GitAdd(directory: notesURL)
-                try await Process.output(gitAddAll)
+                if let filePath = filesToCommit {
+                    print("DEBUG: Manual commit - adding specific file: \(filePath)")
+                    
+                    // Save current file first if dirty
+                    if isDirty {
+                        await MainActor.run {
+                            saveNote()
+                        }
+                    }
+                    
+                    // Add the specific file
+                    let gitAddFile = GitAddPathspec(directory: notesURL, pathspec: filePath)
+                    try await Process.output(gitAddFile)
+                } else {
+                    print("DEBUG: Manual commit - adding all files")
+                    
+                    // Add all changes in the notes directory
+                    let gitAddAll = GitAdd(directory: notesURL)
+                    try await Process.output(gitAddAll)
+                }
                 
                 print("DEBUG: Manual commit - files added, attempting commit")
                 
-                // Commit all changes
+                // Commit changes
                 let gitCommit = GitCommit(directory: notesURL, message: commitMessage)
                 try await Process.output(gitCommit)
                 
                 print("DEBUG: Manual commit successful")
                 
+                // Update git status
+                await MainActor.run {
+                    checkGitStatus()
+                    checkCurrentFileGitStatus()
+                }
+                
             } catch {
                 print("DEBUG: Manual commit failed: \(error)")
-                self.error = GenericError(errorDescription: "Manual commit failed: \(error.localizedDescription)")
+                await MainActor.run {
+                    self.error = GenericError(errorDescription: "Manual commit failed: \(error.localizedDescription)")
+                }
             }
         }
     }
     
     private func performAutoCommit(for filePath: String, action: String) {
-        guard isGitRepo && autoCommitEnabled else { return }
+        guard isGitRepo && autoCommitEnabled else { 
+            print("DEBUG: Auto commit skipped - isGitRepo: \(isGitRepo), autoCommitEnabled: \(autoCommitEnabled)")
+            return 
+        }
         
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
         let commitMessage = "\(filePath) \(action)\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
         
+        print("DEBUG: === AUTOCOMMIT START ===")
+        print("DEBUG: File: \(filePath), Action: \(action)")
+        print("DEBUG: isGitRepo: \(isGitRepo), autoCommitEnabled: \(autoCommitEnabled)")
+        print("DEBUG: Notes location: \(notesToRepoSettings.notesLocation)")
+        print("DEBUG: Notes URL: \(notesURL.path)")
+        print("DEBUG: Commit message: \(commitMessage)")
+        
         Task {
             do {
-                print("DEBUG: Attempting to add file: \(filePath)")
+                // Pre-flight checks
+                try await validateGitRepository(at: notesURL)
                 
-                // Use existing GitAddPathspec command from the application's Git infrastructure
-                // Always add the specific file path, git will handle the directory structure
-                let gitAddFile = GitAddPathspec(directory: notesURL, pathspec: filePath)
-                try await Process.output(gitAddFile)
+                // Check if there are actually changes to commit
+                let hasChanges = try await checkForChanges(in: notesURL)
+                guard hasChanges else {
+                    print("DEBUG: No changes detected, skipping commit")
+                    return
+                }
                 
-                print("DEBUG: File added successfully, attempting commit")
+                // Add files with better error handling
+                try await addFilesToGit(directory: notesURL, specificFile: filePath)
                 
-                // Use existing GitCommit command from the application's Git infrastructure
-                let gitCommit = GitCommit(directory: notesURL, message: commitMessage)
-                try await Process.output(gitCommit)
+                print("DEBUG: Files added successfully, attempting commit")
                 
-                print("DEBUG: Commit successful for: \(filePath)")
+                // Commit changes with validation
+                try await commitChanges(directory: notesURL, message: commitMessage)
+                
+                print("DEBUG: Auto commit successful for: \(filePath)")
+                
+                // Update git status after successful commit
+                await MainActor.run {
+                    checkGitStatus()
+                    checkCurrentFileGitStatus()
+                }
                 
             } catch {
-                print("DEBUG: Git auto-commit failed for \(filePath): \(error)")
-                // Fallback: add all changes and commit
-                do {
-                    print("DEBUG: Trying fallback - add all files")
-                    let gitAddAll = GitAdd(directory: notesURL)
-                    try await Process.output(gitAddAll)
-                    
-                    let gitCommit = GitCommit(directory: notesURL, message: commitMessage)
-                    try await Process.output(gitCommit)
-                    
-                    print("DEBUG: Fallback commit successful")
-                } catch {
-                    print("DEBUG: Git auto-commit fallback also failed: \(error)")
+                print("DEBUG: === AUTOCOMMIT FAILED ===")
+                print("DEBUG: Error type: \(type(of: error))")
+                print("DEBUG: Error: \(error)")
+                print("DEBUG: Error description: \(error.localizedDescription)")
+                
+                if let processError = error as? ProcessError {
+                    print("DEBUG: ProcessError details: \(processError.errorDescription ?? \"No description\")")
+                }
+                
+                // Show user-friendly error
+                await MainActor.run {
+                    self.error = GenericError(errorDescription: "Auto-commit failed for \(filePath): \(error.localizedDescription)")
                 }
             }
         }
+    }
+    
+    // MARK: - Git Helper Methods
+    
+    private func validateGitRepository(at directory: URL) async throws {
+        // Check if directory exists
+        guard FileManager.default.fileExists(atPath: directory.path) else {
+            throw GenericError(errorDescription: "Notes directory does not exist: \(directory.path)")
+        }
+        
+        // Check if it's a git repository
+        let gitPath = directory.appendingPathComponent(".git")
+        let isGitDir = FileManager.default.fileExists(atPath: gitPath.path)
+        
+        // Also check for git worktree (single .git file)
+        let gitFile = directory.appendingPathComponent(".git")
+        let isGitFile = FileManager.default.fileExists(atPath: gitFile.path) && !isGitDir
+        
+        guard isGitDir || isGitFile else {
+            throw GenericError(errorDescription: "Directory is not a git repository: \(directory.path)")
+        }
+        
+        // Check git user configuration - common cause of commit failures
+        do {
+            print("DEBUG: Checking git user configuration...")
+            let gitConfigName = Process()
+            gitConfigName.executableURL = URL(fileURLWithPath: "/usr/bin/git")
+            gitConfigName.arguments = ["config", "user.name"]
+            gitConfigName.currentDirectoryURL = directory
+            
+            let gitConfigEmail = Process()
+            gitConfigEmail.executableURL = URL(fileURLWithPath: "/usr/bin/git")
+            gitConfigEmail.arguments = ["config", "user.email"]
+            gitConfigEmail.currentDirectoryURL = directory
+            
+            let namePipe = Pipe()
+            let emailPipe = Pipe()
+            gitConfigName.standardOutput = namePipe
+            gitConfigEmail.standardOutput = emailPipe
+            
+            try gitConfigName.run()
+            try gitConfigEmail.run()
+            
+            gitConfigName.waitUntilExit()
+            gitConfigEmail.waitUntilExit()
+            
+            let nameData = namePipe.fileHandleForReading.readDataToEndOfFile()
+            let emailData = emailPipe.fileHandleForReading.readDataToEndOfFile()
+            
+            let userName = String(data: nameData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let userEmail = String(data: emailData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            
+            print("DEBUG: Git user name: '\(userName)'")
+            print("DEBUG: Git user email: '\(userEmail)'")
+            
+            if userName.isEmpty || userEmail.isEmpty {
+                throw GenericError(errorDescription: "Git user not configured. Run: git config user.name 'Your Name' && git config user.email 'your@email.com'")
+            }
+            
+        } catch {
+            print("DEBUG: Git user config check failed: \(error)")
+            throw GenericError(errorDescription: "Git user configuration required for commits: \(error.localizedDescription)")
+        }
+        
+        print("DEBUG: Git repository validation passed")
+    }
+    
+    private func checkForChanges(in directory: URL) async throws -> Bool {
+        do {
+            let gitStatus = GitStatus(directory: directory)
+            let status = try await Process.output(gitStatus)
+            
+            let hasChanges = !status.untrackedFiles.isEmpty || 
+                           !status.modifiedFiles.isEmpty || 
+                           !status.addedFiles.isEmpty ||
+                           !status.unmergedFiles.isEmpty
+            
+            print("DEBUG: Change detection - untracked: \(status.untrackedFiles.count), modified: \(status.modifiedFiles.count), added: \(status.addedFiles.count)")
+            
+            return hasChanges
+        } catch {
+            print("DEBUG: Failed to check git status, assuming changes exist: \(error)")
+            return true // Assume changes exist if we can't check
+        }
+    }
+    
+    private func addFilesToGit(directory: URL, specificFile: String) async throws {
+        // First try to add the specific file
+        do {
+            let gitAddFile = GitAddPathspec(directory: directory, pathspec: specificFile)
+            try await Process.output(gitAddFile)
+            print("DEBUG: Successfully added specific file: \(specificFile)")
+        } catch {
+            print("DEBUG: Failed to add specific file \(specificFile), trying add all: \(error)")
+            
+            // Fallback to adding all files
+            let gitAddAll = GitAdd(directory: directory)
+            try await Process.output(gitAddAll)
+            print("DEBUG: Successfully added all files")
+        }
+    }
+    
+    private func commitChanges(directory: URL, message: String) async throws {
+        // Check if there are staged changes before committing
+        do {
+            let gitStatus = GitStatus(directory: directory)
+            let status = try await Process.output(gitStatus)
+            
+            let hasStagedChanges = !status.addedFiles.isEmpty ||
+                                 !status.modifiedFiles.isEmpty ||
+                                 !status.unmergedFiles.isEmpty
+            
+            guard hasStagedChanges else {
+                throw GenericError(errorDescription: "No staged changes to commit")
+            }
+        } catch let statusError {
+            print("DEBUG: Could not check staged changes, proceeding with commit: \(statusError)")
+        }
+        
+        // Perform the commit
+        let gitCommit = GitCommit(directory: directory, message: message)
+        try await Process.output(gitCommit)
     }
 }
 
@@ -1066,9 +1436,10 @@ struct NoteFileRow: View {
                         .lineLimit(1)
                 }
                 
-                Text(noteFile.creationDate, format: .dateTime.month().day().hour().minute())
+                Text(noteFile.creationDate.timeIntervalSince1970 == 0 ? "No date" : noteFile.creationDate.formatted(.dateTime.month().day().hour().minute()))
                     .font(.caption)
                     .foregroundColor(.secondary)
+                    .redacted(reason: noteFile.creationDate.timeIntervalSince1970 == 0 ? .placeholder : [])
             }
             Spacer()
         }

@@ -43,7 +43,7 @@ struct FileNameView: View {
     private var folderStructure: FolderNode {
         guard let contextMenuFileNames else { return FolderNode(name: "", fullPath: "", children: [:], files: []) }
         
-        var rootNode = FolderNode(name: "", fullPath: "", children: [:], files: [])
+        let rootNode = FolderNode(name: "", fullPath: "", children: [:], files: [])
         
         for filePath in contextMenuFileNames {
             let pathComponents = filePath.split(separator: "/").map(String.init)

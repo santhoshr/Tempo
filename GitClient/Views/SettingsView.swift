@@ -6,23 +6,12 @@
 //
 
 import SwiftUI
+import Defaults
 
 struct SettingsView: View {
-    @Binding var openAIAPISecretKey: String
-    @Binding var openAIAPIURL: String
-    @Binding var openAIAPIPrompt: String
-    @Binding var openAIAPIModel: String
-    @Binding var openAIAPIStagingPrompt: String
-
     var body: some View {
         TabView {
-            OpenAISettingsView(
-                openAIAPISecretKey: $openAIAPISecretKey,
-                openAIAPIURL: $openAIAPIURL,
-                openAIAPIPrompt: $openAIAPIPrompt,
-                openAIAPIModel: $openAIAPIModel,
-                openAIAPIStagingPrompt: $openAIAPIStagingPrompt
-            )
+            OpenAISettingsView()
             .tabItem {
                 Label("OpenAI", systemImage: "sparkles")
             }
@@ -52,11 +41,11 @@ struct SettingsView: View {
 }
 
 struct OpenAISettingsView: View {
-    @Binding var openAIAPISecretKey: String
-    @Binding var openAIAPIURL: String
-    @Binding var openAIAPIPrompt: String
-    @Binding var openAIAPIModel: String
-    @Binding var openAIAPIStagingPrompt: String
+    @Default(.openAIAPIKey) private var openAIAPISecretKey
+    @Default(.openAIAPIURL) private var openAIAPIURL
+    @Default(.openAIAPIPrompt) private var openAIAPIPrompt
+    @Default(.openAIAPIModel) private var openAIAPIModel
+    @Default(.openAIAPIStagingPrompt) private var openAIAPIStagingPrompt
 
     var body: some View {
         ScrollView {
@@ -224,24 +213,6 @@ struct InfoRow: View {
     }
     
     #Preview {
-        @Previewable @State var openAIAPISecretKey = ""
-        @Previewable @State var openAIAPIURL = "https://api.openai.com/v1/chat/completions"
-        @Previewable @State var openAIAPIPrompt = "You are a good software engineer. Tell me commit title and message of these changes for git. Add a title starting with nature like feat, bugfix, fix, add, update, etc."
-        @Previewable @State var openAIAPIModel = "gpt-4o-mini"
-        @Previewable @State var openAIAPIStagingPrompt = """
-You are a good software engineer.
-The first message is the diff that has already been staged. The second message is the unstaged diff. The third message consists of untracked files, separated by new lines. Please advise on what changes should be committed next. It's fine if you think it is appropriate to commit everything together.
-
-For the unstaged diff, please indicate which hunks should be committed by answering with booleans so that the response can be used as input for git add -p. For the untracked files, please also answer with booleans for each file.
-
-Additionally, please provide a good commit message for committing the changes that should be staged.
-"""
-        SettingsView(
-            openAIAPISecretKey: $openAIAPISecretKey,
-            openAIAPIURL: $openAIAPIURL,
-            openAIAPIPrompt: $openAIAPIPrompt,
-            openAIAPIModel: $openAIAPIModel,
-            openAIAPIStagingPrompt: $openAIAPIStagingPrompt
-        )
+        SettingsView()
     }
 }

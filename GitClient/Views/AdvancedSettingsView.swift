@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import Defaults
 
 struct AdvancedSettingsView: View {
-    @AppStorage(AppStorageKey.allowExpertOptions.rawValue) private var allowExpertOptions = false
-    @AppStorage(AppStorageKey.reflogLimit.rawValue) private var reflogLimit = 100
+    @Default(.allowExpertOptions) private var allowExpertOptions
+    @Default(.reflogLimit) private var reflogLimit
     
     var body: some View {
         ScrollView {

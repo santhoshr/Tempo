@@ -7,10 +7,10 @@
 
 import SwiftUI
 import Foundation
+import Defaults
 
 struct GitRepoSettingsView: View {
-    @AppStorage(AppStorageKey.gitRepoFolders.rawValue) private var gitRepoSettingsData: Data?
-    @State private var gitRepoSettings = GitRepoSettings()
+    @Default(.gitRepoSettings) private var gitRepoSettings
     @State private var foundRepos: [Folder] = []
     @State private var isScanning = false
     @State private var error: Error?
@@ -86,9 +86,6 @@ struct GitRepoSettingsView: View {
                 
                 VStack(alignment: .leading, spacing: 12) {
                     Toggle("Auto-scan subfolders", isOn: $gitRepoSettings.autoScanSubfolders)
-                        .onChange(of: gitRepoSettings.autoScanSubfolders) { _, _ in
-                            saveSettings()
-                        }
                     
                     if gitRepoSettings.autoScanSubfolders {
                         HStack {
@@ -96,9 +93,6 @@ struct GitRepoSettingsView: View {
                             Stepper(value: $gitRepoSettings.maxScanDepth, in: 1...10) {
                                 Text("\(gitRepoSettings.maxScanDepth)")
                                     .font(.system(.body, design: .monospaced))
-                            }
-                            .onChange(of: gitRepoSettings.maxScanDepth) { _, _ in
-                                saveSettings()
                             }
                         }
                         .padding(.leading, 20)
@@ -113,7 +107,6 @@ struct GitRepoSettingsView: View {
                         }
                         .pickerStyle(.menu)
                         .onChange(of: gitRepoSettings.sortOption) { _, newValue in
-                            saveSettings()
                             if newValue != .manual {
                                 rescanRepositories()
                             }
@@ -198,29 +191,11 @@ struct GitRepoSettingsView: View {
         }
         .frame(minWidth: 600, maxWidth: 600, minHeight: 600)
         .onAppear {
-            loadSettings()
             if !gitRepoSettings.searchFolders.isEmpty {
                 rescanRepositories()
             }
         }
         .errorSheet($error)
-    }
-    
-    private func loadSettings() {
-        guard let data = gitRepoSettingsData else { return }
-        do {
-            gitRepoSettings = try JSONDecoder().decode(GitRepoSettings.self, from: data)
-        } catch {
-            self.error = error
-        }
-    }
-    
-    private func saveSettings() {
-        do {
-            gitRepoSettingsData = try JSONEncoder().encode(gitRepoSettings)
-        } catch {
-            self.error = error
-        }
     }
     
     private func addFolder() {
@@ -236,7 +211,6 @@ struct GitRepoSettingsView: View {
                         gitRepoSettings.searchFolders.append(url)
                     }
                 }
-                saveSettings()
                 rescanRepositories()
             }
         }
@@ -244,7 +218,6 @@ struct GitRepoSettingsView: View {
     
     private func removeFolder(at index: Int) {
         gitRepoSettings.searchFolders.remove(at: index)
-        saveSettings()
         rescanRepositories()
     }
     
@@ -271,7 +244,6 @@ struct GitRepoSettingsView: View {
         
         // Update manual order
         gitRepoSettings.manualOrder = foundRepos.map { $0.url.path }
-        saveSettings()
     }
 }
 

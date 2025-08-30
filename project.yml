@@ -7,12 +7,12 @@ options:
   xcodeVersion: "15.0"
 
 packages:
-  KeychainAccess:
-    url: https://github.com/kishikawakatsumi/KeychainAccess
-    from: 4.2.2
   Sourceful:
     url: https://github.com/maoyama/Sourceful
     from: 1.0.0
+  Defaults:
+    url: https://github.com/sindresorhus/Defaults
+    from: 8.2.0
 
 targets:
   GitClient:
@@ -23,8 +23,8 @@ targets:
         excludes:
           - "**/*.md"
     dependencies:
-      - package: KeychainAccess
       - package: Sourceful
+      - package: Defaults
     info:
       path: GitClient/Info.plist
       properties:

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Foundation
+import Defaults
 
 extension CGSize: Codable {
     public func encode(to encoder: Encoder) throws {
@@ -32,9 +33,13 @@ struct NotesToSelfPopupView: View {
     @Environment(\.folder) private var folder
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage(AppStorageKey.notesToRepoSettings.rawValue) private var notesToRepoSettingsData: Data?
     
-    @State private var notesToRepoSettings = NotesToRepoSettings()
+    @Default(.notesToRepoSettings) private var notesToRepoSettings
+    @Default(.notesToSelfAutoSave) private var autoSaveEnabled
+    @Default(.notesToSelfAutoCommit) private var autoCommitEnabled
+    @Default(.notesToSelfFileListWidth) private var fileListWidth
+    @Default(.notesToSelfLastOpenedFile) private var lastOpenedFileID
+    
     @State private var noteFiles: [NoteFile] = []
     @State private var selectedNote: NoteFile?
     @State private var noteContent = ""
@@ -45,16 +50,10 @@ struct NotesToSelfPopupView: View {
     @State private var pendingNavigationAction: (() -> Void)?
     @State private var isDirty = false
     @State private var originalContent = ""
-    @State private var autoSaveEnabled = UserDefaults.standard.bool(forKey: "NotesToSelf_AutoSave")
-    @State private var autoCommitEnabled = UserDefaults.standard.bool(forKey: "NotesToSelf_AutoCommit")
     @State private var isGitRepo = false
     @State private var autoSaveTimer: Timer?
     @State private var showGitMenu = false
     @State private var error: Error?
-    
-    // Window state persistence
-    @State private var fileListWidth: CGFloat = 300
-    @State private var lastOpenedFileID: String?
     
     var body: some View {
         HSplitView {
@@ -93,7 +92,6 @@ struct NotesToSelfPopupView: View {
                             
                             Button {
                                 autoCommitEnabled.toggle()
-                                UserDefaults.standard.set(autoCommitEnabled, forKey: "NotesToSelf_AutoCommit")
                             } label: {
                                 Image(systemName: autoCommitEnabled ? "checkmark.circle.fill" : "checkmark.circle")
                                     .foregroundColor(autoCommitEnabled ? .green : .secondary)
@@ -156,7 +154,6 @@ struct NotesToSelfPopupView: View {
                     Color.clear
                         .onChange(of: geometry.size.width) { _, newWidth in
                             fileListWidth = newWidth
-                            saveWindowState()
                         }
                 }
             )
@@ -223,7 +220,6 @@ struct NotesToSelfPopupView: View {
                         // Auto-save toggle
                         Button {
                             autoSaveEnabled.toggle()
-                            UserDefaults.standard.set(autoSaveEnabled, forKey: "NotesToSelf_AutoSave")
                             updateAutoSaveTimer()
                         } label: {
                             Image(systemName: autoSaveEnabled ? "arrow.triangle.2.circlepath" : "arrow.triangle.2.circlepath")
@@ -293,8 +289,6 @@ struct NotesToSelfPopupView: View {
                minHeight: 400, maxHeight: .infinity)
         .navigationTitle("Notes to Self")
         .onAppear {
-            loadWindowState()
-            loadSettings()
             loadNotes()
             checkIfGitRepo()
             // Restore last opened file or create new note
@@ -306,7 +300,6 @@ struct NotesToSelfPopupView: View {
             if isDirty && autoSaveEnabled {
                 saveNote()
             }
-            saveWindowState()
         }
         .confirmationDialog("Delete Note", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
@@ -336,19 +329,11 @@ struct NotesToSelfPopupView: View {
         .errorSheet($error)
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .background || newPhase == .inactive {
-                saveWindowState()
+                // Only save window state, no auto-commit on background events
             }
         }
     }
     
-    private func loadSettings() {
-        guard let data = notesToRepoSettingsData,
-              let settings = try? JSONDecoder().decode(NotesToRepoSettings.self, from: data) else {
-            notesToRepoSettings = NotesToRepoSettings()
-            return
-        }
-        notesToRepoSettings = settings
-    }
     
     private func loadNotes() {
         guard let folder = folder,
@@ -395,6 +380,7 @@ struct NotesToSelfPopupView: View {
         
         selectedNote = noteFile
         isCreatingNew = false
+        updateLastOpenedFile()
         
         do {
             noteContent = try String(contentsOf: noteFile.url)
@@ -659,27 +645,15 @@ struct NotesToSelfPopupView: View {
         let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
         let newFolder = Folder(url: notesURL)
         
-        // Get current folders from UserDefaults
-        var folderAdded = false
-        if let foldersData = UserDefaults.standard.data(forKey: AppStorageKey.folder.rawValue),
-           var currentFolders = try? JSONDecoder().decode([Folder].self, from: foldersData) {
-            
-            // Remove if already exists and add to front (like addFolderToList does)
-            currentFolders.removeAll { $0.url == notesURL }
-            currentFolders.insert(newFolder, at: 0)
-            folderAdded = true
-            
-            // Save updated folders back to UserDefaults
-            if let updatedData = try? JSONEncoder().encode(currentFolders) {
-                UserDefaults.standard.set(updatedData, forKey: AppStorageKey.folder.rawValue)
-            }
-        } else {
-            // Create new folder list with just this folder
-            if let folderData = try? JSONEncoder().encode([newFolder]) {
-                UserDefaults.standard.set(folderData, forKey: AppStorageKey.folder.rawValue)
-                folderAdded = true
-            }
-        }
+        // Get current folders from Defaults
+        var currentFolders = Defaults[.folders]
+        
+        // Remove if already exists and add to front (like addFolderToList does)
+        currentFolders.removeAll { $0.url == notesURL }
+        currentFolders.insert(newFolder, at: 0)
+        
+        // Save updated folders back to Defaults
+        Defaults[.folders] = currentFolders
         
         // Post notification to select the repository
         NotificationCenter.default.post(
@@ -693,24 +667,9 @@ struct NotesToSelfPopupView: View {
     
     // MARK: - Window State Persistence
     
-    private func loadWindowState() {
-        // Load file list width
-        let width = UserDefaults.standard.double(forKey: "NotesToSelf_FileListWidth")
-        if width > 0 {
-            fileListWidth = CGFloat(width)
-        }
-        
-        // Load last opened file ID
-        lastOpenedFileID = UserDefaults.standard.string(forKey: "NotesToSelf_LastOpenedFile")
-    }
-    
-    private func saveWindowState() {
-        // Save file list width
-        UserDefaults.standard.set(Double(fileListWidth), forKey: "NotesToSelf_FileListWidth")
-        
-        // Save last opened file ID
+    private func updateLastOpenedFile() {
         if let selectedNote = selectedNote {
-            UserDefaults.standard.set(selectedNote.id, forKey: "NotesToSelf_LastOpenedFile")
+            lastOpenedFileID = selectedNote.id
         }
     }
     

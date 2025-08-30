@@ -7,11 +7,11 @@
 
 import SwiftUI
 import Foundation
+import Defaults
 
 struct NotesToRepoSettingsView: View {
-    @AppStorage(AppStorageKey.notesToRepoSettings.rawValue) private var notesToRepoSettingsData: Data?
-    @State private var notesToRepoSettings = NotesToRepoSettings()
-    @State private var autoCommitEnabled = UserDefaults.standard.bool(forKey: "NotesToSelf_AutoCommit")
+    @Default(.notesToRepoSettings) private var notesToRepoSettings
+    @Default(.notesToSelfAutoCommit) private var autoCommitEnabled
     
     var body: some View {
         ScrollView {
@@ -69,9 +69,6 @@ struct NotesToRepoSettingsView: View {
                         // Auto-commit toggle
                         VStack(alignment: .leading, spacing: 6) {
                             Toggle("Auto-Commit (Git repositories)", isOn: $autoCommitEnabled)
-                                .onChange(of: autoCommitEnabled) { _, newValue in
-                                    UserDefaults.standard.set(newValue, forKey: "NotesToSelf_AutoCommit")
-                                }
                             Text("Automatically commit changes to git when notes are in a git repository")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
@@ -122,12 +119,6 @@ struct NotesToRepoSettingsView: View {
             .padding(24)
         }
         .frame(minWidth: 600, maxWidth: 600, minHeight: 400)
-        .onAppear {
-            loadSettings()
-        }
-        .onChange(of: notesToRepoSettings) { _, _ in
-            saveSettings()
-        }
     }
     
     private func selectNotesLocation() {
@@ -142,23 +133,6 @@ struct NotesToRepoSettingsView: View {
         }
     }
     
-    private func loadSettings() {
-        guard let data = notesToRepoSettingsData,
-              let settings = try? JSONDecoder().decode(NotesToRepoSettings.self, from: data) else {
-            notesToRepoSettings = NotesToRepoSettings()
-            return
-        }
-        notesToRepoSettings = settings
-    }
-    
-    private func saveSettings() {
-        do {
-            let data = try JSONEncoder().encode(notesToRepoSettings)
-            notesToRepoSettingsData = data
-        } catch {
-            print("Failed to save notes to repo settings: \(error)")
-        }
-    }
 }
 
 #Preview {

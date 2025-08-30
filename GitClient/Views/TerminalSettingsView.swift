@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
+import Defaults
 
 struct TerminalSettingsView: View {
-    @AppStorage(AppStorageKey.terminalSettings.rawValue) private var terminalSettingsData: Data?
-    @State private var terminalSettings = TerminalSettings()
+    @Default(.terminalSettings) private var terminalSettings
     @State private var error: Error?
     @State private var refreshTrigger = false
     
@@ -48,7 +48,7 @@ struct TerminalSettingsView: View {
                             .pickerStyle(.menu)
                             .frame(minWidth: 200)
                             .onChange(of: terminalSettings.preferredTerminal) { _ in
-                                saveSettings()
+                                // Settings automatically saved via Defaults
                             }
                         }
                         
@@ -86,7 +86,7 @@ struct TerminalSettingsView: View {
                                             },
                                             set: { newValue in
                                                 terminalSettings.setCustomArguments(newValue == selectedTerminal.defaultArguments ? nil : newValue, for: selectedTerminal.bundleIdentifier)
-                                                saveSettings()
+                                                // Settings automatically saved via Defaults
                                             }
                                         ))
                                         .textFieldStyle(.roundedBorder)
@@ -95,7 +95,7 @@ struct TerminalSettingsView: View {
                                         HStack {
                                             Button("Reset to Default") {
                                                 terminalSettings.setCustomArguments(nil, for: selectedTerminal.bundleIdentifier)
-                                                saveSettings()
+                                                // Settings automatically saved via Defaults
                                             }
                                             .buttonStyle(.bordered)
                                             .disabled(terminalSettings.customArguments(for: selectedTerminal.bundleIdentifier) == nil)
@@ -140,7 +140,7 @@ struct TerminalSettingsView: View {
                         
                         Button("Refresh") {
                             refreshTrigger.toggle()
-                            loadSettings()
+                            // Settings automatically loaded via Defaults
                         }
                         .buttonStyle(.bordered)
                     }
@@ -156,33 +156,7 @@ struct TerminalSettingsView: View {
             .padding(24)
         }
         .frame(minWidth: 600, maxWidth: 600, minHeight: 400)
-        .onAppear {
-            loadSettings()
-        }
         .errorSheet($error)
-    }
-    
-    private func loadSettings() {
-        if let data = terminalSettingsData {
-            do {
-                terminalSettings = try JSONDecoder().decode(TerminalSettings.self, from: data)
-            } catch {
-                self.error = error
-                terminalSettings = TerminalSettings()
-            }
-        } else {
-            // No settings saved yet, use default and save it
-            terminalSettings = TerminalSettings()
-            saveSettings()
-        }
-    }
-    
-    private func saveSettings() {
-        do {
-            terminalSettingsData = try JSONEncoder().encode(terminalSettings)
-        } catch {
-            self.error = error
-        }
     }
 }
 

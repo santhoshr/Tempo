@@ -1,13 +1,13 @@
 {
-  "originHash" : "e1dd0d2dea9847dcb776e4a5120c89390c001d0553606690bb57dbc7e196d5de",
+  "originHash" : "7e8c9c18dad0d0f081701a2a1f9b0dc04b2fbe3651de6ecb0d5fdbd6329be445",
   "pins" : [
     {
-      "identity" : "keychainaccess",
+      "identity" : "defaults",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kishikawakatsumi/KeychainAccess",
+      "location" : "https://github.com/sindresorhus/Defaults",
       "state" : {
-        "revision" : "84e546727d66f1adc5439debad16270d0fdd04e7",
-        "version" : "4.2.2"
+        "revision" : "38925e3cfacf3fb89a81a35b1cd44fd5a5b7e0fa",
+        "version" : "8.2.0"
       }
     },
     {

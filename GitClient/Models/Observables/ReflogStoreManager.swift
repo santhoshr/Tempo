@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Defaults
 
 @MainActor
 class ReflogStoreManager: ObservableObject {
@@ -21,13 +22,13 @@ class ReflogStoreManager: ObservableObject {
         
         if let existingStore = stores[key] {
             // Update limit from settings
-            existingStore.limit = UserDefaults.standard.object(forKey: AppStorageKey.reflogLimit.rawValue) as? Int ?? 100
+            existingStore.limit = Defaults[.reflogLimit]
             return existingStore
         }
         
         let newStore = ReflogStore()
         newStore.directory = directory
-        newStore.limit = UserDefaults.standard.object(forKey: AppStorageKey.reflogLimit.rawValue) as? Int ?? 100
+        newStore.limit = Defaults[.reflogLimit]
         stores[key] = newStore
         
         return newStore

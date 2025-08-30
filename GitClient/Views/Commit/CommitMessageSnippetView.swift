@@ -6,15 +6,12 @@
 //
 
 import SwiftUI
+import Defaults
 
 struct CommitMessageSnippetView: View {
-    @AppStorage(AppStorageKey.commitMessageSnippet.rawValue) var commitMessageSnippet: Data = AppStorageDefaults.commitMessageSnippets
+    @Default(.commitMessageSnippets) var commitMessageSnippets
     var decodedCommitMessageSnippets: Array<String> {
-        do {
-            return try JSONDecoder().decode(Array<String>.self, from: commitMessageSnippet)
-        } catch {
-            return []
-        }
+        return commitMessageSnippets
     }
     @State private var editCommitMessageSnippet: String = ""
     @State private var error: Error?
@@ -36,22 +33,14 @@ struct CommitMessageSnippetView: View {
                         Button("Delete") {
                             var snippets = decodedCommitMessageSnippets
                             snippets.removeAll { $0 == snippet }
-                            do {
-                                commitMessageSnippet = try JSONEncoder().encode(snippets)
-                            } catch {
-                                self.error = error
-                            }
+                            commitMessageSnippets = snippets
                         }
                     }
                 }
                 .onMove(perform: { indices, newOffset in
                     var t = decodedCommitMessageSnippets
                     t.move(fromOffsets: indices, toOffset: newOffset)
-                    do {
-                        commitMessageSnippet = try JSONEncoder().encode(t)
-                    } catch {
-                        self.error = error
-                    }
+                    commitMessageSnippets = t
                 })
             }
             Divider()
@@ -69,12 +58,8 @@ struct CommitMessageSnippetView: View {
                 Divider()
                 Button("Add") {
                     let newCommitMessageSnippets = decodedCommitMessageSnippets + [editCommitMessageSnippet]
-                    do {
-                        commitMessageSnippet = try JSONEncoder().encode(newCommitMessageSnippets)
-                        editCommitMessageSnippet = ""
-                    } catch {
-                        self.error = error
-                    }
+                    commitMessageSnippets = newCommitMessageSnippets
+                    editCommitMessageSnippet = ""
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.init(.return))

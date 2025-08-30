@@ -8,13 +8,14 @@
 import SwiftUI
 import Foundation
 import AppKit
+import Defaults
 
 struct FolderView: View {
     var folder: Folder
     @Binding var selectionLog: Log?
     @Binding var subSelectionLogID: String?
     @Binding var isRefresh: Bool
-    @AppStorage(AppStorageKey.allowExpertOptions.rawValue) private var allowExpertOptions = false
+    @Default(.allowExpertOptions) private var allowExpertOptions
     @State private var logStore = LogStore()
     @State private var syncState = SyncState()
     @State private var isLoading = false
@@ -28,14 +29,9 @@ struct FolderView: View {
     @State private var searchTask: Task<(), Never>?
     @State private var showGraph = false
     @State private var showNotesToSelfPopup = false
-    @AppStorage(AppStorageKey.searchTokenHisrtory.rawValue) var searchTokenHistory: Data?
+    @Default(.searchTokenHistory) var searchTokenHistory
     private var decodedSearchTokenHistory: [SearchToken] {
-        guard let searchTokenHistory else { return [] }
-        do {
-            return try JSONDecoder().decode([SearchToken].self, from: searchTokenHistory)
-        } catch {
-            return []
-        }
+        return searchTokenHistory
     }
     private var suggestSearchToken: [SearchToken] {
         decodedSearchTokenHistory.filter { !searchTokens.contains($0)}
@@ -149,11 +145,7 @@ struct FolderView: View {
                                     Button("Delete") {
                                         var tokens = decodedSearchTokenHistory
                                         tokens.removeAll { $0 == token }
-                                        do {
-                                            try self.searchTokenHistory = JSONEncoder().encode(tokens)
-                                        } catch {
-                                            self.error = error
-                                        }
+                                        searchTokenHistory = tokens
                                     }
                                 }
                         }
@@ -660,11 +652,7 @@ struct FolderView: View {
     fileprivate func saveSearchTokenHistory(oldValue: [SearchToken], newValue: [SearchToken]) {
         let newHistory = SearchTokensHandler.searchTokenHistory(currentHistory: decodedSearchTokenHistory, old: oldValue, new: newValue)
         guard newHistory != decodedSearchTokenHistory else { return }
-        do {
-            try self.searchTokenHistory = JSONEncoder().encode(newHistory)
-        } catch {
-            self.error = error
-        }
+        searchTokenHistory = newHistory
     }
 
     fileprivate func addBranchButton() -> some View {
@@ -1075,18 +1063,12 @@ struct FolderView: View {
     }
     
     fileprivate func openInTerminal() {
-        // Get terminal settings from app storage
-        if let terminalSettingsData = UserDefaults.standard.data(forKey: AppStorageKey.terminalSettings.rawValue) {
-            do {
-                let terminalSettings = try JSONDecoder().decode(TerminalSettings.self, from: terminalSettingsData)
-                if let selectedTerminal = terminalSettings.selectedTerminal {
-                    let customArguments = terminalSettings.customArguments(for: selectedTerminal.bundleIdentifier)
-                    selectedTerminal.openTerminal(at: folder.url, customArguments: customArguments)
-                    return
-                }
-            } catch {
-                // Fall back to default if decoding fails
-            }
+        // Get terminal settings from Defaults
+        let terminalSettings = Defaults[.terminalSettings]
+        if let selectedTerminal = terminalSettings.selectedTerminal {
+            let customArguments = terminalSettings.customArguments(for: selectedTerminal.bundleIdentifier)
+            selectedTerminal.openTerminal(at: folder.url, customArguments: customArguments)
+            return
         }
         
         // Fallback to default Terminal.app

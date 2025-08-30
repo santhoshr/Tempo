@@ -7,12 +7,13 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import Defaults
 
 struct ContentView: View {
     @Environment(\.openSettings) private var openSettings: OpenSettingsAction
-    @AppStorage(AppStorageKey.folder.rawValue) var folders: Data?
-    @AppStorage(AppStorageKey.gitRepoFolders.rawValue) private var gitRepoSettingsData: Data?
-    @AppStorage(AppStorageKey.terminalSettings.rawValue) private var terminalSettingsData: Data?
+    @Default(.folders) var folders
+    @Default(.gitRepoSettings) private var gitRepoSettings
+    @Default(.terminalSettings) private var terminalSettings
     
     private var decodedFolders: [Folder] {
         let allFolders = getManualFolders()
@@ -44,28 +45,17 @@ struct ContentView: View {
     }
     
     private func getManualFolders() -> [Folder] {
-        guard let folders = folders else { return [] }
-        do {
-            return try JSONDecoder().decode([Folder].self, from: folders)
-        } catch {
-            return []
-        }
+        return folders
     }
     
     private func getDiscoveredFolders() -> [Folder] {
-        guard let settingsData = gitRepoSettingsData else { return [] }
-        do {
-            let settings = try JSONDecoder().decode(GitRepoSettings.self, from: settingsData)
-            return GitRepoSettings.findGitRepositories(
-                in: settings.searchFolders,
-                autoScanSubfolders: settings.autoScanSubfolders,
-                maxDepth: settings.maxScanDepth,
-                sortOption: settings.sortOption,
-                manualOrder: settings.manualOrder
-            )
-        } catch {
-            return []
-        }
+        return GitRepoSettings.findGitRepositories(
+            in: gitRepoSettings.searchFolders,
+            autoScanSubfolders: gitRepoSettings.autoScanSubfolders,
+            maxDepth: gitRepoSettings.maxScanDepth,
+            sortOption: gitRepoSettings.sortOption,
+            manualOrder: gitRepoSettings.manualOrder
+        )
     }
     @State private var selectionFolderURL: URL?
     private var selectionFolder: Folder? {
@@ -77,7 +67,6 @@ struct ContentView: View {
     @State private var folderIsRefresh = false
     @State private var error: Error?
     @State private var isTargeted = false
-    @State private var terminalSettings = TerminalSettings()
 
 
     var body: some View {
@@ -209,9 +198,6 @@ struct ContentView: View {
         .onAppear {
             loadTerminalSettings()
         }
-        .onChange(of: terminalSettingsData) { _, _ in
-            loadTerminalSettings()
-        }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SelectRepository"))) { notification in
             if let url = notification.object as? URL {
                 selectionFolderURL = url
@@ -241,49 +227,32 @@ struct ContentView: View {
     
     private func addFolderToList(_ url: URL) {
         let chooseFolder = Folder(url: url)
-        var currentFolders = getCurrentManualFolders()
+        var currentFolders = folders
         
         // Remove if already exists and add to front
         currentFolders.removeAll { $0 == chooseFolder }
         currentFolders.insert(chooseFolder, at: 0)
         
-        do {
-            try self.folders = JSONEncoder().encode(currentFolders)
-        } catch {
-            self.error = error
-        }
+        folders = currentFolders
     }
     
     private func removeFolder(_ folder: Folder) {
-        var currentFolders = getCurrentManualFolders()
+        var currentFolders = folders
         currentFolders.removeAll { $0 == folder }
-        
-        do {
-            try self.folders = JSONEncoder().encode(currentFolders)
-        } catch {
-            self.error = error
-        }
+        folders = currentFolders
     }
     
     private func getCurrentManualFolders() -> [Folder] {
-        guard let folders = folders else { return [] }
-        do {
-            return try JSONDecoder().decode([Folder].self, from: folders)
-        } catch {
-            return []
-        }
+        return folders
     }
     
     private func rescanFolders() {
-        // Trigger a refresh by updating the gitRepoSettingsData
+        // Trigger a refresh by updating the gitRepoSettings
         // This will cause decodedFolders to recompute
-        if gitRepoSettingsData != nil {
-            // Force a refresh by temporarily setting to nil and back
-            let temp = gitRepoSettingsData
-            gitRepoSettingsData = nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                gitRepoSettingsData = temp
-            }
+        let temp = gitRepoSettings
+        gitRepoSettings = GitRepoSettings()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            gitRepoSettings = temp
         }
     }
     
@@ -310,18 +279,10 @@ struct ContentView: View {
     }
     
     private func loadTerminalSettings() {
-        if let data = terminalSettingsData {
-            do {
-                terminalSettings = try JSONDecoder().decode(TerminalSettings.self, from: data)
-            } catch {
-                // Use default settings if decoding fails
-                terminalSettings = TerminalSettings()
-            }
-        } else {
-            // No settings saved yet, use default
-            terminalSettings = TerminalSettings()
-        }
+        // Terminal settings are now automatically loaded via Defaults
+        // No manual loading needed
     }
+    
     
     private func openInBrowser(folder: Folder) {
         // Check if there's a remote URL in git config

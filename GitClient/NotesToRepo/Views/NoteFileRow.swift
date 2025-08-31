@@ -12,6 +12,8 @@ struct NoteFileRow: View {
     let isSelected: Bool
     let onSelect: () -> Void
     
+    @State private var isHovered = false
+    
     // Extract the final directory name from the relative path
     private var finalDirectoryName: String? {
         // Only show badge if file is in a subdirectory
@@ -22,6 +24,26 @@ struct NoteFileRow: View {
         
         // Return the final directory component if it exists
         return directoryPath.isEmpty ? nil : (directoryPath as NSString).lastPathComponent
+    }
+    
+    private var backgroundFill: Color {
+        if isSelected {
+            return Color.accentColor.opacity(0.2)
+        } else if isHovered {
+            return Color.primary.opacity(0.05)
+        } else {
+            return Color.clear
+        }
+    }
+    
+    private var strokeColor: Color {
+        if isSelected {
+            return Color.accentColor
+        } else if isHovered {
+            return Color.primary.opacity(0.2)
+        } else {
+            return Color.clear
+        }
     }
     
     var body: some View {
@@ -67,17 +89,23 @@ struct NoteFileRow: View {
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 6)
-                .fill(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
+                .fill(backgroundFill)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 6)
-                .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
+                .stroke(strokeColor, lineWidth: isSelected ? 2 : 1)
         )
         .contentShape(Rectangle())
         .onTapGesture {
             onSelect()
         }
-        .animation(.easeInOut(duration: 0.1), value: isSelected)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
+        .animation(.easeInOut(duration: 0.15), value: isHovered)
     }
 }
 

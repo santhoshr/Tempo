@@ -36,6 +36,8 @@ struct NotesToRepoPopupView: View {
     @State private var displayedProjectFiles: [URL] = []
     @State private var projectLoadedCount: Int = 0
     @State private var isLoadingProjectFiles = false
+    @State private var projectFilterText = ""
+    @State private var selectedProjectFile: URL?
     @State private var newNoteFileName = ""
     @State private var showDeleteConfirmation = false
     @State private var isDirty = false
@@ -49,16 +51,100 @@ struct NotesToRepoPopupView: View {
     @FocusState private var isFileListFocused: Bool
     @FocusState private var isEditorFocused: Bool
     
+    private var fileCountText: some View {
+        Text("\(activeTab == .notes ? noteFiles.count : projectFiles.count)")
+            .font(.caption)
+            .foregroundColor(.secondary)
+    }
+    
+    private var tabPicker: some View {
+        Picker("", selection: $activeTab) {
+            Text("Notes").tag(FileListTab.notes)
+            Text("Project").tag(FileListTab.project)
+        }
+        .pickerStyle(.segmented)
+        .frame(width: 180)
+        .onChange(of: activeTab) { _, newTab in
+            if newTab == .project {
+                loadProjectFilesIfNeeded()
+            }
+        }
+    }
+    
+    private var fileListHeader: some View {
+        HStack(spacing: 12) {
+            tabPicker
+            Spacer()
+            fileCountText
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color(NSColor.controlBackgroundColor))
+    }
+    
+    @ViewBuilder
+    private var fileListContent: some View {
+        if activeTab == .notes {
+            ForEach(noteFiles, id: \.id) { noteFile in
+                NoteFileRow(
+                    noteFile: noteFile,
+                    isSelected: selectedNote?.id == noteFile.id
+                ) {
+                    selectNoteWithAutoSave(noteFile)
+                }
+                .id(noteFile.id)
+            }
+        } else {
+            ForEach(displayedProjectFiles, id: \.path) { fileURL in
+                ProjectFileRow(
+                    fileURL: fileURL, 
+                    repoRoot: folder?.path ?? "",
+                    isSelected: selectedProjectFile?.path == fileURL.path,
+                    onSelect: {
+                        selectProjectFile(fileURL)
+                    },
+                    onReveal: { 
+                        NSWorkspace.shared.selectFile(fileURL.path, inFileViewerRootedAtPath: folder?.path ?? "") 
+                    }
+                )
+                .id(fileURL.path)
+            }
+            if projectLoadedCount < projectFiles.count {
+                HStack {
+                    Spacer()
+                    Button(action: loadMoreProjectFiles) {
+                        if isLoadingProjectFiles {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Text("Load more")
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .padding(.vertical, 8)
+                    Spacer()
+                }
+            }
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Toolbar
             NotesToRepoToolbar(
+                projectFilterText: $projectFilterText,
+                isProjectTab: activeTab == .project,
                 isGitRepo: isGitRepo,
                 selectedNote: selectedNote,
                 fileListVisible: fileListVisible,
                 onToggleFileList: { fileListVisible.toggle() },
                 onOpenNotesRepo: { openNotesRepoInApp() },
-                onRevealInFinder: { revealNotesLocationInFinder() },
+                onRevealInFinder: { 
+                    if let selectedNote = selectedNote {
+                        NSWorkspace.shared.selectFile(selectedNote.url.path, inFileViewerRootedAtPath: "")
+                    } else if let folder = folder {
+                        NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: folder.path)
+                    }
+                },
                 onCreateNote: { createNewNote() },
                 onDeleteNote: { showDeleteConfirmation = true },
                 onToggleStatusBar: { statusBarVisible.toggle() }
@@ -121,72 +207,14 @@ struct NotesToRepoPopupView: View {
     private func fileListPanel() -> some View {
         VStack(alignment: .leading, spacing: 0) {
             // File list header with tabs
-            HStack(spacing: 12) {
-                Picker("", selection: $activeTab) {
-                    Text("Notes").tag(FileListTab.notes)
-                    Text("Project").tag(FileListTab.project)
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 180)
-                .onChange(of: activeTab) { _, newTab in
-                    if newTab == .project {
-                        loadProjectFilesIfNeeded()
-                    }
-                }
-
-                Spacer()
-
-                if activeTab == .notes {
-                    Text("\(noteFiles.count)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } else {
-                    Text("\(projectFiles.count)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(Color(NSColor.controlBackgroundColor))
+            fileListHeader
             
             Divider()
             
             // Notes/Project List with improved arrow key scrolling
             ScrollView(.vertical) {
                 LazyVStack(spacing: 0) {
-                    if activeTab == .notes {
-                        ForEach(noteFiles, id: \.id) { noteFile in
-                            NoteFileRow(
-                                noteFile: noteFile,
-                                isSelected: selectedNote?.id == noteFile.id
-                            ) {
-                                selectNoteWithAutoSave(noteFile)
-                            }
-                            .id(noteFile.id)
-                        }
-                    } else {
-                        ForEach(displayedProjectFiles, id: \.path) { fileURL in
-                            ProjectFileRow(fileURL: fileURL, repoRoot: folder?.url.path ?? "",
-                                           onReveal: { NSWorkspace.shared.selectFile(fileURL.path, inFileViewerRootedAtPath: folder?.url.path ?? "") })
-                            .id(fileURL.path)
-                        }
-                        if projectLoadedCount < projectFiles.count {
-                            HStack {
-                                Spacer()
-                                Button(action: loadMoreProjectFiles) {
-                                    if isLoadingProjectFiles {
-                                        ProgressView().controlSize(.small)
-                                    } else {
-                                        Text("Load more")
-                                    }
-                                }
-                                .buttonStyle(.bordered)
-                                .padding(.vertical, 8)
-                                Spacer()
-                            }
-                        }
-                    }
+                    fileListContent
                 }
                 .scrollTargetLayout()
             }
@@ -199,6 +227,13 @@ struct NotesToRepoPopupView: View {
             .onTapGesture {
                 isFileListFocused = true
             }
+            .overlay(
+                // Focus ring when file list is focused
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(isFileListFocused ? Color.accentColor : Color.clear, lineWidth: 2)
+                    .opacity(isFileListFocused ? 0.6 : 0)
+                    .animation(.easeInOut(duration: 0.2), value: isFileListFocused)
+            )
         }
         .frame(minWidth: 200, idealWidth: fileListWidth, maxWidth: 500)
         .background(Color(NSColor.controlBackgroundColor))
@@ -245,8 +280,16 @@ struct NotesToRepoPopupView: View {
                             .fill(.green)
                             .frame(width: 6, height: 6)
                             .help("New file")
+                    } else if let selectedProjectFile = selectedProjectFile {
+                        Text(selectedProjectFile.lastPathComponent)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        
+                        Text("(Project File)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     } else {
-                        Text("No note selected")
+                        Text("No file selected")
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(.secondary)
@@ -255,27 +298,35 @@ struct NotesToRepoPopupView: View {
                 
                 Spacer()
                 
-                if selectedNote != nil || isCreatingNew {
+                if selectedNote != nil || isCreatingNew || selectedProjectFile != nil {
                     HStack(spacing: 8) {
                         Button {
-                            navigateUpWithDirtyCheck()
+                            if activeTab == .notes {
+                                navigateUpWithDirtyCheck()
+                            } else {
+                                navigateFileList(direction: .up)
+                            }
                         } label: {
                             Image(systemName: "chevron.up")
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                         .disabled(!canNavigateUp())
-                        .help("Previous note (↑ or ⌘↑ or ⌘← or ⌘K or ⌘H)")
+                        .help("Previous file (↑ or ⌘↑ or ⌘← or ⌘K or ⌘H)")
                         
                         Button {
-                            navigateDownWithDirtyCheck()
+                            if activeTab == .notes {
+                                navigateDownWithDirtyCheck()
+                            } else {
+                                navigateFileList(direction: .down)
+                            }
                         } label: {
                             Image(systemName: "chevron.down")
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                         .disabled(!canNavigateDown())
-                        .help("Next note (↓ or ⌘↓ or ⌘→ or ⌘J or ⌘L)")
+                        .help("Next file (↓ or ⌘↓ or ⌘→ or ⌘J or ⌘L)")
                     }
                 }
             }
@@ -301,6 +352,9 @@ struct NotesToRepoPopupView: View {
                     .onChange(of: noteContent) { _, newValue in
                         updateDirtyState(newContent: newValue)
                     }
+            } else if selectedProjectFile != nil {
+                ReadOnlyTextView(text: noteContent)
+                    .background(Color(NSColor.textBackgroundColor))
             } else {
                 // Empty state
                 VStack(spacing: 16) {
@@ -494,9 +548,50 @@ struct NotesToRepoPopupView: View {
                     return .handled
                 }
                 return .ignored
+            case .home:
+                navigateToFirstFile()
+                return .handled
+            case .end:
+                navigateToLastFile()
+                return .handled
             default:
                 break
             }
+        }
+        
+        // Handle basic navigation without modifiers
+        switch keyPress.key {
+        case .upArrow:
+            navigateFileList(direction: .up)
+            return .handled
+        case .downArrow:
+            navigateFileList(direction: .down)
+            return .handled
+        case .pageUp:
+            navigateFileList(direction: .pageUp)
+            return .handled
+        case .pageDown:
+            navigateFileList(direction: .pageDown)
+            return .handled
+        case .home:
+            navigateToFirstFile()
+            return .handled
+        case .end:
+            navigateToLastFile()
+            return .handled
+        case .return, .space:
+            if selectedNote != nil {
+                isEditorFocused = true
+            }
+            return .handled
+        case .delete, .deleteForward:
+            if selectedNote != nil {
+                showDeleteConfirmation = true
+                return .handled
+            }
+            return .ignored
+        default:
+            break
         }
         
         // Handle Cmd+Alt shortcuts
@@ -567,7 +662,7 @@ struct NotesToRepoPopupView: View {
     
     // MARK: - Project Tab
     private func loadProjectFilesIfNeeded() {
-        guard let repoURL = folder?.url else { return }
+        guard let repoURL = folder else { return }
         if !projectFiles.isEmpty { return }
         loadProjectFiles(from: repoURL)
     }
@@ -825,21 +920,39 @@ struct NotesToRepoPopupView: View {
     // MARK: - Navigation
     
     private func canNavigateUp() -> Bool {
-        guard !noteFiles.isEmpty else { return false }
-        if let currentNote = selectedNote,
-           let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }) {
-            return currentIndex > 0
+        if activeTab == .notes {
+            guard !noteFiles.isEmpty else { return false }
+            if let currentNote = selectedNote,
+               let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }) {
+                return currentIndex > 0
+            }
+            return !noteFiles.isEmpty
+        } else {
+            guard !displayedProjectFiles.isEmpty else { return false }
+            if let selectedProjectFile = selectedProjectFile,
+               let currentIndex = displayedProjectFiles.firstIndex(where: { $0.path == selectedProjectFile.path }) {
+                return currentIndex > 0
+            }
+            return !displayedProjectFiles.isEmpty
         }
-        return !noteFiles.isEmpty
     }
     
     private func canNavigateDown() -> Bool {
-        guard !noteFiles.isEmpty else { return false }
-        if let currentNote = selectedNote,
-           let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }) {
-            return currentIndex < noteFiles.count - 1
+        if activeTab == .notes {
+            guard !noteFiles.isEmpty else { return false }
+            if let currentNote = selectedNote,
+               let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }) {
+                return currentIndex < noteFiles.count - 1
+            }
+            return !noteFiles.isEmpty
+        } else {
+            guard !displayedProjectFiles.isEmpty else { return false }
+            if let selectedProjectFile = selectedProjectFile,
+               let currentIndex = displayedProjectFiles.firstIndex(where: { $0.path == selectedProjectFile.path }) {
+                return currentIndex < displayedProjectFiles.count - 1
+            }
+            return !displayedProjectFiles.isEmpty
         }
-        return !noteFiles.isEmpty
     }
     
     private func navigateUp() {
@@ -976,6 +1089,132 @@ struct NotesToRepoPopupView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                     self.isFileListFocused = false
                     self.isEditorFocused = true
+                }
+            }
+        }
+    }
+    
+    // MARK: - Enhanced File List Navigation
+    
+    enum NavigationDirection {
+        case up, down, pageUp, pageDown
+    }
+    
+    private func navigateFileList(direction: NavigationDirection) {
+        if activeTab == .notes {
+            guard !noteFiles.isEmpty else { return }
+            
+            let currentIndex: Int
+            if let selectedNote = selectedNote,
+               let index = noteFiles.firstIndex(where: { $0.id == selectedNote.id }) {
+                currentIndex = index
+            } else {
+                currentIndex = -1
+            }
+            
+            let newIndex: Int
+            switch direction {
+            case .up:
+                newIndex = max(0, currentIndex - 1)
+            case .down:
+                newIndex = min(noteFiles.count - 1, currentIndex + 1)
+            case .pageUp:
+                newIndex = max(0, currentIndex - 10)
+            case .pageDown:
+                newIndex = min(noteFiles.count - 1, currentIndex + 10)
+            }
+            
+            if newIndex != currentIndex && newIndex >= 0 && newIndex < noteFiles.count {
+                let targetNote = noteFiles[newIndex]
+                selectNoteWithAutoSave(targetNote)
+                scrollToFile(targetNote)
+            }
+        } else {
+            guard !displayedProjectFiles.isEmpty else { return }
+            
+            let currentIndex: Int
+            if let selectedProjectFile = selectedProjectFile,
+               let index = displayedProjectFiles.firstIndex(where: { $0.path == selectedProjectFile.path }) {
+                currentIndex = index
+            } else {
+                currentIndex = -1
+            }
+            
+            let newIndex: Int
+            switch direction {
+            case .up:
+                newIndex = max(0, currentIndex - 1)
+            case .down:
+                newIndex = min(displayedProjectFiles.count - 1, currentIndex + 1)
+            case .pageUp:
+                newIndex = max(0, currentIndex - 10)
+            case .pageDown:
+                newIndex = min(displayedProjectFiles.count - 1, currentIndex + 10)
+            }
+            
+            if newIndex != currentIndex && newIndex >= 0 && newIndex < displayedProjectFiles.count {
+                let targetURL = displayedProjectFiles[newIndex]
+                selectProjectFile(targetURL)
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    scrollID = targetURL.path
+                }
+            }
+        }
+    }
+    
+    private func navigateToFirstFile() {
+        if activeTab == .notes {
+            guard let firstNote = noteFiles.first else { return }
+            selectNoteWithAutoSave(firstNote)
+            scrollToFile(firstNote)
+        } else {
+            guard let firstProjectFile = displayedProjectFiles.first else { return }
+            selectProjectFile(firstProjectFile)
+            withAnimation(.easeInOut(duration: 0.2)) {
+                scrollID = firstProjectFile.path
+            }
+        }
+    }
+    
+    private func navigateToLastFile() {
+        if activeTab == .notes {
+            guard let lastNote = noteFiles.last else { return }
+            selectNoteWithAutoSave(lastNote)
+            scrollToFile(lastNote)
+        } else {
+            guard let lastProjectFile = displayedProjectFiles.last else { return }
+            selectProjectFile(lastProjectFile)
+            withAnimation(.easeInOut(duration: 0.2)) {
+                scrollID = lastProjectFile.path
+            }
+        }
+    }
+    
+    private func scrollToFile(_ file: NoteFile) {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            scrollID = file.id
+        }
+    }
+    
+    private func selectProjectFile(_ fileURL: URL) {
+        selectedProjectFile = fileURL
+        
+        // Load file content for read-only viewing
+        Task {
+            do {
+                let content = try String(contentsOf: fileURL, encoding: .utf8)
+                await MainActor.run {
+                    noteContent = content
+                    originalContent = content
+                    isDirty = false
+                    selectedNote = nil // Clear note selection when viewing project file
+                    isCreatingNew = false
+                }
+            } catch {
+                await MainActor.run {
+                    noteContent = "Error loading file: \(error.localizedDescription)"
+                    originalContent = ""
+                    isDirty = false
                 }
             }
         }
@@ -1136,6 +1375,253 @@ struct NotesToRepoPopupView: View {
                 await MainActor.run {
                     self.error = error
                 }
+            }
+        }
+    }
+}
+
+// MARK: - Enhanced Read-Only Text View
+
+struct ReadOnlyTextView: NSViewRepresentable {
+    let text: String
+    
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSScrollView()
+        let textView = ReadOnlyNSTextView()
+        textView.coordinator = context.coordinator
+        context.coordinator.textView = textView
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Configure text view for read-only with selection and scrolling
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.isRichText = false
+        textView.font = NSFont.monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
+        textView.backgroundColor = NSColor.textBackgroundColor
+        textView.string = text
+        textView.isAutomaticQuoteSubstitutionEnabled = false
+        textView.isAutomaticDashSubstitutionEnabled = false
+        textView.isAutomaticTextReplacementEnabled = false
+        textView.isAutomaticSpellingCorrectionEnabled = false
+        
+        // Configure scroll view
+        scrollView.borderType = .noBorder
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = false
+        scrollView.autohidesScrollers = false
+        scrollView.drawsBackground = false
+
+        // Configure document view and constraints
+        scrollView.documentView = textView
+        textView.isVerticallyResizable = true
+        textView.isHorizontallyResizable = false
+        textView.textContainerInset = NSSize(width: 0, height: 0)
+        
+        // Ensure the text view tracks the width of the scroll view content
+        let contentView = scrollView.contentView
+        if let container = textView.textContainer {
+            container.containerSize = NSSize(width: contentView.bounds.width, height: .greatestFiniteMagnitude)
+            container.widthTracksTextView = true
+        }
+
+        // Set up coordinator for key handling
+        textView.delegate = context.coordinator
+
+        // Make the text view become first responder when the scroll view appears
+        DispatchQueue.main.async {
+            scrollView.window?.makeFirstResponder(textView)
+        }
+
+        return scrollView
+    }
+    
+    func updateNSView(_ scrollView: NSScrollView, context: Context) {
+        if let textView = scrollView.documentView as? ReadOnlyNSTextView {
+            if textView.string != text {
+                textView.string = text
+            }
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class ReadOnlyNSTextView: NSTextView {
+        weak var coordinator: Coordinator?
+        
+        override var acceptsFirstResponder: Bool { return true }
+        override var isSelectable: Bool { get { true } set { } }
+        
+        override func awakeFromNib() {
+            super.awakeFromNib()
+            becomeFirstResponder()
+        }
+        
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            DispatchQueue.main.async {
+                self.window?.makeFirstResponder(self)
+            }
+        }
+        
+        override func keyDown(with event: NSEvent) {
+            interpretKeyEvents([event])
+        }
+        
+        override func doCommand(by selector: Selector) {
+            // Block editing commands
+            if selector == NSSelectorFromString("insertText:") || 
+               selector == #selector(deleteForward(_:)) || 
+               selector == #selector(deleteBackward(_:)) || 
+               selector == #selector(paste(_:)) {
+                NSSound.beep()
+                return
+            }
+            
+            // Handle page up/down and document navigation with enhanced cursor positioning
+            switch selector {
+            case #selector(pageUp(_:)):
+                pageUpAndMoveCursor(false)
+                return
+            case #selector(pageDown(_:)):
+                pageDownAndMoveCursor(false)
+                return
+            case #selector(pageUpAndModifySelection(_:)):
+                pageUpAndMoveCursor(true)
+                return
+            case #selector(pageDownAndModifySelection(_:)):
+                pageDownAndMoveCursor(true)
+                return
+            case #selector(moveToBeginningOfDocument(_:)):
+                moveToBeginningOfDocumentAndMoveCursor(false)
+                return
+            case #selector(moveToEndOfDocument(_:)):
+                moveToEndOfDocumentAndMoveCursor(false)
+                return
+            case #selector(moveToBeginningOfDocumentAndModifySelection(_:)):
+                moveToBeginningOfDocumentAndMoveCursor(true)
+                return
+            case #selector(moveToEndOfDocumentAndModifySelection(_:)):
+                moveToEndOfDocumentAndMoveCursor(true)
+                return
+            default:
+                break
+            }
+            
+            // Allow standard text navigation and selection commands
+            switch selector {
+            case #selector(NSResponder.moveUp(_:)), #selector(NSResponder.moveDown(_:)),
+                 #selector(moveLeft(_:)), #selector(moveRight(_:)),
+                 #selector(moveUpAndModifySelection(_:)), #selector(moveDownAndModifySelection(_:)),
+                 #selector(moveLeftAndModifySelection(_:)), #selector(moveRightAndModifySelection(_:)),
+                 #selector(moveToBeginningOfLine(_:)), #selector(moveToEndOfLine(_:)),
+                 #selector(moveToBeginningOfLineAndModifySelection(_:)), #selector(moveToEndOfLineAndModifySelection(_:)),
+                 #selector(selectAll(_:)), #selector(copy(_:)),
+                 #selector(moveWordLeft(_:)), #selector(moveWordRight(_:)),
+                 #selector(moveWordLeftAndModifySelection(_:)), #selector(moveWordRightAndModifySelection(_:)):
+                super.doCommand(by: selector)
+            default:
+                break
+            }
+        }
+        
+        // Enhanced cursor movement methods for page navigation
+        private func pageUpAndMoveCursor(_ extendSelection: Bool) {
+            let visibleRect = enclosingScrollView?.contentView.visibleRect ?? bounds
+            let pageHeight = visibleRect.height
+            let currentLocation = selectedRange().location
+            
+            // Calculate target position one page up
+            let topPoint = NSPoint(x: visibleRect.minX, y: max(0, visibleRect.minY - pageHeight))
+            let targetCharIndex = characterIndexForInsertion(at: topPoint)
+            
+            if extendSelection {
+                setSelectedRange(NSRange(location: min(currentLocation, targetCharIndex), 
+                                       length: abs(currentLocation - targetCharIndex)))
+            } else {
+                setSelectedRange(NSRange(location: targetCharIndex, length: 0))
+            }
+            scrollRangeToVisible(selectedRange())
+        }
+        
+        private func pageDownAndMoveCursor(_ extendSelection: Bool) {
+            let visibleRect = enclosingScrollView?.contentView.visibleRect ?? bounds
+            let pageHeight = visibleRect.height
+            let currentLocation = selectedRange().location
+            
+            // Calculate target position one page down
+            let bottomPoint = NSPoint(x: visibleRect.minX, y: visibleRect.maxY + pageHeight)
+            let targetCharIndex = min(characterIndexForInsertion(at: bottomPoint), string.count)
+            
+            if extendSelection {
+                setSelectedRange(NSRange(location: min(currentLocation, targetCharIndex), 
+                                       length: abs(currentLocation - targetCharIndex)))
+            } else {
+                setSelectedRange(NSRange(location: targetCharIndex, length: 0))
+            }
+            scrollRangeToVisible(selectedRange())
+        }
+        
+        private func moveToBeginningOfDocumentAndMoveCursor(_ extendSelection: Bool) {
+            let currentLocation = selectedRange().location
+            
+            if extendSelection {
+                setSelectedRange(NSRange(location: 0, length: currentLocation))
+            } else {
+                setSelectedRange(NSRange(location: 0, length: 0))
+            }
+            scrollRangeToVisible(selectedRange())
+        }
+        
+        private func moveToEndOfDocumentAndMoveCursor(_ extendSelection: Bool) {
+            let currentLocation = selectedRange().location
+            let endLocation = string.count
+            
+            if extendSelection {
+                setSelectedRange(NSRange(location: min(currentLocation, endLocation), 
+                                       length: abs(endLocation - currentLocation)))
+            } else {
+                setSelectedRange(NSRange(location: endLocation, length: 0))
+            }
+            scrollRangeToVisible(selectedRange())
+        }
+    }
+    
+    class Coordinator: NSObject, NSTextViewDelegate, NSWindowDelegate {
+        let parent: ReadOnlyTextView
+        weak var textView: NSTextView?
+        
+        init(_ parent: ReadOnlyTextView) {
+            self.parent = parent
+        }
+        
+        func textView(_ textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+            // Let the ReadOnlyNSTextView handle page and document navigation commands directly
+            switch commandSelector {
+            case #selector(NSResponder.pageUp(_:)), #selector(NSResponder.pageDown(_:)),
+                 #selector(NSResponder.pageUpAndModifySelection(_:)), #selector(NSResponder.pageDownAndModifySelection(_:)),
+                 #selector(NSResponder.moveToBeginningOfDocument(_:)), #selector(NSResponder.moveToEndOfDocument(_:)),
+                 #selector(NSResponder.moveToBeginningOfDocumentAndModifySelection(_:)), #selector(NSResponder.moveToEndOfDocumentAndModifySelection(_:)):
+                return true // Let the text view handle these with enhanced cursor positioning
+            default:
+                break
+            }
+            
+            // Allow other navigation and selection commands
+            switch commandSelector {
+            case #selector(NSResponder.moveUp(_:)), #selector(NSResponder.moveDown(_:)),
+                 #selector(NSResponder.moveLeft(_:)), #selector(NSResponder.moveRight(_:)),
+                 #selector(NSResponder.moveUpAndModifySelection(_:)), #selector(NSResponder.moveDownAndModifySelection(_:)),
+                 #selector(NSResponder.moveLeftAndModifySelection(_:)), #selector(NSResponder.moveRightAndModifySelection(_:)),
+                 #selector(NSResponder.moveToBeginningOfLine(_:)), #selector(NSResponder.moveToEndOfLine(_:)),
+                 #selector(NSResponder.moveToBeginningOfLineAndModifySelection(_:)), #selector(NSResponder.moveToEndOfLineAndModifySelection(_:)),
+                 #selector(NSText.selectAll(_:)), #selector(NSText.copy(_:)),
+                 #selector(NSResponder.moveWordLeft(_:)), #selector(NSResponder.moveWordRight(_:)),
+                 #selector(NSResponder.moveWordLeftAndModifySelection(_:)), #selector(NSResponder.moveWordRightAndModifySelection(_:)):
+                return false // Allow these commands
+            default:
+                return true // Block other commands
             }
         }
     }

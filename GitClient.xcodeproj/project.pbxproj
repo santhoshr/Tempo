@@ -172,6 +172,7 @@
 		F94CF3ED70C782E0EC83C6EE /* NotesToRepoPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D38654E8E9B17C0069F299 /* NotesToRepoPopupView.swift */; };
 		F9A0444A9A50B44F9B6D4E3B /* DefaultMergeCommitMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961A38A9CB4F1D5F94F6C071 /* DefaultMergeCommitMessage.swift */; };
 		FA9EE469C4BE1D3F0905D16B /* BarBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54170C0486A61FFDA180CE1 /* BarBackButton.swift */; };
+		FAFE7F4F970945138510A032 /* ProjectFileRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AA051B956A0D134CF4FAE9 /* ProjectFileRow.swift */; };
 		FB4DBF908B4DC522A55F1981 /* GitBranchDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABB38B51419E00575340E1CC /* GitBranchDelete.swift */; };
 		FDB75950ADF9085F48541823 /* DiffCommitListContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AC7775E2ED408F46BD5190 /* DiffCommitListContentView.swift */; };
 /* End PBXBuildFile section */
@@ -325,6 +326,7 @@
 		C1AC377D306EED709B48B9FB /* NotesToRepoWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesToRepoWindow.swift; sourceTree = "<group>"; };
 		C1B33E7C0FD07BC1ED1938E9 /* GitPull.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitPull.swift; sourceTree = "<group>"; };
 		C248B2CA92BF581DA60533EA /* GitAddPatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitAddPatch.swift; sourceTree = "<group>"; };
+		C3AA051B956A0D134CF4FAE9 /* ProjectFileRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectFileRow.swift; sourceTree = "<group>"; };
 		C6BEAE56B5637CE0DDF092BE /* StagedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StagedView.swift; sourceTree = "<group>"; };
 		CBC29B91CE3DB58836D08E82 /* GitStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitStatusTests.swift; sourceTree = "<group>"; };
 		CC82B4E765C5A16DFC70D63E /* SyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncState.swift; sourceTree = "<group>"; };
@@ -592,6 +594,7 @@
 				12AC03A756E8999D963046B7 /* NotesToRepoStatusBar.swift */,
 				BD3896713470ED8255237254 /* NotesToRepoToolbar.swift */,
 				C1AC377D306EED709B48B9FB /* NotesToRepoWindow.swift */,
+				C3AA051B956A0D134CF4FAE9 /* ProjectFileRow.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -926,6 +929,7 @@
 				49C19291E3B7CEB1E47F6744 /* NotesToRepoWindowManager.swift in Sources */,
 				653935FF8C2DE1558EED8D54 /* Notification+.swift in Sources */,
 				B304FC08B955BFA595623890 /* Process+Run.swift in Sources */,
+				FAFE7F4F970945138510A032 /* ProjectFileRow.swift in Sources */,
 				8F5B1904E88966235F4494CA /* ReflogButton.swift in Sources */,
 				D6A6C5D05F3D5BD119D1C78A /* ReflogEntry.swift in Sources */,
 				E670331F4744FFC1A12018EE /* ReflogStore.swift in Sources */,

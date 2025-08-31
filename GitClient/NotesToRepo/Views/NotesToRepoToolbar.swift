@@ -14,6 +14,7 @@ struct NotesToRepoToolbar: View {
     
     let onToggleFileList: () -> Void
     let onOpenNotesRepo: () -> Void
+    let onRevealInFinder: () -> Void
     let onCreateNote: () -> Void
     let onDeleteNote: () -> Void
     let onToggleStatusBar: () -> Void
@@ -29,6 +30,14 @@ struct NotesToRepoToolbar: View {
                 }
                 .buttonStyle(.bordered)
                 .help("Toggle file list (⌘1)")
+                
+                Button {
+                    onRevealInFinder()
+                } label: {
+                    Image(systemName: "folder")
+                }
+                .buttonStyle(.bordered)
+                .help(selectedNote != nil ? "Reveal selected note in Finder" : "Reveal notes location in Finder")
                 
                 if isGitRepo {
                     Button {
@@ -91,6 +100,7 @@ struct NotesToRepoToolbar: View {
         fileListVisible: true,
         onToggleFileList: {},
         onOpenNotesRepo: {},
+        onRevealInFinder: {},
         onCreateNote: {},
         onDeleteNote: {},
         onToggleStatusBar: {}

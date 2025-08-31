@@ -12,8 +12,8 @@ class NotesToRepoFileService {
     
     // MARK: - Note Creation
     
-    static func createNewNote(settings: NotesToRepoSettings, folder: URL?) -> (fileName: String, content: String, originalContent: String, isDirty: Bool) {
-        let fileName = NoteFileManager.generateNewFileName(settings: settings, folder: folder)
+    static func createNewNote(settings: NotesToRepoSettings, folder: URL?, selectedNote: NoteFile?) -> (fileName: String, content: String, originalContent: String, isDirty: Bool) {
+        let fileName = NoteFileManager.generateNewFileName(settings: settings, folder: folder, selectedNote: selectedNote)
         return (fileName: fileName, content: "", originalContent: "", isDirty: false)
     }
     
@@ -44,6 +44,12 @@ class NotesToRepoFileService {
             fileURL = selectedNote.url
         } else {
             fileURL = notesURL.appendingPathComponent(newFileName)
+            
+            // Ensure directory exists if the filename includes a path
+            let directory = fileURL.deletingLastPathComponent()
+            if !FileManager.default.fileExists(atPath: directory.path) {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            }
         }
         
         try content.write(to: fileURL, atomically: true, encoding: .utf8)

@@ -48,6 +48,7 @@ struct NotesToRepoPopupView: View {
                 fileListVisible: fileListVisible,
                 onToggleFileList: { fileListVisible.toggle() },
                 onOpenNotesRepo: { openNotesRepoInApp() },
+                onRevealInFinder: { revealNotesLocationInFinder() },
                 onCreateNote: { createNewNote() },
                 onDeleteNote: { showDeleteConfirmation = true },
                 onToggleStatusBar: { statusBarVisible.toggle() }
@@ -472,7 +473,7 @@ struct NotesToRepoPopupView: View {
             navigateDownWithDirtyCheck()
             return .handled
         case .return:
-            if let selectedNote = selectedNote {
+            if selectedNote != nil {
                 // File is already selected, focus the editor
                 isFileListFocused = false
                 isEditorFocused = true
@@ -542,11 +543,12 @@ struct NotesToRepoPopupView: View {
             saveNote()
         }
         
+        let currentlySelectedNote = selectedNote
         selectedNote = nil
         isCreatingNew = true
         checkCurrentFileGitStatus()
         
-        let newNoteData = NotesToRepoFileService.createNewNote(settings: notesToRepoSettings, folder: folder)
+        let newNoteData = NotesToRepoFileService.createNewNote(settings: notesToRepoSettings, folder: folder, selectedNote: currentlySelectedNote)
         newNoteFileName = newNoteData.fileName
         noteContent = newNoteData.content
         originalContent = newNoteData.originalContent
@@ -955,6 +957,19 @@ struct NotesToRepoPopupView: View {
         }
     }
     
+    private func revealNotesLocationInFinder() {
+        guard !notesToRepoSettings.notesLocation.isEmpty else { return }
+        
+        // If we have a selected note, reveal that specific file
+        if let selectedNote = selectedNote {
+            NSWorkspace.shared.selectFile(selectedNote.url.path, inFileViewerRootedAtPath: notesToRepoSettings.notesLocation)
+        } else {
+            // Otherwise, reveal the notes directory
+            let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
+            NSWorkspace.shared.open(notesURL)
+        }
+    }
+    
     private func openNotesRepoInApp() {
         guard !notesToRepoSettings.notesLocation.isEmpty else { return }
         
@@ -978,10 +993,10 @@ struct NotesToRepoPopupView: View {
     
     @ViewBuilder
     private func deleteConfirmationActions() -> some View {
+        Button("Cancel", role: .cancel) {}
         Button("Delete", role: .destructive) {
             deleteSelectedNote()
         }
-        Button("Cancel", role: .cancel) {}
     }
     
     @ViewBuilder

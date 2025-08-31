@@ -12,6 +12,18 @@ struct NoteFileRow: View {
     let isSelected: Bool
     let onSelect: () -> Void
     
+    // Extract the final directory name from the relative path
+    private var finalDirectoryName: String? {
+        // Only show badge if file is in a subdirectory
+        guard noteFile.relativePath != noteFile.name else { return nil }
+        
+        // Get the directory path by removing the filename
+        let directoryPath = (noteFile.relativePath as NSString).deletingLastPathComponent
+        
+        // Return the final directory component if it exists
+        return directoryPath.isEmpty ? nil : (directoryPath as NSString).lastPathComponent
+    }
+    
     var body: some View {
         HStack(spacing: 8) {
             // File icon
@@ -21,18 +33,26 @@ struct NoteFileRow: View {
                 .frame(width: 16)
             
             VStack(alignment: .leading, spacing: 2) {
-                // File name
-                Text(noteFile.name)
-                    .font(.system(.subheadline, weight: isSelected ? .medium : .regular))
-                    .lineLimit(1)
-                    .foregroundColor(.primary)
-                
-                // Show relative path if file is in a subdirectory
-                if noteFile.relativePath != noteFile.name {
-                    Text(noteFile.relativePath)
-                        .font(.caption2)
-                        .foregroundColor(Color(NSColor.tertiaryLabelColor))
+                // File name and directory badge
+                HStack(spacing: 6) {
+                    Text(noteFile.name)
+                        .font(.system(.subheadline, weight: isSelected ? .medium : .regular))
                         .lineLimit(1)
+                        .foregroundColor(.primary)
+                    
+                    // Show directory badge if file is in a subdirectory
+                    if let directoryName = finalDirectoryName {
+                        Text(directoryName)
+                            .font(.caption2)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color(NSColor.controlAccentColor).opacity(0.15))
+                            .foregroundColor(Color(NSColor.controlAccentColor))
+                            .clipShape(Capsule())
+                            .lineLimit(1)
+                    }
+                    
+                    Spacer()
                 }
                 
                 // Creation date
@@ -63,16 +83,34 @@ struct NoteFileRow: View {
 }
 
 #Preview {
-    NoteFileRow(
-        noteFile: NoteFile(
-            id: "preview",
-            name: "Sample_Note.md",
-            relativePath: "Sample_Note.md",
-            url: URL(fileURLWithPath: "/tmp/Sample_Note.md"),
-            creationDate: Date(),
-            modificationDate: Date()
-        ),
-        isSelected: true,
-        onSelect: {}
-    )
+    VStack(spacing: 8) {
+        // File in root directory (no badge)
+        NoteFileRow(
+            noteFile: NoteFile(
+                id: "preview1",
+                name: "Sample_Note.md",
+                relativePath: "Sample_Note.md",
+                url: URL(fileURLWithPath: "/tmp/Sample_Note.md"),
+                creationDate: Date(),
+                modificationDate: Date()
+            ),
+            isSelected: false,
+            onSelect: {}
+        )
+        
+        // File in subdirectory (shows badge)
+        NoteFileRow(
+            noteFile: NoteFile(
+                id: "preview2",
+                name: "Feature_Notes.md",
+                relativePath: "repo/to/Feature_Notes.md",
+                url: URL(fileURLWithPath: "/tmp/repo/to/Feature_Notes.md"),
+                creationDate: Date(),
+                modificationDate: Date()
+            ),
+            isSelected: true,
+            onSelect: {}
+        )
+    }
+    .padding()
 }

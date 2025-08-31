@@ -235,14 +235,38 @@ class NoteFileManager: ObservableObject {
     
     // MARK: - File Name Generation
     
-    static func generateNewFileName(settings: NotesToRepoSettings, folder: URL?) -> String {
+    static func generateNewFileName(settings: NotesToRepoSettings, folder: URL?, selectedNote: NoteFile?) -> String {
         let repoName = getRepositoryName(for: folder)
         let formatter = DateFormatter()
         formatter.dateFormat = "ddMMyyyyHHmmss"
         let timestamp = formatter.string(from: Date())
         
-        return settings.noteNameFormat
+        // If there's a selected note, use its directory path and create a simpler filename
+        if let selectedNote = selectedNote {
+            let selectedDirectory = selectedNote.url.deletingLastPathComponent()
+            let notesBaseURL = URL(fileURLWithPath: settings.notesLocation)
+            
+            // Only use the selected note's directory if it's within the notes location
+            if selectedDirectory.path.hasPrefix(notesBaseURL.path) {
+                let relativePath = selectedDirectory.path.replacingOccurrences(of: notesBaseURL.path, with: "").trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                
+                if !relativePath.isEmpty {
+                    // Create a simpler filename since we're in a directory context
+                    // Use just timestamp or a simple pattern to avoid double repo names
+                    let simpleFileName = settings.noteNameFormat.contains("{REPO_NAME}") ? 
+                        timestamp + ".md" : 
+                        settings.noteNameFormat.replacingOccurrences(of: "DDMMYYYYHHMMSS", with: timestamp) + ".md"
+                    
+                    return relativePath + "/" + simpleFileName
+                }
+            }
+        }
+        
+        // For root directory, use the full template with repo name
+        let fileName = settings.noteNameFormat
             .replacingOccurrences(of: "{REPO_NAME}", with: repoName)
             .replacingOccurrences(of: "DDMMYYYYHHMMSS", with: timestamp) + ".md"
+        
+        return fileName
     }
 }

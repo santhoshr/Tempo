@@ -790,7 +790,7 @@ struct NotesToRepoPopupView: View {
             
             // Handle git auto-commit 
             if isGitRepo {
-                performAutoCommit(for: relativePath, action: "deleted")
+                performAutoCommit(for: relativePath, action: "deleted", isDeleted: true)
             }
             
             // Refresh the notes list first
@@ -973,7 +973,8 @@ struct NotesToRepoPopupView: View {
                     hasUncommittedChanges = !status.untrackedFiles.isEmpty || 
                                           !status.unmergedFiles.isEmpty || 
                                           !status.modifiedFiles.isEmpty || 
-                                          !status.addedFiles.isEmpty
+                                          !status.addedFiles.isEmpty ||
+                                          !status.deletedFiles.isEmpty
                     checkCurrentFileGitStatus()
                 }
             } catch {
@@ -1023,7 +1024,8 @@ struct NotesToRepoPopupView: View {
                     currentFileHasUncommittedChanges = status.untrackedFiles.contains(relativePath) ||
                                                      status.unmergedFiles.contains(relativePath) ||
                                                      status.modifiedFiles.contains(relativePath) ||
-                                                     status.addedFiles.contains(relativePath)
+                                                     status.addedFiles.contains(relativePath) ||
+                                                     status.deletedFiles.contains(relativePath)
                 }
             } catch {
                 print("DEBUG: Current file git status check failed: \(error)")
@@ -1265,7 +1267,7 @@ struct NotesToRepoPopupView: View {
     }
     
     
-    private func performAutoCommit(for filePath: String, action: String) {
+    private func performAutoCommit(for filePath: String, action: String, isDeleted: Bool = false) {
         guard isGitRepo else { 
             print("DEBUG: Auto commit skipped - not a git repo")
             return 
@@ -1275,7 +1277,7 @@ struct NotesToRepoPopupView: View {
         let commitMessage = "\(filePath) \(action)\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
         
         print("DEBUG: === AUTOCOMMIT START ===")
-        print("DEBUG: File: \(filePath), Action: \(action)")
+        print("DEBUG: File: \(filePath), Action: \(action), isDeleted: \(isDeleted)")
         print("DEBUG: isGitRepo: \(isGitRepo)")
         print("DEBUG: Notes location: \(notesToRepoSettings.notesLocation)")
         print("DEBUG: Notes URL: \(notesURL.path)")
@@ -1294,7 +1296,7 @@ struct NotesToRepoPopupView: View {
                 }
                 
                 // Add files with better error handling
-                try await addFilesToGit(directory: notesURL, specificFile: filePath)
+                try await addFilesToGit(directory: notesURL, specificFile: filePath, isDeleted: isDeleted)
                 
                 print("DEBUG: Files added successfully, attempting commit")
                 
@@ -1400,9 +1402,10 @@ struct NotesToRepoPopupView: View {
             let hasChanges = !status.untrackedFiles.isEmpty || 
                            !status.modifiedFiles.isEmpty || 
                            !status.addedFiles.isEmpty ||
+                           !status.deletedFiles.isEmpty ||
                            !status.unmergedFiles.isEmpty
             
-            print("DEBUG: Change detection - untracked: \(status.untrackedFiles.count), modified: \(status.modifiedFiles.count), added: \(status.addedFiles.count)")
+            print("DEBUG: Change detection - untracked: \(status.untrackedFiles.count), modified: \(status.modifiedFiles.count), added: \(status.addedFiles.count), deleted: \(status.deletedFiles.count)")
             
             return hasChanges
         } catch {
@@ -1411,10 +1414,21 @@ struct NotesToRepoPopupView: View {
         }
     }
     
-    private func addFilesToGit(directory: URL, specificFile: String) async throws {
-        print("DEBUG: addFilesToGit called with directory: \(directory.path), specificFile: \(specificFile)")
+    private func addFilesToGit(directory: URL, specificFile: String, isDeleted: Bool = false) async throws {
+        print("DEBUG: addFilesToGit called with directory: \(directory.path), specificFile: \(specificFile), isDeleted: \(isDeleted)")
         
-        // First try to add the specific file
+        // For deleted files, we need to use git add . to stage the deletion
+        // because git add <specific-file> will fail when the file doesn't exist
+        if isDeleted {
+            print("DEBUG: File was deleted, using git add . to stage deletion")
+            let gitAddAll = GitAdd(directory: directory)
+            print("DEBUG: Executing git command: \(gitAddAll.arguments.joined(separator: " ")) in \(directory.path)")
+            try await Process.output(gitAddAll)
+            print("DEBUG: Successfully staged deletion via git add .")
+            return
+        }
+        
+        // For existing files, try to add the specific file first
         do {
             let gitAddFile = GitAddPathspec(directory: directory, pathspec: specificFile)
             print("DEBUG: Executing git command: \(gitAddFile.arguments.joined(separator: " ")) in \(directory.path)")
@@ -1455,6 +1469,7 @@ struct NotesToRepoPopupView: View {
             
             let hasStagedChanges = !status.addedFiles.isEmpty ||
                                  !status.modifiedFiles.isEmpty ||
+                                 !status.deletedFiles.isEmpty ||
                                  !status.unmergedFiles.isEmpty
             
             print("DEBUG: hasStagedChanges: \(hasStagedChanges)")

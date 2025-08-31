@@ -907,7 +907,22 @@ struct NotesToRepoPopupView: View {
     
     private func getWindowTitle() -> String {
         let repoName = NoteFileManager.getRepositoryName(for: folder)
-        var title = "Notes to Repo - \(repoName) (\(noteFiles.count))"
+        
+        var title = "Notes to Repo - \(repoName)"
+        
+        // Add position indicator if we have files and a selected note
+        if !noteFiles.isEmpty {
+            if let selectedNote = selectedNote,
+               let currentIndex = noteFiles.firstIndex(where: { $0.id == selectedNote.id }) {
+                title += " (\(currentIndex + 1) of \(noteFiles.count))"
+            } else if isCreatingNew {
+                title += " (new of \(noteFiles.count))"
+            } else {
+                title += " (\(noteFiles.count))"
+            }
+        } else {
+            title += " (empty)"
+        }
         
         if isDirty {
             title += " •"

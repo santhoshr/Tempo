@@ -65,6 +65,7 @@ struct NotesToSelfPopupView: View {
     @State private var currentFileHasUncommittedChanges = false
     @State private var titleUpdateTrigger = false
     @FocusState private var isFileListFocused: Bool
+    @FocusState private var isEditorFocused: Bool
     
     var body: some View {
         HSplitView {
@@ -296,6 +297,11 @@ struct NotesToSelfPopupView: View {
                         .background(Color(NSColor.textBackgroundColor))
                         .font(.system(.body, design: .monospaced))
                         .padding()
+                        .focused($isEditorFocused)
+                        .onTapGesture {
+                            isFileListFocused = false
+                            isEditorFocused = true
+                        }
                         .onChange(of: noteContent) { _, newValue in
                             updateDirtyState(newContent: newValue)
                         }
@@ -323,6 +329,9 @@ struct NotesToSelfPopupView: View {
         .navigationTitle(getWindowTitle())
         .focusable()
         .onKeyPress { keyPress in
+            // Only handle navigation keys when file list is focused
+            guard isFileListFocused else { return .ignored }
+            
             switch keyPress.key {
             case .upArrow:
                 navigateUpWithDirtyCheck()
@@ -503,6 +512,7 @@ struct NotesToSelfPopupView: View {
         // Maintain focus on file list for keyboard navigation
         DispatchQueue.main.async {
             self.isFileListFocused = true
+            self.isEditorFocused = false
         }
     }
     
@@ -706,6 +716,7 @@ struct NotesToSelfPopupView: View {
         
         // Ensure focus stays on file list
         isFileListFocused = true
+        isEditorFocused = false
     }
     
     private func navigateDown() {
@@ -723,6 +734,7 @@ struct NotesToSelfPopupView: View {
         
         // Ensure focus stays on file list
         isFileListFocused = true
+        isEditorFocused = false
     }
     
     // MARK: - Navigation with Dirty Check

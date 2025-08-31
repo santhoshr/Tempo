@@ -1089,24 +1089,7 @@ struct FolderView: View {
     }
     
     fileprivate func openNotesToRepoWindow() {
-        let windowController = NSWindowController(window: NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
-            backing: .buffered,
-            defer: false
-        ))
-        
-        windowController.window?.center()
-        windowController.window?.setFrameAutosaveName("NotesToRepoWindow")
-        windowController.window?.contentView = NSHostingView(
-            rootView: NotesToRepoPopupView()
-                .environment(\.folder, folder.url)
-        )
-        windowController.window?.title = "Repository Notes - \(folder.displayName)"
-        windowController.showWindow(nil)
-        
-        // Keep a reference to prevent deallocation
-        windowController.window?.makeKeyAndOrderFront(nil)
+        NotesToRepoWindowManager.openWindow(for: folder.url)
     }
     
 }

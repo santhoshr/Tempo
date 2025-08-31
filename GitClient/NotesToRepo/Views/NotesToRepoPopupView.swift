@@ -16,6 +16,7 @@ struct NotesToRepoPopupView: View {
     @Environment(\.scenePhase) private var scenePhase
     
     @Default(.notesToRepoSettings) private var notesToRepoSettings
+    @Default(.notesToRepoAutoSave) private var autoSaveEnabled
     @Default(.notesToRepoFileListWidth) private var fileListWidth
     @Default(.notesToRepoLastOpenedFile) private var lastOpenedFileID
     @Default(.notesToRepoFileListVisible) private var fileListVisible
@@ -34,6 +35,7 @@ struct NotesToRepoPopupView: View {
     @State private var hasUncommittedChanges = false
     @State private var currentFileHasUncommittedChanges = false
     @State private var scrollID: String?
+    @State private var autoSaveTimer: Timer?
     @FocusState private var isFileListFocused: Bool
     @FocusState private var isEditorFocused: Bool
     
@@ -81,8 +83,11 @@ struct NotesToRepoPopupView: View {
                minHeight: 400, maxHeight: .infinity)
         .navigationTitle(getWindowTitle())
         .focusable()
-        .onKeyPress(action: handleKeyPress)
+        .onKeyPress(phases: [.down], action: handleKeyPress)
         .onAppear { setupView() }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("CreateNewNoteFromWindow"))) { _ in
+            createNewNote()
+        }
         .onDisappear { handleDisappear() }
         .confirmationDialog("Delete Note", isPresented: $showDeleteConfirmation,
                           actions: deleteConfirmationActions,
@@ -213,7 +218,7 @@ struct NotesToRepoPopupView: View {
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                         .disabled(!canNavigateUp())
-                        .help("Previous note (↑)")
+                        .help("Previous note (↑ or ⌘↑ or ⌘← or ⌘K or ⌘H)")
                         
                         Button {
                             navigateDownWithDirtyCheck()
@@ -223,7 +228,7 @@ struct NotesToRepoPopupView: View {
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                         .disabled(!canNavigateDown())
-                        .help("Next note (↓)")
+                        .help("Next note (↓ or ⌘↓ or ⌘→ or ⌘J or ⌘L)")
                     }
                 }
             }
@@ -241,6 +246,7 @@ struct NotesToRepoPopupView: View {
                     .font(.system(.body, design: .monospaced, weight: .regular))
                     .padding(16)
                     .focused($isEditorFocused)
+                    .onKeyPress(action: handleEditorKeyPress)
                     .onTapGesture {
                         isFileListFocused = false
                         isEditorFocused = true
@@ -291,7 +297,7 @@ struct NotesToRepoPopupView: View {
     // MARK: - Key Press Handling
     
     private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
-        // Handle global keyboard shortcuts only
+        // Handle global keyboard shortcuts
         if keyPress.modifiers.contains(.command) {
             switch keyPress.key {
             case KeyEquivalent("1"):
@@ -299,6 +305,108 @@ struct NotesToRepoPopupView: View {
                 return .handled
             case KeyEquivalent("n"):
                 createNewNote()
+                return .handled
+            // File navigation shortcuts (Cmd+Arrow keys)
+            case .upArrow:
+                navigateUpWithDirtyCheck() // Previous file
+                return .handled
+            case .downArrow:
+                navigateDownWithDirtyCheck() // Next file
+                return .handled
+            case .leftArrow:
+                navigateUpWithDirtyCheck() // Previous file (left = up in file list)
+                return .handled
+            case .rightArrow:
+                navigateDownWithDirtyCheck() // Next file (right = down in file list)
+                return .handled
+            // Vim-style navigation (Cmd+HJKL)
+            case KeyEquivalent("h"):
+                navigateUpWithDirtyCheck() // h = left = previous file
+                return .handled
+            case KeyEquivalent("j"):
+                navigateDownWithDirtyCheck() // j = down = next file
+                return .handled
+            case KeyEquivalent("k"):
+                navigateUpWithDirtyCheck() // k = up = previous file
+                return .handled
+            case KeyEquivalent("l"):
+                navigateDownWithDirtyCheck() // l = right = next file
+                return .handled
+            case KeyEquivalent("b"):
+                toggleSidebarWithFocus() // Toggle sidebar with proper focus management
+                return .handled
+            case .delete, .deleteForward:
+                if selectedNote != nil {
+                    showDeleteConfirmation = true
+                    return .handled
+                }
+                return .ignored
+            case KeyEquivalent("\u{7f}"), KeyEquivalent("\u{08}"):  // Backspace characters
+                if selectedNote != nil {
+                    showDeleteConfirmation = true
+                    return .handled
+                }
+                return .ignored
+            default:
+                break
+            }
+        }
+        
+        // Handle Cmd+Alt shortcuts
+        if keyPress.modifiers.contains(.command) && keyPress.modifiers.contains(.option) {
+            switch keyPress.key {
+            case KeyEquivalent("s"):
+                statusBarVisible.toggle() // Toggle status bar
+                return .handled
+            default:
+                break
+            }
+        }
+        
+        return .ignored
+    }
+    
+    private func handleEditorKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+        // Handle Cmd+navigation shortcuts from editor
+        if keyPress.modifiers.contains(.command) {
+            switch keyPress.key {
+            case .upArrow, .leftArrow, KeyEquivalent("k"), KeyEquivalent("h"):
+                navigateUpWithDirtyCheck()
+                return .handled
+            case .downArrow, .rightArrow, KeyEquivalent("j"), KeyEquivalent("l"):
+                navigateDownWithDirtyCheck()
+                return .handled
+            case KeyEquivalent("n"):
+                createNewNote()
+                return .handled
+            case KeyEquivalent("b"):
+                toggleSidebarWithFocus() // Toggle sidebar with proper focus management
+                return .handled
+            case KeyEquivalent("1"):
+                fileListVisible.toggle()
+                return .handled
+            case .delete, .deleteForward:
+                if selectedNote != nil {
+                    showDeleteConfirmation = true
+                    return .handled
+                }
+                return .ignored
+            case KeyEquivalent("\u{7f}"), KeyEquivalent("\u{08}"):  // Backspace characters
+                if selectedNote != nil {
+                    showDeleteConfirmation = true
+                    return .handled
+                }
+                return .ignored
+            default:
+                break
+            }
+        }
+        
+        // Handle Cmd+Alt shortcuts
+        if keyPress.modifiers.contains(.command) && keyPress.modifiers.contains(.option) {
+            switch keyPress.key {
+            case KeyEquivalent("s"):
+                statusBarVisible.toggle() // Toggle status bar
                 return .handled
             default:
                 break
@@ -309,7 +417,53 @@ struct NotesToRepoPopupView: View {
     }
     
     private func handleFileListKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
-        // Handle file list specific navigation keys
+        // Handle Cmd+arrow keys and Cmd+HJKL first (global shortcuts)
+        if keyPress.modifiers.contains(.command) {
+            switch keyPress.key {
+            case .upArrow, .leftArrow, KeyEquivalent("k"), KeyEquivalent("h"):
+                navigateUpWithDirtyCheck()
+                return .handled
+            case .downArrow, .rightArrow, KeyEquivalent("j"), KeyEquivalent("l"):
+                navigateDownWithDirtyCheck()
+                return .handled
+            case KeyEquivalent("n"):
+                createNewNote()
+                return .handled
+            case KeyEquivalent("1"):
+                fileListVisible.toggle()
+                return .handled
+            case KeyEquivalent("b"):
+                toggleSidebarWithFocus() // Toggle sidebar with proper focus management
+                return .handled
+            case .delete, .deleteForward:
+                if selectedNote != nil {
+                    showDeleteConfirmation = true
+                    return .handled
+                }
+                return .ignored
+            case KeyEquivalent("\u{7f}"), KeyEquivalent("\u{08}"):  // Backspace characters
+                if selectedNote != nil {
+                    showDeleteConfirmation = true
+                    return .handled
+                }
+                return .ignored
+            default:
+                break
+            }
+        }
+        
+        // Handle Cmd+Alt shortcuts
+        if keyPress.modifiers.contains(.command) && keyPress.modifiers.contains(.option) {
+            switch keyPress.key {
+            case KeyEquivalent("s"):
+                statusBarVisible.toggle() // Toggle status bar
+                return .handled
+            default:
+                break
+            }
+        }
+        
+        // Handle file list specific navigation keys (regular arrows)
         switch keyPress.key {
         case .upArrow:
             navigateUpWithDirtyCheck()
@@ -318,14 +472,28 @@ struct NotesToRepoPopupView: View {
             navigateDownWithDirtyCheck()
             return .handled
         case .return:
-            if selectedNote == nil && !noteFiles.isEmpty {
+            if let selectedNote = selectedNote {
+                // File is already selected, focus the editor
+                isFileListFocused = false
+                isEditorFocused = true
+                return .handled
+            } else if !noteFiles.isEmpty {
+                // No file selected, select the first one
                 let firstNote = noteFiles[0]
                 selectNoteWithAutoSave(firstNote)
-                scrollID = firstNote.id
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    scrollID = firstNote.id
+                }
                 return .handled
             }
             return .ignored
         case .delete, .deleteForward:
+            if selectedNote != nil {
+                showDeleteConfirmation = true
+                return .handled
+            }
+            return .ignored
+        case KeyEquivalent("\u{7f}"), KeyEquivalent("\u{08}"):  // Backspace characters
             if selectedNote != nil {
                 showDeleteConfirmation = true
                 return .handled
@@ -349,6 +517,11 @@ struct NotesToRepoPopupView: View {
     }
     
     private func handleDisappear() {
+        // Cancel auto-save timer
+        autoSaveTimer?.invalidate()
+        autoSaveTimer = nil
+        
+        // Save any remaining changes
         if isDirty {
             saveNote()
         }
@@ -378,13 +551,34 @@ struct NotesToRepoPopupView: View {
         noteContent = newNoteData.content
         originalContent = newNoteData.originalContent
         isDirty = newNoteData.isDirty
+        
+        // Ensure file list is visible for context when creating new notes
+        if !fileListVisible {
+            fileListVisible = true
+        }
+        
+        // Focus the editor when creating a new note
+        DispatchQueue.main.async {
+            self.isFileListFocused = false
+            self.isEditorFocused = true
+        }
     }
     
     private func selectNote(_ noteFile: NoteFile) {
         if isDirty && (selectedNote != nil || isCreatingNew) {
-            saveNote()
+            Task {
+                await saveNoteAsync()
+                await MainActor.run {
+                    performNoteSelection(noteFile)
+                }
+            }
+            return
         }
         
+        performNoteSelection(noteFile)
+    }
+    
+    private func performNoteSelection(_ noteFile: NoteFile) {
         selectedNote = noteFile
         isCreatingNew = false
         updateLastOpenedFile()
@@ -402,23 +596,45 @@ struct NotesToRepoPopupView: View {
         }
         
         DispatchQueue.main.async {
-            self.scrollID = noteFile.id
-            self.isFileListFocused = true
-            self.isEditorFocused = false
+            withAnimation(.easeInOut(duration: 0.2)) {
+                self.scrollID = noteFile.id
+            }
+            // Focus management: file list if visible, editor if sidebar is closed
+            if self.fileListVisible {
+                // Sidebar is open - focus file list for subsequent navigation
+                self.isEditorFocused = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    self.isFileListFocused = true
+                }
+            } else {
+                // Sidebar is closed - focus editor for subsequent navigation
+                self.isFileListFocused = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    self.isEditorFocused = true
+                }
+            }
         }
     }
     
     private func selectNoteWithAutoSave(_ noteFile: NoteFile) {
         if isDirty {
-            saveNote()
-            selectNote(noteFile)
+            Task {
+                await saveNoteAsync()
+                await MainActor.run {
+                    performNoteSelection(noteFile)
+                }
+            }
         } else {
-            selectNote(noteFile)
+            performNoteSelection(noteFile)
         }
     }
     
     private func saveNote() {
         guard folder != nil else { return }
+        
+        // Cancel any pending auto-save
+        autoSaveTimer?.invalidate()
+        autoSaveTimer = nil
         
         Task {
             do {
@@ -460,6 +676,53 @@ struct NotesToRepoPopupView: View {
         }
     }
     
+    private func saveNoteAsync() async {
+        guard folder != nil else { return }
+        
+        // Cancel any pending auto-save
+        await MainActor.run {
+            autoSaveTimer?.invalidate()
+            autoSaveTimer = nil
+        }
+        
+        do {
+            let result = try await NotesToRepoFileService.saveNoteWithAutoCommit(
+                content: noteContent,
+                selectedNote: selectedNote,
+                newFileName: newNoteFileName,
+                settings: notesToRepoSettings,
+                isCreatingNew: isCreatingNew,
+                isGitRepo: isGitRepo
+            )
+            
+            await MainActor.run {
+                // Update state
+                originalContent = noteContent
+                isDirty = false
+                
+                // Update file list and selection
+                if let updatedNote = NotesToRepoFileService.updateFileInList(
+                    &noteFiles,
+                    savedURL: result.savedURL,
+                    notesLocation: notesToRepoSettings.notesLocation,
+                    wasCreatingNew: result.wasCreatingNew
+                ) {
+                    selectedNote = updatedNote
+                    isCreatingNew = false
+                }
+                
+                // Refresh Git status
+                checkGitStatus()
+                checkCurrentFileGitStatus()
+            }
+            
+        } catch {
+            await MainActor.run {
+                self.error = error
+            }
+        }
+    }
+    
     // MARK: - Navigation
     
     private func canNavigateUp() -> Bool {
@@ -488,14 +751,15 @@ struct NotesToRepoPopupView: View {
            currentIndex > 0 {
             let previousNote = noteFiles[currentIndex - 1]
             selectNote(previousNote)
-            scrollID = previousNote.id
+            withAnimation(.easeInOut(duration: 0.2)) {
+                scrollID = previousNote.id
+            }
         } else if selectedNote == nil {
             selectNote(noteFiles[0])
-            scrollID = noteFiles[0].id
+            withAnimation(.easeInOut(duration: 0.2)) {
+                scrollID = noteFiles[0].id
+            }
         }
-        
-        isFileListFocused = true
-        isEditorFocused = false
     }
     
     private func navigateDown() {
@@ -506,20 +770,25 @@ struct NotesToRepoPopupView: View {
            currentIndex < noteFiles.count - 1 {
             let nextNote = noteFiles[currentIndex + 1]
             selectNote(nextNote)
-            scrollID = nextNote.id
+            withAnimation(.easeInOut(duration: 0.2)) {
+                scrollID = nextNote.id
+            }
         } else if selectedNote == nil {
             selectNote(noteFiles[0])
-            scrollID = noteFiles[0].id
+            withAnimation(.easeInOut(duration: 0.2)) {
+                scrollID = noteFiles[0].id
+            }
         }
-        
-        isFileListFocused = true
-        isEditorFocused = false
     }
     
     private func navigateUpWithDirtyCheck() {
         if isDirty {
-            saveNote()
-            navigateUp()
+            Task {
+                await saveNoteAsync()
+                await MainActor.run {
+                    navigateUp()
+                }
+            }
         } else {
             navigateUp()
         }
@@ -527,8 +796,12 @@ struct NotesToRepoPopupView: View {
     
     private func navigateDownWithDirtyCheck() {
         if isDirty {
-            saveNote()
-            navigateDown()
+            Task {
+                await saveNoteAsync()
+                await MainActor.run {
+                    navigateDown()
+                }
+            }
         } else {
             navigateDown()
         }
@@ -586,8 +859,50 @@ struct NotesToRepoPopupView: View {
     
     // MARK: - Helper Methods
     
+    private func toggleSidebarWithFocus() {
+        fileListVisible.toggle()
+        
+        // Manage focus when toggling sidebar
+        if fileListVisible {
+            // Sidebar is now visible - focus it if we have files
+            if !noteFiles.isEmpty {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    self.isEditorFocused = false
+                    self.isFileListFocused = true
+                }
+            }
+        } else {
+            // Sidebar is now hidden - focus editor if we have content
+            if selectedNote != nil || isCreatingNew {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    self.isFileListFocused = false
+                    self.isEditorFocused = true
+                }
+            }
+        }
+    }
+    
     private func updateDirtyState(newContent: String) {
         isDirty = (newContent != originalContent)
+        
+        // Schedule auto-save if enabled and there are changes
+        if autoSaveEnabled && isDirty {
+            scheduleAutoSave()
+        }
+    }
+    
+    private func scheduleAutoSave() {
+        // Cancel existing timer
+        autoSaveTimer?.invalidate()
+        
+        // Schedule new auto-save in 3 seconds
+        autoSaveTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
+            Task { @MainActor in
+                if self.isDirty {
+                    self.saveNote()
+                }
+            }
+        }
     }
     
     private func getWindowTitle() -> String {
@@ -617,7 +932,9 @@ struct NotesToRepoPopupView: View {
             lastOpenedFileID: lastOpenedFileID
         ) {
             selectNote(fileToRestore)
-            scrollID = fileToRestore.id
+            withAnimation(.easeInOut(duration: 0.2)) {
+                scrollID = fileToRestore.id
+            }
         } else {
             createNewNote()
         }
@@ -676,7 +993,9 @@ struct NotesToRepoPopupView: View {
                     // Navigate to next note or create new one
                     if let nextNote = NotesToRepoFileService.findNavigationTarget(in: noteFiles, after: currentIndex) {
                         selectNote(nextNote)
-                        scrollID = nextNote.id
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            scrollID = nextNote.id
+                        }
                     } else {
                         createNewNote()
                     }

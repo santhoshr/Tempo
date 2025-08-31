@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Defaults
+import AppKit
 
 @main
 struct GitClientApp: App {
@@ -65,24 +66,6 @@ struct GitClientApp: App {
     
     private func openNotesToRepoWindow() {
         guard let folderURL = selectedFolder else { return }
-        
-        let windowController = NSWindowController(window: NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
-            backing: .buffered,
-            defer: false
-        ))
-        
-        windowController.window?.center()
-        windowController.window?.setFrameAutosaveName("NotesToRepoWindow")
-        windowController.window?.contentView = NSHostingView(
-            rootView: NotesToRepoPopupView()
-                .environment(\.folder, folderURL)
-        )
-        
-        let folderName = folderURL.lastPathComponent
-        windowController.window?.title = "Repository Notes - \(folderName)"
-        windowController.showWindow(nil)
-        windowController.window?.makeKeyAndOrderFront(nil)
+        NotesToRepoWindowManager.openWindow(for: folderURL)
     }
 }

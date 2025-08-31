@@ -33,26 +33,12 @@ struct NoteFileRow: View {
                 .frame(width: 16)
             
             VStack(alignment: .leading, spacing: 2) {
-                // File name and directory badge
+                // File name (badge moved to right edge)
                 HStack(spacing: 6) {
                     Text(noteFile.name)
                         .font(.system(.subheadline, weight: isSelected ? .medium : .regular))
                         .lineLimit(1)
                         .foregroundColor(.primary)
-                    
-                    // Show directory badge if file is in a subdirectory
-                    if let directoryName = finalDirectoryName {
-                        Text(directoryName)
-                            .font(.caption2)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color(NSColor.controlAccentColor).opacity(0.15))
-                            .foregroundColor(Color(NSColor.controlAccentColor))
-                            .clipShape(Capsule())
-                            .lineLimit(1)
-                    }
-                    
-                    Spacer()
                 }
                 
                 // Creation date
@@ -62,7 +48,20 @@ struct NoteFileRow: View {
                     .redacted(reason: noteFile.creationDate.timeIntervalSince1970 == 0 ? .placeholder : [])
             }
             
+            // Push trailing elements to the right edge
             Spacer()
+            
+            // Directory badge on the right edge if file is in a subdirectory
+            if let directoryName = finalDirectoryName {
+                Text(directoryName)
+                    .font(.caption2)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color(NSColor.controlAccentColor).opacity(0.15))
+                    .foregroundColor(Color(NSColor.controlAccentColor))
+                    .clipShape(Capsule())
+                    .lineLimit(1)
+            }
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
@@ -98,7 +97,7 @@ struct NoteFileRow: View {
             onSelect: {}
         )
         
-        // File in subdirectory (shows badge)
+        // File in subdirectory (shows badge on right)
         NoteFileRow(
             noteFile: NoteFile(
                 id: "preview2",

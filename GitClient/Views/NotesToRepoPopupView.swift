@@ -1,5 +1,5 @@
 //
-//  NotesToSelfPopupView.swift
+//  NotesToRepoPopupView.swift
 //  GitClient
 //
 //  Created by Claude on 2025/08/29.
@@ -41,14 +41,16 @@ import Sourceful
  - Git command fails (logged for debugging)
 */
 
-struct NotesToSelfPopupView: View {
+struct NotesToRepoPopupView: View {
     @Environment(\.folder) private var folder
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     
     @Default(.notesToRepoSettings) private var notesToRepoSettings
-    @Default(.notesToSelfFileListWidth) private var fileListWidth
-    @Default(.notesToSelfLastOpenedFile) private var lastOpenedFileID
+    @Default(.notesToRepoFileListWidth) private var fileListWidth
+    @Default(.notesToRepoLastOpenedFile) private var lastOpenedFileID
+    @Default(.notesToRepoFileListVisible) private var fileListVisible
+    @Default(.notesToRepoStatusBarVisible) private var statusBarVisible
     
     @State private var noteFiles: [NoteFile] = []
     @State private var selectedNote: NoteFile?
@@ -68,188 +70,321 @@ struct NotesToSelfPopupView: View {
     @FocusState private var isEditorFocused: Bool
     
     var body: some View {
-        HSplitView {
-            // Left Panel - Folder View
-            VStack(alignment: .leading, spacing: 0) {
-                // Title Bar
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 4) {
-                            Text("Repository Notes")
-                                .font(.headline)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(getRepositoryName())
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            
-                            Text("\(noteFiles.count) note\(noteFiles.count == 1 ? "" : "s")")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    
-                    
-                    Spacer()
+        mainContentView
+            .navigationTitle(getWindowTitle())
+            .focusable()
+            .onKeyPress(action: handleKeyPress)
+            .onAppear { setupView() }
+            .onDisappear { handleDisappear() }
+            .confirmationDialog("Delete Note", isPresented: $showDeleteConfirmation, actions: deleteConfirmationActions, message: deleteConfirmationMessage)
+            .errorSheet($error)
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                handleScenePhaseChange(oldPhase, newPhase)
+            }
+            .onChange(of: titleUpdateTrigger) { _, _ in
+                // This triggers when title needs to update
+            }
+            .onChange(of: hasUncommittedChanges) { _, _ in
+                titleUpdateTrigger.toggle()
+            }
+            .onChange(of: currentFileHasUncommittedChanges) { _, _ in
+                titleUpdateTrigger.toggle()
+            }
+            .onChange(of: selectedNote?.id) { _, _ in
+                checkCurrentFileGitStatus()
+                titleUpdateTrigger.toggle()
+            }
+            .onChange(of: isCreatingNew) { _, _ in
+                checkCurrentFileGitStatus()
+                titleUpdateTrigger.toggle()
+            }
+    }
+    
+    @ViewBuilder
+    private var mainContentView: some View {
+        VStack(spacing: 0) {
+            // Main Toolbar
+            mainToolbar()
+            
+            Divider()
+            
+            // Main Content Area
+            HSplitView {
+                // Left Panel - File List (conditionally visible)
+                if fileListVisible {
+                    fileListPanel()
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color(NSColor.windowBackgroundColor))
                 
-                // Toolbar
-                HStack(spacing: 8) {
-                    // Git repository buttons (left edge)
-                    if isGitRepo {
-                        Button {
-                            openNotesRepoInApp()
-                        } label: {
-                            Image(systemName: "folder.badge.gearshape")
-                        }
-                        .buttonStyle(.bordered)
-                        .help("Open notes repository in main app")
-                        
-                    }
-                    
-                    Spacer()
-                    
-                    // Add/Delete buttons (right edge)
-                    Button {
-                        showDeleteConfirmation = true
-                    } label: {
-                        Image(systemName: "minus")
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(selectedNote == nil)
-                    .help("Delete selected note")
-                    
-                    Button {
-                        createNewNote()
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    .buttonStyle(.bordered)
-                    .help("Create new note")
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color(NSColor.controlBackgroundColor))
-                
+                // Right Panel - Editor View
+                editorPanel()
+            }
+            
+            // Status Bar
+            if statusBarVisible {
                 Divider()
-                
-                // Notes List
-                List(noteFiles, id: \.id, selection: Binding<String?>(
-                    get: { selectedNote?.id },
-                    set: { newID in
-                        if let id = newID,
-                           let noteFile = noteFiles.first(where: { $0.id == id }) {
-                            selectNoteWithAutoSave(noteFile)
-                        }
-                    }
-                )) { noteFile in
-                    NoteFileRow(
-                        noteFile: noteFile,
-                        isSelected: selectedNote?.id == noteFile.id
-                    ) {
-                        selectNoteWithAutoSave(noteFile)
-                    }
-                    .tag(noteFile.id)
+                statusBar()
+            }
+        }
+        .frame(minWidth: 600, maxWidth: .infinity, 
+               minHeight: 400, maxHeight: .infinity)
+    }
+    
+    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+        // Handle global keyboard shortcuts first
+        if keyPress.modifiers.contains(.command) {
+            switch keyPress.key {
+            case KeyEquivalent("1"):
+                fileListVisible.toggle()
+                return .handled
+            case KeyEquivalent("n"):
+                createNewNote()
+                return .handled
+            default:
+                break
+            }
+        }
+        
+        // Only handle navigation keys when file list is focused
+        guard isFileListFocused else { return .ignored }
+        
+        switch keyPress.key {
+        case .upArrow:
+            navigateUpWithDirtyCheck()
+            return .handled
+        case .downArrow:
+            navigateDownWithDirtyCheck()
+            return .handled
+        case .return:
+            if selectedNote == nil && !noteFiles.isEmpty {
+                selectNoteWithAutoSave(noteFiles[0])
+                return .handled
+            }
+            return .ignored
+        case .delete, .deleteForward:
+            if selectedNote != nil {
+                showDeleteConfirmation = true
+                return .handled
+            }
+            return .ignored
+        default:
+            return .ignored
+        }
+    }
+    
+    private func setupView() {
+        loadNotes()
+        checkIfGitRepo()
+        checkGitStatus()
+        // Restore last opened file or create new note
+        restoreLastOpenedFile()
+        // Set focus to file list for keyboard navigation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            isFileListFocused = true
+        }
+    }
+    
+    private func handleDisappear() {
+        // Auto-save and auto-commit when closing if dirty
+        if isDirty {
+            print("DEBUG: OnDisappear - auto-saving with auto commit")
+            saveNote()
+        }
+    }
+    
+    @ViewBuilder
+    private func deleteConfirmationActions() -> some View {
+        Button("Delete", role: .destructive) {
+            deleteSelectedNote()
+        }
+        Button("Cancel", role: .cancel) {}
+    }
+    
+    @ViewBuilder
+    private func deleteConfirmationMessage() -> some View {
+        Text("Are you sure you want to delete this note? This action cannot be undone.")
+    }
+    
+    private func handleScenePhaseChange(_ oldPhase: ScenePhase, _ newPhase: ScenePhase) {
+        if newPhase == .background || newPhase == .inactive {
+            // Only save window state, no auto-commit on background events
+        }
+    }
+    
+    // MARK: - View Components
+    
+    @ViewBuilder
+    private func mainToolbar() -> some View {
+        HStack(spacing: 12) {
+            // Left section - File operations
+            HStack(spacing: 8) {
+                Button {
+                    fileListVisible.toggle()
+                } label: {
+                    Image(systemName: "sidebar.left")
                 }
-                .listStyle(.sidebar)
-                .scrollContentBackground(.hidden)
-                .background(Color(NSColor.controlBackgroundColor))
-                .focused($isFileListFocused)
-                .onTapGesture {
-                    isFileListFocused = true
+                .buttonStyle(.bordered)
+                .help("Toggle file list (⌘1)")
+                
+                if isGitRepo {
+                    Button {
+                        openNotesRepoInApp()
+                    } label: {
+                        Image(systemName: "folder.badge.gearshape")
+                    }
+                    .buttonStyle(.bordered)
+                    .help("Open notes repository in main app")
                 }
             }
-            .frame(minWidth: 200, idealWidth: fileListWidth, maxWidth: 500)
-            .background(Color(NSColor.controlBackgroundColor))
-            .background(
-                GeometryReader { geometry in
-                    Color.clear
-                        .onChange(of: geometry.size.width) { _, newWidth in
-                            fileListWidth = newWidth
-                        }
-                }
-            )
             
-            // Right Panel - Editor View
-            VStack(alignment: .leading, spacing: 0) {
-                // Title Bar
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        if let selectedNote = selectedNote {
-                            HStack(spacing: 4) {
-                                Text(selectedNote.name)
-                                    .font(.headline)
-                                if currentFileHasUncommittedChanges {
-                                    Text("+")
-                                        .font(.headline)
-                                        .foregroundColor(.orange)
-                                        .help("File has uncommitted changes")
-                                }
-                            }
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("Created: \(selectedNote.creationDate, format: .dateTime.month().day().year().hour().minute())")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .redacted(reason: selectedNote.creationDate.timeIntervalSince1970 == 0 ? .placeholder : [])
-                                Text("Modified: \(selectedNote.modificationDate, format: .dateTime.month().day().year().hour().minute())")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .redacted(reason: selectedNote.modificationDate.timeIntervalSince1970 == 0 ? .placeholder : [])
-                            }
-                        } else if isCreatingNew {
-                            HStack(spacing: 4) {
-                                Text(newNoteFileName)
-                                    .font(.headline)
-                                Text("+")
-                                    .font(.headline)
-                                    .foregroundColor(.green)
-                                    .help("New file (not yet saved)")
-                            }
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("New note")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        } else {
-                            Text("Select a note or create a new one")
-                                .font(.headline)
-                                .foregroundColor(.secondary)
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-                    
-                    Spacer()
+            Spacer()
+            
+            // Right section - Note operations
+            HStack(spacing: 8) {
+                Button {
+                    createNewNote()
+                } label: {
+                    Image(systemName: "plus")
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color(NSColor.windowBackgroundColor))
+                .buttonStyle(.bordered)
+                .help("Create new note (⌘N)")
                 
-                // Toolbar - Always visible
+                Button {
+                    showDeleteConfirmation = true
+                } label: {
+                    Image(systemName: "minus")
+                }
+                .buttonStyle(.bordered)
+                .disabled(selectedNote == nil)
+                .help("Delete selected note")
+                
+                Button {
+                    statusBarVisible.toggle()
+                } label: {
+                    Image(systemName: "info.circle")
+                }
+                .buttonStyle(.bordered)
+                .help("Toggle status bar")
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(NSColor.windowBackgroundColor))
+    }
+    
+    @ViewBuilder
+    private func fileListPanel() -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // File list header
+            HStack {
+                Text("Files")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("\(noteFiles.count)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Color(NSColor.controlBackgroundColor))
+            
+            Divider()
+            
+            // Notes List
+            List(noteFiles, id: \.id, selection: Binding<String?>(
+                get: { selectedNote?.id },
+                set: { newID in
+                    if let id = newID,
+                       let noteFile = noteFiles.first(where: { $0.id == id }) {
+                        selectNoteWithAutoSave(noteFile)
+                    }
+                }
+            )) { noteFile in
+                NoteFileRow(
+                    noteFile: noteFile,
+                    isSelected: selectedNote?.id == noteFile.id
+                ) {
+                    selectNoteWithAutoSave(noteFile)
+                }
+                .tag(noteFile.id)
+            }
+            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+            .background(Color(NSColor.controlBackgroundColor))
+            .focused($isFileListFocused)
+            .onTapGesture {
+                isFileListFocused = true
+            }
+        }
+        .frame(minWidth: 200, idealWidth: fileListWidth, maxWidth: 500)
+        .background(Color(NSColor.controlBackgroundColor))
+        .background(
+            GeometryReader { geometry in
+                Color.clear
+                    .onChange(of: geometry.size.width) { _, newWidth in
+                        fileListWidth = newWidth
+                    }
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func editorPanel() -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Editor header
+            HStack {
                 HStack(spacing: 8) {
-                    if selectedNote != nil || isCreatingNew {
-                        // Navigation buttons
+                    if let selectedNote = selectedNote {
+                        Text(selectedNote.name)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        
+                        if isDirty {
+                            Circle()
+                                .fill(.secondary)
+                                .frame(width: 6, height: 6)
+                                .help("Unsaved changes")
+                        }
+                        
+                        if currentFileHasUncommittedChanges {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                                .help("File has uncommitted changes")
+                        }
+                    } else if isCreatingNew {
+                        Text(newNoteFileName)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        
+                        Circle()
+                            .fill(.green)
+                            .frame(width: 6, height: 6)
+                            .help("New file")
+                    } else {
+                        Text("No note selected")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                if selectedNote != nil || isCreatingNew {
+                    HStack(spacing: 8) {
                         Button {
                             navigateUpWithDirtyCheck()
                         } label: {
                             Image(systemName: "chevron.up")
                         }
                         .buttonStyle(.bordered)
+                        .controlSize(.small)
                         .disabled(!canNavigateUp())
-                        .help("Previous note")
+                        .help("Previous note (↑)")
                         
                         Button {
                             navigateDownWithDirtyCheck()
@@ -257,153 +392,145 @@ struct NotesToSelfPopupView: View {
                             Image(systemName: "chevron.down")
                         }
                         .buttonStyle(.bordered)
+                        .controlSize(.small)
                         .disabled(!canNavigateDown())
-                        .help("Next note")
-                        
-                        Spacer()
-                        
-                        
-                        Button {
-                            performAutoSaveAndClose()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
-                        .buttonStyle(.bordered)
-                        .help("Close editor")
-                    } else {
-                        // Placeholder content when no note is selected
-                        Spacer()
-                        
-                        // Create new note button
-                        Button {
-                            createNewNote()
-                        } label: {
-                            Image(systemName: "plus.circle")
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .help("Create new note")
+                        .help("Next note (↓)")
                     }
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color(NSColor.controlBackgroundColor))
-                
-                Divider()
-                
-                // Editor
-                if selectedNote != nil || isCreatingNew {
-                    TextEditor(text: $noteContent)
-                        .scrollContentBackground(.hidden)
-                        .background(Color(NSColor.textBackgroundColor))
-                        .font(.system(.body, design: .monospaced))
-                        .padding()
-                        .focused($isEditorFocused)
-                        .onTapGesture {
-                            isFileListFocused = false
-                            isEditorFocused = true
-                        }
-                        .onChange(of: noteContent) { _, newValue in
-                            updateDirtyState(newContent: newValue)
-                        }
-                } else {
-                    VStack {
-                        Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Color(NSColor.controlBackgroundColor))
+            
+            Divider()
+            
+            // Editor content
+            if selectedNote != nil || isCreatingNew {
+                TextEditor(text: $noteContent)
+                    .scrollContentBackground(.hidden)
+                    .background(Color(NSColor.textBackgroundColor))
+                    .font(.system(.body, design: .monospaced, weight: .regular))
+                    .padding(16)
+                    .focused($isEditorFocused)
+                    .onTapGesture {
+                        isFileListFocused = false
+                        isEditorFocused = true
+                    }
+                    .onChange(of: noteContent) { _, newValue in
+                        updateDirtyState(newContent: newValue)
+                    }
+            } else {
+                VStack(spacing: 16) {
+                    Spacer()
+                    
+                    VStack(spacing: 12) {
                         Image(systemName: "note.text")
                             .font(.system(size: 48))
                             .foregroundColor(.secondary)
-                        Text("No note selected")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                        Text("Select a note from the list or create a new one")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Spacer()
+                            .opacity(0.6)
+                        
+                        VStack(spacing: 4) {
+                            Text("No note selected")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                            
+                            Text("Select a note from the list or create a new one")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Button {
+                            createNewNote()
+                        } label: {
+                            Label("Create New Note", systemImage: "plus.circle.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(NSColor.textBackgroundColor))
+            }
+        }
+        .frame(minWidth: 400)
+    }
+    
+    @ViewBuilder
+    private func statusBar() -> some View {
+        HStack(spacing: 16) {
+            // Left section - File info
+            HStack(spacing: 8) {
+                if let selectedNote = selectedNote {
+                    let directoryPath = selectedNote.url.deletingLastPathComponent().path
+                        .replacingOccurrences(of: notesToRepoSettings.notesLocation, with: "")
+                        .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                    
+                    if directoryPath.isEmpty {
+                        Text("Root directory")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text(directoryPath)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .help("Directory: \(selectedNote.url.deletingLastPathComponent().path)")
+                    }
+                } else if isCreatingNew {
+                    Text("Root directory")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("No file selected")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
-            .frame(minWidth: 400)
-        }
-        .frame(minWidth: 600, maxWidth: .infinity, 
-               minHeight: 400, maxHeight: .infinity)
-        .navigationTitle(getWindowTitle())
-        .focusable()
-        .onKeyPress { keyPress in
-            // Only handle navigation keys when file list is focused
-            guard isFileListFocused else { return .ignored }
             
-            switch keyPress.key {
-            case .upArrow:
-                navigateUpWithDirtyCheck()
-                return .handled
-            case .downArrow:
-                navigateDownWithDirtyCheck()
-                return .handled
-            case .return:
-                if selectedNote == nil && !noteFiles.isEmpty {
-                    selectNoteWithAutoSave(noteFiles[0])
-                    return .handled
+            Spacer()
+            
+            // Center section - Git status
+            if isGitRepo {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.triangle.branch")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    if hasUncommittedChanges {
+                        Text("Uncommitted changes")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    } else {
+                        Text("Up to date")
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    }
                 }
-                return .ignored
-            case .delete, .deleteForward:
-                if selectedNote != nil {
-                    showDeleteConfirmation = true
-                    return .handled
+            }
+            
+            Spacer()
+            
+            // Right section - Document stats
+            HStack(spacing: 12) {
+                if selectedNote != nil || isCreatingNew {
+                    let wordCount = noteContent.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }.count
+                    let charCount = noteContent.count
+                    
+                    Text("\(wordCount) words")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Text("\(charCount) chars")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
-                return .ignored
-            default:
-                return .ignored
             }
         }
-        .onChange(of: titleUpdateTrigger) { _, _ in
-            // This triggers when title needs to update
-        }
-        .onChange(of: hasUncommittedChanges) { _, _ in
-            titleUpdateTrigger.toggle()
-        }
-        .onChange(of: currentFileHasUncommittedChanges) { _, _ in
-            titleUpdateTrigger.toggle()
-        }
-        .onChange(of: selectedNote?.id) { _, _ in
-            checkCurrentFileGitStatus()
-            titleUpdateTrigger.toggle()
-        }
-        .onChange(of: isCreatingNew) { _, _ in
-            checkCurrentFileGitStatus()
-            titleUpdateTrigger.toggle()
-        }
-        .onAppear {
-            loadNotes()
-            checkIfGitRepo()
-            checkGitStatus()
-            // Restore last opened file or create new note
-            restoreLastOpenedFile()
-            // Set focus to file list for keyboard navigation
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isFileListFocused = true
-            }
-        }
-        .onDisappear {
-            // Auto-save and auto-commit when closing if dirty
-            if isDirty {
-                print("DEBUG: OnDisappear - auto-saving with auto commit")
-                saveNote()
-            }
-        }
-        .confirmationDialog("Delete Note", isPresented: $showDeleteConfirmation) {
-            Button("Delete", role: .destructive) {
-                deleteSelectedNote()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Are you sure you want to delete this note? This action cannot be undone.")
-        }
-        .errorSheet($error)
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .background || newPhase == .inactive {
-                // Only save window state, no auto-commit on background events
-            }
-        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color(NSColor.controlBackgroundColor))
     }
     
     
@@ -559,7 +686,7 @@ struct NotesToSelfPopupView: View {
         }
         
         do {
-            let previousContent = originalContent
+            _ = originalContent
             try noteContent.write(to: fileURL, atomically: true, encoding: .utf8)
             
             print("DEBUG: === SAVE NOTE CALLED ===")
@@ -899,30 +1026,17 @@ struct NotesToSelfPopupView: View {
     // MARK: - Window Title Management
     
     private func getWindowTitle() -> String {
-        var title = "Notes to Self"
+        let repoName = getRepositoryName()
+        var title = "Notes to Repo - \(repoName) (\(noteFiles.count))"
         
-        if let selectedNote = selectedNote {
-            title = selectedNote.name
-            if isDirty {
-                title += " *"
-            }
-            if isGitRepo && currentFileHasUncommittedChanges {
-                title += " <*>"
-            }
-        } else if isCreatingNew {
-            title = newNoteFileName
-            if isDirty {
-                title += " *"
-            }
-            // New files are always uncommitted until first commit
-            if isGitRepo {
-                title += " <*>"
-            }
-        } else {
-            title = "Notes to Self"
-            if isGitRepo && hasUncommittedChanges {
-                title += " <*>"
-            }
+        // Add dirty state indicator
+        if isDirty {
+            title += " •"
+        }
+        
+        // Add git status indicator
+        if isGitRepo && (currentFileHasUncommittedChanges || hasUncommittedChanges) {
+            title += " ⚠"
         }
         
         return title
@@ -1363,54 +1477,56 @@ struct NoteFileRow: View {
     let onSelect: () -> Void
     
     var body: some View {
-        HStack {
+        HStack(spacing: 8) {
+            // File icon
+            Image(systemName: "doc.text")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+                .frame(width: 16)
+            
             VStack(alignment: .leading, spacing: 2) {
+                // File name
                 Text(noteFile.name)
-                    .font(.subheadline)
-                    .fontWeight(isSelected ? .medium : .regular)
+                    .font(.system(.subheadline, weight: isSelected ? .medium : .regular))
                     .lineLimit(1)
+                    .foregroundColor(.primary)
                 
                 // Show relative path if file is in a subdirectory
                 if noteFile.relativePath != noteFile.name {
                     Text(noteFile.relativePath)
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color(NSColor.tertiaryLabelColor))
                         .lineLimit(1)
                 }
                 
-                Text(noteFile.creationDate.timeIntervalSince1970 == 0 ? "No date" : noteFile.creationDate.formatted(.dateTime.month().day().hour().minute()))
+                // Creation date
+                Text(noteFile.creationDate.timeIntervalSince1970 == 0 ? "No date" : noteFile.creationDate.formatted(.relative(presentation: .named)))
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .redacted(reason: noteFile.creationDate.timeIntervalSince1970 == 0 ? .placeholder : [])
             }
+            
             Spacer()
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
-        .background(isSelected ? Color.accentColor.opacity(0.3) : Color.clear)
         .background(
-            // Hover effect
-            RoundedRectangle(cornerRadius: 4)
-                .fill(Color.primary.opacity(0.05))
-                .opacity(isSelected ? 0 : 1)
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(Color.accentColor, lineWidth: isSelected ? 1 : 0)
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 1)
         )
         .contentShape(Rectangle())
         .onTapGesture {
             onSelect()
         }
-        .simultaneousGesture(
-            TapGesture()
-                .onEnded { _ in
-                    onSelect()
-                }
-        )
+        .animation(.easeInOut(duration: 0.1), value: isSelected)
     }
 }
 
+
 #Preview {
-    NotesToSelfPopupView()
+    NotesToRepoPopupView()
 }

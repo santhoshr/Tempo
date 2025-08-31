@@ -11,7 +11,7 @@ import Defaults
 
 struct NotesToRepoSettingsView: View {
     @Default(.notesToRepoSettings) private var notesToRepoSettings
-    @Default(.notesToSelfAutoCommit) private var autoCommitEnabled
+    @Default(.notesToRepoAutoCommit) private var autoCommitEnabled
     
     var body: some View {
         ScrollView {

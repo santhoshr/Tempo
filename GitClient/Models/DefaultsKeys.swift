@@ -22,10 +22,12 @@ extension Defaults.Keys {
     
     // MARK: - Notes to Repo Settings
     static let notesToRepoSettings = Key<NotesToRepoSettings>("notesToRepoSettings", default: NotesToRepoSettings())
-    static let notesToSelfAutoSave = Key<Bool>("notesToSelfAutoSave", default: true)
-    static let notesToSelfAutoCommit = Key<Bool>("notesToSelfAutoCommit", default: false)
-    static let notesToSelfFileListWidth = Key<Double>("notesToSelfFileListWidth", default: 300.0)
-    static let notesToSelfLastOpenedFile = Key<String?>("notesToSelfLastOpenedFile", default: nil)
+    static let notesToRepoAutoSave = Key<Bool>("notesToRepoAutoSave", default: true)
+    static let notesToRepoAutoCommit = Key<Bool>("notesToRepoAutoCommit", default: false)
+    static let notesToRepoFileListWidth = Key<Double>("notesToRepoFileListWidth", default: 300.0)
+    static let notesToRepoLastOpenedFile = Key<String?>("notesToRepoLastOpenedFile", default: nil)
+    static let notesToRepoFileListVisible = Key<Bool>("notesToRepoFileListVisible", default: true)
+    static let notesToRepoStatusBarVisible = Key<Bool>("notesToRepoStatusBarVisible", default: true)
     
     // MARK: - AI Service Settings (replacing Keychain)
     static let openAIAPIKey = Key<String>("openAIAPIKey", default: "")

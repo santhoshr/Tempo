@@ -76,7 +76,7 @@ struct GitClientApp: App {
         windowController.window?.center()
         windowController.window?.setFrameAutosaveName("NotesToRepoWindow")
         windowController.window?.contentView = NSHostingView(
-            rootView: NotesToSelfPopupView()
+            rootView: NotesToRepoPopupView()
                 .environment(\.folder, folderURL)
         )
         

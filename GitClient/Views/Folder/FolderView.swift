@@ -28,7 +28,7 @@ struct FolderView: View {
     @State private var searchText = ""
     @State private var searchTask: Task<(), Never>?
     @State private var showGraph = false
-    @State private var showNotesToSelfPopup = false
+    @State private var showNotesToRepoPopup = false
     @Default(.searchTokenHistory) var searchTokenHistory
     private var decodedSearchTokenHistory: [SearchToken] {
         return searchTokenHistory
@@ -85,7 +85,7 @@ struct FolderView: View {
                 .help("Commit Graph")
                 
                 Button(action: {
-                    showNotesToSelfPopup = true
+                    showNotesToRepoPopup = true
                 }) {
                     Image(systemName: "note.text")
                         .font(.title3)
@@ -247,10 +247,10 @@ struct FolderView: View {
         })
         .background(
             EmptyView()
-                .onChange(of: showNotesToSelfPopup) { _, isPresented in
+                .onChange(of: showNotesToRepoPopup) { _, isPresented in
                     if isPresented {
-                        openNotesToSelfWindow()
-                        showNotesToSelfPopup = false
+                        openNotesToRepoWindow()
+                        showNotesToRepoPopup = false
                     }
                 }
         )
@@ -1088,7 +1088,7 @@ struct FolderView: View {
         NSWorkspace.shared.open([folder.url], withApplicationAt: gitupURL, configuration: NSWorkspace.OpenConfiguration())
     }
     
-    fileprivate func openNotesToSelfWindow() {
+    fileprivate func openNotesToRepoWindow() {
         let windowController = NSWindowController(window: NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
@@ -1097,9 +1097,9 @@ struct FolderView: View {
         ))
         
         windowController.window?.center()
-        windowController.window?.setFrameAutosaveName("NotesToSelfWindow")
+        windowController.window?.setFrameAutosaveName("NotesToRepoWindow")
         windowController.window?.contentView = NSHostingView(
-            rootView: NotesToSelfPopupView()
+            rootView: NotesToRepoPopupView()
                 .environment(\.folder, folder.url)
         )
         windowController.window?.title = "Repository Notes - \(folder.displayName)"

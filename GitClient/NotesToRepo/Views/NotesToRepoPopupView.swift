@@ -21,11 +21,21 @@ struct NotesToRepoPopupView: View {
     @Default(.notesToRepoLastOpenedFile) private var lastOpenedFileID
     @Default(.notesToRepoFileListVisible) private var fileListVisible
     @Default(.notesToRepoStatusBarVisible) private var statusBarVisible
+    @Default(.notesToRepoProjectFileExtensions) private var projectFileExtensions
+    @Default(.notesToRepoProjectInitialLoad) private var projectInitialLoad
     
     @State private var noteFiles: [NoteFile] = []
     @State private var selectedNote: NoteFile?
     @State private var noteContent = ""
     @State private var isCreatingNew = false
+    
+    // Project tab state
+    enum FileListTab: Hashable { case notes, project }
+    @State private var activeTab: FileListTab = .notes
+    @State private var projectFiles: [URL] = []
+    @State private var displayedProjectFiles: [URL] = []
+    @State private var projectLoadedCount: Int = 0
+    @State private var isLoadingProjectFiles = false
     @State private var newNoteFileName = ""
     @State private var showDeleteConfirmation = false
     @State private var isDirty = false
@@ -85,7 +95,7 @@ struct NotesToRepoPopupView: View {
         .navigationTitle(getWindowTitle())
         .focusable()
         .onKeyPress(phases: [.down], action: handleKeyPress)
-        .onAppear { setupView() }
+        .onAppear { setupView(); if activeTab == .project { loadProjectFilesIfNeeded() } }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("CreateNewNoteFromWindow"))) { _ in
             createNewNote()
         }
@@ -110,18 +120,31 @@ struct NotesToRepoPopupView: View {
     @ViewBuilder
     private func fileListPanel() -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            // File list header
-            HStack {
-                Text("Files")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
-                
+            // File list header with tabs
+            HStack(spacing: 12) {
+                Picker("", selection: $activeTab) {
+                    Text("Notes").tag(FileListTab.notes)
+                    Text("Project").tag(FileListTab.project)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 180)
+                .onChange(of: activeTab) { _, newTab in
+                    if newTab == .project {
+                        loadProjectFilesIfNeeded()
+                    }
+                }
+
                 Spacer()
-                
-                Text("\(noteFiles.count)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+
+                if activeTab == .notes {
+                    Text("\(noteFiles.count)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("\(projectFiles.count)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
@@ -129,17 +152,40 @@ struct NotesToRepoPopupView: View {
             
             Divider()
             
-            // Notes List with improved arrow key scrolling
+            // Notes/Project List with improved arrow key scrolling
             ScrollView(.vertical) {
                 LazyVStack(spacing: 0) {
-                    ForEach(noteFiles, id: \.id) { noteFile in
-                        NoteFileRow(
-                            noteFile: noteFile,
-                            isSelected: selectedNote?.id == noteFile.id
-                        ) {
-                            selectNoteWithAutoSave(noteFile)
+                    if activeTab == .notes {
+                        ForEach(noteFiles, id: \.id) { noteFile in
+                            NoteFileRow(
+                                noteFile: noteFile,
+                                isSelected: selectedNote?.id == noteFile.id
+                            ) {
+                                selectNoteWithAutoSave(noteFile)
+                            }
+                            .id(noteFile.id)
                         }
-                        .id(noteFile.id)
+                    } else {
+                        ForEach(displayedProjectFiles, id: \.path) { fileURL in
+                            ProjectFileRow(fileURL: fileURL, repoRoot: folder?.url.path ?? "",
+                                           onReveal: { NSWorkspace.shared.selectFile(fileURL.path, inFileViewerRootedAtPath: folder?.url.path ?? "") })
+                            .id(fileURL.path)
+                        }
+                        if projectLoadedCount < projectFiles.count {
+                            HStack {
+                                Spacer()
+                                Button(action: loadMoreProjectFiles) {
+                                    if isLoadingProjectFiles {
+                                        ProgressView().controlSize(.small)
+                                    } else {
+                                        Text("Load more")
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .padding(.vertical, 8)
+                                Spacer()
+                            }
+                        }
                     }
                 }
                 .scrollTargetLayout()
@@ -508,6 +554,8 @@ struct NotesToRepoPopupView: View {
     // MARK: - Lifecycle & Setup
     
     private func setupView() {
+        // Ensure default tab is Notes
+        activeTab = .notes
         loadNotes()
         checkIfGitRepo()
         checkGitStatus()
@@ -515,6 +563,55 @@ struct NotesToRepoPopupView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             isFileListFocused = true
         }
+    }
+    
+    // MARK: - Project Tab
+    private func loadProjectFilesIfNeeded() {
+        guard let repoURL = folder?.url else { return }
+        if !projectFiles.isEmpty { return }
+        loadProjectFiles(from: repoURL)
+    }
+    
+    private func loadProjectFiles(from repoURL: URL) {
+        isLoadingProjectFiles = true
+        let allowedExts = Set(projectFileExtensions.map { $0.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: ".")) })
+        let rootPath = repoURL.path
+        DispatchQueue.global(qos: .userInitiated).async {
+            var collected: [(url: URL, depth: Int, rel: String)] = []
+            let fm = FileManager.default
+            if let en = fm.enumerator(at: repoURL, includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles, .skipsPackageDescendants]) {
+                for case let fileURL as URL in en {
+                    let ext = fileURL.pathExtension.lowercased()
+                    guard allowedExts.contains(ext) else { continue }
+                    let fullPath = fileURL.path
+                    var rel = fullPath
+                    if rel.hasPrefix(rootPath) { rel.removeFirst(rootPath.count) }
+                    rel = rel.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                    let depth = rel.isEmpty ? 0 : rel.components(separatedBy: "/").count - 1
+                    collected.append((fileURL, depth, rel))
+                }
+            }
+            // Sort: shallow first by depth, then by relative path alphabetical
+            collected.sort { (a, b) in
+                if a.depth != b.depth { return a.depth < b.depth }
+                return a.rel.localizedCaseInsensitiveCompare(b.rel) == .orderedAscending
+            }
+            let sortedURLs = collected.map { $0.url }
+            DispatchQueue.main.async {
+                self.projectFiles = sortedURLs
+                self.projectLoadedCount = 0
+                self.displayedProjectFiles.removeAll()
+                self.loadMoreProjectFiles()
+                self.isLoadingProjectFiles = false
+            }
+        }
+    }
+    
+    private func loadMoreProjectFiles() {
+        guard projectLoadedCount < projectFiles.count else { return }
+        let next = min(projectLoadedCount + max(1, projectInitialLoad), projectFiles.count)
+        displayedProjectFiles.append(contentsOf: projectFiles[projectLoadedCount..<next])
+        projectLoadedCount = next
     }
     
     private func handleDisappear() {

@@ -12,6 +12,8 @@ import Defaults
 struct NotesToRepoSettingsView: View {
     @Default(.notesToRepoSettings) private var notesToRepoSettings
     @Default(.notesToRepoAutoCommit) private var autoCommitEnabled
+    @Default(.notesToRepoProjectFileExtensions) private var projectFileExtensions
+    @Default(.notesToRepoProjectInitialLoad) private var projectInitialLoad
     
     var body: some View {
         ScrollView {
@@ -80,6 +82,58 @@ struct NotesToRepoSettingsView: View {
                     .cornerRadius(8)
                 }
                 
+                // Project Tab Settings
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Project Tab")
+                        .font(.headline)
+                        .fontWeight(.medium)
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        // File Extensions
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("File Extensions")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            TextField("e.g. md, txt", text: Binding(
+                                get: { projectFileExtensions.joined(separator: ", ") },
+                                set: { newValue in
+                                    let cleaned = newValue
+                                        .lowercased()
+                                        .split(separator: ",")
+                                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                                        .filter { !$0.isEmpty }
+                                        .map { $0.hasPrefix(".") ? String($0.dropFirst()) : String($0) }
+                                    projectFileExtensions = Array(Set(cleaned)).sorted()
+                                }
+                            ))
+                            .textFieldStyle(.roundedBorder)
+                            .focusable(false)
+                            Text("Extensions to include in Project tab (comma-separated, no dots).")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+
+                        // Initial Load Count
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Initial Load Count")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            HStack {
+                                Stepper(value: $projectInitialLoad, in: 10...500, step: 5) {
+                                    Text("\(projectInitialLoad)")
+                                }
+                                .frame(maxWidth: 200, alignment: .leading)
+                            }
+                            Text("How many project files to load initially in the Project tab. Use 'Load more' to fetch additional files.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(16)
+                    .background(Color(NSColor.controlBackgroundColor))
+                    .cornerRadius(8)
+                }
+
                 // Information Section
                 VStack(alignment: .leading, spacing: 12) {
                     Text("How it Works")

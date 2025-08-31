@@ -28,6 +28,9 @@ extension Defaults.Keys {
     static let notesToRepoLastOpenedFile = Key<String?>("notesToRepoLastOpenedFile", default: nil)
     static let notesToRepoFileListVisible = Key<Bool>("notesToRepoFileListVisible", default: true)
     static let notesToRepoStatusBarVisible = Key<Bool>("notesToRepoStatusBarVisible", default: true)
+    // Project tab configuration
+    static let notesToRepoProjectFileExtensions = Key<[String]>("notesToRepoProjectFileExtensions", default: ["md", "txt"]) // lowercase extensions, no dots
+    static let notesToRepoProjectInitialLoad = Key<Int>("notesToRepoProjectInitialLoad", default: 25)
     
     // MARK: - AI Service Settings (replacing Keychain)
     static let openAIAPIKey = Key<String>("openAIAPIKey", default: "")

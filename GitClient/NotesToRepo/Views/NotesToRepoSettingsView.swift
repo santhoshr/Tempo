@@ -90,7 +90,7 @@ struct NotesToRepoSettingsView: View {
                         InfoRow(
                             icon: "note.text",
                             iconColor: .blue,
-                            text: "Click 'Notes to Self' in any commit diff view to quickly jot down thoughts or documentation."
+                            text: "Click 'Notes to Repo' in any commit diff view to quickly jot down thoughts or documentation."
                         )
                         
                         InfoRow(

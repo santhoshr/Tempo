@@ -91,7 +91,7 @@ struct FolderView: View {
                         .font(.title3)
                 }
                 .buttonStyle(.accessoryBar)
-                .help("Notes to Self")
+                .help("Notes to Repo")
             }
             .padding(.horizontal, 8)
         }

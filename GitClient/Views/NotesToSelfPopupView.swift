@@ -63,6 +63,7 @@ struct NotesToSelfPopupView: View {
     @State private var hasUncommittedChanges = false
     @State private var currentFileHasUncommittedChanges = false
     @State private var titleUpdateTrigger = false
+    @FocusState private var isFileListFocused: Bool
     
     var body: some View {
         HSplitView {
@@ -135,19 +136,29 @@ struct NotesToSelfPopupView: View {
                 Divider()
                 
                 // Notes List
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 4) {
-                        ForEach(noteFiles) { noteFile in
-                            NoteFileRow(
-                                noteFile: noteFile,
-                                isSelected: selectedNote?.id == noteFile.id
-                            ) {
-                                selectNoteWithAutoSave(noteFile)
-                            }
+                List(noteFiles, id: \.id, selection: Binding<String?>(
+                    get: { selectedNote?.id },
+                    set: { newID in
+                        if let id = newID,
+                           let noteFile = noteFiles.first(where: { $0.id == id }) {
+                            selectNoteWithAutoSave(noteFile)
                         }
                     }
-                    .padding(.horizontal, 8)
-                    .padding(.top, 8)
+                )) { noteFile in
+                    NoteFileRow(
+                        noteFile: noteFile,
+                        isSelected: selectedNote?.id == noteFile.id
+                    ) {
+                        selectNoteWithAutoSave(noteFile)
+                    }
+                    .tag(noteFile.id)
+                }
+                .listStyle(.sidebar)
+                .scrollContentBackground(.hidden)
+                .background(Color(NSColor.controlBackgroundColor))
+                .focused($isFileListFocused)
+                .onTapGesture {
+                    isFileListFocused = true
                 }
             }
             .frame(minWidth: 200, idealWidth: fileListWidth, maxWidth: 500)
@@ -309,6 +320,31 @@ struct NotesToSelfPopupView: View {
         .frame(minWidth: 600, maxWidth: .infinity, 
                minHeight: 400, maxHeight: .infinity)
         .navigationTitle(getWindowTitle())
+        .focusable()
+        .onKeyPress { keyPress in
+            switch keyPress.key {
+            case .upArrow:
+                navigateUpWithDirtyCheck()
+                return .handled
+            case .downArrow:
+                navigateDownWithDirtyCheck()
+                return .handled
+            case .return:
+                if selectedNote == nil && !noteFiles.isEmpty {
+                    selectNoteWithAutoSave(noteFiles[0])
+                    return .handled
+                }
+                return .ignored
+            case .delete, .deleteForward:
+                if selectedNote != nil {
+                    showDeleteConfirmation = true
+                    return .handled
+                }
+                return .ignored
+            default:
+                return .ignored
+            }
+        }
         .onChange(of: titleUpdateTrigger) { _, _ in
             // This triggers when title needs to update
         }
@@ -332,6 +368,10 @@ struct NotesToSelfPopupView: View {
             checkGitStatus()
             // Restore last opened file or create new note
             restoreLastOpenedFile()
+            // Set focus to file list for keyboard navigation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isFileListFocused = true
+            }
         }
         .onDisappear {
             // Auto-save and auto-commit when closing if dirty
@@ -457,6 +497,11 @@ struct NotesToSelfPopupView: View {
             self.error = error
             noteContent = ""
             originalContent = ""
+        }
+        
+        // Maintain focus on file list for keyboard navigation
+        DispatchQueue.main.async {
+            self.isFileListFocused = true
         }
     }
     
@@ -628,41 +673,55 @@ struct NotesToSelfPopupView: View {
     }
     
     private func canNavigateUp() -> Bool {
-        guard let currentNote = selectedNote,
-              let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }) else {
-            return false
+        guard !noteFiles.isEmpty else { return false }
+        if let currentNote = selectedNote,
+           let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }) {
+            return currentIndex > 0
         }
-        return currentIndex > 0
+        return !noteFiles.isEmpty
     }
     
     private func canNavigateDown() -> Bool {
-        guard let currentNote = selectedNote,
-              let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }) else {
-            return false
+        guard !noteFiles.isEmpty else { return false }
+        if let currentNote = selectedNote,
+           let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }) {
+            return currentIndex < noteFiles.count - 1
         }
-        return currentIndex < noteFiles.count - 1
+        return !noteFiles.isEmpty
     }
     
     private func navigateUp() {
-        guard let currentNote = selectedNote,
-              let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }),
-              currentIndex > 0 else {
-            return
+        guard !noteFiles.isEmpty else { return }
+        
+        if let currentNote = selectedNote,
+           let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }),
+           currentIndex > 0 {
+            let previousNote = noteFiles[currentIndex - 1]
+            selectNote(previousNote)
+        } else if selectedNote == nil {
+            // If no selection, select first note
+            selectNote(noteFiles[0])
         }
         
-        let previousNote = noteFiles[currentIndex - 1]
-        selectNote(previousNote)
+        // Ensure focus stays on file list
+        isFileListFocused = true
     }
     
     private func navigateDown() {
-        guard let currentNote = selectedNote,
-              let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }),
-              currentIndex < noteFiles.count - 1 else {
-            return
+        guard !noteFiles.isEmpty else { return }
+        
+        if let currentNote = selectedNote,
+           let currentIndex = noteFiles.firstIndex(where: { $0.id == currentNote.id }),
+           currentIndex < noteFiles.count - 1 {
+            let nextNote = noteFiles[currentIndex + 1]
+            selectNote(nextNote)
+        } else if selectedNote == nil {
+            // If no selection, select first note
+            selectNote(noteFiles[0])
         }
         
-        let nextNote = noteFiles[currentIndex + 1]
-        selectNote(nextNote)
+        // Ensure focus stays on file list
+        isFileListFocused = true
     }
     
     // MARK: - Navigation with Dirty Check
@@ -1313,14 +1372,29 @@ struct NoteFileRow: View {
             }
             Spacer()
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(isSelected ? Color.accentColor.opacity(0.2) : Color.clear)
-        .cornerRadius(6)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(isSelected ? Color.accentColor.opacity(0.3) : Color.clear)
+        .background(
+            // Hover effect
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color.primary.opacity(0.05))
+                .opacity(isSelected ? 0 : 1)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(Color.accentColor, lineWidth: isSelected ? 1 : 0)
+        )
+        .contentShape(Rectangle())
         .onTapGesture {
             onSelect()
         }
-        .contentShape(Rectangle())
+        .simultaneousGesture(
+            TapGesture()
+                .onEnded { _ in
+                    onSelect()
+                }
+        )
     }
 }
 

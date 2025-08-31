@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NotesToRepoStatusBar: View {
     let selectedNote: NoteFile?
+    let selectedProjectFile: URL?
     let isCreatingNew: Bool
     let isGitRepo: Bool
     let hasUncommittedChanges: Bool
@@ -34,6 +35,12 @@ struct NotesToRepoStatusBar: View {
                             .foregroundColor(.secondary)
                             .help("Directory: \(selectedNote.url.deletingLastPathComponent().path)")
                     }
+                } else if let selectedProjectFile = selectedProjectFile {
+                    let directoryPath = selectedProjectFile.deletingLastPathComponent().path
+                    Text(directoryPath)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .help("Directory: \(directoryPath)")
                 } else if isCreatingNew {
                     Text("Root directory")
                         .font(.caption)
@@ -70,7 +77,7 @@ struct NotesToRepoStatusBar: View {
             
             // Right section - Document stats
             HStack(spacing: 12) {
-                if selectedNote != nil || isCreatingNew {
+                if selectedNote != nil || selectedProjectFile != nil || isCreatingNew {
                     let wordCount = noteContent.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }.count
                     let charCount = noteContent.count
                     
@@ -100,6 +107,7 @@ struct NotesToRepoStatusBar: View {
             creationDate: Date(),
             modificationDate: Date()
         ),
+        selectedProjectFile: nil,
         isCreatingNew: false,
         isGitRepo: true,
         hasUncommittedChanges: false,

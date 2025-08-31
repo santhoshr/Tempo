@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NotesToRepoToolbar: View {
-    @Binding var projectFilterText: String
+    @Binding var filterText: String
     let isProjectTab: Bool
     let isGitRepo: Bool
     let selectedNote: NoteFile?
@@ -56,16 +56,18 @@ struct NotesToRepoToolbar: View {
             
             Spacer()
             
-            // Right section - Note operations and project filter
+            // Right section - Note operations and file filter
             HStack(spacing: 8) {
-                if isProjectTab {
-                    TextField("Filter extensions (e.g. md, txt)", text: $projectFilterText)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 240)
-                        .onSubmit { 
-                            NotificationCenter.default.post(name: NSNotification.Name("ReloadProjectFiles"), object: nil) 
+                TextField(isProjectTab ? "Filter extensions (e.g. md, txt)" : "Filter files (e.g. project, daily)", text: $filterText)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 240)
+                    .onSubmit { 
+                        if isProjectTab {
+                            NotificationCenter.default.post(name: NSNotification.Name("ReloadProjectFiles"), object: nil)
+                        } else {
+                            NotificationCenter.default.post(name: NSNotification.Name("ReloadNoteFiles"), object: nil)
                         }
-                }
+                    }
                 
                 Button {
                     guard !editingDisabled else { return }
@@ -113,10 +115,10 @@ struct NotesToRepoToolbar: View {
 #Preview {
     struct Wrapper: View {
         @State var isProjectTab = false
-        @State var projectFilterText = ""
+        @State var filterText = ""
         var body: some View {
             NotesToRepoToolbar(
-                projectFilterText: $projectFilterText,
+                filterText: $filterText,
                 isProjectTab: isProjectTab,
                 isGitRepo: true,
                 selectedNote: NoteFile(

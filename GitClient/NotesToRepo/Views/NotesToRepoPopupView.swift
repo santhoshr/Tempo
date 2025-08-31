@@ -102,9 +102,6 @@ struct NotesToRepoPopupView: View {
                     isSelected: selectedProjectFile?.path == fileURL.path,
                     onSelect: {
                         selectProjectFile(fileURL)
-                    },
-                    onReveal: { 
-                        NSWorkspace.shared.selectFile(fileURL.path, inFileViewerRootedAtPath: folder?.path ?? "") 
                     }
                 )
                 .id(fileURL.path)
@@ -139,10 +136,19 @@ struct NotesToRepoPopupView: View {
                 onToggleFileList: { fileListVisible.toggle() },
                 onOpenNotesRepo: { openNotesRepoInApp() },
                 onRevealInFinder: { 
-                    if let selectedNote = selectedNote {
-                        NSWorkspace.shared.selectFile(selectedNote.url.path, inFileViewerRootedAtPath: "")
-                    } else if let folder = folder {
-                        NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: folder.path)
+                    if activeTab == .project {
+                        if let selectedProjectFile = selectedProjectFile {
+                            NSWorkspace.shared.selectFile(selectedProjectFile.path, inFileViewerRootedAtPath: folder?.path ?? "")
+                        } else if let folder = folder {
+                            NSWorkspace.shared.open(folder)
+                        }
+                    } else {
+                        if let selectedNote = selectedNote {
+                            NSWorkspace.shared.selectFile(selectedNote.url.path, inFileViewerRootedAtPath: notesToRepoSettings.notesLocation)
+                        } else {
+                            let notesURL = URL(fileURLWithPath: notesToRepoSettings.notesLocation)
+                            NSWorkspace.shared.open(notesURL)
+                        }
                     }
                 },
                 onCreateNote: { createNewNote() },
@@ -184,6 +190,11 @@ struct NotesToRepoPopupView: View {
         .onAppear { setupView(); if activeTab == .project { loadProjectFilesIfNeeded() } }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("CreateNewNoteFromWindow"))) { _ in
             createNewNote()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ReloadProjectFiles"))) { _ in
+            if activeTab == .project {
+                loadProjectFilesIfNeeded(forceReload: true)
+            }
         }
         .onDisappear { handleDisappear() }
         .confirmationDialog("Delete Note", isPresented: $showDeleteConfirmation,
@@ -661,15 +672,28 @@ struct NotesToRepoPopupView: View {
     }
     
     // MARK: - Project Tab
-    private func loadProjectFilesIfNeeded() {
+    private func loadProjectFilesIfNeeded(forceReload: Bool = false) {
         guard let repoURL = folder else { return }
-        if !projectFiles.isEmpty { return }
+        if !forceReload && !projectFiles.isEmpty { return }
         loadProjectFiles(from: repoURL)
     }
     
     private func loadProjectFiles(from repoURL: URL) {
         isLoadingProjectFiles = true
-        let allowedExts = Set(projectFileExtensions.map { $0.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: ".")) })
+        
+        // Use projectFilterText if not empty, otherwise fall back to default extensions
+        let extensions: [String]
+        if !projectFilterText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            extensions = projectFilterText
+                .split(separator: ",")
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+                .map { $0.hasPrefix(".") ? String($0.dropFirst()) : $0 }
+                .filter { !$0.isEmpty }
+        } else {
+            extensions = projectFileExtensions
+        }
+        
+        let allowedExts = Set(extensions.map { $0.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: ".")) })
         let rootPath = repoURL.path
         DispatchQueue.global(qos: .userInitiated).async {
             var collected: [(url: URL, depth: Int, rel: String)] = []
@@ -1245,21 +1269,44 @@ struct NotesToRepoPopupView: View {
     
     private func getWindowTitle() -> String {
         let repoName = NoteFileManager.getRepositoryName(for: folder)
+        let tabName = activeTab == .project ? "Project" : "Notes"
         
-        var title = "Notes to Repo - \(repoName)"
+        var title = "Notes to Repo - \(repoName) [\(tabName)]"
         
-        // Add position indicator if we have files and a selected note
-        if !noteFiles.isEmpty {
-            if let selectedNote = selectedNote,
-               let currentIndex = noteFiles.firstIndex(where: { $0.id == selectedNote.id }) {
-                title += " (\(currentIndex + 1) of \(noteFiles.count))"
-            } else if isCreatingNew {
-                title += " (new of \(noteFiles.count))"
+        // Add position indicator based on active tab
+        if activeTab == .project {
+            if !displayedProjectFiles.isEmpty {
+                if let selectedProjectFile = selectedProjectFile,
+                   let currentIndex = displayedProjectFiles.firstIndex(where: { $0.path == selectedProjectFile.path }) {
+                    title += " (\(currentIndex + 1) of \(displayedProjectFiles.count)"
+                    if displayedProjectFiles.count < projectFiles.count {
+                        title += "/\(projectFiles.count)"
+                    }
+                    title += ")"
+                } else {
+                    title += " (\(displayedProjectFiles.count)"
+                    if displayedProjectFiles.count < projectFiles.count {
+                        title += "/\(projectFiles.count)"
+                    }
+                    title += ")"
+                }
             } else {
-                title += " (\(noteFiles.count))"
+                title += " (empty)"
             }
         } else {
-            title += " (empty)"
+            // Notes tab
+            if !noteFiles.isEmpty {
+                if let selectedNote = selectedNote,
+                   let currentIndex = noteFiles.firstIndex(where: { $0.id == selectedNote.id }) {
+                    title += " (\(currentIndex + 1) of \(noteFiles.count))"
+                } else if isCreatingNew {
+                    title += " (new of \(noteFiles.count))"
+                } else {
+                    title += " (\(noteFiles.count))"
+                }
+            } else {
+                title += " (empty)"
+            }
         }
         
         if isDirty {

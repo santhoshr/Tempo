@@ -41,7 +41,7 @@ struct NotesToRepoToolbar: View {
                     Image(systemName: "folder")
                 }
                 .buttonStyle(.bordered)
-                .help(selectedNote != nil ? "Reveal selected note in Finder" : "Reveal notes location in Finder")
+                .help(getRevealFinderHelpText())
                 
                 if isGitRepo {
                     Button {
@@ -99,6 +99,14 @@ struct NotesToRepoToolbar: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(Color(NSColor.windowBackgroundColor))
+    }
+    
+    private func getRevealFinderHelpText() -> String {
+        if isProjectTab {
+            return selectedNote != nil ? "Reveal selected project file in Finder" : "Reveal project repository in Finder"
+        } else {
+            return selectedNote != nil ? "Reveal selected note in Finder" : "Reveal notes location in Finder"
+        }
     }
 }
 

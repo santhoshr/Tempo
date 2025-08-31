@@ -12,7 +12,6 @@ struct ProjectFileRow: View {
     let repoRoot: String
     let isSelected: Bool
     let onSelect: () -> Void
-    let onReveal: () -> Void
     
     @State private var isHovered = false
     
@@ -81,12 +80,6 @@ struct ProjectFileRow: View {
                     .clipShape(Capsule())
                     .lineLimit(1)
             }
-            
-            Button(action: onReveal) {
-                Image(systemName: "folder")
-            }
-            .buttonStyle(.bordered)
-            .help("Reveal in Finder")
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
@@ -118,16 +111,14 @@ struct ProjectFileRow: View {
             fileURL: URL(fileURLWithPath: "/tmp/repo/docs/README.md"),
             repoRoot: "/tmp/repo",
             isSelected: false,
-            onSelect: {},
-            onReveal: {}
+            onSelect: {}
         )
         
         ProjectFileRow(
             fileURL: URL(fileURLWithPath: "/tmp/repo/src/main.swift"),
             repoRoot: "/tmp/repo",
             isSelected: true,
-            onSelect: {},
-            onReveal: {}
+            onSelect: {}
         )
     }
     .padding()

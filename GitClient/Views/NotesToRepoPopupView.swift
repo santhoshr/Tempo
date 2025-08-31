@@ -66,6 +66,7 @@ struct NotesToRepoPopupView: View {
     @State private var hasUncommittedChanges = false
     @State private var currentFileHasUncommittedChanges = false
     @State private var titleUpdateTrigger = false
+    @State private var scrollID: String?
     @FocusState private var isFileListFocused: Bool
     @FocusState private var isEditorFocused: Bool
     
@@ -130,7 +131,7 @@ struct NotesToRepoPopupView: View {
     }
     
     private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
-        // Handle global keyboard shortcuts first
+        // Handle global keyboard shortcuts only
         if keyPress.modifiers.contains(.command) {
             switch keyPress.key {
             case KeyEquivalent("1"):
@@ -144,9 +145,11 @@ struct NotesToRepoPopupView: View {
             }
         }
         
-        // Only handle navigation keys when file list is focused
-        guard isFileListFocused else { return .ignored }
-        
+        return .ignored
+    }
+    
+    private func handleFileListKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+        // Handle file list specific navigation keys
         switch keyPress.key {
         case .upArrow:
             navigateUpWithDirtyCheck()
@@ -156,7 +159,9 @@ struct NotesToRepoPopupView: View {
             return .handled
         case .return:
             if selectedNote == nil && !noteFiles.isEmpty {
-                selectNoteWithAutoSave(noteFiles[0])
+                let firstNote = noteFiles[0]
+                selectNoteWithAutoSave(firstNote)
+                scrollID = firstNote.id
                 return .handled
             }
             return .ignored
@@ -293,28 +298,27 @@ struct NotesToRepoPopupView: View {
             
             Divider()
             
-            // Notes List
-            List(noteFiles, id: \.id, selection: Binding<String?>(
-                get: { selectedNote?.id },
-                set: { newID in
-                    if let id = newID,
-                       let noteFile = noteFiles.first(where: { $0.id == id }) {
-                        selectNoteWithAutoSave(noteFile)
+            // Notes List with improved arrow key scrolling
+            ScrollView(.vertical) {
+                LazyVStack(spacing: 0) {
+                    ForEach(noteFiles, id: \.id) { noteFile in
+                        NoteFileRow(
+                            noteFile: noteFile,
+                            isSelected: selectedNote?.id == noteFile.id
+                        ) {
+                            selectNoteWithAutoSave(noteFile)
+                        }
+                        .id(noteFile.id)
                     }
                 }
-            )) { noteFile in
-                NoteFileRow(
-                    noteFile: noteFile,
-                    isSelected: selectedNote?.id == noteFile.id
-                ) {
-                    selectNoteWithAutoSave(noteFile)
-                }
-                .tag(noteFile.id)
+                .scrollTargetLayout()
             }
-            .listStyle(.sidebar)
             .scrollContentBackground(.hidden)
             .background(Color(NSColor.controlBackgroundColor))
+            .scrollPosition(id: $scrollID)
+            .focusable()
             .focused($isFileListFocused)
+            .onKeyPress(action: handleFileListKeyPress)
             .onTapGesture {
                 isFileListFocused = true
             }
@@ -636,8 +640,9 @@ struct NotesToRepoPopupView: View {
             originalContent = ""
         }
         
-        // Maintain focus on file list for keyboard navigation
+        // Set scroll position and maintain focus on file list for keyboard navigation
         DispatchQueue.main.async {
+            self.scrollID = noteFile.id
             self.isFileListFocused = true
             self.isEditorFocused = false
         }
@@ -798,7 +803,9 @@ struct NotesToRepoPopupView: View {
                     nextIndex = noteFiles.count - 1 // Stay at last note if we deleted the last one
                 }
                 if nextIndex >= 0 && nextIndex < noteFiles.count {
-                    selectNote(noteFiles[nextIndex])
+                    let nextNote = noteFiles[nextIndex]
+                    selectNote(nextNote)
+                    scrollID = nextNote.id
                 }
             } else {
                 // If no notes left, start creating a new one
@@ -836,9 +843,11 @@ struct NotesToRepoPopupView: View {
            currentIndex > 0 {
             let previousNote = noteFiles[currentIndex - 1]
             selectNote(previousNote)
+            scrollID = previousNote.id
         } else if selectedNote == nil {
             // If no selection, select first note
             selectNote(noteFiles[0])
+            scrollID = noteFiles[0].id
         }
         
         // Ensure focus stays on file list
@@ -854,9 +863,11 @@ struct NotesToRepoPopupView: View {
            currentIndex < noteFiles.count - 1 {
             let nextNote = noteFiles[currentIndex + 1]
             selectNote(nextNote)
+            scrollID = nextNote.id
         } else if selectedNote == nil {
             // If no selection, select first note
             selectNote(noteFiles[0])
+            scrollID = noteFiles[0].id
         }
         
         // Ensure focus stays on file list
@@ -1246,6 +1257,7 @@ struct NotesToRepoPopupView: View {
         // Silently fail if file doesn't exist anymore
         if FileManager.default.fileExists(atPath: fileToRestore.url.path) {
             selectNote(fileToRestore)
+            scrollID = fileToRestore.id
         } else {
             // File was deleted, create new note instead
             createNewNote()
